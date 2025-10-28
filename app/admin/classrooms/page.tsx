@@ -115,7 +115,7 @@ export default function ClassroomsPage() {
             <School className="h-6 w-6 text-primary" />
             <h1 className="text-2xl font-bold">Classroom Management</h1>
           </div>
-            <Dialog open={openCreate} onOpenChange={setOpenCreate}>
+          <Dialog open={openCreate} onOpenChange={setOpenCreate}>
               <DialogTrigger asChild>
                 <Button className="rounded-xl">
                   <Plus className="h-4 w-4 mr-2" />
@@ -161,7 +161,6 @@ export default function ClassroomsPage() {
                 </form>
               </DialogContent>
             </Dialog>
-          </div>
         </div>
 
         <Card className="mb-6 rounded-2xl shadow-sm">

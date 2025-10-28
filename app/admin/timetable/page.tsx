@@ -223,13 +223,13 @@ export default function TimetablePage() {
               Timetable Management
             </h1>
           </div>
-            <Dialog
-              open={openCreate || !!editingEntry}
-              onOpenChange={(open) => {
-                setOpenCreate(open);
-                if (!open) setEditingEntry(null);
-              }}
-            >
+          <Dialog
+            open={openCreate || !!editingEntry}
+            onOpenChange={(open) => {
+              setOpenCreate(open);
+              if (!open) setEditingEntry(null);
+            }}
+          >
               <DialogTrigger asChild>
                 <Button disabled={!selectedClassroom}>
                   <Plus className="h-4 w-4 mr-2" />
@@ -364,7 +364,6 @@ export default function TimetablePage() {
                 </form>
               </DialogContent>
             </Dialog>
-          </div>
         </div>
 
         <Card className="mb-6 rounded-2xl shadow-sm">
