@@ -18,6 +18,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { SharedLayout } from "@/components/shared-layout";
 
 interface Student {
   id: string;
@@ -218,67 +219,57 @@ export default function StudentPage() {
   const todayQuote = classroomMessages?.find(msg => msg.messageType === "quote");
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <SharedLayout title="Student Portal" description={`Welcome back, ${session.user?.name}`}>
+      <div className="space-y-6">
+        {/* Student Info Badge */}
+        {studentProfile && (
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <BookOpen className="h-8 w-8 text-primary" />
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Student Portal</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Welcome back, {session.user?.name}</p>
-              </div>
-            </div>
-            {studentProfile && (
-              <Badge variant="outline" className="text-lg px-4 py-2">
-                {studentProfile.classroom.name}
-              </Badge>
-            )}
+            <Badge variant="outline" className="text-base px-4 py-2 rounded-xl">
+              {studentProfile.classroom.name}
+            </Badge>
           </div>
-        </div>
-      </header>
+        )}
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending Homework</p>
+                  <p className="text-sm font-medium text-muted-foreground">Pending Homework</p>
                   <p className="text-3xl font-bold mt-2">{pendingHomework}</p>
                 </div>
                 <Clock className="h-8 w-8 text-orange-500" />
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Today&apos;s Classes</p>
+                  <p className="text-sm font-medium text-muted-foreground">Today&apos;s Classes</p>
                   <p className="text-3xl font-bold mt-2">{todayTimetable.length}</p>
                 </div>
                 <BookOpen className="h-8 w-8 text-blue-500" />
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Roll Number</p>
+                  <p className="text-sm font-medium text-muted-foreground">Roll Number</p>
                   <p className="text-2xl font-bold mt-2">{studentProfile?.rollNumber}</p>
                 </div>
                 <Users className="h-8 w-8 text-green-500" />
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Today</p>
+                  <p className="text-sm font-medium text-muted-foreground">Today</p>
                   <p className="text-sm font-bold mt-2">{new Date().toLocaleDateString()}</p>
                 </div>
                 <Calendar className="h-8 w-8 text-purple-500" />
@@ -289,7 +280,7 @@ export default function StudentPage() {
 
         {/* Today's Quote */}
         {todayQuote && (
-          <Card className="mb-8 bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-l-4 border-l-primary">
+          <Card className="rounded-2xl shadow-sm bg-primary/5 border-primary/20">
             <CardContent className="p-6">
               <div className="flex items-start space-x-3">
                 <School className="h-6 w-6 text-primary mt-1" />
@@ -303,16 +294,16 @@ export default function StudentPage() {
         )}
 
         <Tabs defaultValue="homework" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="homework">Homework</TabsTrigger>
-            <TabsTrigger value="timetable">Timetable</TabsTrigger>
-            <TabsTrigger value="classroom">Classroom</TabsTrigger>
-            <TabsTrigger value="message">Message Teacher</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 rounded-xl">
+            <TabsTrigger value="homework" className="rounded-lg">Homework</TabsTrigger>
+            <TabsTrigger value="timetable" className="rounded-lg">Timetable</TabsTrigger>
+            <TabsTrigger value="classroom" className="rounded-lg">Classroom</TabsTrigger>
+            <TabsTrigger value="message" className="rounded-lg">Message Teacher</TabsTrigger>
           </TabsList>
 
           {/* Homework Tab */}
           <TabsContent value="homework">
-            <Card>
+            <Card className="rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle>My Homework</CardTitle>
                 <CardDescription>Track and submit your assignments</CardDescription>
@@ -322,13 +313,13 @@ export default function StudentPage() {
                   {homework?.map((hw) => {
                     const status = getHomeworkStatus(hw);
                     return (
-                      <Card key={hw.id} className="hover:shadow-md transition-shadow">
+                      <Card key={hw.id} className="rounded-xl shadow-sm hover:shadow-md transition-shadow">
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
-                                <Badge variant={status.variant}>{status.text}</Badge>
-                                <span className="text-sm font-medium text-gray-500">{hw.subjectName}</span>
+                                <Badge variant={status.variant} className="rounded-lg">{status.text}</Badge>
+                                <span className="text-sm font-medium text-muted-foreground">{hw.subjectName}</span>
                               </div>
                               <h4 className="font-semibold text-lg">{hw.title}</h4>
                               <p className="text-sm text-muted-foreground mt-1">{hw.description}</p>
@@ -343,7 +334,7 @@ export default function StudentPage() {
                                 </span>
                               </div>
                             </div>
-                            <Button size="sm" variant={hw.status === "submitted" ? "outline" : "default"}>
+                            <Button size="sm" variant={hw.status === "submitted" ? "outline" : "default"} className="rounded-xl">
                               {hw.status === "submitted" ? "View" : "Submit"}
                             </Button>
                           </div>
@@ -364,7 +355,7 @@ export default function StudentPage() {
 
           {/* Timetable Tab */}
           <TabsContent value="timetable">
-            <Card>
+            <Card className="rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle>Weekly Timetable</CardTitle>
                 <CardDescription>Your class schedule for the week</CardDescription>
@@ -420,7 +411,7 @@ export default function StudentPage() {
           {/* Classroom Tab */}
           <TabsContent value="classroom">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
+              <Card className="rounded-2xl shadow-sm">
                 <CardHeader>
                   <CardTitle>Classroom Information</CardTitle>
                   <CardDescription>Your class details</CardDescription>
@@ -453,7 +444,7 @@ export default function StudentPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="rounded-2xl shadow-sm">
                 <CardHeader>
                   <CardTitle>Class Announcements</CardTitle>
                   <CardDescription>Messages from your teachers</CardDescription>
@@ -461,9 +452,9 @@ export default function StudentPage() {
                 <CardContent>
                   <div className="space-y-3">
                     {classroomMessages?.filter(msg => msg.messageType !== "quote").map((msg) => (
-                      <div key={msg.id} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div key={msg.id} className="p-3 bg-secondary rounded-xl">
                         <div className="flex items-center gap-2 mb-1">
-                          <Badge variant="outline">{msg.messageType}</Badge>
+                          <Badge variant="outline" className="rounded-lg">{msg.messageType}</Badge>
                           <span className="text-xs text-muted-foreground">
                             {new Date(msg.date).toLocaleDateString()}
                           </span>
@@ -483,7 +474,7 @@ export default function StudentPage() {
 
           {/* Message Teacher Tab */}
           <TabsContent value="message">
-            <Card>
+            <Card className="rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle>Send Message to Teacher</CardTitle>
                 <CardDescription>Contact your teachers for queries, absence notifications, or requests</CardDescription>
@@ -492,7 +483,7 @@ export default function StudentPage() {
                 <div>
                   <Label>Select Teacher</Label>
                   <Select value={messageForm.receiverId} onValueChange={(value) => setMessageForm(prev => ({ ...prev, receiverId: value }))}>
-                    <SelectTrigger>
+                    <SelectTrigger className="rounded-xl">
                       <SelectValue placeholder="Choose a teacher" />
                     </SelectTrigger>
                     <SelectContent>
@@ -508,7 +499,7 @@ export default function StudentPage() {
                 <div>
                   <Label>Message Type</Label>
                   <Select value={messageForm.messageType} onValueChange={(value) => setMessageForm(prev => ({ ...prev, messageType: value as typeof messageForm.messageType }))}>
-                    <SelectTrigger>
+                    <SelectTrigger className="rounded-xl">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -523,6 +514,7 @@ export default function StudentPage() {
                 <div>
                   <Label>Subject</Label>
                   <Input
+                    className="rounded-xl"
                     placeholder="Enter message subject"
                     value={messageForm.subject}
                     onChange={(e) => setMessageForm(prev => ({ ...prev, subject: e.target.value }))}
@@ -532,6 +524,7 @@ export default function StudentPage() {
                 <div>
                   <Label>Message</Label>
                   <Textarea
+                    className="rounded-xl"
                     placeholder="Write your message..."
                     value={messageForm.message}
                     onChange={(e) => setMessageForm(prev => ({ ...prev, message: e.target.value }))}
@@ -539,7 +532,7 @@ export default function StudentPage() {
                   />
                 </div>
 
-                <Button onClick={handleSendMessage} disabled={sendMessageMutation.isPending}>
+                <Button onClick={handleSendMessage} disabled={sendMessageMutation.isPending} className="rounded-xl">
                   {sendMessageMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                   <Send className="h-4 w-4 mr-2" />
                   Send Message
@@ -548,7 +541,7 @@ export default function StudentPage() {
             </Card>
           </TabsContent>
         </Tabs>
-      </main>
-    </div>
+      </div>
+    </SharedLayout>
   );
 }
