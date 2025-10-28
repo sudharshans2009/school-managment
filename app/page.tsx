@@ -2,11 +2,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { GraduationCap, BookOpen, Users, LayoutDashboard } from "lucide-react";
+import { HomeLayout } from "@/components/layouts/home-layout";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-6 py-16">
+    <HomeLayout>
+      <div className="container mx-auto px-6 py-16">
         <div className="flex flex-col items-center justify-center min-h-[80vh] text-center space-y-8">
           {/* Logo/Icon */}
           <div className="flex items-center justify-center w-20 h-20 bg-primary rounded-2xl shadow-lg">
@@ -90,7 +91,7 @@ export default function Home() {
             <p>Built with Next.js, Drizzle ORM, Better Auth, and TanStack Query</p>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </HomeLayout>
   );
 }

@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
 interface Classroom {
   id: string;
@@ -97,24 +98,23 @@ export default function ClassroomsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <DashboardLayout title="Classrooms Management" description="Admin Portal">
         <p>Loading classrooms...</p>
-      </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <Link href="/admin">
-                <Button variant="ghost" size="sm">← Back</Button>
-              </Link>
-              <School className="h-6 w-6 text-primary" />
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Classroom Management</h1>
-            </div>
+    <DashboardLayout title="Classrooms Management" description="Admin Portal">
+      <div>
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center space-x-3">
+            <Link href="/admin">
+              <Button variant="ghost" size="sm">← Back</Button>
+            </Link>
+            <School className="h-6 w-6 text-primary" />
+            <h1 className="text-2xl font-bold">Classroom Management</h1>
+          </div>
             <Dialog open={openCreate} onOpenChange={setOpenCreate}>
               <DialogTrigger asChild>
                 <Button className="rounded-xl">
@@ -163,10 +163,8 @@ export default function ClassroomsPage() {
             </Dialog>
           </div>
         </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Card className="mb-6">
+        <Card className="mb-6 rounded-2xl shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
               <Search className="h-5 w-5 text-gray-400" />
@@ -245,7 +243,7 @@ export default function ClassroomsPage() {
             ))}
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

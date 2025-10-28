@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { AuthLayout } from "@/components/layouts/auth-layout";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -47,7 +48,7 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <AuthLayout>
       <Card className="w-full max-w-md rounded-2xl shadow-sm">
         <CardHeader className="space-y-1 pt-8">
           <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
@@ -142,6 +143,6 @@ export default function SignInPage() {
           </CardFooter>
         </form>
       </Card>
-    </div>
+    </AuthLayout>
   );
 }

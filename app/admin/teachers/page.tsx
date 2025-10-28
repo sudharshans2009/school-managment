@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { UserPlus, Mail, Phone, MapPin, Search, Edit2, Trash2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
 interface Teacher {
   id: string;
@@ -138,14 +139,14 @@ export default function TeachersPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6">
+      <DashboardLayout title="Teachers Management" description="Admin Portal">
         <div className="text-center">Loading teachers...</div>
-      </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <DashboardLayout title="Teachers Management" description="Admin Portal">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-3xl font-bold">Teachers Management</h1>
@@ -322,6 +323,6 @@ export default function TeachersPage() {
           </CardContent>
         </Card>
       )}
-    </div>
+    </DashboardLayout>
   );
 }

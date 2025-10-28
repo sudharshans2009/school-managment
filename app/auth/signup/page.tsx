@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { AuthLayout } from "@/components/layouts/auth-layout";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -69,7 +70,7 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <AuthLayout>
       <Card className="w-full max-w-md rounded-2xl shadow-sm">
         <CardHeader className="space-y-1 pt-8">
           <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
@@ -195,6 +196,6 @@ export default function SignUpPage() {
           </CardFooter>
         </form>
       </Card>
-    </div>
+    </AuthLayout>
   );
 }

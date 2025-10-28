@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { BookOpen, Plus, Search, Edit2, Trash2, Users, GraduationCap, Filter } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
 interface Subject {
   id: string;
@@ -188,25 +189,24 @@ export default function SubjectsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+      <DashboardLayout title="Subjects Management" description="Admin Portal">
         <p>Loading subjects...</p>
-      </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <Link href="/admin">
-                <Button variant="ghost" size="sm">
-                  ← Back
-                </Button>
-              </Link>
-              <BookOpen className="h-6 w-6 text-primary" />
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+    <DashboardLayout title="Subjects Management" description="Admin Portal">
+      <div>
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center space-x-3">
+            <Link href="/admin">
+              <Button variant="ghost" size="sm">
+                ← Back
+              </Button>
+            </Link>
+            <BookOpen className="h-6 w-6 text-primary" />
+            <h1 className="text-2xl font-bold">
                 Subject Management
               </h1>
             </div>
@@ -364,10 +364,8 @@ export default function SubjectsPage() {
             </Dialog>
           </div>
         </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Card className="mb-6">
+        <Card className="mb-6 rounded-2xl shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
               <Search className="h-5 w-5 text-gray-400" />
@@ -507,7 +505,7 @@ export default function SubjectsPage() {
             ))}
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

@@ -18,7 +18,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { SharedLayout } from "@/components/shared-layout";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
 interface Student {
   id: string;
@@ -219,7 +219,7 @@ export default function StudentPage() {
   const todayQuote = classroomMessages?.find(msg => msg.messageType === "quote");
 
   return (
-    <SharedLayout title="Student Portal" description={`Welcome back, ${session.user?.name}`}>
+    <DashboardLayout title="Student Portal" description={`Welcome back, ${session.user?.name}`}>
       <div className="space-y-6">
         {/* Student Info Badge */}
         {studentProfile && (
@@ -542,6 +542,6 @@ export default function StudentPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </SharedLayout>
+    </DashboardLayout>
   );
 }
