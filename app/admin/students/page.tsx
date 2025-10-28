@@ -219,7 +219,7 @@ export default function StudentsPage() {
                 </div>
                 <div>
                   <Label htmlFor="password">Password {editingStudent ? "" : "*"}</Label>
-                <Input id="password" name="password" type="password" required={!editingStudent} minLength={6} placeholder={editingStudent ? "Leave blank to keep current password" : ""} />
+                <Input id="password" name="password" type="password" required={!editingStudent} minLength={6} placeholder={editingStudent ? "Leave blank to keep current password" : ""} className="rounded-xl" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
