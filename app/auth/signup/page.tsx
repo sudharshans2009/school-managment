@@ -69,9 +69,9 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-md rounded-2xl shadow-sm">
+        <CardHeader className="space-y-1 pt-8">
           <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
           <CardDescription className="text-center">
             Join Smart School Management System
@@ -167,10 +167,10 @@ export default function SignUpPage() {
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col space-y-4">
+          <CardFooter className="flex flex-col space-y-4 pb-8">
             <Button
               type="submit"
-              className="w-full"
+              className="w-full rounded-xl"
               disabled={isLoading}
             >
               {isLoading ? (
