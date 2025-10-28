@@ -12,12 +12,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
-  GraduationCap, BookOpen, Users, Calendar, MessageSquare, Quote, 
+  BookOpen, Users, Calendar, MessageSquare, Quote, 
   CheckCircle, XCircle, Send, Loader2 
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { SharedLayout } from "@/components/shared-layout";
 
 interface TeacherAssignment {
   id: string;
@@ -266,67 +267,55 @@ export default function TeacherPage() {
   const unreadMessages = messages?.filter(m => m.status === "sent").length || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <GraduationCap className="h-8 w-8 text-primary" />
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Teacher Portal</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Welcome back, {session.user?.name}</p>
-              </div>
-            </div>
-            {unreadMessages > 0 && (
-              <Badge variant="destructive" className="h-8 px-3">
-                {unreadMessages} New Messages
-              </Badge>
-            )}
-          </div>
-        </div>
-      </header>
+    <SharedLayout title="Teacher Portal" description={`Welcome back, ${session.user?.name}`}>
+      <div className="space-y-6">
+        {/* Unread messages badge */}
+        {unreadMessages > 0 && (
+          <Badge variant="destructive" className="h-8 px-3 rounded-xl">
+            {unreadMessages} New Messages
+          </Badge>
+        )}
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">My Classes</p>
+                  <p className="text-sm font-medium text-muted-foreground">My Classes</p>
                   <p className="text-3xl font-bold mt-2">{assignments?.length || 0}</p>
                 </div>
                 <BookOpen className="h-8 w-8 text-blue-500" />
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Class Teacher</p>
+                  <p className="text-sm font-medium text-muted-foreground">Class Teacher</p>
                   <p className="text-3xl font-bold mt-2">{primaryClasses.length}</p>
                 </div>
                 <Users className="h-8 w-8 text-green-500" />
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Messages</p>
+                  <p className="text-sm font-medium text-muted-foreground">Messages</p>
                   <p className="text-3xl font-bold mt-2">{unreadMessages}</p>
                 </div>
                 <MessageSquare className="h-8 w-8 text-orange-500" />
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Today</p>
+                  <p className="text-sm font-medium text-muted-foreground">Today</p>
                   <p className="text-sm font-bold mt-2">{new Date().toLocaleDateString()}</p>
                 </div>
                 <Calendar className="h-8 w-8 text-purple-500" />
@@ -336,17 +325,17 @@ export default function TeacherPage() {
         </div>
 
         <Tabs defaultValue="classes" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="classes">My Classes</TabsTrigger>
-            <TabsTrigger value="attendance">Attendance</TabsTrigger>
-            <TabsTrigger value="homework">Homework</TabsTrigger>
-            <TabsTrigger value="messages">Messages</TabsTrigger>
-            <TabsTrigger value="classroom-msg">Class Message</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5 rounded-xl">
+            <TabsTrigger value="classes" className="rounded-lg">My Classes</TabsTrigger>
+            <TabsTrigger value="attendance" className="rounded-lg">Attendance</TabsTrigger>
+            <TabsTrigger value="homework" className="rounded-lg">Homework</TabsTrigger>
+            <TabsTrigger value="messages" className="rounded-lg">Messages</TabsTrigger>
+            <TabsTrigger value="classroom-msg" className="rounded-lg">Class Message</TabsTrigger>
           </TabsList>
 
           {/* My Classes Tab */}
           <TabsContent value="classes">
-            <Card>
+            <Card className="rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle>My Assigned Classes</CardTitle>
                 <CardDescription>Classes and subjects you teach</CardDescription>
@@ -354,12 +343,12 @@ export default function TeacherPage() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {assignments?.map((assignment) => (
-                    <Card key={assignment.id} className="hover:shadow-lg transition-shadow">
+                    <Card key={assignment.id} className="rounded-xl shadow-sm hover:shadow-lg transition-shadow">
                       <CardContent className="p-6">
                         <div className="flex items-start justify-between mb-3">
                           <h3 className="font-bold text-lg">{assignment.classroom.name}</h3>
                           {assignment.isPrimary && (
-                            <Badge variant="default">Class Teacher</Badge>
+                            <Badge variant="default" className="rounded-lg">Class Teacher</Badge>
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground mb-2">{assignment.subject.name}</p>
@@ -382,7 +371,7 @@ export default function TeacherPage() {
 
           {/* Attendance Tab */}
           <TabsContent value="attendance">
-            <Card>
+            <Card className="rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle>Mark Attendance</CardTitle>
                 <CardDescription>Record student attendance for your classes</CardDescription>
@@ -392,7 +381,7 @@ export default function TeacherPage() {
                   <div>
                     <Label>Select Class</Label>
                     <Select value={selectedClass} onValueChange={setSelectedClass}>
-                      <SelectTrigger>
+                      <SelectTrigger className="rounded-xl">
                         <SelectValue placeholder="Choose a class" />
                       </SelectTrigger>
                       <SelectContent>
@@ -406,7 +395,7 @@ export default function TeacherPage() {
                   </div>
                   <div>
                     <Label>Date</Label>
-                    <Input
+                    <Input className="rounded-xl"
                       type="date"
                       value={attendanceDate}
                       onChange={(e) => setAttendanceDate(e.target.value)}
@@ -417,10 +406,10 @@ export default function TeacherPage() {
                 {selectedClass && students && students.length > 0 && (
                   <>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" onClick={() => markAllStudents('present')}>
+                      <Button className="rounded-xl" size="sm" variant="outline" onClick={() => markAllStudents('present')}>
                         <CheckCircle className="h-4 w-4 mr-1" /> Mark All Present
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => markAllStudents('absent')}>
+                      <Button className="rounded-xl" size="sm" variant="outline" onClick={() => markAllStudents('absent')}>
                         <XCircle className="h-4 w-4 mr-1" /> Mark All Absent
                       </Button>
                     </div>
@@ -483,7 +472,7 @@ export default function TeacherPage() {
 
           {/* Homework Tab */}
           <TabsContent value="homework">
-            <Card>
+            <Card className="rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle>Assign Homework</CardTitle>
                 <CardDescription>Create and assign homework for your classes</CardDescription>
@@ -493,7 +482,7 @@ export default function TeacherPage() {
                   <div>
                     <Label>Class</Label>
                     <Select value={homeworkForm.classroomId} onValueChange={(value) => setHomeworkForm(prev => ({ ...prev, classroomId: value }))}>
-                      <SelectTrigger>
+                      <SelectTrigger className="rounded-xl">
                         <SelectValue placeholder="Select class" />
                       </SelectTrigger>
                       <SelectContent>
@@ -508,7 +497,7 @@ export default function TeacherPage() {
                   <div>
                     <Label>Subject</Label>
                     <Select value={homeworkForm.subjectId} onValueChange={(value) => setHomeworkForm(prev => ({ ...prev, subjectId: value }))}>
-                      <SelectTrigger>
+                      <SelectTrigger className="rounded-xl">
                         <SelectValue placeholder="Select subject" />
                       </SelectTrigger>
                       <SelectContent>
@@ -526,7 +515,7 @@ export default function TeacherPage() {
 
                 <div>
                   <Label>Title</Label>
-                  <Input
+                  <Input className="rounded-xl"
                     placeholder="Enter homework title"
                     value={homeworkForm.title}
                     onChange={(e) => setHomeworkForm(prev => ({ ...prev, title: e.target.value }))}
@@ -535,7 +524,7 @@ export default function TeacherPage() {
 
                 <div>
                   <Label>Description</Label>
-                  <Textarea
+                  <Textarea className="rounded-xl"
                     placeholder="Describe the homework assignment"
                     value={homeworkForm.description}
                     onChange={(e) => setHomeworkForm(prev => ({ ...prev, description: e.target.value }))}
@@ -545,14 +534,14 @@ export default function TeacherPage() {
 
                 <div>
                   <Label>Due Date</Label>
-                  <Input
+                  <Input className="rounded-xl"
                     type="date"
                     value={homeworkForm.dueDate}
                     onChange={(e) => setHomeworkForm(prev => ({ ...prev, dueDate: e.target.value }))}
                   />
                 </div>
 
-                <Button onClick={handleCreateHomework} disabled={homeworkMutation.isPending}>
+                <Button className="rounded-xl" onClick={handleCreateHomework} disabled={homeworkMutation.isPending}>
                   {homeworkMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                   Assign Homework
                 </Button>
@@ -562,7 +551,7 @@ export default function TeacherPage() {
 
           {/* Messages Tab */}
           <TabsContent value="messages">
-            <Card>
+            <Card className="rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle>Messages from Students</CardTitle>
                 <CardDescription>View and respond to student messages</CardDescription>
@@ -601,7 +590,7 @@ export default function TeacherPage() {
 
           {/* Classroom Message Tab */}
           <TabsContent value="classroom-msg">
-            <Card>
+            <Card className="rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle>Post Class Message</CardTitle>
                 <CardDescription>Share daily quotes and announcements with your class</CardDescription>
@@ -612,7 +601,7 @@ export default function TeacherPage() {
                     <div>
                       <Label>Select Your Class</Label>
                       <Select value={quoteForm.classroomId} onValueChange={(value) => setQuoteForm(prev => ({ ...prev, classroomId: value }))}>
-                        <SelectTrigger>
+                        <SelectTrigger className="rounded-xl">
                           <SelectValue placeholder="Choose class" />
                         </SelectTrigger>
                         <SelectContent>
@@ -628,7 +617,7 @@ export default function TeacherPage() {
                     <div>
                       <Label>Message Type</Label>
                       <Select value={quoteForm.messageType} onValueChange={(value) => setQuoteForm(prev => ({ ...prev, messageType: value }))}>
-                        <SelectTrigger>
+                        <SelectTrigger className="rounded-xl">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -641,7 +630,7 @@ export default function TeacherPage() {
 
                     <div>
                       <Label>Message</Label>
-                      <Textarea
+                      <Textarea className="rounded-xl"
                         placeholder="Enter your message..."
                         value={quoteForm.content}
                         onChange={(e) => setQuoteForm(prev => ({ ...prev, content: e.target.value }))}
@@ -649,7 +638,7 @@ export default function TeacherPage() {
                       />
                     </div>
 
-                    <Button onClick={handlePostQuote} disabled={quoteMutation.isPending}>
+                    <Button className="rounded-xl" onClick={handlePostQuote} disabled={quoteMutation.isPending}>
                       {quoteMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                       <Send className="h-4 w-4 mr-2" />
                       Post Message
@@ -667,7 +656,7 @@ export default function TeacherPage() {
             </Card>
           </TabsContent>
         </Tabs>
-      </main>
-    </div>
+      </div>
+    </SharedLayout>
   );
 }

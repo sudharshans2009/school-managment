@@ -117,7 +117,7 @@ export default function ClassroomsPage() {
             </div>
             <Dialog open={openCreate} onOpenChange={setOpenCreate}>
               <DialogTrigger asChild>
-                <Button>
+                <Button className="rounded-xl">
                   <Plus className="h-4 w-4 mr-2" />
                   Create Classroom
                 </Button>
@@ -129,15 +129,15 @@ export default function ClassroomsPage() {
                 <form onSubmit={handleCreate} className="space-y-4">
                   <div>
                     <Label htmlFor="name">Classroom Name *</Label>
-                    <Input id="name" name="name" placeholder="e.g., Class 10A" required />
+                    <Input className="rounded-xl" id="name" name="name" placeholder="e.g., Class 10A" required />
                   </div>
                   <div>
                     <Label htmlFor="grade">Grade *</Label>
-                    <Input id="grade" name="grade" placeholder="e.g., 10" required />
+                    <Input className="rounded-xl" id="grade" name="grade" placeholder="e.g., 10" required />
                   </div>
                   <div>
                     <Label htmlFor="section">Section *</Label>
-                    <Input id="section" name="section" placeholder="e.g., A" required />
+                    <Input className="rounded-xl" id="section" name="section" placeholder="e.g., A" required />
                   </div>
                   {createMutation.error && (
                     <Alert variant="destructive">
@@ -181,7 +181,7 @@ export default function ClassroomsPage() {
         </Card>
 
         {filteredClassrooms && filteredClassrooms.length === 0 ? (
-          <Card>
+          <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-8 text-center text-gray-500">
               No classrooms found. Create your first classroom to get started.
             </CardContent>

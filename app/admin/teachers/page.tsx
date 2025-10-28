@@ -156,7 +156,7 @@ export default function TeachersPage() {
           if (!isOpen) setEditingTeacher(null);
         }}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="rounded-xl">
               <UserPlus className="h-4 w-4 mr-2" />
               Add Teacher
             </Button>
@@ -168,23 +168,23 @@ export default function TeachersPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <Label htmlFor="name">Full Name *</Label>
-                <Input id="name" name="name" required defaultValue={editingTeacher?.name} />
+                <Input className="rounded-xl" id="name" name="name" required defaultValue={editingTeacher?.name} />
               </div>
               <div>
                 <Label htmlFor="email">Email *</Label>
-                <Input id="email" name="email" type="email" required defaultValue={editingTeacher?.email} />
+                <Input className="rounded-xl" id="email" name="email" type="email" required defaultValue={editingTeacher?.email} />
               </div>
               <div>
                 <Label htmlFor="password">Password {editingTeacher ? "" : "*"}</Label>
-                <Input id="password" name="password" type="password" required={!editingTeacher} minLength={6} placeholder={editingTeacher ? "Leave blank to keep current password" : ""} />
+                <Input className="rounded-xl" id="password" name="password" type="password" required={!editingTeacher} minLength={6} placeholder={editingTeacher ? "Leave blank to keep current password" : ""} />
               </div>
               <div>
                 <Label htmlFor="phone">Phone</Label>
-                <Input id="phone" name="phone" type="tel" defaultValue={editingTeacher?.phone || ''} />
+                <Input className="rounded-xl" id="phone" name="phone" type="tel" defaultValue={editingTeacher?.phone || ''} />
               </div>
               <div>
                 <Label htmlFor="address">Address</Label>
-                <Input id="address" name="address" defaultValue={editingTeacher?.address || ''} />
+                <Input className="rounded-xl" id="address" name="address" defaultValue={editingTeacher?.address || ''} />
               </div>
               {(createMutation.error || updateMutation.error) && (
                 <Alert variant="destructive">
@@ -316,7 +316,7 @@ export default function TeachersPage() {
       </AlertDialog>
 
       {filteredTeachers?.length === 0 && (
-        <Card>
+        <Card className="rounded-2xl shadow-sm">
           <CardContent className="text-center py-8">
             <p className="text-gray-500">No teachers found</p>
           </CardContent>

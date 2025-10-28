@@ -215,7 +215,7 @@ export default function SubjectsPage() {
               onOpenChange={handleDialogChange}
             >
               <DialogTrigger asChild>
-                <Button>
+                <Button className="rounded-xl">
                   <Plus className="h-4 w-4 mr-2" />
                   Add Subject
                 </Button>
@@ -382,7 +382,7 @@ export default function SubjectsPage() {
         </Card>
 
         {filteredSubjects && filteredSubjects.length === 0 ? (
-          <Card>
+          <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-8 text-center text-gray-500">
               No subjects found. Add your first subject to get started.
             </CardContent>
