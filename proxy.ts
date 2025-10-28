@@ -7,7 +7,7 @@ const protectedRoutes = ["/dashboard", "/admin", "/teacher", "/student", "/smart
 // Routes that should redirect to dashboard if authenticated
 const authRoutes = ["/auth/signin", "/auth/signup"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Check if the route is protected

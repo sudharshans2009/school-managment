@@ -6,11 +6,15 @@ export const userRoleEnum = pgEnum('user_role', ['admin', 'teacher', 'student', 
 export const feeStatusEnum = pgEnum('fee_status', ['pending', 'paid', 'overdue', 'partial']);
 export const attendanceStatusEnum = pgEnum('attendance_status', ['present', 'absent', 'late', 'excused']);
 export const homeworkStatusEnum = pgEnum('homework_status', ['assigned', 'submitted', 'graded', 'overdue']);
+export const messageStatusEnum = pgEnum('message_status', ['sent', 'read']);
+export const messageTypeEnum = pgEnum('message_type', ['absence', 'query', 'request', 'general']);
+export const sessionTypeEnum = pgEnum('session_type', ['regular', 'lab', 'test', 'extra']);
 
 // Users Table
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
   email: varchar('email', { length: 255 }).notNull().unique(),
+  emailVerified: boolean('email_verified').notNull().default(false),
   name: varchar('name', { length: 255 }).notNull(),
   role: userRoleEnum('role').notNull(),
   passwordHash: text('password_hash'),
@@ -18,6 +22,43 @@ export const users = pgTable('users', {
   address: text('address'),
   profileImage: text('profile_image'),
   isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Better Auth - Session Table
+export const sessions = pgTable('session', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  expiresAt: timestamp('expires_at').notNull(),
+  token: text('token').notNull().unique(),
+  ipAddress: varchar('ip_address', { length: 45 }),
+  userAgent: text('user_agent'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Better Auth - Account Table (for OAuth providers)
+export const accounts = pgTable('account', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  accountId: text('account_id').notNull(),
+  providerId: text('provider_id').notNull(),
+  accessToken: text('access_token'),
+  refreshToken: text('refresh_token'),
+  idToken: text('id_token'),
+  expiresAt: timestamp('expires_at'),
+  password: text('password'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Better Auth - Verification Table
+export const verifications = pgTable('verification', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  identifier: text('identifier').notNull(),
+  value: text('value').notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
@@ -44,7 +85,10 @@ export const subjects = pgTable('subjects', {
   name: varchar('name', { length: 100 }).notNull(),
   code: varchar('code', { length: 20 }).notNull().unique(),
   description: text('description'),
-  credits: integer('credits').default(1),
+  // Class and section filters - JSON arrays stored as text
+  // If null or empty, applies to all classes/sections
+  applicableGrades: text('applicable_grades'), // JSON array like ["6", "7", "8", "9", "10"]
+  applicableSections: text('applicable_sections'), // JSON array like ["A", "B"] or null for all
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -70,6 +114,7 @@ export const students = pgTable('students', {
   emergencyContact: varchar('emergency_contact', { length: 20 }),
   bloodGroup: varchar('blood_group', { length: 5 }),
   medicalInfo: text('medical_info'),
+  elective: varchar('elective', { length: 100 }), // For students to choose electives like KTPI or Sports
   admissionDate: timestamp('admission_date').defaultNow(),
   createdAt: timestamp('created_at').defaultNow(),
 });
@@ -167,9 +212,36 @@ export const timetable = pgTable('timetable', {
   subjectId: uuid('subject_id').notNull().references(() => subjects.id),
   teacherId: uuid('teacher_id').notNull().references(() => users.id),
   dayOfWeek: integer('day_of_week').notNull(), // 0-6 (Sunday-Saturday)
+  periodNumber: integer('period_number').notNull(), // 1-9 for the 9-period system
   startTime: varchar('start_time', { length: 10 }).notNull(), // HH:MM format
   endTime: varchar('end_time', { length: 10 }).notNull(),
   room: varchar('room', { length: 50 }),
+  sessionType: sessionTypeEnum('session_type').default('regular'), // regular, lab, test, extra
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Messages Table (Student-Teacher Communication)
+export const messages = pgTable('messages', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  senderId: uuid('sender_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  receiverId: uuid('receiver_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  subject: varchar('subject', { length: 255 }).notNull(),
+  message: text('message').notNull(),
+  messageType: messageTypeEnum('message_type').default('general'),
+  status: messageStatusEnum('status').default('sent'),
+  readAt: timestamp('read_at'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Classroom Messages (Daily Quotes, Class Announcements by Class Teacher)
+export const classroomMessages = pgTable('classroom_messages', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  classroomId: uuid('classroom_id').notNull().references(() => classrooms.id, { onDelete: 'cascade' }),
+  teacherId: uuid('teacher_id').notNull().references(() => users.id),
+  messageType: varchar('message_type', { length: 50 }).notNull(), // 'quote', 'announcement', 'reminder'
+  content: text('content').notNull(),
+  date: timestamp('date').defaultNow(),
   isActive: boolean('is_active').default(true),
   createdAt: timestamp('created_at').defaultNow(),
 });
@@ -183,6 +255,9 @@ export const usersRelations = relations(users, ({ many }) => ({
   attendanceMarked: many(attendance),
   announcements: many(announcements),
   timetable: many(timetable),
+  sentMessages: many(messages, { relationName: 'sentMessages' }),
+  receivedMessages: many(messages, { relationName: 'receivedMessages' }),
+  classroomMessages: many(classroomMessages),
 }));
 
 export const classroomsRelations = relations(classrooms, ({ many }) => ({
@@ -193,6 +268,7 @@ export const classroomsRelations = relations(classrooms, ({ many }) => ({
   announcements: many(announcements),
   timetable: many(timetable),
   feeStructures: many(feeStructures),
+  classroomMessages: many(classroomMessages),
 }));
 
 export const subjectsRelations = relations(subjects, ({ many }) => ({
@@ -254,4 +330,14 @@ export const timetableRelations = relations(timetable, ({ one }) => ({
   classroom: one(classrooms, { fields: [timetable.classroomId], references: [classrooms.id] }),
   subject: one(subjects, { fields: [timetable.subjectId], references: [subjects.id] }),
   teacher: one(users, { fields: [timetable.teacherId], references: [users.id] }),
+}));
+
+export const messagesRelations = relations(messages, ({ one }) => ({
+  sender: one(users, { fields: [messages.senderId], references: [users.id], relationName: 'sentMessages' }),
+  receiver: one(users, { fields: [messages.receiverId], references: [users.id], relationName: 'receivedMessages' }),
+}));
+
+export const classroomMessagesRelations = relations(classroomMessages, ({ one }) => ({
+  classroom: one(classrooms, { fields: [classroomMessages.classroomId], references: [classrooms.id] }),
+  teacher: one(users, { fields: [classroomMessages.teacherId], references: [users.id] }),
 }));

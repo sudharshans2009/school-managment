@@ -18,12 +18,9 @@ export default function SignUpPage() {
     name: "",
     email: "",
     password: "",
-    confirmPassword: "",
     role: "student" as "admin" | "teacher" | "student" | "parent",
-    phone: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,11 +29,6 @@ export default function SignUpPage() {
     setError("");
 
     // Validation
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
     if (formData.password.length < 6) {
       setError("Password must be at least 6 characters long");
       return;
@@ -122,19 +114,6 @@ export default function SignUpPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number (Optional)</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="+1 (555) 000-0000"
-                value={formData.phone}
-                onChange={(e) => handleInputChange("phone", e.target.value)}
-                disabled={isLoading}
-                autoComplete="tel"
-              />
-            </div>
-
-            <div className="space-y-2">
               <Label htmlFor="role">Role</Label>
               <Select
                 value={formData.role}
@@ -185,34 +164,6 @@ export default function SignUpPage() {
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 Must be at least 6 characters long
               </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <div className="relative">
-                <Input
-                  id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Re-enter your password"
-                  value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-                  required
-                  disabled={isLoading}
-                  autoComplete="new-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                  tabIndex={-1}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
             </div>
           </CardContent>
 
