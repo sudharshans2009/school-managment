@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { UserPlus, Mail, Phone, Calendar, Search, Edit2, Trash2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { SharedLayout } from "@/components/shared-layout";
 
 interface Student {
   id: string;
@@ -177,46 +178,47 @@ export default function StudentsPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6">
-        <div className="text-center">Loading students...</div>
-      </div>
+      <SharedLayout title="Students Management" description="Admin Portal">
+        <div className="text-center py-12">Loading students...</div>
+      </SharedLayout>
     );
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Students Management</h1>
-          <p className="text-gray-600 mt-1">Manage students and their enrollment</p>
-        </div>
-        <Dialog open={open} onOpenChange={(isOpen) => {
-          setOpen(isOpen);
-          if (!isOpen) setEditingStudent(null);
-        }}>
-          <DialogTrigger asChild>
-            <Button>
-              <UserPlus className="h-4 w-4 mr-2" />
-              Add Student
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{editingStudent ? "Edit Student" : "Add New Student"}</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="name">Full Name *</Label>
-                  <Input id="name" name="name" required defaultValue={editingStudent?.user.name} />
+    <SharedLayout title="Students Management" description="Admin Portal">
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Students Management</h1>
+            <p className="text-muted-foreground mt-1">Manage students and their enrollment</p>
+          </div>
+          <Dialog open={open} onOpenChange={(isOpen) => {
+            setOpen(isOpen);
+            if (!isOpen) setEditingStudent(null);
+          }}>
+            <DialogTrigger asChild>
+              <Button className="rounded-xl">
+                <UserPlus className="h-4 w-4 mr-2" />
+                Add Student
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
+              <DialogHeader>
+                <DialogTitle>{editingStudent ? "Edit Student" : "Add New Student"}</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="name">Full Name *</Label>
+                    <Input id="name" name="name" required defaultValue={editingStudent?.user.name} className="rounded-xl" />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email *</Label>
+                    <Input id="email" name="email" type="email" required defaultValue={editingStudent?.user.email} className="rounded-xl" />
+                  </div>
                 </div>
                 <div>
-                  <Label htmlFor="email">Email *</Label>
-                  <Input id="email" name="email" type="email" required defaultValue={editingStudent?.user.email} />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="password">Password {editingStudent ? "" : "*"}</Label>
+                  <Label htmlFor="password">Password {editingStudent ? "" : "*"}</Label>
                 <Input id="password" name="password" type="password" required={!editingStudent} minLength={6} placeholder={editingStudent ? "Leave blank to keep current password" : ""} />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -412,12 +414,13 @@ export default function StudentsPage() {
       </AlertDialog>
 
       {filteredStudents?.length === 0 && (
-        <Card>
+        <Card className="rounded-2xl shadow-sm">
           <CardContent className="text-center py-8">
             <p className="text-gray-500">No students found</p>
           </CardContent>
         </Card>
       )}
-    </div>
+      </div>
+    </SharedLayout>
   );
 }

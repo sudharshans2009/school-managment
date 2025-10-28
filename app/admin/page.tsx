@@ -1,7 +1,6 @@
 "use client";
 
-import { useSession, signOut } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
+import { useSession } from "@/lib/auth-client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Users, 

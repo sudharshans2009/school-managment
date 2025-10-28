@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
-  GraduationCap, BookOpen, Users, Calendar, MessageSquare, Quote, 
+  BookOpen, Users, Calendar, MessageSquare, Quote, 
   CheckCircle, XCircle, Send, Loader2 
 } from "lucide-react";
 import { useRouter } from "next/navigation";

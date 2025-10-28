@@ -375,7 +375,7 @@ export default function TimetablePage() {
               <div className="flex-1">
                 <Label>Select Classroom</Label>
                 <Select value={selectedClassroom} onValueChange={setSelectedClassroom}>
-                  <SelectTrigger>
+                  <SelectTrigger className="rounded-xl">
                     <SelectValue placeholder="Choose a classroom" />
                   </SelectTrigger>
                   <SelectContent>
@@ -393,7 +393,7 @@ export default function TimetablePage() {
                   value={selectedDay.toString()}
                   onValueChange={(value) => setSelectedDay(parseInt(value))}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="rounded-xl">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -410,13 +410,13 @@ export default function TimetablePage() {
         </Card>
 
         {!selectedClassroom ? (
-          <Card>
+          <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-8 text-center text-gray-500">
               Please select a classroom to view and manage its timetable.
             </CardContent>
           </Card>
         ) : filteredTimetable && filteredTimetable.length === 0 ? (
-          <Card>
+          <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-8 text-center text-gray-500">
               No periods scheduled for {DAYS.find((d) => d.value === selectedDay)?.label}. Click
               &quot;Add Period&quot; to create one.
