@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
 interface Classroom {
   id: string;
@@ -171,42 +172,38 @@ export default function AdminAttendancePage() {
   } : null;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <Link href="/admin">
-                <Button variant="ghost" size="sm">
-                  ← Back
-                </Button>
-              </Link>
-              <UserCheck className="h-6 w-6 text-primary" />
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Attendance Management
-              </h1>
-            </div>
-            {selectedClassroom && students && students.length > 0 && (
-              <Button
-                onClick={() => setViewMode(viewMode === "view" ? "mark" : "view")}
-                disabled={!selectedDate}
-              >
-                {viewMode === "view" ? "Mark Attendance" : "View Records"}
+    <DashboardLayout title="Admin Portal" description="Attendance Management">
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <Link href="/admin">
+              <Button variant="ghost" size="sm" className="rounded-xl">
+                ← Back
               </Button>
-            )}
+            </Link>
+            <UserCheck className="h-6 w-6 text-primary" />
+            <h1 className="text-2xl font-bold">
+              Attendance Management
+            </h1>
           </div>
+          {selectedClassroom && students && students.length > 0 && (
+            <Button
+              className="rounded-xl"
+              onClick={() => setViewMode(viewMode === "view" ? "mark" : "view")}
+              disabled={!selectedDate}
+            >
+              {viewMode === "view" ? "Mark Attendance" : "View Records"}
+            </Button>
+          )}
         </div>
-      </header>
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters */}
-        <Card className="mb-6">
+        <Card className="rounded-2xl shadow-sm">
           <CardContent className="p-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label>Select Classroom</Label>
                 <Select value={selectedClassroom} onValueChange={setSelectedClassroom}>
-                  <SelectTrigger>
+                  <SelectTrigger className="rounded-xl">
                     <SelectValue placeholder="Choose a classroom" />
                   </SelectTrigger>
                   <SelectContent>
@@ -222,6 +219,7 @@ export default function AdminAttendancePage() {
                 <Label>Select Date</Label>
                 <Input
                   type="date"
+                  className="rounded-xl"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
                 />
@@ -229,7 +227,7 @@ export default function AdminAttendancePage() {
               <div>
                 <Label>Mode</Label>
                 <div className="pt-2">
-                  <Badge variant={viewMode === "view" ? "default" : "secondary"}>
+                  <Badge variant={viewMode === "view" ? "default" : "secondary"} className="rounded-lg">
                     {viewMode === "view" ? "Viewing Records" : "Marking Attendance"}
                   </Badge>
                 </div>
@@ -239,73 +237,71 @@ export default function AdminAttendancePage() {
         </Card>
 
         {error && (
-          <Alert variant="destructive" className="mb-6">
+          <Alert variant="destructive" className="rounded-xl">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
 
         {!selectedClassroom ? (
-          <Card>
-            <CardContent className="p-8 text-center text-gray-500">
+          <Card className="rounded-2xl shadow-sm">
+            <CardContent className="p-8 text-center text-muted-foreground">
               Please select a classroom to view or mark attendance.
             </CardContent>
           </Card>
         ) : isLoading ? (
-          <Card>
-            <CardContent className="p-8 flex justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </CardContent>
-          </Card>
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
         ) : viewMode === "view" ? (
           <>
             {/* Stats */}
             {attendanceStats && (
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-                <Card>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <Card className="rounded-2xl shadow-sm">
                   <CardContent className="p-4 text-center">
-                    <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <div className="text-2xl font-bold">
                       {attendanceStats.total}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Total</div>
+                    <div className="text-sm text-muted-foreground">Total</div>
                   </CardContent>
                 </Card>
-                <Card>
+                <Card className="rounded-2xl shadow-sm">
                   <CardContent className="p-4 text-center">
                     <div className="text-2xl font-bold text-green-600">
                       {attendanceStats.present}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Present</div>
+                    <div className="text-sm text-muted-foreground">Present</div>
                   </CardContent>
                 </Card>
-                <Card>
+                <Card className="rounded-2xl shadow-sm">
                   <CardContent className="p-4 text-center">
                     <div className="text-2xl font-bold text-red-600">
                       {attendanceStats.absent}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Absent</div>
+                    <div className="text-sm text-muted-foreground">Absent</div>
                   </CardContent>
                 </Card>
-                <Card>
+                <Card className="rounded-2xl shadow-sm">
                   <CardContent className="p-4 text-center">
                     <div className="text-2xl font-bold text-yellow-600">
                       {attendanceStats.late}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Late</div>
+                    <div className="text-sm text-muted-foreground">Late</div>
                   </CardContent>
                 </Card>
-                <Card>
+                <Card className="rounded-2xl shadow-sm">
                   <CardContent className="p-4 text-center">
                     <div className="text-2xl font-bold text-blue-600">
                       {attendanceStats.excused}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Excused</div>
+                    <div className="text-sm text-muted-foreground">Excused</div>
                   </CardContent>
                 </Card>
               </div>
             )}
 
             {/* Records Table */}
-            <Card>
+            <Card className="rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle>Attendance Records - {format(new Date(selectedDate), "PPP")}</CardTitle>
               </CardHeader>
@@ -315,12 +311,12 @@ export default function AdminAttendancePage() {
                     {attendanceRecords.map((record) => (
                       <div
                         key={record.id}
-                        className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+                        className="flex items-center justify-between p-4 border rounded-xl hover:bg-muted"
                       >
                         <div className="flex items-center gap-4">
                           <div>
                             <div className="font-medium">{record.studentName}</div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">
+                            <div className="text-sm text-muted-foreground">
                               Roll No: {record.studentRollNumber}
                             </div>
                           </div>
@@ -399,7 +395,7 @@ export default function AdminAttendancePage() {
             </CardContent>
           </Card>
         )}
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

@@ -41,6 +41,8 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { format } from "date-fns";
 import { useSession } from "@/lib/auth-client";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import Link from "next/link";
 
 interface Classroom {
   id: string;
@@ -239,7 +241,7 @@ export default function TeacherHomeworkPage() {
     const config = variants[status] || { variant: "outline", icon: XCircle };
     const Icon = config.icon;
     return (
-      <Badge variant={config.variant} className="flex items-center gap-1">
+      <Badge variant={config.variant} className="rounded-lg flex items-center gap-1">
         <Icon className="w-3 h-3" />
         {status}
       </Badge>
@@ -249,33 +251,41 @@ export default function TeacherHomeworkPage() {
   const submittedStudentIds = submissions?.map((s) => s.studentId) || [];
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <BookOpen className="w-8 h-8" />
-            Homework Submissions
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Mark physical submissions and grade homework
-          </p>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <DashboardLayout title="Teacher Portal" description="Homework Submissions">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link href="/teacher">
+              <Button variant="ghost" size="sm" className="rounded-xl">
+                ← Back
+              </Button>
+            </Link>
+            <BookOpen className="w-6 h-6 text-primary" />
             <div>
-              <Label>Select Classroom</Label>
-              <Select value={selectedClassroom} onValueChange={setSelectedClassroom}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose a classroom" />
-                </SelectTrigger>
-                <SelectContent>
-                  {classrooms?.map((classroom) => (
-                    <SelectItem key={classroom.id} value={classroom.id}>
-                      {classroom.name}
+              <h1 className="text-2xl font-bold">
+                Homework Submissions
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Mark physical submissions and grade homework
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <Card className="rounded-2xl shadow-sm">
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label>Select Classroom</Label>
+                <Select value={selectedClassroom} onValueChange={setSelectedClassroom}>
+                  <SelectTrigger className="rounded-xl">
+                    <SelectValue placeholder="Choose a classroom" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {classrooms?.map((classroom) => (
+                      <SelectItem key={classroom.id} value={classroom.id}>
+                        {classroom.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -508,6 +518,7 @@ export default function TeacherHomeworkPage() {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
