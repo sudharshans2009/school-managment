@@ -306,7 +306,6 @@ export default function AdminAnnouncementsPage() {
                 </form>
               </DialogContent>
             </Dialog>
-          </div>
         </div>
 
         {/* Filter */}
