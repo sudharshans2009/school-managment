@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   BookOpen, Users, Calendar, MessageSquare, Quote, 
-  CheckCircle, XCircle, Send, Loader2 
+  CheckCircle, XCircle, Send, Loader2
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -269,6 +269,28 @@ export default function TeacherPage() {
   return (
     <DashboardLayout title="Teacher Portal" description={`Welcome back, ${session.user?.name}`}>
       <div className="space-y-6">
+        {/* Quick Actions */}
+        <Card className="rounded-2xl shadow-sm">
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Button
+                variant="outline"
+                className="h-auto p-4 justify-start"
+                onClick={() => router.push("/teacher/homework")}
+              >
+                <BookOpen className="h-5 w-5 mr-3 text-primary" />
+                <div className="text-left">
+                  <div className="font-semibold">Homework Submissions</div>
+                  <div className="text-sm text-muted-foreground">Mark & grade homework</div>
+                </div>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Unread messages badge */}
         {unreadMessages > 0 && (
           <Badge variant="destructive" className="h-8 px-3 rounded-xl">

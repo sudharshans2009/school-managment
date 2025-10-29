@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { GraduationCap, BookOpen, Users, LayoutDashboard } from "lucide-react";
+import { GraduationCap, BookOpen, Users, LayoutDashboard, UserCog, Presentation } from "lucide-react";
 import { HomeLayout } from "@/components/layouts/home-layout";
 
 export default function Home() {
@@ -25,8 +25,81 @@ export default function Home() {
             </p>
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+          {/* Login Options */}
+          <div className="pt-8 w-full max-w-4xl">
+            <h2 className="text-2xl font-semibold mb-6">Select Your Portal</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Admin Portal */}
+              <Link href="/auth/signin?role=admin" className="block">
+                <Card className="rounded-2xl shadow-sm hover:shadow-lg transition-all hover:scale-105 cursor-pointer border-2 hover:border-primary">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                      <UserCog className="w-8 h-8 text-red-600 dark:text-red-400" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">Admin</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Manage school, users, and settings
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              {/* Teacher Portal */}
+              <Link href="/auth/signin?role=teacher" className="block">
+                <Card className="rounded-2xl shadow-sm hover:shadow-lg transition-all hover:scale-105 cursor-pointer border-2 hover:border-primary">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                      <Users className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">Teacher</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Manage classes and assignments
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              {/* Student Portal */}
+              <Link href="/auth/signin?role=student" className="block">
+                <Card className="rounded-2xl shadow-sm hover:shadow-lg transition-all hover:scale-105 cursor-pointer border-2 hover:border-primary">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                      <BookOpen className="w-8 h-8 text-green-600 dark:text-green-400" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">Student</h3>
+                    <p className="text-sm text-muted-foreground">
+                      View homework and timetable
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              {/* Smartboard */}
+              <Link href="/smartboard/login" className="block">
+                <Card className="rounded-2xl shadow-sm hover:shadow-lg transition-all hover:scale-105 cursor-pointer border-2 hover:border-primary">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                      <Presentation className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">Smartboard</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Classroom display dashboard
+                    </p>
+                  </CardContent>
+                </Card>
+              </Link>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center gap-4 w-full max-w-4xl pt-8">
+            <div className="flex-1 h-px bg-border"></div>
+            <span className="text-sm text-muted-foreground">Or</span>
+            <div className="flex-1 h-px bg-border"></div>
+          </div>
+
+          {/* General Auth Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4">
             <Link href="/auth/signin">
               <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-6 rounded-2xl shadow-sm">
                 <LayoutDashboard className="mr-2 h-5 w-5" />

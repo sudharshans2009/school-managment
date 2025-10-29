@@ -32,9 +32,14 @@ export async function GET(
 
     // Get today's date
     const today = new Date();
-    const dayOfWeek = today.getDay(); // 0-6 (Sunday-Saturday)
     const todayStart = new Date(today.setHours(0, 0, 0, 0));
     const todayEnd = new Date(today.setHours(23, 59, 59, 999));
+
+    // Import calendar utils
+    const { getTimetableDay } = await import("@/lib/calendar-utils");
+    
+    // Get the effective timetable day (respects calendar settings)
+    const dayOfWeek = await getTimetableDay(today);
 
     // Get today's timetable
     const todaySchedule = await db.query.timetable.findMany({

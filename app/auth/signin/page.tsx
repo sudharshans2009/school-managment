@@ -37,9 +37,21 @@ export default function SignInPage() {
         return;
       }
 
+      // Fetch session to get user role
+      const session = result.data;
+      const userRole = session?.user?.role || "student";
+
       // Redirect based on user role
-      // You can customize this based on the session data
-      router.push("/dashboard");
+      if (userRole === "admin") {
+        router.push("/admin");
+      } else if (userRole === "teacher") {
+        router.push("/teacher");
+      } else if (userRole === "student") {
+        router.push("/student");
+      } else {
+        router.push("/dashboard");
+      }
+      
       router.refresh();
     } catch {
       setError("An error occurred. Please try again.");

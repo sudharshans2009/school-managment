@@ -130,15 +130,15 @@ export default function SmartboardDisplayPage() {
   // Show loading while checking authentication
   if (!classroomId) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-indigo-600 via-blue-600 to-cyan-600 p-6 flex items-center justify-center">
-        <div className="text-white text-2xl">Verifying credentials...</div>
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 p-6 flex items-center justify-center">
+        <div className="text-gray-900 text-2xl font-light">Verifying credentials...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-indigo-600 via-blue-600 to-cyan-600 p-6 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 p-6 flex items-center justify-center">
         <Alert variant="destructive" className="max-w-md">
           <AlertDescription>
             Failed to load smartboard data. Please try again later.
@@ -150,15 +150,16 @@ export default function SmartboardDisplayPage() {
 
   if (isLoading || !data) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-indigo-600 via-blue-600 to-cyan-600 p-6">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
         <div className="max-w-[1920px] mx-auto">
-          <Skeleton className="h-32 w-full rounded-3xl mb-6" />
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div className="xl:col-span-2 space-y-6">
+          <Skeleton className="h-24 w-full rounded-2xl mb-4" />
+          <Skeleton className="h-28 w-full rounded-2xl mb-4" />
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+            <div className="xl:col-span-2 space-y-4">
               <Skeleton className="h-96 w-full rounded-xl" />
               <Skeleton className="h-64 w-full rounded-xl" />
             </div>
-            <div className="space-y-6">
+            <div className="space-y-4">
               <Skeleton className="h-96 w-full rounded-xl" />
               <Skeleton className="h-96 w-full rounded-xl" />
             </div>
@@ -169,48 +170,58 @@ export default function SmartboardDisplayPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-indigo-600 via-blue-600 to-cyan-600 p-6">
+    <div className="min-h-screen bg-linear-to-br from-pink-500 via-blue-500 to-indigo-500 p-4">
       <div className="max-w-[1920px] mx-auto">
+        {/* Motivational Quote */}
+        <div className="bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl shadow-lg mb-4 overflow-hidden">
+          <div className="p-6 text-center backdrop-blur-sm bg-white/5">
+            <p className="text-xl md:text-2xl font-medium text-white/95 leading-relaxed mb-2">
+              &ldquo;The beautiful thing about learning is that no one can take it away from you.&rdquo;
+            </p>
+            <p className="text-base text-white/75 font-light">- B.B. King</p>
+          </div>
+        </div>
+
         {/* Header - Classroom Info & Time */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 mb-6">
+        <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6 mb-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <div className="bg-linear-to-br from-blue-500 to-purple-600 p-4 rounded-2xl">
-                <BookOpen className="h-12 w-12 text-white" />
+              <div className="bg-linear-to-br from-blue-500 to-indigo-600 p-3 rounded-xl shadow-md">
+                <BookOpen className="h-10 w-10 text-white" />
               </div>
               <div>
-                <h1 className="text-5xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="text-4xl md:text-5xl font-semibold bg-linear-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
                   {data.classroom.name}
                 </h1>
-                <p className="text-xl text-gray-600 mt-1">
+                <p className="text-base md:text-lg text-gray-600 mt-0.5 font-light">
                   Grade {data.classroom.grade} - Section {data.classroom.section} • Class Teacher: {data.classroom.classTeacher}
                 </p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-6xl font-bold text-gray-900 tabular-nums">
+              <p className="text-5xl md:text-6xl font-light text-gray-900 tabular-nums tracking-tight">
                 {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
               </p>
-              <p className="text-xl text-gray-600 mt-2">
+              <p className="text-base md:text-lg text-gray-500 mt-1 font-light">
                 {currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
           {/* Left Column - Schedule & Attendance */}
-          <div className="xl:col-span-2 space-y-6">
+          <div className="xl:col-span-2 space-y-4">
             {/* Today's Schedule */}
-            <Card className="bg-white/95 backdrop-blur-sm shadow-2xl">
-              <CardHeader className="pb-4 border-b">
-                <CardTitle className="flex items-center text-3xl">
-                  <Clock className="h-8 w-8 mr-3 text-blue-600" />
+            <Card className="bg-white/90 backdrop-blur-xl shadow-lg border border-gray-200/50">
+              <CardHeader className="pb-3 border-b border-gray-100">
+                <CardTitle className="text-blue-600 flex items-center text-2xl font-semibold">
+                  <Clock className="h-6 w-6 mr-3" />
                   Today&apos;s Schedule
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6">
-                <div className="space-y-3">
+              <CardContent className="pt-4">
+                <div className="space-y-2">
                   {data.schedule.map((item, index) => {
                     const isCurrent = getCurrentPeriodIndex() === index;
                     const isPast = getCurrentPeriodIndex() > index;
@@ -218,51 +229,51 @@ export default function SmartboardDisplayPage() {
                     return (
                       <div
                         key={index}
-                        className={`flex items-center justify-between p-5 rounded-2xl border-2 transition-all duration-300 ${
+                        className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${
                           isCurrent
-                            ? 'bg-linear-to-r from-blue-50 to-purple-50 border-blue-500 shadow-lg scale-[1.02] ring-4 ring-blue-200'
+                            ? 'bg-linear-to-r from-blue-50 to-indigo-50 border-blue-400 shadow-md ring-2 ring-blue-200/50'
                             : isPast
-                            ? 'bg-gray-50 border-gray-200 opacity-60'
-                            : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-md'
+                            ? 'bg-gray-50/50 border-gray-200 opacity-50'
+                            : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-sm'
                         }`}
                       >
                         <div className="flex items-center space-x-4 flex-1">
-                          <div className={`text-center min-w-[100px] ${isCurrent ? 'text-blue-600' : isPast ? 'text-gray-400' : 'text-gray-600'}`}>
-                            <p className="text-sm font-semibold opacity-75">Period {item.period}</p>
-                            <p className="text-xl font-bold">{item.time}</p>
+                          <div className={`text-center min-w-[90px] ${isCurrent ? 'text-blue-600' : isPast ? 'text-gray-400' : 'text-gray-600'}`}>
+                            <p className="text-xs font-medium opacity-75">Period {item.period}</p>
+                            <p className="text-lg font-semibold tracking-tight">{item.time}</p>
                           </div>
                           
-                          <div className="h-12 w-px bg-gray-300"></div>
+                          <div className="h-10 w-px bg-gray-200"></div>
                           
                           <div className="flex-1">
-                            <div className="flex items-center space-x-3">
-                              <h3 className={`text-2xl font-bold ${isCurrent ? 'text-blue-900' : isPast ? 'text-gray-500' : 'text-gray-900'}`}>
+                            <div className="flex items-center space-x-2">
+                              <h3 className={`text-xl font-semibold ${isCurrent ? 'text-blue-900' : isPast ? 'text-gray-500' : 'text-gray-900'}`}>
                                 {item.subject}
                               </h3>
                               {item.type !== 'Break' && (
-                                <Badge variant={item.type === 'Practical' ? 'default' : item.type === 'Activity' ? 'secondary' : 'outline'}>
+                                <Badge variant={item.type === 'Practical' ? 'default' : item.type === 'Activity' ? 'secondary' : 'outline'} className="text-xs">
                                   {item.type}
                                 </Badge>
                               )}
                             </div>
-                            <div className="flex items-center space-x-4 mt-2 text-gray-600">
-                              <p className="text-base flex items-center">
-                                <Users className="h-4 w-4 mr-1" />
+                            <div className="flex items-center space-x-3 mt-1.5 text-gray-600 text-sm font-light">
+                              <p className="flex items-center">
+                                <Users className="h-3.5 w-3.5 mr-1.5" />
                                 {item.teacher}
                               </p>
-                              <span className="text-gray-400">•</span>
-                              <p className="text-base">{item.room}</p>
+                              <span className="text-gray-300">•</span>
+                              <p>{item.room}</p>
                             </div>
                           </div>
                         </div>
                         
                         {isCurrent && (
-                          <Badge className="bg-linear-to-r from-blue-600 to-purple-600 text-white text-base px-6 py-2 shadow-lg">
-                            ● LIVE NOW
+                          <Badge className="bg-linear-to-r from-blue-600 to-indigo-600 text-white text-sm px-4 py-1.5 shadow-md font-medium">
+                            ● LIVE
                           </Badge>
                         )}
                         {isPast && (
-                          <CheckCircle className="h-6 w-6 text-green-500" />
+                          <CheckCircle className="h-5 w-5 text-green-500" />
                         )}
                       </div>
                     );
@@ -272,50 +283,50 @@ export default function SmartboardDisplayPage() {
             </Card>
 
             {/* Attendance Section */}
-            <Card className="bg-white/95 backdrop-blur-sm shadow-2xl">
-              <CardHeader className="border-b">
-                <CardTitle className="flex items-center text-3xl">
-                  <TrendingUp className="h-8 w-8 mr-3 text-green-600" />
+            <Card className="bg-white/90 backdrop-blur-xl shadow-lg border border-gray-200/50">
+              <CardHeader className="border-b border-gray-100">
+                <CardTitle className="text-green-600 flex items-center text-2xl font-semibold">
+                  <TrendingUp className="h-6 w-6 mr-3" />
                   Today&apos;s Attendance
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6">
+              <CardContent className="pt-4">
                 {/* Stats Grid */}
-                <div className="grid grid-cols-4 gap-4 mb-6">
-                  <div className="text-center p-5 bg-linear-to-br from-green-50 to-emerald-50 rounded-2xl border-2 border-green-300 shadow-md">
-                    <CheckCircle className="h-10 w-10 mx-auto text-green-600 mb-3" />
-                    <p className="text-4xl font-bold text-green-600">{data.attendance.present}</p>
-                    <p className="text-sm font-semibold text-gray-600 mt-2">Present</p>
+                <div className="grid grid-cols-4 gap-3 mb-4">
+                  <div className="text-center p-4 bg-linear-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200 shadow-sm">
+                    <CheckCircle className="h-8 w-8 mx-auto text-green-600 mb-2" />
+                    <p className="text-3xl font-semibold text-green-600">{data.attendance.present}</p>
+                    <p className="text-xs font-medium text-gray-600 mt-1">Present</p>
                   </div>
-                  <div className="text-center p-5 bg-linear-to-br from-red-50 to-rose-50 rounded-2xl border-2 border-red-300 shadow-md">
-                    <XCircle className="h-10 w-10 mx-auto text-red-600 mb-3" />
-                    <p className="text-4xl font-bold text-red-600">{data.attendance.absent}</p>
-                    <p className="text-sm font-semibold text-gray-600 mt-2">Absent</p>
+                  <div className="text-center p-4 bg-linear-to-br from-red-50 to-rose-50 rounded-xl border border-red-200 shadow-sm">
+                    <XCircle className="h-8 w-8 mx-auto text-red-600 mb-2" />
+                    <p className="text-3xl font-semibold text-red-600">{data.attendance.absent}</p>
+                    <p className="text-xs font-medium text-gray-600 mt-1">Absent</p>
                   </div>
-                  <div className="text-center p-5 bg-linear-to-br from-yellow-50 to-amber-50 rounded-2xl border-2 border-yellow-300 shadow-md">
-                    <Clock className="h-10 w-10 mx-auto text-yellow-600 mb-3" />
-                    <p className="text-4xl font-bold text-yellow-600">{data.attendance.late}</p>
-                    <p className="text-sm font-semibold text-gray-600 mt-2">Late</p>
+                  <div className="text-center p-4 bg-linear-to-br from-yellow-50 to-amber-50 rounded-xl border border-yellow-200 shadow-sm">
+                    <Clock className="h-8 w-8 mx-auto text-yellow-600 mb-2" />
+                    <p className="text-3xl font-semibold text-yellow-600">{data.attendance.late}</p>
+                    <p className="text-xs font-medium text-gray-600 mt-1">Late</p>
                   </div>
-                  <div className="text-center p-5 bg-linear-to-br from-blue-50 to-indigo-50 rounded-2xl border-2 border-blue-300 shadow-md">
-                    <TrendingUp className="h-10 w-10 mx-auto text-blue-600 mb-3" />
-                    <p className="text-4xl font-bold text-blue-600">{data.attendance.percentage}%</p>
-                    <p className="text-sm font-semibold text-gray-600 mt-2">Rate</p>
+                  <div className="text-center p-4 bg-linear-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 shadow-sm">
+                    <TrendingUp className="h-8 w-8 mx-auto text-blue-600 mb-2" />
+                    <p className="text-3xl font-semibold text-blue-600">{data.attendance.percentage}%</p>
+                    <p className="text-xs font-medium text-gray-600 mt-1">Rate</p>
                   </div>
                 </div>
 
                 {/* Attendance Details */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   {data.attendance.absentStudents.length > 0 && (
-                    <div className="p-4 bg-red-50 rounded-xl border-2 border-red-200">
-                      <h4 className="font-bold text-red-900 mb-3 flex items-center">
-                        <XCircle className="h-5 w-5 mr-2" />
+                    <div className="p-3 bg-red-50/80 rounded-xl border border-red-200">
+                      <h4 className="font-semibold text-red-900 mb-2 flex items-center text-sm">
+                        <XCircle className="h-4 w-4 mr-1.5" />
                         Absent Students
                       </h4>
-                      <ul className="space-y-2">
+                      <ul className="space-y-1.5">
                         {data.attendance.absentStudents.map((student, idx) => (
-                          <li key={idx} className="text-sm text-red-700 flex items-center">
-                            <span className="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+                          <li key={idx} className="text-xs text-red-700 flex items-center font-light">
+                            <span className="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></span>
                             {student}
                           </li>
                         ))}
@@ -324,15 +335,15 @@ export default function SmartboardDisplayPage() {
                   )}
                   
                   {data.attendance.lateStudents.length > 0 && (
-                    <div className="p-4 bg-yellow-50 rounded-xl border-2 border-yellow-200">
-                      <h4 className="font-bold text-yellow-900 mb-3 flex items-center">
-                        <Clock className="h-5 w-5 mr-2" />
+                    <div className="p-3 bg-yellow-50/80 rounded-xl border border-yellow-200">
+                      <h4 className="font-semibold text-yellow-900 mb-2 flex items-center text-sm">
+                        <Clock className="h-4 w-4 mr-1.5" />
                         Late Arrivals
                       </h4>
-                      <ul className="space-y-2">
+                      <ul className="space-y-1.5">
                         {data.attendance.lateStudents.map((student, idx) => (
-                          <li key={idx} className="text-sm text-yellow-700 flex items-center">
-                            <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                          <li key={idx} className="text-xs text-yellow-700 flex items-center font-light">
+                            <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full mr-2"></span>
                             {student}
                           </li>
                         ))}
@@ -345,49 +356,49 @@ export default function SmartboardDisplayPage() {
           </div>
 
           {/* Right Column - Homework & Messages */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {/* Homework Section */}
-            <Card className="bg-white/95 backdrop-blur-sm shadow-2xl">
-              <CardHeader className="border-b">
-                <CardTitle className="flex items-center text-2xl">
-                  <Calendar className="h-7 w-7 mr-3 text-purple-600" />
+            <Card className="bg-white/90 backdrop-blur-xl shadow-lg border border-gray-200/50">
+              <CardHeader className="border-b border-gray-100">
+                <CardTitle className="text-purple-600 flex items-center text-2xl font-semibold">
+                  <Calendar className="h-6 w-6 mr-3" />
                   Homework & Assignments
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-4">
-                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+              <CardContent className="pt-3">
+                <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
                   {data.homework.map((hw) => (
                     <div
                       key={hw.id}
-                      className={`p-4 rounded-xl border-2 transition-all hover:shadow-md ${
+                      className={`p-3 rounded-xl border transition-all hover:shadow-md ${
                         hw.priority === 'high'
-                          ? 'bg-red-50 border-red-300'
+                          ? 'bg-red-50/80 border-red-300'
                           : hw.priority === 'medium'
-                          ? 'bg-yellow-50 border-yellow-300'
-                          : 'bg-blue-50 border-blue-300'
+                          ? 'bg-yellow-50/80 border-yellow-300'
+                          : 'bg-blue-50/80 border-blue-300'
                       }`}
                     >
                       <div className="flex items-start justify-between mb-2">
                         <Badge 
                           variant={hw.priority === 'high' ? 'destructive' : hw.priority === 'medium' ? 'default' : 'secondary'}
-                          className="text-xs"
+                          className="text-xs font-medium"
                         >
                           {hw.priority.toUpperCase()}
                         </Badge>
-                        <span className="text-xs font-bold text-gray-600">{hw.totalMarks} marks</span>
+                        <span className="text-xs font-semibold text-gray-600">{hw.totalMarks} marks</span>
                       </div>
                       
                       <div className="mb-2">
-                        <p className="text-xs font-semibold text-purple-600 mb-1">{hw.subject}</p>
-                        <h4 className="font-bold text-gray-900 text-sm leading-tight">{hw.title}</h4>
+                        <p className="text-xs font-semibold text-purple-600 mb-0.5">{hw.subject}</p>
+                        <h4 className="font-semibold text-gray-900 text-sm leading-tight">{hw.title}</h4>
                       </div>
                       
-                      <div className="flex items-center justify-between text-xs text-gray-600 mt-3 pt-3 border-t border-gray-200">
+                      <div className="flex items-center justify-between text-xs text-gray-600 mt-2 pt-2 border-t border-gray-200">
                         <div>
                           <p className="font-semibold text-gray-700">Due: {hw.dueDate}</p>
-                          <p className="text-gray-500">{hw.dueTime}</p>
+                          <p className="text-gray-500 font-light">{hw.dueTime}</p>
                         </div>
-                        <p className="text-gray-500">By: {hw.assignedBy}</p>
+                        <p className="text-gray-500 font-light">By: {hw.assignedBy}</p>
                       </div>
                     </div>
                   ))}
@@ -396,19 +407,19 @@ export default function SmartboardDisplayPage() {
             </Card>
 
             {/* Admin Messages/Announcements */}
-            <Card className="bg-white/95 backdrop-blur-sm shadow-2xl">
-              <CardHeader className="border-b">
-                <CardTitle className="flex items-center text-2xl">
-                  <Bell className="h-7 w-7 mr-3 text-orange-600" />
+            <Card className="bg-white/90 backdrop-blur-xl shadow-lg border border-gray-200/50">
+              <CardHeader className="border-b border-gray-100">
+                <CardTitle className="text-orange-600 flex items-center text-2xl font-semibold">
+                  <Bell className="h-6 w-6 mr-3" />
                   School Announcements
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-4">
-                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+              <CardContent className="pt-3">
+                <div className="space-y-2 max-h-[600px] overflow-y-auto pr-1">
                   {data.announcements.map((msg) => (
                     <div
                       key={msg.id}
-                      className={`p-4 rounded-xl border-2 transition-all hover:shadow-md ${
+                      className={`p-3 rounded-xl border transition-all hover:shadow-md ${
                         msg.priority === 'high'
                           ? 'bg-linear-to-br from-red-50 to-orange-50 border-red-300 shadow-sm'
                           : msg.priority === 'medium'
@@ -416,23 +427,23 @@ export default function SmartboardDisplayPage() {
                           : 'bg-linear-to-br from-blue-50 to-cyan-50 border-blue-300'
                       }`}
                     >
-                      <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center space-x-2">
-                          <span className="text-2xl">{msg.icon}</span>
-                          <h4 className="font-bold text-gray-900">{msg.title}</h4>
+                          <span className="text-xl">{msg.icon}</span>
+                          <h4 className="font-semibold text-gray-900 text-sm">{msg.title}</h4>
                         </div>
                         {msg.priority === 'high' && (
-                          <Badge variant="destructive" className="text-xs animate-pulse">
+                          <Badge variant="destructive" className="text-xs animate-pulse font-medium">
                             Important
                           </Badge>
                         )}
                       </div>
                       
-                      <p className="text-sm text-gray-700 leading-relaxed mb-3">
+                      <p className="text-sm text-gray-700 leading-relaxed mb-2 font-light">
                         {msg.message}
                       </p>
                       
-                      <div className="flex items-center justify-between text-xs text-gray-500 pt-3 border-t border-gray-200">
+                      <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-200 font-light">
                         <span className="flex items-center">
                           <Calendar className="h-3 w-3 mr-1" />
                           {msg.date}
@@ -441,18 +452,6 @@ export default function SmartboardDisplayPage() {
                       </div>
                     </div>
                   ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Motivational Quote */}
-            <Card className="bg-linear-to-br from-indigo-600 via-purple-600 to-pink-600 text-white shadow-2xl">
-              <CardContent className="p-6">
-                <div className="text-center">
-                  <p className="text-2xl font-bold mb-4 leading-relaxed">
-                    &ldquo;The beautiful thing about learning is that no one can take it away from you.&rdquo;
-                  </p>
-                  <p className="text-lg text-purple-100">- B.B. King</p>
                 </div>
               </CardContent>
             </Card>

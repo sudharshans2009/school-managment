@@ -49,8 +49,9 @@ export default function AdminDashboard() {
     { title: "Manage Students", href: "/admin/students", icon: Users, description: "Enroll and manage students" },
     { title: "Manage Teachers", href: "/admin/teachers", icon: GraduationCap, description: "Assign teachers to classes" },
     { title: "Manage Subjects", href: "/admin/subjects", icon: BookOpen, description: "Add and edit subjects" },
-    { title: "Attendance", href: "/admin/attendance", icon: UserCheck, description: "View attendance reports" },
-    { title: "Announcements", href: "/admin/announcements", icon: Calendar, description: "School-wide announcements" },
+    { title: "Calendar & Holidays", href: "/admin/calendar", icon: Calendar, description: "Manage working days and timetables" },
+    { title: "Attendance Records", href: "/admin/attendance", icon: UserCheck, description: "View and mark attendance" },
+    { title: "Announcements", href: "/admin/announcements", icon: ClipboardList, description: "Create and manage announcements" },
   ];
 
   return (

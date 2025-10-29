@@ -9,6 +9,9 @@ export const homeworkStatusEnum = pgEnum('homework_status', ['assigned', 'submit
 export const messageStatusEnum = pgEnum('message_status', ['sent', 'read']);
 export const messageTypeEnum = pgEnum('message_type', ['absence', 'query', 'request', 'general']);
 export const sessionTypeEnum = pgEnum('session_type', ['regular', 'lab', 'test', 'extra']);
+export const dayTypeEnum = pgEnum('day_type', ['working', 'holiday']);
+export const dayDurationEnum = pgEnum('day_duration', ['full', 'half']);
+export const holidayForEnum = pgEnum('holiday_for', ['all', 'students', 'teachers', 'office']);
 
 // Users Table
 export const users = pgTable('users', {
@@ -246,6 +249,21 @@ export const classroomMessages = pgTable('classroom_messages', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// Calendar Days (Working Days, Holidays, Custom Timetables)
+export const calendarDays = pgTable('calendar_days', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  date: varchar('date', { length: 10 }).notNull().unique(), // YYYY-MM-DD format
+  dayType: dayTypeEnum('day_type').notNull().default('working'), // working, holiday
+  dayDuration: dayDurationEnum('day_duration').notNull().default('full'), // full, half
+  holidayFor: holidayForEnum('holiday_for'), // all, students, teachers, office (null if working day)
+  holidayName: varchar('holiday_name', { length: 255 }), // Name of holiday
+  customTimetable: integer('custom_timetable'), // 1-6 for Mon-Sat timetable, null for default based on actual day
+  notes: text('notes'), // Additional notes
+  createdBy: uuid('created_by').notNull().references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   teacherAssignments: many(teacherAssignments),
@@ -340,4 +358,8 @@ export const messagesRelations = relations(messages, ({ one }) => ({
 export const classroomMessagesRelations = relations(classroomMessages, ({ one }) => ({
   classroom: one(classrooms, { fields: [classroomMessages.classroomId], references: [classrooms.id] }),
   teacher: one(users, { fields: [classroomMessages.teacherId], references: [users.id] }),
+}));
+
+export const calendarDaysRelations = relations(calendarDays, ({ one }) => ({
+  creator: one(users, { fields: [calendarDays.createdBy], references: [users.id] }),
 }));
