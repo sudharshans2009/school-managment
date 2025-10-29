@@ -12,6 +12,8 @@ export const sessionTypeEnum = pgEnum('session_type', ['regular', 'lab', 'test',
 export const dayTypeEnum = pgEnum('day_type', ['working', 'holiday']);
 export const dayDurationEnum = pgEnum('day_duration', ['full', 'half']);
 export const holidayForEnum = pgEnum('holiday_for', ['all', 'students', 'teachers', 'office']);
+export const leaveTypeEnum = pgEnum('leave_type', ['sick', 'casual', 'earned', 'duty', 'emergency']);
+export const leaveStatusEnum = pgEnum('leave_status', ['pending', 'approved', 'rejected', 'cancelled']);
 
 // Users Table
 export const users = pgTable('users', {
@@ -264,6 +266,57 @@ export const calendarDays = pgTable('calendar_days', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// Teacher Leaves Table
+export const teacherLeaves = pgTable('teacher_leaves', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  teacherId: uuid('teacher_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  leaveType: leaveTypeEnum('leave_type').notNull(),
+  startDate: varchar('start_date', { length: 10 }).notNull(), // YYYY-MM-DD format
+  endDate: varchar('end_date', { length: 10 }).notNull(), // YYYY-MM-DD format
+  reason: text('reason').notNull(),
+  status: leaveStatusEnum('status').notNull().default('pending'),
+  approvedBy: uuid('approved_by').references(() => users.id),
+  approvalNotes: text('approval_notes'),
+  approvedAt: timestamp('approved_at'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Substitute Assignments Table
+export const substituteAssignments = pgTable('substitute_assignments', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  leaveId: uuid('leave_id').references(() => teacherLeaves.id, { onDelete: 'cascade' }),
+  originalTeacherId: uuid('original_teacher_id').notNull().references(() => users.id),
+  substituteTeacherId: uuid('substitute_teacher_id').notNull().references(() => users.id),
+  classroomId: uuid('classroom_id').notNull().references(() => classrooms.id),
+  subjectId: uuid('subject_id').notNull().references(() => subjects.id),
+  date: varchar('date', { length: 10 }).notNull(), // YYYY-MM-DD format
+  periodNumber: integer('period_number').notNull(),
+  startTime: varchar('start_time', { length: 10 }).notNull(), // HH:MM format
+  endTime: varchar('end_time', { length: 10 }).notNull(), // HH:MM format
+  reason: text('reason'), // Reason for substitution
+  assignedBy: uuid('assigned_by').notNull().references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Work Done Table
+export const workDone = pgTable('work_done', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  classroomId: uuid('classroom_id').notNull().references(() => classrooms.id, { onDelete: 'cascade' }),
+  subjectId: uuid('subject_id').notNull().references(() => subjects.id),
+  teacherId: uuid('teacher_id').notNull().references(() => users.id),
+  date: varchar('date', { length: 10 }).notNull(), // YYYY-MM-DD format
+  periodNumber: integer('period_number').notNull(),
+  topicsCovered: text('topics_covered').notNull(),
+  homeworkAssigned: text('homework_assigned'),
+  remarks: text('remarks'),
+  isSubstitute: boolean('is_substitute').default(false),
+  substituteAssignmentId: uuid('substitute_assignment_id').references(() => substituteAssignments.id),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   teacherAssignments: many(teacherAssignments),
@@ -276,6 +329,12 @@ export const usersRelations = relations(users, ({ many }) => ({
   sentMessages: many(messages, { relationName: 'sentMessages' }),
   receivedMessages: many(messages, { relationName: 'receivedMessages' }),
   classroomMessages: many(classroomMessages),
+  teacherLeaves: many(teacherLeaves, { relationName: 'teacherLeaves' }),
+  approvedLeaves: many(teacherLeaves, { relationName: 'approvedLeaves' }),
+  substituteAssignmentsAsOriginal: many(substituteAssignments, { relationName: 'originalTeacher' }),
+  substituteAssignmentsAsSubstitute: many(substituteAssignments, { relationName: 'substituteTeacher' }),
+  substituteAssignmentsAssigned: many(substituteAssignments, { relationName: 'assignedBy' }),
+  workDone: many(workDone),
 }));
 
 export const classroomsRelations = relations(classrooms, ({ many }) => ({
@@ -287,12 +346,16 @@ export const classroomsRelations = relations(classrooms, ({ many }) => ({
   timetable: many(timetable),
   feeStructures: many(feeStructures),
   classroomMessages: many(classroomMessages),
+  substituteAssignments: many(substituteAssignments),
+  workDone: many(workDone),
 }));
 
 export const subjectsRelations = relations(subjects, ({ many }) => ({
   teacherAssignments: many(teacherAssignments),
   homework: many(homework),
   timetable: many(timetable),
+  substituteAssignments: many(substituteAssignments),
+  workDone: many(workDone),
 }));
 
 export const teacherAssignmentsRelations = relations(teacherAssignments, ({ one }) => ({
@@ -362,4 +425,27 @@ export const classroomMessagesRelations = relations(classroomMessages, ({ one })
 
 export const calendarDaysRelations = relations(calendarDays, ({ one }) => ({
   creator: one(users, { fields: [calendarDays.createdBy], references: [users.id] }),
+}));
+
+export const teacherLeavesRelations = relations(teacherLeaves, ({ one, many }) => ({
+  teacher: one(users, { fields: [teacherLeaves.teacherId], references: [users.id], relationName: 'teacherLeaves' }),
+  approvedByUser: one(users, { fields: [teacherLeaves.approvedBy], references: [users.id], relationName: 'approvedLeaves' }),
+  substituteAssignments: many(substituteAssignments),
+}));
+
+export const substituteAssignmentsRelations = relations(substituteAssignments, ({ one, many }) => ({
+  leave: one(teacherLeaves, { fields: [substituteAssignments.leaveId], references: [teacherLeaves.id] }),
+  originalTeacher: one(users, { fields: [substituteAssignments.originalTeacherId], references: [users.id], relationName: 'originalTeacher' }),
+  substituteTeacher: one(users, { fields: [substituteAssignments.substituteTeacherId], references: [users.id], relationName: 'substituteTeacher' }),
+  classroom: one(classrooms, { fields: [substituteAssignments.classroomId], references: [classrooms.id] }),
+  subject: one(subjects, { fields: [substituteAssignments.subjectId], references: [subjects.id] }),
+  assignedByUser: one(users, { fields: [substituteAssignments.assignedBy], references: [users.id], relationName: 'assignedBy' }),
+  workDone: many(workDone),
+}));
+
+export const workDoneRelations = relations(workDone, ({ one }) => ({
+  classroom: one(classrooms, { fields: [workDone.classroomId], references: [classrooms.id] }),
+  subject: one(subjects, { fields: [workDone.subjectId], references: [subjects.id] }),
+  teacher: one(users, { fields: [workDone.teacherId], references: [users.id] }),
+  substituteAssignment: one(substituteAssignments, { fields: [workDone.substituteAssignmentId], references: [substituteAssignments.id] }),
 }));
