@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Loader2, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { SharedLayout } from "@/components/shared-layout";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
 export default function DashboardPage() {
   const { data: session, isPending } = useSession();
@@ -30,7 +30,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <SharedLayout title="Dashboard">
+    <DashboardLayout title="Dashboard">
       <div className="space-y-6">
         <Card className="rounded-2xl shadow-sm">
           <CardHeader>
@@ -113,6 +113,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-    </SharedLayout>
+    </DashboardLayout>
   );
 }

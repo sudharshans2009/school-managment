@@ -18,7 +18,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { SharedLayout } from "@/components/shared-layout";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
 interface TeacherAssignment {
   id: string;
@@ -267,7 +267,7 @@ export default function TeacherPage() {
   const unreadMessages = messages?.filter(m => m.status === "sent").length || 0;
 
   return (
-    <SharedLayout title="Teacher Portal" description={`Welcome back, ${session.user?.name}`}>
+    <DashboardLayout title="Teacher Portal" description={`Welcome back, ${session.user?.name}`}>
       <div className="space-y-6">
         {/* Unread messages badge */}
         {unreadMessages > 0 && (
@@ -657,6 +657,6 @@ export default function TeacherPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </SharedLayout>
+    </DashboardLayout>
   );
 }

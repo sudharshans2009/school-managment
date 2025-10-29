@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Plus, Trash2, Edit2 } from "lucide-react";
 import Link from "next/link";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
 interface Classroom {
   id: string;
@@ -208,28 +209,27 @@ export default function TimetablePage() {
   const filteredTimetable = timetable?.filter((entry) => entry.dayOfWeek === selectedDay);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <Link href="/admin">
-                <Button variant="ghost" size="sm">
-                  ← Back
-                </Button>
-              </Link>
-              <Calendar className="h-6 w-6 text-primary" />
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Timetable Management
-              </h1>
-            </div>
-            <Dialog
-              open={openCreate || !!editingEntry}
-              onOpenChange={(open) => {
-                setOpenCreate(open);
-                if (!open) setEditingEntry(null);
-              }}
-            >
+    <DashboardLayout title="Timetable Management" description="Admin Portal">
+      <div>
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center space-x-3">
+            <Link href="/admin">
+              <Button variant="ghost" size="sm">
+                ← Back
+              </Button>
+            </Link>
+            <Calendar className="h-6 w-6 text-primary" />
+            <h1 className="text-2xl font-bold">
+              Timetable Management
+            </h1>
+          </div>
+          <Dialog
+            open={openCreate || !!editingEntry}
+            onOpenChange={(open) => {
+              setOpenCreate(open);
+              if (!open) setEditingEntry(null);
+            }}
+          >
               <DialogTrigger asChild>
                 <Button disabled={!selectedClassroom}>
                   <Plus className="h-4 w-4 mr-2" />
@@ -364,12 +364,9 @@ export default function TimetablePage() {
                 </form>
               </DialogContent>
             </Dialog>
-          </div>
         </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Card className="mb-6">
+        <Card className="mb-6 rounded-2xl shadow-sm">
           <CardContent className="p-4">
             <div className="flex gap-4">
               <div className="flex-1">
@@ -466,7 +463,7 @@ export default function TimetablePage() {
               ))}
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

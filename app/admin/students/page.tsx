@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { UserPlus, Mail, Phone, Calendar, Search, Edit2, Trash2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { SharedLayout } from "@/components/shared-layout";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
 interface Student {
   id: string;
@@ -178,14 +178,14 @@ export default function StudentsPage() {
 
   if (isLoading) {
     return (
-      <SharedLayout title="Students Management" description="Admin Portal">
+      <DashboardLayout title="Students Management" description="Admin Portal">
         <div className="text-center py-12">Loading students...</div>
-      </SharedLayout>
+      </DashboardLayout>
     );
   }
 
   return (
-    <SharedLayout title="Students Management" description="Admin Portal">
+    <DashboardLayout title="Students Management" description="Admin Portal">
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
@@ -421,6 +421,6 @@ export default function StudentsPage() {
         </Card>
       )}
       </div>
-    </SharedLayout>
+    </DashboardLayout>
   );
 }

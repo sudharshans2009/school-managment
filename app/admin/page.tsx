@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { SharedLayout } from "@/components/shared-layout";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
 export default function AdminDashboard() {
   const { data: session, isPending } = useSession();
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <SharedLayout title="Admin Portal" description="Smart School Management">
+    <DashboardLayout title="Admin Portal" description="Smart School Management">
       <div className="space-y-6">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -162,6 +162,6 @@ export default function AdminDashboard() {
           </Card>
         </div>
       </div>
-    </SharedLayout>
+    </DashboardLayout>
   );
 }

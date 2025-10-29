@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserPlus, Trash2, Star, Calendar, Settings, BookOpen } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
 interface Classroom {
   id: string;
@@ -349,24 +350,24 @@ export default function EditClassroomPage({
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6">
+      <DashboardLayout title="Classroom Settings" description="Admin Portal">
         <div className="text-center">Loading classroom...</div>
-      </div>
+      </DashboardLayout>
     );
   }
 
   if (!classroom) {
     return (
-      <div className="container mx-auto p-6">
+      <DashboardLayout title="Classroom Settings" description="Admin Portal">
         <Alert variant="destructive">
           <AlertDescription>Classroom not found</AlertDescription>
         </Alert>
-      </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="container mx-auto p-6">
+    <DashboardLayout title="Classroom Settings" description="Admin Portal">
       <div className="mb-6 flex justify-between items-center">
         <Button variant="outline" onClick={() => router.back()}>
           ← Back
@@ -954,6 +955,6 @@ export default function EditClassroomPage({
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </DashboardLayout>
   );
 }
