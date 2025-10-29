@@ -10,10 +10,11 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   BookOpen, Users, Calendar, MessageSquare, Quote, 
-  CheckCircle, XCircle, Send, Loader2
+  CheckCircle, XCircle, Send, Loader2, FileText, UserCheck, ClipboardList, AlertCircle
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -61,6 +62,53 @@ interface Message {
   senderEmail: string;
 }
 
+interface TeacherLeave {
+  id: string;
+  teacherId: string;
+  leaveType: string;
+  startDate: string;
+  endDate: string;
+  reason: string;
+  status: string;
+  approvedBy?: string;
+  approvalNotes?: string;
+  approvedAt?: string;
+  createdAt: string;
+}
+
+interface SubstituteAssignment {
+  id: string;
+  originalTeacherId: string;
+  originalTeacherName: string;
+  classroomId: string;
+  classroomName: string;
+  classroomGrade: string;
+  classroomSection: string;
+  subjectId: string;
+  subjectName: string;
+  date: string;
+  periodNumber: number;
+  startTime: string;
+  endTime: string;
+  reason?: string;
+}
+
+interface WorkDone {
+  id: string;
+  classroomId: string;
+  classroomName: string;
+  subjectId: string;
+  subjectName: string;
+  teacherId: string;
+  date: string;
+  periodNumber: number;
+  topicsCovered: string;
+  homeworkAssigned?: string;
+  remarks?: string;
+  isSubstitute: boolean;
+  createdAt: string;
+}
+
 export default function TeacherPage() {
   const { data: session, isPending } = useSession();
   const router = useRouter();
@@ -83,6 +131,26 @@ export default function TeacherPage() {
     content: "",
     messageType: "quote",
   });
+
+  const [leaveForm, setLeaveForm] = useState({
+    leaveType: "casual",
+    startDate: "",
+    endDate: "",
+    reason: "",
+  });
+
+  const [workDoneForm, setWorkDoneForm] = useState({
+    classroomId: "",
+    subjectId: "",
+    date: new Date().toISOString().split('T')[0],
+    periodNumber: 1,
+    topicsCovered: "",
+    homeworkAssigned: "",
+    remarks: "",
+  });
+
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false);
+  const [showWorkDoneDialog, setShowWorkDoneDialog] = useState(false);
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -118,6 +186,39 @@ export default function TeacherPage() {
     queryFn: async () => {
       const res = await fetch(`/api/messages?userId=${session?.user?.id}&type=received`);
       if (!res.ok) throw new Error("Failed to fetch messages");
+      return res.json();
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  // Fetch teacher leaves
+  const { data: leaves } = useQuery<TeacherLeave[]>({
+    queryKey: ["teacher-leaves", session?.user?.id],
+    queryFn: async () => {
+      const res = await fetch(`/api/teacher-leaves?teacherId=${session?.user?.id}`);
+      if (!res.ok) throw new Error("Failed to fetch leaves");
+      return res.json();
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  // Fetch substitute assignments
+  const { data: substituteAssignments } = useQuery<SubstituteAssignment[]>({
+    queryKey: ["substitute-assignments", session?.user?.id],
+    queryFn: async () => {
+      const res = await fetch(`/api/substitute-assignments?substituteTeacherId=${session?.user?.id}`);
+      if (!res.ok) throw new Error("Failed to fetch substitute assignments");
+      return res.json();
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  // Fetch work done records
+  const { data: workDoneRecords } = useQuery<WorkDone[]>({
+    queryKey: ["work-done", session?.user?.id],
+    queryFn: async () => {
+      const res = await fetch(`/api/work-done?teacherId=${session?.user?.id}`);
+      if (!res.ok) throw new Error("Failed to fetch work done records");
       return res.json();
     },
     enabled: !!session?.user?.id,
@@ -193,6 +294,83 @@ export default function TeacherPage() {
     },
     onError: () => {
       toast.error("Failed to post message");
+    },
+  });
+
+  // Create leave request mutation
+  const leaveMutation = useMutation({
+    mutationFn: async (data: typeof leaveForm & { teacherId: string }) => {
+      const res = await fetch("/api/teacher-leaves", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to create leave request");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("Leave request submitted successfully");
+      setLeaveForm({
+        leaveType: "casual",
+        startDate: "",
+        endDate: "",
+        reason: "",
+      });
+      setShowLeaveDialog(false);
+      queryClient.invalidateQueries({ queryKey: ["teacher-leaves"] });
+    },
+    onError: () => {
+      toast.error("Failed to submit leave request");
+    },
+  });
+
+  // Create work done record mutation
+  const workDoneMutation = useMutation({
+    mutationFn: async (data: typeof workDoneForm & { teacherId: string }) => {
+      const res = await fetch("/api/work-done", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to create work done record");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("Work done recorded successfully");
+      setWorkDoneForm({
+        classroomId: "",
+        subjectId: "",
+        date: new Date().toISOString().split('T')[0],
+        periodNumber: 1,
+        topicsCovered: "",
+        homeworkAssigned: "",
+        remarks: "",
+      });
+      setShowWorkDoneDialog(false);
+      queryClient.invalidateQueries({ queryKey: ["work-done"] });
+    },
+    onError: () => {
+      toast.error("Failed to record work done");
+    },
+  });
+
+  // Cancel leave request mutation
+  const cancelLeaveMutation = useMutation({
+    mutationFn: async (leaveId: string) => {
+      const res = await fetch(`/api/teacher-leaves/${leaveId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "cancelled" }),
+      });
+      if (!res.ok) throw new Error("Failed to cancel leave");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("Leave request cancelled");
+      queryClient.invalidateQueries({ queryKey: ["teacher-leaves"] });
+    },
+    onError: () => {
+      toast.error("Failed to cancel leave request");
     },
   });
 
@@ -347,12 +525,15 @@ export default function TeacherPage() {
         </div>
 
         <Tabs defaultValue="classes" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 rounded-xl">
+          <TabsList className="grid w-full grid-cols-8 rounded-xl">
             <TabsTrigger value="classes" className="rounded-lg">My Classes</TabsTrigger>
             <TabsTrigger value="attendance" className="rounded-lg">Attendance</TabsTrigger>
             <TabsTrigger value="homework" className="rounded-lg">Homework</TabsTrigger>
             <TabsTrigger value="messages" className="rounded-lg">Messages</TabsTrigger>
             <TabsTrigger value="classroom-msg" className="rounded-lg">Class Message</TabsTrigger>
+            <TabsTrigger value="leaves" className="rounded-lg">My Leaves</TabsTrigger>
+            <TabsTrigger value="substitutes" className="rounded-lg">Substitute Duties</TabsTrigger>
+            <TabsTrigger value="work-done" className="rounded-lg">Work Done</TabsTrigger>
           </TabsList>
 
           {/* My Classes Tab */}
@@ -674,6 +855,355 @@ export default function TeacherPage() {
                     </p>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* My Leaves Tab */}
+          <TabsContent value="leaves">
+            <Card className="rounded-2xl shadow-sm">
+              <CardHeader>
+                <CardTitle>My Leave Requests</CardTitle>
+                <CardDescription>View and manage your leave requests</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Dialog open={showLeaveDialog} onOpenChange={setShowLeaveDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="rounded-xl">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Request Leave
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="rounded-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Request Leave</DialogTitle>
+                      <DialogDescription>Fill in the leave request form</DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label>Leave Type</Label>
+                        <Select value={leaveForm.leaveType} onValueChange={(value) => setLeaveForm(prev => ({ ...prev, leaveType: value }))}>
+                          <SelectTrigger className="rounded-xl">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="sick">Sick Leave</SelectItem>
+                            <SelectItem value="casual">Casual Leave</SelectItem>
+                            <SelectItem value="earned">Earned Leave</SelectItem>
+                            <SelectItem value="duty">Duty</SelectItem>
+                            <SelectItem value="emergency">Emergency</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Start Date</Label>
+                          <Input
+                            type="date"
+                            className="rounded-xl"
+                            value={leaveForm.startDate}
+                            onChange={(e) => setLeaveForm(prev => ({ ...prev, startDate: e.target.value }))}
+                          />
+                        </div>
+                        <div>
+                          <Label>End Date</Label>
+                          <Input
+                            type="date"
+                            className="rounded-xl"
+                            value={leaveForm.endDate}
+                            onChange={(e) => setLeaveForm(prev => ({ ...prev, endDate: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Reason</Label>
+                        <Textarea
+                          className="rounded-xl"
+                          rows={3}
+                          value={leaveForm.reason}
+                          onChange={(e) => setLeaveForm(prev => ({ ...prev, reason: e.target.value }))}
+                          placeholder="Enter reason for leave..."
+                        />
+                      </div>
+                      <Button
+                        className="w-full rounded-xl"
+                        onClick={() => leaveMutation.mutate({ ...leaveForm, teacherId: session?.user?.id || "" })}
+                        disabled={leaveMutation.isPending}
+                      >
+                        {leaveMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+                        Submit Request
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                <div className="space-y-3">
+                  {leaves?.map((leave) => (
+                    <Card key={leave.id} className="rounded-xl">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h4 className="font-semibold capitalize">{leave.leaveType} Leave</h4>
+                              <Badge variant={
+                                leave.status === 'approved' ? 'default' :
+                                leave.status === 'rejected' ? 'destructive' :
+                                leave.status === 'cancelled' ? 'secondary' : 'outline'
+                              }>
+                                {leave.status}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-2">
+                              {leave.startDate} to {leave.endDate}
+                            </p>
+                            <p className="text-sm">{leave.reason}</p>
+                            {leave.approvalNotes && (
+                              <p className="text-sm text-muted-foreground mt-2">
+                                <strong>Admin Notes:</strong> {leave.approvalNotes}
+                              </p>
+                            )}
+                            <p className="text-xs text-muted-foreground mt-2">
+                              Requested on: {new Date(leave.createdAt).toLocaleString()}
+                            </p>
+                          </div>
+                          {leave.status === 'pending' && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="rounded-xl"
+                              onClick={() => cancelLeaveMutation.mutate(leave.id)}
+                              disabled={cancelLeaveMutation.isPending}
+                            >
+                              Cancel
+                            </Button>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                  {(!leaves || leaves.length === 0) && (
+                    <p className="text-center py-8 text-muted-foreground">No leave requests yet</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Substitute Duties Tab */}
+          <TabsContent value="substitutes">
+            <Card className="rounded-2xl shadow-sm">
+              <CardHeader>
+                <CardTitle>Substitute Duties</CardTitle>
+                <CardDescription>Your upcoming substitute assignments</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {substituteAssignments?.map((assignment) => (
+                    <Card key={assignment.id} className="rounded-xl border-l-4 border-l-orange-500">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <h4 className="font-semibold">
+                                {assignment.classroomName} - {assignment.subjectName}
+                              </h4>
+                              <Badge variant="outline">Period {assignment.periodNumber}</Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-1">
+                              <strong>Date:</strong> {assignment.date}
+                            </p>
+                            <p className="text-sm text-muted-foreground mb-1">
+                              <strong>Time:</strong> {assignment.startTime} - {assignment.endTime}
+                            </p>
+                            <p className="text-sm text-muted-foreground mb-1">
+                              <strong>Original Teacher:</strong> {assignment.originalTeacherName}
+                            </p>
+                            {assignment.reason && (
+                              <p className="text-sm mb-2">
+                                <strong>Reason:</strong> {assignment.reason}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                  {(!substituteAssignments || substituteAssignments.length === 0) && (
+                    <div className="text-center py-8">
+                      <UserCheck className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                      <p className="text-muted-foreground">No substitute duties assigned</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Work Done Tab */}
+          <TabsContent value="work-done">
+            <Card className="rounded-2xl shadow-sm">
+              <CardHeader>
+                <CardTitle>Work Done Records</CardTitle>
+                <CardDescription>Record and view what was taught in each period</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Dialog open={showWorkDoneDialog} onOpenChange={setShowWorkDoneDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="rounded-xl">
+                      <ClipboardList className="h-4 w-4 mr-2" />
+                      Record Work Done
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="rounded-2xl max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Record Work Done</DialogTitle>
+                      <DialogDescription>Document what was covered in the period</DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Class</Label>
+                          <Select value={workDoneForm.classroomId} onValueChange={(value) => setWorkDoneForm(prev => ({ ...prev, classroomId: value }))}>
+                            <SelectTrigger className="rounded-xl">
+                              <SelectValue placeholder="Select class" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {assignments?.map((assignment) => (
+                                <SelectItem key={assignment.classroomId} value={assignment.classroomId}>
+                                  {assignment.classroom.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label>Subject</Label>
+                          <Select value={workDoneForm.subjectId} onValueChange={(value) => setWorkDoneForm(prev => ({ ...prev, subjectId: value }))}>
+                            <SelectTrigger className="rounded-xl">
+                              <SelectValue placeholder="Select subject" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {assignments?.map((assignment) => (
+                                <SelectItem key={assignment.id} value={assignment.subject.id}>
+                                  {assignment.subject.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Date</Label>
+                          <Input
+                            type="date"
+                            className="rounded-xl"
+                            value={workDoneForm.date}
+                            onChange={(e) => setWorkDoneForm(prev => ({ ...prev, date: e.target.value }))}
+                          />
+                        </div>
+                        <div>
+                          <Label>Period Number</Label>
+                          <Select value={workDoneForm.periodNumber.toString()} onValueChange={(value) => setWorkDoneForm(prev => ({ ...prev, periodNumber: parseInt(value) }))}>
+                            <SelectTrigger className="rounded-xl">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((p) => (
+                                <SelectItem key={p} value={p.toString()}>Period {p}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <div>
+                        <Label>Topics Covered *</Label>
+                        <Textarea
+                          className="rounded-xl"
+                          rows={3}
+                          value={workDoneForm.topicsCovered}
+                          onChange={(e) => setWorkDoneForm(prev => ({ ...prev, topicsCovered: e.target.value }))}
+                          placeholder="Enter topics covered in this period..."
+                        />
+                      </div>
+                      <div>
+                        <Label>Homework Assigned (Optional)</Label>
+                        <Textarea
+                          className="rounded-xl"
+                          rows={2}
+                          value={workDoneForm.homeworkAssigned}
+                          onChange={(e) => setWorkDoneForm(prev => ({ ...prev, homeworkAssigned: e.target.value }))}
+                          placeholder="Enter homework assigned..."
+                        />
+                      </div>
+                      <div>
+                        <Label>Remarks (Optional)</Label>
+                        <Textarea
+                          className="rounded-xl"
+                          rows={2}
+                          value={workDoneForm.remarks}
+                          onChange={(e) => setWorkDoneForm(prev => ({ ...prev, remarks: e.target.value }))}
+                          placeholder="Any additional remarks..."
+                        />
+                      </div>
+                      <Button
+                        className="w-full rounded-xl"
+                        onClick={() => workDoneMutation.mutate({ ...workDoneForm, teacherId: session?.user?.id || "" })}
+                        disabled={workDoneMutation.isPending || !workDoneForm.topicsCovered}
+                      >
+                        {workDoneMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+                        Submit
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                <div className="space-y-3">
+                  {workDoneRecords?.map((record) => (
+                    <Card key={record.id} className="rounded-xl">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-2">
+                          <div>
+                            <h4 className="font-semibold">
+                              {record.classroomName} - {record.subjectName}
+                            </h4>
+                            <p className="text-sm text-muted-foreground">
+                              {record.date} | Period {record.periodNumber}
+                              {record.isSubstitute && <Badge variant="outline" className="ml-2">Substitute</Badge>}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div>
+                            <p className="text-sm font-medium">Topics Covered:</p>
+                            <p className="text-sm text-muted-foreground">{record.topicsCovered}</p>
+                          </div>
+                          {record.homeworkAssigned && (
+                            <div>
+                              <p className="text-sm font-medium">Homework:</p>
+                              <p className="text-sm text-muted-foreground">{record.homeworkAssigned}</p>
+                            </div>
+                          )}
+                          {record.remarks && (
+                            <div>
+                              <p className="text-sm font-medium">Remarks:</p>
+                              <p className="text-sm text-muted-foreground">{record.remarks}</p>
+                            </div>
+                          )}
+                          <p className="text-xs text-muted-foreground">
+                            Recorded on: {new Date(record.createdAt).toLocaleString()}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                  {(!workDoneRecords || workDoneRecords.length === 0) && (
+                    <div className="text-center py-8">
+                      <ClipboardList className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                      <p className="text-muted-foreground">No work done records yet</p>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
