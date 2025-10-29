@@ -46,9 +46,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { classroomId, subjectId, teacherId, dayOfWeek, startTime, endTime, room } = body;
+    const { classroomId, subjectId, teacherId, dayOfWeek, periodNumber, startTime, endTime, room, sessionType } = body;
 
-    if (!classroomId || !subjectId || !teacherId || dayOfWeek === undefined || !startTime || !endTime) {
+    if (!classroomId || !subjectId || !teacherId || dayOfWeek === undefined || periodNumber === undefined || !startTime || !endTime) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -60,13 +60,13 @@ export async function POST(request: NextRequest) {
       where: and(
         eq(timetable.classroomId, classroomId),
         eq(timetable.dayOfWeek, dayOfWeek),
-        eq(timetable.startTime, startTime)
+        eq(timetable.periodNumber, periodNumber)
       ),
     });
 
     if (existing) {
       return NextResponse.json(
-        { error: "Time slot already occupied" },
+        { error: "Period slot already occupied" },
         { status: 400 }
       );
     }
@@ -76,9 +76,11 @@ export async function POST(request: NextRequest) {
       subjectId,
       teacherId,
       dayOfWeek,
+      periodNumber,
       startTime,
       endTime,
       room,
+      sessionType: sessionType || 'regular',
     }).returning();
 
     return NextResponse.json(newEntry, { status: 201 });

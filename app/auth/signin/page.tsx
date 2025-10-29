@@ -39,7 +39,9 @@ export default function SignInPage() {
 
       // Fetch session to get user role
       const session = result.data;
-      const userRole = session?.user?.role || "student";
+      // Type assertion for the role field from Better Auth
+      const user = session?.user as { role?: string } | undefined;
+      const userRole = user?.role || "student";
 
       // Redirect based on user role
       if (userRole === "admin") {
