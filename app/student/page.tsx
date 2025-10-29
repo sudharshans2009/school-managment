@@ -77,17 +77,24 @@ interface Teacher {
 interface WorkDone {
   id: string;
   classroomId: string;
+  classroomName?: string;
+  classroomGrade?: string;
+  classroomSection?: string;
   subjectId: string;
   subjectName: string;
+  subjectCode?: string;
   teacherId: string;
   teacherName: string;
+  teacherEmail?: string;
   date: string;
   periodNumber: number;
   topicsCovered: string;
   homeworkAssigned?: string;
   remarks?: string;
   isSubstitute: boolean;
+  substituteAssignmentId?: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export default function StudentPage() {
