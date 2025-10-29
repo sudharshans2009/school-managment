@@ -10,7 +10,10 @@ import {
   School,
   UserCheck,
   ClipboardList,
-  Loader2
+  Loader2,
+  FileText,
+  UserPlus,
+  ClipboardCheck
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -52,6 +55,9 @@ export default function AdminDashboard() {
     { title: "Calendar & Holidays", href: "/admin/calendar", icon: Calendar, description: "Manage working days and timetables" },
     { title: "Attendance Records", href: "/admin/attendance", icon: UserCheck, description: "View and mark attendance" },
     { title: "Announcements", href: "/admin/announcements", icon: ClipboardList, description: "Create and manage announcements" },
+    { title: "Manage Leaves", href: "/admin/leaves", icon: FileText, description: "Approve and manage teacher leaves" },
+    { title: "Manage Substitutes", href: "/admin/substitutes", icon: UserPlus, description: "Assign substitute teachers" },
+    { title: "View Work Done", href: "/admin/work-done", icon: ClipboardCheck, description: "View all work done records" },
   ];
 
   return (
