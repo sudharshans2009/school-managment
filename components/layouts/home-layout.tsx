@@ -15,10 +15,30 @@ export function HomeLayout({ children }: HomeLayoutProps) {
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
 
+  // Determine dashboard route based on user role
+  const getDashboardRoute = () => {
+    if (!session?.user) return "/dashboard";
+    
+    // Type assertion for the role field from Better Auth
+    const user = session.user as { role?: string };
+    const role = user.role;
+    
+    switch (role) {
+      case "admin":
+        return "/admin";
+      case "teacher":
+        return "/teacher";
+      case "student":
+        return "/student";
+      default:
+        return "/dashboard";
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navbar */}
-      <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo + Website Name */}
@@ -44,7 +64,7 @@ export function HomeLayout({ children }: HomeLayoutProps) {
 
               {/* Auth Buttons */}
               {session ? (
-                <Link href="/dashboard">
+                <Link href={getDashboardRoute()}>
                   <Button className="rounded-xl">
                     Go to Dashboard
                   </Button>
