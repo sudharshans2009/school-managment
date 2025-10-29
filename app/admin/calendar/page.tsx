@@ -25,6 +25,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import Link from "next/link";
 
 interface CalendarDay {
   id: string;
@@ -231,42 +233,50 @@ export default function AdminCalendarPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Calendar className="w-8 h-8" />
-            Calendar Management
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Manage working days, holidays, and custom timetables
-          </p>
+    <DashboardLayout title="Admin Portal" description="Calendar Management">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-3">
+              <Link href="/admin">
+                <Button variant="ghost" size="sm" className="rounded-xl">
+                  ← Back
+                </Button>
+              </Link>
+              <Calendar className="w-6 h-6 text-primary" />
+              <h1 className="text-2xl font-bold">
+                Calendar Management
+              </h1>
+            </div>
+            <p className="text-muted-foreground mt-1 ml-14">
+              Manage working days, holidays, and custom timetables
+            </p>
+          </div>
         </div>
-      </div>
 
-      {/* Legend */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-sm">Default Schedule</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-wrap gap-4 text-sm">
+        {/* Legend */}
+        <Card className="rounded-2xl shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-sm">Default Schedule</CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="rounded-lg">Working</Badge>
+              <span className="text-muted-foreground">Mon-Sat: Full working day</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="rounded-lg">Sunday</Badge>
+              <span className="text-muted-foreground">Sunday: Holiday for all</span>
+            </div>
           <div className="flex items-center gap-2">
-            <Badge variant="secondary">Working</Badge>
-            <span className="text-muted-foreground">Mon-Sat: Full working day</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="outline">Sunday</Badge>
-            <span className="text-muted-foreground">Sunday: Holiday for all</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant="destructive" className="flex items-center gap-1">
+            <Badge variant="destructive" className="rounded-lg flex items-center gap-1">
               <Sun className="w-3 h-3" />
               Holiday
             </Badge>
             <span className="text-muted-foreground">Custom holiday</span>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant="default" className="flex items-center gap-1">
+            <Badge variant="default" className="rounded-lg flex items-center gap-1">
               <Clock className="w-3 h-3" />
               Half Day
             </Badge>
@@ -276,7 +286,7 @@ export default function AdminCalendarPage() {
       </Card>
 
       {/* Calendar */}
-      <Card>
+      <Card className="rounded-2xl shadow-sm">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-2xl">
@@ -286,6 +296,7 @@ export default function AdminCalendarPage() {
               <Button
                 variant="outline"
                 size="sm"
+                className="rounded-xl"
                 onClick={() => setCurrentDate(subMonths(currentDate, 1))}
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -293,6 +304,7 @@ export default function AdminCalendarPage() {
               <Button
                 variant="outline"
                 size="sm"
+                className="rounded-xl"
                 onClick={() => setCurrentDate(new Date())}
               >
                 Today
@@ -530,6 +542,7 @@ export default function AdminCalendarPage() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }

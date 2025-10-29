@@ -3,7 +3,7 @@
 import { ReactNode } from "react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { GraduationCap, LogOut, Moon, Sun } from "lucide-react";
+import { GraduationCap, LogOut, Moon, Sun, Home, Bell, User } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -47,7 +47,25 @@ export function DashboardLayout({
               </div>
             </Link>
 
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center gap-2">
+              {/* Navigation Links */}
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="rounded-xl">
+                  <Home className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Home</span>
+                </Button>
+              </Link>
+              
+              <Button variant="ghost" size="sm" className="rounded-xl">
+                <Bell className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Notifications</span>
+              </Button>
+              
+              <Button variant="ghost" size="sm" className="rounded-xl">
+                <User className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Profile</span>
+              </Button>
+
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
@@ -60,23 +78,17 @@ export function DashboardLayout({
                 <span className="sr-only">Toggle theme</span>
               </Button>
 
-              {/* User Info & Sign Out */}
+              {/* Sign Out */}
               {session && (
-                <div className="flex items-center space-x-3">
-                  <div className="hidden sm:flex flex-col items-end">
-                    <span className="text-sm font-medium">{session.user?.name}</span>
-                    <span className="text-xs text-muted-foreground">{session.user?.email}</span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleSignOut}
-                    className="rounded-xl"
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
-                  </Button>
-                </div>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleSignOut}
+                  className="rounded-xl"
+                >
+                  <LogOut className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Logout</span>
+                </Button>
               )}
             </div>
           </div>

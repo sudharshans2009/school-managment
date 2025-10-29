@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
 interface Classroom {
   id: string;
@@ -177,35 +178,34 @@ export default function AdminAnnouncementsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-3">
-              <Link href="/admin">
-                <Button variant="ghost" size="sm">
-                  ← Back
-                </Button>
-              </Link>
-              <Bell className="h-6 w-6 text-primary" />
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Announcements
-              </h1>
-            </div>
-            <Dialog
-              open={openCreate || !!editingAnnouncement}
-              onOpenChange={(open) => {
-                setOpenCreate(open);
-                if (!open) setEditingAnnouncement(null);
-                setError("");
-              }}
-            >
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Announcement
-                </Button>
-              </DialogTrigger>
+    <DashboardLayout title="Admin Portal" description="Manage Announcements">
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <Link href="/admin">
+              <Button variant="ghost" size="sm" className="rounded-xl">
+                ← Back
+              </Button>
+            </Link>
+            <Bell className="h-6 w-6 text-primary" />
+            <h1 className="text-2xl font-bold">
+              Announcements
+            </h1>
+          </div>
+          <Dialog
+            open={openCreate || !!editingAnnouncement}
+            onOpenChange={(open) => {
+              setOpenCreate(open);
+              if (!open) setEditingAnnouncement(null);
+              setError("");
+            }}
+          >
+            <DialogTrigger asChild>
+              <Button className="rounded-xl">
+                <Plus className="h-4 w-4 mr-2" />
+                New Announcement
+              </Button>
+            </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>
@@ -218,6 +218,7 @@ export default function AdminAnnouncementsPage() {
                     <Input
                       id="title"
                       name="title"
+                      className="rounded-xl"
                       placeholder="e.g., Mid-term Examination Schedule"
                       required
                       defaultValue={editingAnnouncement?.title}
@@ -228,6 +229,7 @@ export default function AdminAnnouncementsPage() {
                     <Textarea
                       id="content"
                       name="content"
+                      className="rounded-xl"
                       placeholder="Enter announcement details..."
                       rows={6}
                       required
@@ -238,7 +240,7 @@ export default function AdminAnnouncementsPage() {
                     <div>
                       <Label htmlFor="priority">Priority *</Label>
                       <Select name="priority" defaultValue={editingAnnouncement?.priority || "normal"}>
-                        <SelectTrigger id="priority">
+                        <SelectTrigger id="priority" className="rounded-xl">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -252,7 +254,7 @@ export default function AdminAnnouncementsPage() {
                     <div>
                       <Label htmlFor="classroomId">Target Classroom</Label>
                       <Select name="classroomId" defaultValue={editingAnnouncement?.classroomId || "all"}>
-                        <SelectTrigger id="classroomId">
+                        <SelectTrigger id="classroomId" className="rounded-xl">
                           <SelectValue placeholder="All Classrooms" />
                         </SelectTrigger>
                         <SelectContent>
@@ -267,7 +269,7 @@ export default function AdminAnnouncementsPage() {
                     </div>
                   </div>
                   {error && (
-                    <Alert variant="destructive">
+                    <Alert variant="destructive" className="rounded-xl">
                       <AlertDescription>{error}</AlertDescription>
                     </Alert>
                   )}
@@ -275,6 +277,7 @@ export default function AdminAnnouncementsPage() {
                     <Button
                       type="button"
                       variant="outline"
+                      className="rounded-xl"
                       onClick={() => {
                         setOpenCreate(false);
                         setEditingAnnouncement(null);
@@ -285,6 +288,7 @@ export default function AdminAnnouncementsPage() {
                     </Button>
                     <Button
                       type="submit"
+                      className="rounded-xl"
                       disabled={createMutation.isPending || updateMutation.isPending}
                     >
                       {createMutation.isPending || updateMutation.isPending ? (
@@ -304,16 +308,14 @@ export default function AdminAnnouncementsPage() {
             </Dialog>
           </div>
         </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filter */}
-        <Card className="mb-6">
+        <Card className="rounded-2xl shadow-sm">
           <CardContent className="p-4">
             <div className="flex items-center gap-4">
               <Label>Filter by Classroom:</Label>
               <Select value={filterClassroom || "all"} onValueChange={(val) => setFilterClassroom(val === "all" ? "" : val)}>
-                <SelectTrigger className="w-64">
+                <SelectTrigger className="w-64 rounded-xl">
                   <SelectValue placeholder="All Classrooms" />
                 </SelectTrigger>
                 <SelectContent>
@@ -326,7 +328,7 @@ export default function AdminAnnouncementsPage() {
                 </SelectContent>
               </Select>
               {filterClassroom && (
-                <Button variant="outline" size="sm" onClick={() => setFilterClassroom("")}>
+                <Button variant="outline" size="sm" className="rounded-xl" onClick={() => setFilterClassroom("")}>
                   Clear Filter
                 </Button>
               )}
@@ -336,15 +338,13 @@ export default function AdminAnnouncementsPage() {
 
         {/* Announcements List */}
         {isLoading ? (
-          <Card>
-            <CardContent className="p-8 flex justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </CardContent>
-          </Card>
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
         ) : announcements && announcements.length > 0 ? (
           <div className="space-y-4">
             {announcements.map((announcement) => (
-              <Card key={announcement.id} className="hover:shadow-md transition-shadow">
+              <Card key={announcement.id} className="rounded-2xl shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
@@ -355,7 +355,7 @@ export default function AdminAnnouncementsPage() {
                           <AlertCircle className="h-5 w-5 text-red-500 animate-pulse" />
                         )}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <span>
                           <strong>Target:</strong>{" "}
                           {announcement.classroomName || "All Classrooms"}
@@ -374,6 +374,7 @@ export default function AdminAnnouncementsPage() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="rounded-xl"
                         onClick={() => setEditingAnnouncement(announcement)}
                       >
                         <Edit2 className="h-4 w-4" />
@@ -381,6 +382,7 @@ export default function AdminAnnouncementsPage() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="rounded-xl"
                         onClick={() => {
                           if (confirm("Are you sure you want to delete this announcement?")) {
                             deleteMutation.mutate(announcement.id);
@@ -394,7 +396,7 @@ export default function AdminAnnouncementsPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                  <p className="text-muted-foreground whitespace-pre-wrap">
                     {announcement.content}
                   </p>
                 </CardContent>
@@ -402,13 +404,13 @@ export default function AdminAnnouncementsPage() {
             ))}
           </div>
         ) : (
-          <Card>
-            <CardContent className="p-8 text-center text-gray-500">
+          <Card className="rounded-2xl shadow-sm">
+            <CardContent className="p-8 text-center text-muted-foreground">
               No announcements found. Click &quot;New Announcement&quot; to create one.
             </CardContent>
           </Card>
         )}
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
