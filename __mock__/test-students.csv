@@ -1,0 +1,4 @@
+name,email,password,phone,address,rollNumber,admissionNumber,dateOfBirth,bloodGroup,classroomId
+John Doe,john.doe@test.com,password123,1234567890,123 Main St,R001,A001,2005-05-15,A+,
+Jane Smith,jane.smith@test.com,password123,9876543210,456 Oak Ave,R002,A002,2006-03-20,B+,
+Bob Johnson,bob.johnson@test.com,password123,5551234567,789 Pine Rd,R003,A003,2005-11-10,O+,

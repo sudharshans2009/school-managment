@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { UserPlus, Mail, Phone, MapPin, Search, Edit2, Trash2 } from "lucide-react";
+import { UserPlus, Mail, Phone, MapPin, Search, Edit2, Trash2, Upload } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
@@ -28,9 +28,12 @@ interface Teacher {
 
 export default function TeachersPage() {
   const [open, setOpen] = useState(false);
+  const [csvDialogOpen, setCsvDialogOpen] = useState(false);
+  const [csvFile, setCsvFile] = useState<File | null>(null);
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
   const [deletingTeacher, setDeletingTeacher] = useState<Teacher | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [uploadResult, setUploadResult] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
   const queryClient = useQueryClient();
 
   const { data: teachers, isLoading } = useQuery<Teacher[]>({
@@ -110,6 +113,49 @@ export default function TeachersPage() {
     },
   });
 
+  const bulkUploadMutation = useMutation({
+    mutationFn: async (teachers: Array<Record<string, string>>) => {
+      const response = await fetch("/api/teachers/bulk-upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ teachers }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to upload teachers");
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["teachers"] });
+      setCsvDialogOpen(false);
+      setCsvFile(null);
+      setUploadResult({ success: data.success, failed: data.failed, errors: data.errors || [] });
+    },
+    onError: (error: Error) => {
+      setUploadResult({ success: 0, failed: 0, errors: [error.message] });
+    },
+  });
+
+  const handleCSVUpload = async () => {
+    if (!csvFile) return;
+
+    const text = await csvFile.text();
+    const lines = text.split("\n").filter(line => line.trim());
+    const headers = lines[0].split(",").map(h => h.trim().toLowerCase());
+
+    const teachers = lines.slice(1).map(line => {
+      const values = line.split(",").map(v => v.trim());
+      const teacher: Record<string, string> = {};
+      headers.forEach((header, index) => {
+        teacher[header] = values[index];
+      });
+      return teacher;
+    });
+
+    bulkUploadMutation.mutate(teachers);
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -147,21 +193,57 @@ export default function TeachersPage() {
 
   return (
     <DashboardLayout title="Teachers Management" description="Admin Portal">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Teachers Management</h1>
-          <p className="text-gray-600 mt-1">Manage teachers and their assignments</p>
-        </div>
-        <Dialog open={open} onOpenChange={(isOpen) => {
-          setOpen(isOpen);
-          if (!isOpen) setEditingTeacher(null);
-        }}>
-          <DialogTrigger asChild>
-            <Button className="rounded-xl">
-              <UserPlus className="h-4 w-4 mr-2" />
-              Add Teacher
-            </Button>
-          </DialogTrigger>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold">Teachers Management</h1>
+            <p className="text-gray-600 mt-1">Manage teachers and their assignments</p>
+          </div>
+          <div className="flex gap-2">
+            <Dialog open={csvDialogOpen} onOpenChange={setCsvDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="rounded-xl">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Upload CSV
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="rounded-2xl">
+                <DialogHeader>
+                  <DialogTitle>Bulk Upload Teachers</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label>CSV File</Label>
+                    <Input
+                      type="file"
+                      accept=".csv"
+                      onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
+                      className="rounded-xl"
+                    />
+                    <p className="text-sm text-muted-foreground mt-2">
+                      CSV should have headers: name, email, password, phone, address
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleCSVUpload}
+                    disabled={!csvFile || bulkUploadMutation.isPending}
+                    className="w-full rounded-xl"
+                  >
+                    {bulkUploadMutation.isPending ? "Uploading..." : "Upload Teachers"}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Dialog open={open} onOpenChange={(isOpen) => {
+              setOpen(isOpen);
+              if (!isOpen) setEditingTeacher(null);
+            }}>
+              <DialogTrigger asChild>
+                <Button className="rounded-xl">
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Add Teacher
+                </Button>
+              </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>{editingTeacher ? "Edit Teacher" : "Add New Teacher"}</DialogTitle>
@@ -212,8 +294,34 @@ export default function TeachersPage() {
           </DialogContent>
         </Dialog>
       </div>
+    </div>
 
-      <div className="mb-4">
+    {uploadResult && (
+      <Alert variant={uploadResult.failed > 0 ? "destructive" : "default"} className="mb-4">
+        <AlertDescription>
+          <div className="font-semibold mb-2">
+            Bulk Upload Complete: {uploadResult.success} succeeded, {uploadResult.failed} failed
+          </div>
+          {uploadResult.errors.length > 0 && (
+            <ul className="list-disc list-inside text-sm">
+              {uploadResult.errors.map((error, i) => (
+                <li key={i}>{error}</li>
+              ))}
+            </ul>
+          )}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="mt-2"
+            onClick={() => setUploadResult(null)}
+          >
+            Dismiss
+          </Button>
+        </AlertDescription>
+      </Alert>
+    )}
+
+    <div className="mb-4">
         <div className="relative">
           <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <Input
@@ -323,6 +431,7 @@ export default function TeachersPage() {
           </CardContent>
         </Card>
       )}
+      </div>
     </DashboardLayout>
   );
 }

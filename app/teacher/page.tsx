@@ -9,17 +9,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   BookOpen, Users, Calendar, MessageSquare, Quote, 
-  CheckCircle, XCircle, Send, Loader2, FileText, UserCheck, ClipboardList, AlertCircle
+  Send, Loader2, FileText, UserCheck, ClipboardList, AlertCircle
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { TeacherQuickActions } from "@/components/teacher-quick-actions";
 
 interface TeacherAssignment {
   id: string;
@@ -36,18 +36,6 @@ interface TeacherAssignment {
     id: string;
     name: string;
     code: string;
-  };
-}
-
-interface Student {
-  id: string;
-  userId: string;
-  rollNumber: string;
-  admissionNumber: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
   };
 }
 
@@ -100,6 +88,7 @@ interface WorkDone {
   subjectId: string;
   subjectName: string;
   teacherId: string;
+  teacherName?: string;
   date: string;
   periodNumber: number;
   topicsCovered: string;
@@ -113,10 +102,6 @@ export default function TeacherPage() {
   const { data: session, isPending } = useSession();
   const router = useRouter();
   const queryClient = useQueryClient();
-  
-  const [selectedClass, setSelectedClass] = useState<string>("");
-  const [attendanceDate, setAttendanceDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [attendanceRecords, setAttendanceRecords] = useState<Record<string, 'present' | 'absent' | 'late' | 'excused'>>({});
   
   const [homeworkForm, setHomeworkForm] = useState({
     classroomId: "",
@@ -169,16 +154,8 @@ export default function TeacherPage() {
     enabled: !!session?.user?.id,
   });
 
-  // Fetch students for selected class
-  const { data: students } = useQuery<Student[]>({
-    queryKey: ["students", selectedClass],
-    queryFn: async () => {
-      const res = await fetch(`/api/students?classroomId=${selectedClass}`);
-      if (!res.ok) throw new Error("Failed to fetch students");
-      return res.json();
-    },
-    enabled: !!selectedClass,
-  });
+  // Calculate primary classes (class teacher assignments)
+  const primaryClasses = assignments?.filter(a => a.isPrimary) || [];
 
   // Fetch messages
   const { data: messages } = useQuery<Message[]>({
@@ -213,7 +190,7 @@ export default function TeacherPage() {
     enabled: !!session?.user?.id,
   });
 
-  // Fetch work done records
+  // Fetch work done records - teacher's own records
   const { data: workDoneRecords } = useQuery<WorkDone[]>({
     queryKey: ["work-done", session?.user?.id],
     queryFn: async () => {
@@ -224,25 +201,20 @@ export default function TeacherPage() {
     enabled: !!session?.user?.id,
   });
 
-  // Submit attendance mutation
-  const attendanceMutation = useMutation({
-    mutationFn: async (data: { records: { studentId: string; classroomId: string; status: 'present' | 'absent' | 'late' | 'excused'; date: Date }[]; markedBy: string }) => {
-      const res = await fetch("/api/attendance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+  // Fetch work done records for primary classes (class teacher view)
+  const { data: classWorkDoneRecords } = useQuery<WorkDone[]>({
+    queryKey: ["class-work-done", primaryClasses.map(c => c.classroomId)],
+    queryFn: async () => {
+      // Fetch work done for all primary classes
+      const promises = primaryClasses.map(async (assignment) => {
+        const res = await fetch(`/api/work-done?classroomId=${assignment.classroomId}`);
+        if (!res.ok) return [];
+        return res.json();
       });
-      if (!res.ok) throw new Error("Failed to mark attendance");
-      return res.json();
+      const results = await Promise.all(promises);
+      return results.flat();
     },
-    onSuccess: () => {
-      toast.success("Attendance marked successfully");
-      setAttendanceRecords({});
-      queryClient.invalidateQueries({ queryKey: ["attendance"] });
-    },
-    onError: () => {
-      toast.error("Failed to mark attendance");
-    },
+    enabled: primaryClasses.length > 0,
   });
 
   // Create homework mutation
@@ -374,30 +346,6 @@ export default function TeacherPage() {
     },
   });
 
-  const handleMarkAttendance = () => {
-    if (!selectedClass || !students) {
-      toast.error("Please select a class first");
-      return;
-    }
-
-    const records = Object.entries(attendanceRecords).map(([studentId, status]) => ({
-      studentId,
-      classroomId: selectedClass,
-      status,
-      date: new Date(attendanceDate),
-    }));
-
-    if (records.length === 0) {
-      toast.error("Please mark attendance for at least one student");
-      return;
-    }
-
-    attendanceMutation.mutate({
-      records,
-      markedBy: session?.user?.id || "",
-    });
-  };
-
   const handleCreateHomework = () => {
     if (!homeworkForm.classroomId || !homeworkForm.subjectId || !homeworkForm.title || !homeworkForm.dueDate) {
       toast.error("Please fill in all required fields");
@@ -422,15 +370,6 @@ export default function TeacherPage() {
     });
   };
 
-  const markAllStudents = (status: 'present' | 'absent' | 'late' | 'excused') => {
-    if (!students) return;
-    const newRecords: Record<string, typeof status> = {};
-    students.forEach(student => {
-      newRecords[student.id] = status;
-    });
-    setAttendanceRecords(newRecords);
-  };
-
   if (isPending) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -441,41 +380,11 @@ export default function TeacherPage() {
 
   if (!session) return null;
 
-  const primaryClasses = assignments?.filter(a => a.isPrimary) || [];
   const unreadMessages = messages?.filter(m => m.status === "sent").length || 0;
 
   return (
     <DashboardLayout title="Teacher Portal" description={`Welcome back, ${session.user?.name}`}>
       <div className="space-y-6">
-        {/* Quick Actions */}
-        <Card className="rounded-2xl shadow-sm">
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Button
-                variant="outline"
-                className="h-auto p-4 justify-start"
-                onClick={() => router.push("/teacher/homework")}
-              >
-                <BookOpen className="h-5 w-5 mr-3 text-primary" />
-                <div className="text-left">
-                  <div className="font-semibold">Homework Submissions</div>
-                  <div className="text-sm text-muted-foreground">Mark & grade homework</div>
-                </div>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Unread messages badge */}
-        {unreadMessages > 0 && (
-          <Badge variant="destructive" className="h-8 px-3 rounded-xl">
-            {unreadMessages} New Messages
-          </Badge>
-        )}
-
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card className="rounded-2xl shadow-sm">
@@ -523,11 +432,23 @@ export default function TeacherPage() {
             </CardContent>
           </Card>
         </div>
+        
+        {/* Quick Actions */}
+        <TeacherQuickActions 
+          unreadMessages={unreadMessages}
+          isPrimaryTeacher={primaryClasses.length > 0}
+          currentPage="work-done"
+        />
 
-        <Tabs defaultValue="classes" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8 rounded-xl">
-            <TabsTrigger value="classes" className="rounded-lg">My Classes</TabsTrigger>
-            <TabsTrigger value="attendance" className="rounded-lg">Attendance</TabsTrigger>
+        {/* Unread messages badge */}
+        {unreadMessages > 0 && (
+          <Badge variant="destructive" className="h-8 px-3 rounded-xl">
+            {unreadMessages} New Messages
+          </Badge>
+        )}
+
+        <Tabs defaultValue="homework" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-6 rounded-xl">
             <TabsTrigger value="homework" className="rounded-lg">Homework</TabsTrigger>
             <TabsTrigger value="messages" className="rounded-lg">Messages</TabsTrigger>
             <TabsTrigger value="classroom-msg" className="rounded-lg">Class Message</TabsTrigger>
@@ -535,143 +456,6 @@ export default function TeacherPage() {
             <TabsTrigger value="substitutes" className="rounded-lg">Substitute Duties</TabsTrigger>
             <TabsTrigger value="work-done" className="rounded-lg">Work Done</TabsTrigger>
           </TabsList>
-
-          {/* My Classes Tab */}
-          <TabsContent value="classes">
-            <Card className="rounded-2xl shadow-sm">
-              <CardHeader>
-                <CardTitle>My Assigned Classes</CardTitle>
-                <CardDescription>Classes and subjects you teach</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {assignments?.map((assignment) => (
-                    <Card key={assignment.id} className="rounded-xl shadow-sm hover:shadow-lg transition-shadow">
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between mb-3">
-                          <h3 className="font-bold text-lg">{assignment.classroom.name}</h3>
-                          {assignment.isPrimary && (
-                            <Badge variant="default" className="rounded-lg">Class Teacher</Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2">{assignment.subject.name}</p>
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Students:</span>
-                          <span className="font-medium">{assignment.classroom.currentStrength}</span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                  {(!assignments || assignments.length === 0) && (
-                    <div className="col-span-full text-center py-8 text-muted-foreground">
-                      No classes assigned yet
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Attendance Tab */}
-          <TabsContent value="attendance">
-            <Card className="rounded-2xl shadow-sm">
-              <CardHeader>
-                <CardTitle>Mark Attendance</CardTitle>
-                <CardDescription>Record student attendance for your classes</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label>Select Class</Label>
-                    <Select value={selectedClass} onValueChange={setSelectedClass}>
-                      <SelectTrigger className="rounded-xl">
-                        <SelectValue placeholder="Choose a class" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {assignments?.map((assignment) => (
-                          <SelectItem key={assignment.classroomId} value={assignment.classroomId}>
-                            {assignment.classroom.name} - {assignment.subject.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label>Date</Label>
-                    <Input className="rounded-xl"
-                      type="date"
-                      value={attendanceDate}
-                      onChange={(e) => setAttendanceDate(e.target.value)}
-                    />
-                  </div>
-                </div>
-
-                {selectedClass && students && students.length > 0 && (
-                  <>
-                    <div className="flex gap-2">
-                      <Button className="rounded-xl" size="sm" variant="outline" onClick={() => markAllStudents('present')}>
-                        <CheckCircle className="h-4 w-4 mr-1" /> Mark All Present
-                      </Button>
-                      <Button className="rounded-xl" size="sm" variant="outline" onClick={() => markAllStudents('absent')}>
-                        <XCircle className="h-4 w-4 mr-1" /> Mark All Absent
-                      </Button>
-                    </div>
-
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Roll No</TableHead>
-                          <TableHead>Student Name</TableHead>
-                          <TableHead>Status</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {students.map((student) => (
-                          <TableRow key={student.id}>
-                            <TableCell className="font-medium">{student.rollNumber}</TableCell>
-                            <TableCell>{student.user.name}</TableCell>
-                            <TableCell>
-                              <Select
-                                value={attendanceRecords[student.id] || ""}
-                                onValueChange={(value) => {
-                                  setAttendanceRecords(prev => ({
-                                    ...prev,
-                                    [student.id]: value as 'present' | 'absent' | 'late' | 'excused',
-                                  }));
-                                }}
-                              >
-                                <SelectTrigger className="w-32">
-                                  <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="present">Present</SelectItem>
-                                  <SelectItem value="absent">Absent</SelectItem>
-                                  <SelectItem value="late">Late</SelectItem>
-                                  <SelectItem value="excused">Excused</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-
-                    <Button
-                      onClick={handleMarkAttendance}
-                      disabled={attendanceMutation.isPending || Object.keys(attendanceRecords).length === 0}
-                    >
-                      {attendanceMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                      Submit Attendance
-                    </Button>
-                  </>
-                )}
-
-                {selectedClass && (!students || students.length === 0) && (
-                  <p className="text-center py-8 text-muted-foreground">No students found in this class</p>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
 
           {/* Homework Tab */}
           <TabsContent value="homework">
@@ -1041,171 +825,265 @@ export default function TeacherPage() {
 
           {/* Work Done Tab */}
           <TabsContent value="work-done">
-            <Card className="rounded-2xl shadow-sm">
-              <CardHeader>
-                <CardTitle>Work Done Records</CardTitle>
-                <CardDescription>Record and view what was taught in each period</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Dialog open={showWorkDoneDialog} onOpenChange={setShowWorkDoneDialog}>
-                  <DialogTrigger asChild>
-                    <Button className="rounded-xl">
-                      <ClipboardList className="h-4 w-4 mr-2" />
-                      Record Work Done
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="rounded-2xl max-w-2xl">
-                    <DialogHeader>
-                      <DialogTitle>Record Work Done</DialogTitle>
-                      <DialogDescription>Document what was covered in the period</DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label>Class</Label>
-                          <Select value={workDoneForm.classroomId} onValueChange={(value) => setWorkDoneForm(prev => ({ ...prev, classroomId: value }))}>
-                            <SelectTrigger className="rounded-xl">
-                              <SelectValue placeholder="Select class" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {assignments?.map((assignment) => (
-                                <SelectItem key={assignment.classroomId} value={assignment.classroomId}>
-                                  {assignment.classroom.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+            <div className="space-y-6">
+              {/* Record Work Done */}
+              <Card className="rounded-2xl shadow-sm">
+                <CardHeader>
+                  <CardTitle>Work Done Records</CardTitle>
+                  <CardDescription>Record and view what was taught in each period</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Dialog open={showWorkDoneDialog} onOpenChange={setShowWorkDoneDialog}>
+                    <DialogTrigger asChild>
+                      <Button className="rounded-xl">
+                        <ClipboardList className="h-4 w-4 mr-2" />
+                        Record Work Done
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="rounded-2xl max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle>Record Work Done</DialogTitle>
+                        <DialogDescription>Document what was covered in the period</DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label>Class</Label>
+                            <Select value={workDoneForm.classroomId} onValueChange={(value) => setWorkDoneForm(prev => ({ ...prev, classroomId: value }))}>
+                              <SelectTrigger className="rounded-xl">
+                                <SelectValue placeholder="Select class" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {assignments?.map((assignment) => (
+                                  <SelectItem key={assignment.classroomId} value={assignment.classroomId}>
+                                    {assignment.classroom.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label>Subject</Label>
+                            <Select value={workDoneForm.subjectId} onValueChange={(value) => setWorkDoneForm(prev => ({ ...prev, subjectId: value }))}>
+                              <SelectTrigger className="rounded-xl">
+                                <SelectValue placeholder="Select subject" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {assignments?.map((assignment) => (
+                                  <SelectItem key={assignment.id} value={assignment.subject.id}>
+                                    {assignment.subject.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label>Date</Label>
+                            <Input
+                              type="date"
+                              className="rounded-xl"
+                              value={workDoneForm.date}
+                              onChange={(e) => setWorkDoneForm(prev => ({ ...prev, date: e.target.value }))}
+                            />
+                          </div>
+                          <div>
+                            <Label>Period Number</Label>
+                            <Select value={workDoneForm.periodNumber.toString()} onValueChange={(value) => setWorkDoneForm(prev => ({ ...prev, periodNumber: parseInt(value) }))}>
+                              <SelectTrigger className="rounded-xl">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((p) => (
+                                  <SelectItem key={p} value={p.toString()}>Period {p}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
                         <div>
-                          <Label>Subject</Label>
-                          <Select value={workDoneForm.subjectId} onValueChange={(value) => setWorkDoneForm(prev => ({ ...prev, subjectId: value }))}>
-                            <SelectTrigger className="rounded-xl">
-                              <SelectValue placeholder="Select subject" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {assignments?.map((assignment) => (
-                                <SelectItem key={assignment.id} value={assignment.subject.id}>
-                                  {assignment.subject.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label>Date</Label>
-                          <Input
-                            type="date"
+                          <Label>Topics Covered *</Label>
+                          <Textarea
                             className="rounded-xl"
-                            value={workDoneForm.date}
-                            onChange={(e) => setWorkDoneForm(prev => ({ ...prev, date: e.target.value }))}
+                            rows={3}
+                            value={workDoneForm.topicsCovered}
+                            onChange={(e) => setWorkDoneForm(prev => ({ ...prev, topicsCovered: e.target.value }))}
+                            placeholder="Enter topics covered in this period..."
                           />
                         </div>
                         <div>
-                          <Label>Period Number</Label>
-                          <Select value={workDoneForm.periodNumber.toString()} onValueChange={(value) => setWorkDoneForm(prev => ({ ...prev, periodNumber: parseInt(value) }))}>
-                            <SelectTrigger className="rounded-xl">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((p) => (
-                                <SelectItem key={p} value={p.toString()}>Period {p}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <Label>Homework Assigned (Optional)</Label>
+                          <Textarea
+                            className="rounded-xl"
+                            rows={2}
+                            value={workDoneForm.homeworkAssigned}
+                            onChange={(e) => setWorkDoneForm(prev => ({ ...prev, homeworkAssigned: e.target.value }))}
+                            placeholder="Enter homework assigned..."
+                          />
                         </div>
+                        <div>
+                          <Label>Remarks (Optional)</Label>
+                          <Textarea
+                            className="rounded-xl"
+                            rows={2}
+                            value={workDoneForm.remarks}
+                            onChange={(e) => setWorkDoneForm(prev => ({ ...prev, remarks: e.target.value }))}
+                            placeholder="Any additional remarks..."
+                          />
+                        </div>
+                        <Button
+                          className="w-full rounded-xl"
+                          onClick={() => workDoneMutation.mutate({ ...workDoneForm, teacherId: session?.user?.id || "" })}
+                          disabled={workDoneMutation.isPending || !workDoneForm.topicsCovered}
+                        >
+                          {workDoneMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+                          Submit
+                        </Button>
                       </div>
-                      <div>
-                        <Label>Topics Covered *</Label>
-                        <Textarea
-                          className="rounded-xl"
-                          rows={3}
-                          value={workDoneForm.topicsCovered}
-                          onChange={(e) => setWorkDoneForm(prev => ({ ...prev, topicsCovered: e.target.value }))}
-                          placeholder="Enter topics covered in this period..."
-                        />
-                      </div>
-                      <div>
-                        <Label>Homework Assigned (Optional)</Label>
-                        <Textarea
-                          className="rounded-xl"
-                          rows={2}
-                          value={workDoneForm.homeworkAssigned}
-                          onChange={(e) => setWorkDoneForm(prev => ({ ...prev, homeworkAssigned: e.target.value }))}
-                          placeholder="Enter homework assigned..."
-                        />
-                      </div>
-                      <div>
-                        <Label>Remarks (Optional)</Label>
-                        <Textarea
-                          className="rounded-xl"
-                          rows={2}
-                          value={workDoneForm.remarks}
-                          onChange={(e) => setWorkDoneForm(prev => ({ ...prev, remarks: e.target.value }))}
-                          placeholder="Any additional remarks..."
-                        />
-                      </div>
-                      <Button
-                        className="w-full rounded-xl"
-                        onClick={() => workDoneMutation.mutate({ ...workDoneForm, teacherId: session?.user?.id || "" })}
-                        disabled={workDoneMutation.isPending || !workDoneForm.topicsCovered}
-                      >
-                        {workDoneMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
-                        Submit
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
+                    </DialogContent>
+                  </Dialog>
 
-                <div className="space-y-3">
-                  {workDoneRecords?.map((record) => (
-                    <Card key={record.id} className="rounded-xl">
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <h4 className="font-semibold">
-                              {record.classroomName} - {record.subjectName}
-                            </h4>
-                            <p className="text-sm text-muted-foreground">
-                              {record.date} | Period {record.periodNumber}
-                              {record.isSubstitute && <Badge variant="outline" className="ml-2">Substitute</Badge>}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <div>
-                            <p className="text-sm font-medium">Topics Covered:</p>
-                            <p className="text-sm text-muted-foreground">{record.topicsCovered}</p>
-                          </div>
-                          {record.homeworkAssigned && (
-                            <div>
-                              <p className="text-sm font-medium">Homework:</p>
-                              <p className="text-sm text-muted-foreground">{record.homeworkAssigned}</p>
+                  {/* My Work Done Records */}
+                  <div>
+                    <h3 className="font-semibold text-lg mb-3">My Work Done Records</h3>
+                    <div className="space-y-3">
+                      {workDoneRecords?.map((record) => (
+                        <Card key={record.id} className="rounded-xl">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <h4 className="font-semibold">
+                                  {record.classroomName} - {record.subjectName}
+                                </h4>
+                                <p className="text-sm text-muted-foreground">
+                                  {record.date} | Period {record.periodNumber}
+                                  {record.isSubstitute && <Badge variant="outline" className="ml-2">Substitute</Badge>}
+                                </p>
+                              </div>
                             </div>
-                          )}
-                          {record.remarks && (
-                            <div>
-                              <p className="text-sm font-medium">Remarks:</p>
-                              <p className="text-sm text-muted-foreground">{record.remarks}</p>
+                            <div className="space-y-2">
+                              <div>
+                                <p className="text-sm font-medium">Topics Covered:</p>
+                                <p className="text-sm text-muted-foreground">{record.topicsCovered}</p>
+                              </div>
+                              {record.homeworkAssigned && (
+                                <div>
+                                  <p className="text-sm font-medium">Homework:</p>
+                                  <p className="text-sm text-muted-foreground">{record.homeworkAssigned}</p>
+                                </div>
+                              )}
+                              {record.remarks && (
+                                <div>
+                                  <p className="text-sm font-medium">Remarks:</p>
+                                  <p className="text-sm text-muted-foreground">{record.remarks}</p>
+                                </div>
+                              )}
+                              <p className="text-xs text-muted-foreground">
+                                Recorded on: {new Date(record.createdAt).toLocaleString()}
+                              </p>
                             </div>
-                          )}
-                          <p className="text-xs text-muted-foreground">
-                            Recorded on: {new Date(record.createdAt).toLocaleString()}
-                          </p>
+                          </CardContent>
+                        </Card>
+                      ))}
+                      {(!workDoneRecords || workDoneRecords.length === 0) && (
+                        <div className="text-center py-8">
+                          <ClipboardList className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                          <p className="text-muted-foreground">No work done records yet</p>
                         </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                  {(!workDoneRecords || workDoneRecords.length === 0) && (
-                    <div className="text-center py-8">
-                      <ClipboardList className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                      <p className="text-muted-foreground">No work done records yet</p>
+                      )}
                     </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Class Teacher - All Work Done for Primary Classes */}
+              {primaryClasses.length > 0 && (
+                <Card className="rounded-2xl shadow-sm border-l-4 border-l-blue-500">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5" />
+                      Class Teacher View - All Work Done
+                    </CardTitle>
+                    <CardDescription>
+                      View all work done records for your primary classes
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Tabs defaultValue={primaryClasses[0]?.classroomId} className="space-y-4">
+                      <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${primaryClasses.length}, 1fr)` }}>
+                        {primaryClasses.map((assignment) => (
+                          <TabsTrigger key={assignment.classroomId} value={assignment.classroomId} className="rounded-lg">
+                            {assignment.classroom.name}
+                          </TabsTrigger>
+                        ))}
+                      </TabsList>
+
+                      {primaryClasses.map((assignment) => (
+                        <TabsContent key={assignment.classroomId} value={assignment.classroomId}>
+                          <div className="space-y-3">
+                            {classWorkDoneRecords
+                              ?.filter(record => record.classroomId === assignment.classroomId)
+                              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                              .map((record) => (
+                                <Card key={record.id} className="rounded-xl">
+                                  <CardContent className="p-4">
+                                    <div className="flex items-start justify-between mb-2">
+                                      <div className="flex-1">
+                                        <div className="flex items-center gap-2 mb-1">
+                                          <h4 className="font-semibold">{record.subjectName}</h4>
+                                          <Badge variant="secondary" className="text-xs">
+                                            Period {record.periodNumber}
+                                          </Badge>
+                                          {record.isSubstitute && (
+                                            <Badge variant="outline" className="text-xs">
+                                              Substitute
+                                            </Badge>
+                                          )}
+                                        </div>
+                                        <p className="text-sm text-muted-foreground mb-2">
+                                          {new Date(record.date).toLocaleDateString()} • Teacher: {record.teacherName || 'Unknown'}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                      <div>
+                                        <p className="text-sm font-medium text-blue-600">Topics Covered:</p>
+                                        <p className="text-sm text-muted-foreground">{record.topicsCovered}</p>
+                                      </div>
+                                      {record.homeworkAssigned && (
+                                        <div>
+                                          <p className="text-sm font-medium text-green-600">Homework Assigned:</p>
+                                          <p className="text-sm text-muted-foreground">{record.homeworkAssigned}</p>
+                                        </div>
+                                      )}
+                                      {record.remarks && (
+                                        <div>
+                                          <p className="text-sm font-medium text-orange-600">Remarks:</p>
+                                          <p className="text-sm text-muted-foreground">{record.remarks}</p>
+                                        </div>
+                                      )}
+                                      <p className="text-xs text-muted-foreground">
+                                        Recorded: {new Date(record.createdAt).toLocaleString()}
+                                      </p>
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              ))}
+                            {(!classWorkDoneRecords?.some(r => r.classroomId === assignment.classroomId)) && (
+                              <div className="text-center py-8">
+                                <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                                <p className="text-muted-foreground">No work done records for this class yet</p>
+                              </div>
+                            )}
+                          </div>
+                        </TabsContent>
+                      ))}
+                    </Tabs>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </TabsContent>
         </Tabs>
       </div>

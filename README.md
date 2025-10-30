@@ -1,4 +1,4 @@
-# 🎓 Smart School Management System
+# 🎓 Amrita School Management System
 
 A comprehensive, modern school management system with smart classroom dashboards, real-time attendance tracking, fee management, homework submission, and more.
 

@@ -17,7 +17,7 @@
 │                                                         │
 │              [Logo Icon]                                │
 │                                                         │
-│        Smart School Management System                   │
+│        Amrita School Management System                   │
 │     Modern, efficient, and intelligent school...        │
 │                                                         │
 │          [Sign In]  [Create Account]                    │
@@ -73,7 +73,7 @@
 │              - shadow-sm for depth                      │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
-│  © 2025 Smart School Management System. Built with...  │ ← Footer
+│  © 2025 Amrita School Management System. Built with...  │ ← Footer
 └─────────────────────────────────────────────────────────┘
 ```
 

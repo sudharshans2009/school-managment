@@ -13,12 +13,38 @@ import {
   Loader2,
   FileText,
   UserPlus,
-  ClipboardCheck
+  ClipboardCheck,
+  DollarSign,
+  BookMarked
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
+
+interface DashboardStats {
+  totalStudents: number;
+  totalTeachers: number;
+  activeClassrooms: number;
+  attendanceRate: number;
+}
+
+interface RecentActivity {
+  id: string;
+  type: string;
+  action: string;
+  detail: string;
+  time: string;
+}
+
+interface SystemMetrics {
+  attendanceRate: number;
+  feeCollectionRate: number;
+  homeworkCompletionRate: number;
+  teacherAssignmentRate: number;
+}
 
 export default function AdminDashboard() {
   const { data: session, isPending } = useSession();
@@ -30,6 +56,39 @@ export default function AdminDashboard() {
     }
   }, [session, isPending, router]);
 
+  // Fetch dashboard stats
+  const { data: stats, isLoading: statsLoading } = useQuery<DashboardStats>({
+    queryKey: ["admin-stats"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/stats");
+      if (!response.ok) throw new Error("Failed to fetch stats");
+      return response.json();
+    },
+    enabled: !!session,
+  });
+
+  // Fetch recent activity
+  const { data: recentActivity, isLoading: activityLoading } = useQuery<RecentActivity[]>({
+    queryKey: ["admin-activity"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/recent-activity");
+      if (!response.ok) throw new Error("Failed to fetch activity");
+      return response.json();
+    },
+    enabled: !!session,
+  });
+
+  // Fetch system metrics
+  const { data: metrics, isLoading: metricsLoading } = useQuery<SystemMetrics>({
+    queryKey: ["admin-metrics"],
+    queryFn: async () => {
+      const response = await fetch("/api/admin/metrics");
+      if (!response.ok) throw new Error("Failed to fetch metrics");
+      return response.json();
+    },
+    enabled: !!session,
+  });
+
   if (isPending) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -40,11 +99,35 @@ export default function AdminDashboard() {
 
   if (!session) return null;
 
-  const stats = [
-    { title: "Total Students", value: "1,234", icon: Users, color: "text-blue-600", bgColor: "bg-blue-100" },
-    { title: "Total Teachers", value: "87", icon: GraduationCap, color: "text-green-600", bgColor: "bg-green-100" },
-    { title: "Active Classrooms", value: "42", icon: School, color: "text-purple-600", bgColor: "bg-purple-100" },
-    { title: "Attendance Rate", value: "94.5%", icon: UserCheck, color: "text-orange-600", bgColor: "bg-orange-100" },
+  const statsCards = [
+    { 
+      title: "Total Students", 
+      value: statsLoading ? "..." : stats?.totalStudents.toLocaleString() || "0", 
+      icon: Users, 
+      color: "text-blue-600", 
+      bgColor: "bg-blue-100" 
+    },
+    { 
+      title: "Total Teachers", 
+      value: statsLoading ? "..." : stats?.totalTeachers.toLocaleString() || "0", 
+      icon: GraduationCap, 
+      color: "text-green-600", 
+      bgColor: "bg-green-100" 
+    },
+    { 
+      title: "Active Classrooms", 
+      value: statsLoading ? "..." : stats?.activeClassrooms.toLocaleString() || "0", 
+      icon: School, 
+      color: "text-purple-600", 
+      bgColor: "bg-purple-100" 
+    },
+    { 
+      title: "Attendance Rate", 
+      value: statsLoading ? "..." : `${stats?.attendanceRate.toFixed(1) || 0}%` || "0%", 
+      icon: UserCheck, 
+      color: "text-orange-600", 
+      bgColor: "bg-orange-100" 
+    },
   ];
 
   const quickActions = [
@@ -60,23 +143,69 @@ export default function AdminDashboard() {
     { title: "View Work Done", href: "/admin/work-done", icon: ClipboardCheck, description: "View all work done records" },
   ];
 
+  const systemMetrics = [
+    { 
+      label: "Attendance Rate", 
+      value: metrics?.attendanceRate || 0, 
+      color: "bg-green-500",
+      icon: UserCheck
+    },
+    { 
+      label: "Fee Collection", 
+      value: metrics?.feeCollectionRate || 0, 
+      color: "bg-blue-500",
+      icon: DollarSign
+    },
+    { 
+      label: "Homework Completion", 
+      value: metrics?.homeworkCompletionRate || 0, 
+      color: "bg-purple-500",
+      icon: BookMarked
+    },
+    { 
+      label: "Teacher Assignments", 
+      value: metrics?.teacherAssignmentRate || 0, 
+      color: "bg-orange-500",
+      icon: GraduationCap
+    },
+  ];
+
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case "student": return Users;
+      case "homework": return BookOpen;
+      case "fee": return DollarSign;
+      case "teacher": return GraduationCap;
+      case "leave": return FileText;
+      case "substitute": return UserPlus;
+      default: return ClipboardList;
+    }
+  };
+
   return (
     <DashboardLayout title="Admin Portal" description="Smart School Management">
       <div className="space-y-6">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat) => (
+          {statsCards.map((stat) => (
             <Card key={stat.title} className="rounded-2xl shadow-sm">
               <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                    <p className="text-3xl font-bold mt-2">{stat.value}</p>
+                {statsLoading ? (
+                  <div className="space-y-3">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-8 w-16" />
                   </div>
-                  <div className={`${stat.bgColor} p-3 rounded-xl`}>
-                    <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+                      <p className="text-3xl font-bold mt-2">{stat.value}</p>
+                    </div>
+                    <div className={`${stat.bgColor} p-3 rounded-xl`}>
+                      <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                    </div>
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
           ))}
@@ -119,25 +248,36 @@ export default function AdminDashboard() {
               <CardDescription>Latest updates across the system</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {[
-                  { action: "New student enrolled", detail: "John Doe - Grade 10A", time: "5 minutes ago" },
-                  { action: "Homework assigned", detail: "Mathematics - Class 9B", time: "1 hour ago" },
-                  { action: "Fee payment received", detail: "Jane Smith - ₹15,000", time: "2 hours ago" },
-                  { action: "Teacher assigned", detail: "Dr. Kumar - Science Class", time: "3 hours ago" },
-                ].map((item, index) => (
-                  <div key={index} className="flex items-start space-x-3 pb-3 border-b last:border-0">
-                    <div className="bg-primary/10 p-2 rounded-full">
-                      <ClipboardList className="h-4 w-4 text-primary" />
+              {activityLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="space-y-2">
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-3 w-1/2" />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">{item.action}</p>
-                      <p className="text-sm text-muted-foreground">{item.detail}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : recentActivity && recentActivity.length > 0 ? (
+                <div className="space-y-4">
+                  {recentActivity.map((item) => {
+                    const Icon = getActivityIcon(item.type);
+                    return (
+                      <div key={item.id} className="flex items-start space-x-3 pb-3 border-b last:border-0">
+                        <div className="bg-primary/10 p-2 rounded-full">
+                          <Icon className="h-4 w-4 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium">{item.action}</p>
+                          <p className="text-sm text-muted-foreground">{item.detail}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-8">No recent activity</p>
+              )}
             </CardContent>
           </Card>
 
@@ -147,24 +287,36 @@ export default function AdminDashboard() {
               <CardDescription>Key metrics and performance</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {[
-                  { label: "Attendance Rate", value: 94.5, color: "bg-green-500" },
-                  { label: "Fee Collection", value: 87.3, color: "bg-blue-500" },
-                  { label: "Homework Completion", value: 82.1, color: "bg-purple-500" },
-                  { label: "Teacher Assignments", value: 100, color: "bg-orange-500" },
-                ].map((metric) => (
-                  <div key={metric.label}>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-sm font-medium">{metric.label}</span>
-                      <span className="text-sm font-bold">{metric.value}%</span>
+              {metricsLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="space-y-2">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-2 w-full" />
                     </div>
-                    <div className="w-full bg-secondary rounded-full h-2">
-                      <div className={`${metric.color} h-2 rounded-full transition-all`} style={{ width: `${metric.value}%` }}></div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {systemMetrics.map((metric) => (
+                    <div key={metric.label}>
+                      <div className="flex justify-between items-center mb-2">
+                        <div className="flex items-center space-x-2">
+                          <metric.icon className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm font-medium">{metric.label}</span>
+                        </div>
+                        <span className="text-sm font-bold">{metric.value.toFixed(1)}%</span>
+                      </div>
+                      <div className="w-full bg-secondary rounded-full h-2">
+                        <div 
+                          className={`${metric.color} h-2 rounded-full transition-all duration-500`} 
+                          style={{ width: `${metric.value}%` }}
+                        ></div>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

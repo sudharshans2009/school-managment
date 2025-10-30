@@ -75,7 +75,7 @@ export default function SignUpPage() {
         <CardHeader className="space-y-1 pt-8">
           <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
           <CardDescription className="text-center">
-            Join Smart School Management System
+            Join Amrita School Management System
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>

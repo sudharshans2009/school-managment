@@ -42,7 +42,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { format } from "date-fns";
 import { useSession } from "@/lib/auth-client";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
-import Link from "next/link";
+import { TeacherQuickActions } from "@/components/teacher-quick-actions";
 
 interface Classroom {
   id: string;
@@ -253,22 +253,17 @@ export default function TeacherHomeworkPage() {
   return (
     <DashboardLayout title="Teacher Portal" description="Homework Submissions">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/teacher">
-              <Button variant="ghost" size="sm" className="rounded-xl">
-                ← Back
-              </Button>
-            </Link>
-            <BookOpen className="w-6 h-6 text-primary" />
-            <div>
-              <h1 className="text-2xl font-bold">
-                Homework Submissions
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Mark physical submissions and grade homework
-              </p>
-            </div>
+        <TeacherQuickActions currentPage="homework" />
+
+        <div className="flex items-center gap-3">
+          <BookOpen className="w-6 h-6 text-primary" />
+          <div>
+            <h1 className="text-2xl font-bold">
+              Homework Submissions
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Mark physical submissions and grade homework
+            </p>
           </div>
         </div>
 

@@ -1,4 +1,4 @@
-# 🎓 Smart School Management System
+# 🎓 Amrita School Management System
 ## Setup Summary
 
 ---

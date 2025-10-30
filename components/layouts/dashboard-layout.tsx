@@ -104,7 +104,7 @@ export function DashboardLayout({
       <footer className="border-t border-border mt-auto">
         <div className="container mx-auto px-6 py-6">
           <p className="text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Smart School Management System. Built with Next.js & ShadCN UI.
+            © {new Date().getFullYear()} Amrita School Management System. Built with Next.js & ShadCN UI.
           </p>
         </div>
       </footer>
