@@ -201,7 +201,7 @@ export default function SubjectsPage() {
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center space-x-3">
             <Link href="/admin">
-              <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" className="rounded-xl">
                 ← Back
               </Button>
             </Link>
@@ -337,6 +337,7 @@ export default function SubjectsPage() {
                     <Button
                       type="button"
                       variant="outline"
+                      className="rounded-xl"
                       onClick={() => {
                         setOpenCreate(false);
                         setEditingSubject(null);
@@ -350,6 +351,7 @@ export default function SubjectsPage() {
                     </Button>
                     <Button
                       type="submit"
+                      className="rounded-xl"
                       disabled={createMutation.isPending || updateMutation.isPending}
                     >
                       {createMutation.isPending || updateMutation.isPending

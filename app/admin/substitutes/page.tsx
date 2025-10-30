@@ -9,11 +9,12 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { UserPlus, Loader2, AlertCircle, CheckCircle, Trash2 } from "lucide-react";
+import { UserPlus, Loader2, AlertCircle, CheckCircle, Trash2, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import Link from "next/link";
 
 interface UnassignedPeriod {
   id: string;
@@ -187,6 +188,15 @@ export default function SubstitutesManagementPage() {
   return (
     <DashboardLayout title="Substitute Management" description="Assign substitute teachers to periods">
       <div className="space-y-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Link href="/admin">
+            <Button variant="ghost" size="sm" className="rounded-xl">
+              ← Back
+            </Button>
+          </Link>
+          <h1 className="text-2xl font-bold">Substitute Management</h1>
+        </div>
+        
         {/* Date Selector */}
         <Card className="rounded-2xl shadow-sm">
           <CardHeader>

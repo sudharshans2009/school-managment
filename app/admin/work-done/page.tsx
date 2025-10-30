@@ -8,10 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Download, Filter } from "lucide-react";
+import { Loader2, Download, Filter, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import Link from "next/link";
 
 interface WorkDone {
   id: string;
@@ -128,6 +129,15 @@ export default function WorkDoneManagementPage() {
   return (
     <DashboardLayout title="Work Done Records" description="View all work done records across the school">
       <div className="space-y-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Link href="/admin">
+            <Button variant="ghost" size="sm" className="rounded-xl">
+              ← Back
+            </Button>
+          </Link>
+          <h1 className="text-2xl font-bold">Work Done Records</h1>
+        </div>
+        
         {/* Filters */}
         <Card className="rounded-2xl shadow-sm">
           <CardHeader>
