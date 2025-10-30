@@ -9,28 +9,13 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { UserPlus, Mail, Phone, Calendar, Search, Edit2, Trash2, Upload } from "lucide-react";
+import { UserPlus, Mail, Phone, Calendar, Search, Edit2, Trash2, Upload, LayoutGrid, Table as TableIcon } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
-
-interface Student {
-  id: string;
-  rollNumber: string;
-  admissionNumber: string;
-  user: {
-    name: string;
-    email: string;
-    phone: string | null;
-  };
-  classroom: {
-    name: string;
-    grade: string;
-    section: string;
-  } | null;
-  dateOfBirth: string;
-  bloodGroup: string | null;
-}
+import { DataTable } from "@/components/ui/data-table";
+import { createStudentColumns, Student } from "./components/columns";
+import Link from "next/link";
 
 interface Classroom {
   id: string;
@@ -47,6 +32,7 @@ export default function StudentsPage() {
   const [deletingStudent, setDeletingStudent] = useState<Student | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [uploadResult, setUploadResult] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const queryClient = useQueryClient();
 
   const { data: students, isLoading } = useQuery<Student[]>({
@@ -222,6 +208,16 @@ export default function StudentsPage() {
     student.admissionNumber.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const columns = createStudentColumns({
+    onEdit: (student) => {
+      setEditingStudent(student);
+      setOpen(true);
+    },
+    onDelete: (student) => {
+      setDeletingStudent(student);
+    },
+  });
+
   if (isLoading) {
     return (
       <DashboardLayout title="Students Management" description="Admin Portal">
@@ -234,11 +230,36 @@ export default function StudentsPage() {
     <DashboardLayout title="Students Management" description="Admin Portal">
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Students Management</h1>
-            <p className="text-muted-foreground mt-1">Manage students and their enrollment</p>
+          <div className="flex items-center gap-3">
+            <Link href="/admin">
+              <Button variant="ghost" size="sm" className="rounded-xl">
+                ← Back
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold">Students Management</h1>
+              <p className="text-muted-foreground mt-1">Manage students and their enrollment</p>
+            </div>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setViewMode(viewMode === "grid" ? "table" : "grid")}
+              className="rounded-xl"
+            >
+              {viewMode === "grid" ? (
+                <>
+                  <TableIcon className="h-4 w-4 mr-2" />
+                  Table View
+                </>
+              ) : (
+                <>
+                  <LayoutGrid className="h-4 w-4 mr-2" />
+                  Grid View
+                </>
+              )}
+            </Button>
             <Dialog open={csvDialogOpen} onOpenChange={setCsvDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="rounded-xl">
@@ -369,13 +390,13 @@ export default function StudentsPage() {
                 </Alert>
               )}
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => {
+                <Button type="button" variant="outline" className="rounded-xl" onClick={() => {
                   setOpen(false);
                   setEditingStudent(null);
                 }}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
+                <Button type="submit" className="rounded-xl" disabled={createMutation.isPending || updateMutation.isPending}>
                   {editingStudent 
                     ? (updateMutation.isPending ? "Updating..." : "Update Student")
                     : (createMutation.isPending ? "Creating..." : "Create Student")
@@ -413,20 +434,29 @@ export default function StudentsPage() {
       </Alert>
     )}
 
-    <div className="mb-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search students..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
+    {viewMode === "table" ? (
+      <DataTable
+        columns={columns}
+        data={filteredStudents || []}
+        searchKey="name"
+        searchPlaceholder="Search students by name, roll number, or admission number..."
+      />
+    ) : (
+      <>
+        <div className="mb-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search students..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 rounded-xl"
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredStudents?.map((student) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredStudents?.map((student) => (
           <Card key={student.id}>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
@@ -472,7 +502,7 @@ export default function StudentsPage() {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="flex-1"
+                    className="flex-1 rounded-xl"
                     onClick={() => {
                       setEditingStudent(student);
                       setOpen(true);
@@ -484,6 +514,7 @@ export default function StudentsPage() {
                   <Button 
                     variant="destructive" 
                     size="sm"
+                    className="rounded-xl"
                     onClick={() => setDeletingStudent(student)}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -494,6 +525,16 @@ export default function StudentsPage() {
           </Card>
         ))}
       </div>
+
+      {filteredStudents?.length === 0 && (
+        <Card className="rounded-2xl shadow-sm">
+          <CardContent className="text-center py-8">
+            <p className="text-gray-500">No students found</p>
+          </CardContent>
+        </Card>
+      )}
+      </>
+    )}
 
       <AlertDialog open={!!deletingStudent} onOpenChange={() => setDeletingStudent(null)}>
         <AlertDialogContent>
@@ -519,14 +560,6 @@ export default function StudentsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      {filteredStudents?.length === 0 && (
-        <Card className="rounded-2xl shadow-sm">
-          <CardContent className="text-center py-8">
-            <p className="text-gray-500">No students found</p>
-          </CardContent>
-        </Card>
-      )}
       </div>
     </DashboardLayout>
   );

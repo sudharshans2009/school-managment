@@ -8,23 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { UserPlus, Mail, Phone, MapPin, Search, Edit2, Trash2, Upload } from "lucide-react";
+import { UserPlus, Mail, Phone, MapPin, Search, Edit2, Trash2, Upload, LayoutGrid, Table as TableIcon } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
-
-interface Teacher {
-  id: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  address: string | null;
-  isActive: boolean | null;
-  teacherAssignments: Array<{
-    classroom: { name: string; grade: string; section: string };
-    subject: { name: string };
-  }>;
-}
+import { DataTable } from "@/components/ui/data-table";
+import { createTeacherColumns, Teacher } from "./components/columns";
+import Link from "next/link";
 
 export default function TeachersPage() {
   const [open, setOpen] = useState(false);
@@ -34,6 +24,7 @@ export default function TeachersPage() {
   const [deletingTeacher, setDeletingTeacher] = useState<Teacher | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [uploadResult, setUploadResult] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const queryClient = useQueryClient();
 
   const { data: teachers, isLoading } = useQuery<Teacher[]>({
@@ -191,15 +182,50 @@ export default function TeachersPage() {
     );
   }
 
+  const columns = createTeacherColumns({
+    onEdit: (teacher) => {
+      setEditingTeacher(teacher);
+      setOpen(true);
+    },
+    onDelete: (teacher) => {
+      setDeletingTeacher(teacher);
+    },
+  });
+
   return (
     <DashboardLayout title="Teachers Management" description="Admin Portal">
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Teachers Management</h1>
-            <p className="text-gray-600 mt-1">Manage teachers and their assignments</p>
+          <div className="flex items-center gap-3">
+            <Link href="/admin">
+              <Button variant="ghost" size="sm" className="rounded-xl">
+                ← Back
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold">Teachers Management</h1>
+              <p className="text-gray-600 mt-1">Manage teachers and their assignments</p>
+            </div>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setViewMode(viewMode === "grid" ? "table" : "grid")}
+              className="rounded-xl"
+            >
+              {viewMode === "grid" ? (
+                <>
+                  <TableIcon className="h-4 w-4 mr-2" />
+                  Table View
+                </>
+              ) : (
+                <>
+                  <LayoutGrid className="h-4 w-4 mr-2" />
+                  Grid View
+                </>
+              )}
+            </Button>
             <Dialog open={csvDialogOpen} onOpenChange={setCsvDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="rounded-xl">
@@ -277,13 +303,13 @@ export default function TeachersPage() {
                 </Alert>
               )}
               <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" onClick={() => {
+                <Button type="button" variant="outline" className="rounded-xl" onClick={() => {
                   setOpen(false);
                   setEditingTeacher(null);
                 }}>
                   Cancel
                 </Button>
-                <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
+                <Button type="submit" className="rounded-xl" disabled={createMutation.isPending || updateMutation.isPending}>
                   {editingTeacher 
                     ? (updateMutation.isPending ? "Updating..." : "Update Teacher")
                     : (createMutation.isPending ? "Creating..." : "Create Teacher")
@@ -321,20 +347,29 @@ export default function TeachersPage() {
       </Alert>
     )}
 
-    <div className="mb-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search teachers..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
-          />
+    {viewMode === "table" ? (
+      <DataTable
+        columns={columns}
+        data={filteredTeachers || []}
+        searchKey="name"
+        searchPlaceholder="Search teachers by name..."
+      />
+    ) : (
+      <>
+        <div className="mb-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search teachers..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 rounded-xl"
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredTeachers?.map((teacher) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredTeachers?.map((teacher) => (
           <Card key={teacher.id}>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
@@ -376,7 +411,7 @@ export default function TeachersPage() {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    className="flex-1"
+                    className="flex-1 rounded-xl"
                     onClick={() => {
                       setEditingTeacher(teacher);
                       setOpen(true);
@@ -388,6 +423,7 @@ export default function TeachersPage() {
                   <Button 
                     variant="destructive" 
                     size="sm"
+                    className="rounded-xl"
                     onClick={() => setDeletingTeacher(teacher)}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -398,6 +434,16 @@ export default function TeachersPage() {
           </Card>
         ))}
       </div>
+
+      {filteredTeachers?.length === 0 && (
+        <Card className="rounded-2xl shadow-sm">
+          <CardContent className="text-center py-8">
+            <p className="text-gray-500">No teachers found</p>
+          </CardContent>
+        </Card>
+      )}
+      </>
+    )}
 
       <AlertDialog open={!!deletingTeacher} onOpenChange={() => setDeletingTeacher(null)}>
         <AlertDialogContent>
@@ -423,14 +469,6 @@ export default function TeachersPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      {filteredTeachers?.length === 0 && (
-        <Card className="rounded-2xl shadow-sm">
-          <CardContent className="text-center py-8">
-            <p className="text-gray-500">No teachers found</p>
-          </CardContent>
-        </Card>
-      )}
       </div>
     </DashboardLayout>
   );

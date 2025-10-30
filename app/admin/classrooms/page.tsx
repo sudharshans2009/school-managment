@@ -6,30 +6,19 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { School, Plus, Search, Edit, Trash2, Users } from "lucide-react";
+import { School, Plus, Search, Edit, Trash2, Users, LayoutGrid, Table as TableIcon } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
-
-interface Classroom {
-  id: string;
-  name: string;
-  grade: string;
-  section: string;
-  code: string;
-  currentStrength: number;
-  teacherAssignments: Array<{
-    isPrimary: boolean;
-    teacher: { name: string };
-  }>;
-  students: Array<{ id: string }>;
-}
+import { DataTable } from "@/components/ui/data-table";
+import { createClassroomColumns, Classroom } from "./components/columns";
 
 export default function ClassroomsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
+  const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const queryClient = useQueryClient();
 
   const { data: classrooms, isLoading } = useQuery<Classroom[]>({
@@ -96,6 +85,14 @@ export default function ClassroomsPage() {
     return primary?.teacher.name || "Not assigned";
   };
 
+  const columns = createClassroomColumns({
+    onDelete: (classroom) => {
+      if (confirm("Are you sure you want to delete this classroom?")) {
+        deleteMutation.mutate(classroom.id);
+      }
+    },
+  });
+
   if (isLoading) {
     return (
       <DashboardLayout title="Classrooms Management" description="Admin Portal">
@@ -110,11 +107,30 @@ export default function ClassroomsPage() {
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center space-x-3">
             <Link href="/admin">
-              <Button variant="ghost" size="sm">← Back</Button>
+              <Button variant="ghost" size="sm" className="rounded-xl">← Back</Button>
             </Link>
             <School className="h-6 w-6 text-primary" />
             <h1 className="text-2xl font-bold">Classroom Management</h1>
           </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setViewMode(viewMode === "grid" ? "table" : "grid")}
+              className="rounded-xl"
+            >
+              {viewMode === "grid" ? (
+                <>
+                  <TableIcon className="h-4 w-4 mr-2" />
+                  Table View
+                </>
+              ) : (
+                <>
+                  <LayoutGrid className="h-4 w-4 mr-2" />
+                  Grid View
+                </>
+              )}
+            </Button>
           <Dialog open={openCreate} onOpenChange={setOpenCreate}>
               <DialogTrigger asChild>
                 <Button className="rounded-xl">
@@ -150,34 +166,45 @@ export default function ClassroomsPage() {
                     <Button
                       type="button"
                       variant="outline"
+                      className="rounded-xl"
                       onClick={() => setOpenCreate(false)}
                     >
                       Cancel
                     </Button>
-                    <Button type="submit" disabled={createMutation.isPending}>
+                    <Button type="submit" className="rounded-xl" disabled={createMutation.isPending}>
                       {createMutation.isPending ? "Creating..." : "Create"}
                     </Button>
                   </div>
                 </form>
               </DialogContent>
             </Dialog>
+          </div>
         </div>
 
-        <Card className="mb-6 rounded-2xl shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Search className="h-5 w-5 text-gray-400" />
-              <Input
-                placeholder="Search classrooms by name, grade, or section..."
-                className="flex-1"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-          </CardContent>
-        </Card>
+        {viewMode === "table" ? (
+          <DataTable
+            columns={columns}
+            data={filteredClassrooms || []}
+            searchKey="name"
+            searchPlaceholder="Search classrooms by name, grade, or section..."
+          />
+        ) : (
+          <>
+            <Card className="mb-6 rounded-2xl shadow-sm">
+              <CardContent className="p-4">
+                <div className="flex items-center space-x-2">
+                  <Search className="h-5 w-5 text-gray-400" />
+                  <Input
+                    placeholder="Search classrooms by name, grade, or section..."
+                    className="flex-1 rounded-xl"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
 
-        {filteredClassrooms && filteredClassrooms.length === 0 ? (
+            {filteredClassrooms && filteredClassrooms.length === 0 ? (
           <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-8 text-center text-gray-500">
               No classrooms found. Create your first classroom to get started.
@@ -242,6 +269,8 @@ export default function ClassroomsPage() {
             ))}
           </div>
         )}
+        </>
+      )}
       </div>
     </DashboardLayout>
   );
