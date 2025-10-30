@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import Link from "next/link";
 
 interface UnassignedPeriod {
   id: string;
@@ -187,6 +188,15 @@ export default function SubstitutesManagementPage() {
   return (
     <DashboardLayout title="Substitute Management" description="Assign substitute teachers to periods">
       <div className="space-y-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Link href="/admin">
+            <Button variant="ghost" size="sm" className="rounded-xl">
+              ← Back
+            </Button>
+          </Link>
+          <h1 className="text-2xl font-bold">Substitute Management</h1>
+        </div>
+        
         {/* Date Selector */}
         <Card className="rounded-2xl shadow-sm">
           <CardHeader>
