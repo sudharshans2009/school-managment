@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Loader2,
   TrendingUp,
@@ -24,6 +25,7 @@ import {
   Award,
   UserCheck,
   Calendar,
+  ArrowLeft,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -98,6 +100,15 @@ export default function AdminAnalyticsPage() {
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.back()}
+              className="mb-4"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
             <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
             <p className="text-muted-foreground mt-1">
               Comprehensive insights into school performance

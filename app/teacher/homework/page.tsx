@@ -36,11 +36,13 @@ import {
   Clock,
   UserCheck,
   Edit,
-  Trash2
+  Trash2,
+  ArrowLeft
 } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { format } from "date-fns";
 import { useSession } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { TeacherQuickActions } from "@/components/teacher-quick-actions";
 
@@ -86,6 +88,7 @@ interface Submission {
 
 export default function TeacherHomeworkPage() {
   const { data: session } = useSession();
+  const router = useRouter();
   const [selectedClassroom, setSelectedClassroom] = useState<string>("");
   const [selectedHomework, setSelectedHomework] = useState<string>("");
   const [openMarkDialog, setOpenMarkDialog] = useState(false);
@@ -253,6 +256,15 @@ export default function TeacherHomeworkPage() {
   return (
     <DashboardLayout title="Teacher Portal" description="Homework Submissions">
       <div className="space-y-6">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.back()}
+          className="mb-4"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
         <TeacherQuickActions currentPage="homework" />
 
         <div className="flex items-center gap-3">

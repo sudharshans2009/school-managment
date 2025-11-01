@@ -34,7 +34,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Upload, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { Loader2, Upload, CheckCircle, XCircle, AlertCircle, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -247,6 +247,15 @@ export default function TeacherExamsPage() {
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.back()}
+          className="mb-4"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
         <TeacherQuickActions
           currentPage="exams"
           unreadMessages={0}

@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Loader2,
   TrendingUp,
@@ -23,6 +24,7 @@ import {
   ClipboardCheck,
   Award,
   UserCheck,
+  ArrowLeft,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -89,6 +91,15 @@ export default function TeacherAnalyticsPage() {
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.back()}
+          className="mb-4"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
         <TeacherQuickActions
           currentPage="analytics"
           unreadMessages={0}

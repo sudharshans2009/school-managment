@@ -27,7 +27,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Plus, CheckCircle, XCircle, Trash2 } from "lucide-react";
+import { Loader2, Plus, CheckCircle, XCircle, Trash2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -259,6 +259,15 @@ export default function AdminExamsPage() {
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.back()}
+          className="mb-4"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Exam Management</h1>

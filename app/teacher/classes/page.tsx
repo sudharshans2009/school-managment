@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
-  CheckCircle, XCircle, Loader2
+  CheckCircle, XCircle, Loader2, ArrowLeft
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -153,6 +153,15 @@ export default function TeacherClassesPage() {
   return (
     <DashboardLayout title="My Classes & Attendance" description="Teacher Portal">
       <div className="space-y-6">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.back()}
+          className="mb-4"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
         <TeacherQuickActions currentPage="classes" />
 
         <Tabs defaultValue="classes" className="space-y-6">
