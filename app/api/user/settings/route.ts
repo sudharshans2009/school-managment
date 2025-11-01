@@ -12,10 +12,7 @@ export async function PATCH(request: NextRequest) {
     });
 
     if (!session) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -27,10 +24,7 @@ export async function PATCH(request: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const updates: Record<string, unknown> = {
@@ -47,7 +41,7 @@ export async function PATCH(request: NextRequest) {
       if (existingUser) {
         return NextResponse.json(
           { error: "Email already in use" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -60,7 +54,7 @@ export async function PATCH(request: NextRequest) {
       if (!currentPassword) {
         return NextResponse.json(
           { error: "Current password is required to change password" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -68,19 +62,19 @@ export async function PATCH(request: NextRequest) {
       if (!user.passwordHash) {
         return NextResponse.json(
           { error: "User does not have a password set" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
       const isValidPassword = await bcrypt.compare(
         currentPassword,
-        user.passwordHash
+        user.passwordHash,
       );
 
       if (!isValidPassword) {
         return NextResponse.json(
           { error: "Current password is incorrect" },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -90,11 +84,9 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Update user
-    if (Object.keys(updates).length > 1) { // More than just updatedAt
-      await db
-        .update(users)
-        .set(updates)
-        .where(eq(users.id, session.user.id));
+    if (Object.keys(updates).length > 1) {
+      // More than just updatedAt
+      await db.update(users).set(updates).where(eq(users.id, session.user.id));
 
       return NextResponse.json({
         message: "Settings updated successfully",
@@ -110,7 +102,7 @@ export async function PATCH(request: NextRequest) {
     console.error("Error updating settings:", error);
     return NextResponse.json(
       { error: "Failed to update settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -2,11 +2,23 @@
 
 import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, Download, Filter } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -66,9 +78,12 @@ export default function WorkDoneManagementPage() {
     const params = new URLSearchParams();
     if (filters.startDate) params.append("startDate", filters.startDate);
     if (filters.endDate) params.append("endDate", filters.endDate);
-    if (filters.classroomId && filters.classroomId !== "all") params.append("classroomId", filters.classroomId);
-    if (filters.subjectId && filters.subjectId !== "all") params.append("subjectId", filters.subjectId);
-    if (filters.isSubstitute && filters.isSubstitute !== "all") params.append("isSubstitute", filters.isSubstitute);
+    if (filters.classroomId && filters.classroomId !== "all")
+      params.append("classroomId", filters.classroomId);
+    if (filters.subjectId && filters.subjectId !== "all")
+      params.append("subjectId", filters.subjectId);
+    if (filters.isSubstitute && filters.isSubstitute !== "all")
+      params.append("isSubstitute", filters.isSubstitute);
     return params.toString();
   };
 
@@ -127,7 +142,10 @@ export default function WorkDoneManagementPage() {
   };
 
   return (
-    <DashboardLayout title="Work Done Records" description="View all work done records across the school">
+    <DashboardLayout
+      title="Work Done Records"
+      description="View all work done records across the school"
+    >
       <div className="space-y-6">
         <div className="flex items-center gap-3 mb-6">
           <Link href="/admin">
@@ -137,7 +155,7 @@ export default function WorkDoneManagementPage() {
           </Link>
           <h1 className="text-2xl font-bold">Work Done Records</h1>
         </div>
-        
+
         {/* Filters */}
         <Card className="rounded-2xl shadow-sm">
           <CardHeader>
@@ -145,7 +163,9 @@ export default function WorkDoneManagementPage() {
               <Filter className="h-5 w-5" />
               Filters
             </CardTitle>
-            <CardDescription>Filter work done records by date, class, subject, etc.</CardDescription>
+            <CardDescription>
+              Filter work done records by date, class, subject, etc.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -155,7 +175,12 @@ export default function WorkDoneManagementPage() {
                   type="date"
                   className="rounded-xl"
                   value={filters.startDate}
-                  onChange={(e) => setFilters((prev) => ({ ...prev, startDate: e.target.value }))}
+                  onChange={(e) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      startDate: e.target.value,
+                    }))
+                  }
                 />
               </div>
               <div>
@@ -164,12 +189,19 @@ export default function WorkDoneManagementPage() {
                   type="date"
                   className="rounded-xl"
                   value={filters.endDate}
-                  onChange={(e) => setFilters((prev) => ({ ...prev, endDate: e.target.value }))}
+                  onChange={(e) =>
+                    setFilters((prev) => ({ ...prev, endDate: e.target.value }))
+                  }
                 />
               </div>
               <div>
                 <Label>Classroom</Label>
-                <Select value={filters.classroomId} onValueChange={(value) => setFilters((prev) => ({ ...prev, classroomId: value }))}>
+                <Select
+                  value={filters.classroomId}
+                  onValueChange={(value) =>
+                    setFilters((prev) => ({ ...prev, classroomId: value }))
+                  }
+                >
                   <SelectTrigger className="rounded-xl">
                     <SelectValue placeholder="All classrooms" />
                   </SelectTrigger>
@@ -185,7 +217,12 @@ export default function WorkDoneManagementPage() {
               </div>
               <div>
                 <Label>Subject</Label>
-                <Select value={filters.subjectId} onValueChange={(value) => setFilters((prev) => ({ ...prev, subjectId: value }))}>
+                <Select
+                  value={filters.subjectId}
+                  onValueChange={(value) =>
+                    setFilters((prev) => ({ ...prev, subjectId: value }))
+                  }
+                >
                   <SelectTrigger className="rounded-xl">
                     <SelectValue placeholder="All subjects" />
                   </SelectTrigger>
@@ -201,7 +238,12 @@ export default function WorkDoneManagementPage() {
               </div>
               <div>
                 <Label>Substitute Only</Label>
-                <Select value={filters.isSubstitute} onValueChange={(value) => setFilters((prev) => ({ ...prev, isSubstitute: value }))}>
+                <Select
+                  value={filters.isSubstitute}
+                  onValueChange={(value) =>
+                    setFilters((prev) => ({ ...prev, isSubstitute: value }))
+                  }
+                >
                   <SelectTrigger className="rounded-xl">
                     <SelectValue placeholder="All records" />
                   </SelectTrigger>
@@ -213,7 +255,11 @@ export default function WorkDoneManagementPage() {
                 </Select>
               </div>
               <div className="flex items-end">
-                <Button variant="outline" className="rounded-xl w-full" onClick={clearFilters}>
+                <Button
+                  variant="outline"
+                  className="rounded-xl w-full"
+                  onClick={clearFilters}
+                >
                   Clear Filters
                 </Button>
               </div>
@@ -226,8 +272,12 @@ export default function WorkDoneManagementPage() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Records</p>
-                <p className="text-3xl font-bold mt-2">{workDoneRecords?.length || 0}</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Total Records
+                </p>
+                <p className="text-3xl font-bold mt-2">
+                  {workDoneRecords?.length || 0}
+                </p>
               </div>
               <Button variant="outline" className="rounded-xl" disabled>
                 <Download className="h-4 w-4 mr-2" />
@@ -255,29 +305,42 @@ export default function WorkDoneManagementPage() {
                         <h4 className="font-semibold">
                           {record.classroomName} - {record.subjectName}
                         </h4>
-                        <Badge variant="outline">Period {record.periodNumber}</Badge>
-                        {record.isSubstitute && <Badge variant="secondary">Substitute</Badge>}
+                        <Badge variant="outline">
+                          Period {record.periodNumber}
+                        </Badge>
+                        {record.isSubstitute && (
+                          <Badge variant="secondary">Substitute</Badge>
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground mb-2">
-                        <strong>Teacher:</strong> {record.teacherName} | <strong>Date:</strong> {record.date}
+                        <strong>Teacher:</strong> {record.teacherName} |{" "}
+                        <strong>Date:</strong> {record.date}
                       </p>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <div>
                       <p className="text-sm font-medium">Topics Covered:</p>
-                      <p className="text-sm text-muted-foreground">{record.topicsCovered}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {record.topicsCovered}
+                      </p>
                     </div>
                     {record.homeworkAssigned && (
                       <div>
-                        <p className="text-sm font-medium">Homework Assigned:</p>
-                        <p className="text-sm text-muted-foreground">{record.homeworkAssigned}</p>
+                        <p className="text-sm font-medium">
+                          Homework Assigned:
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {record.homeworkAssigned}
+                        </p>
                       </div>
                     )}
                     {record.remarks && (
                       <div>
                         <p className="text-sm font-medium">Remarks:</p>
-                        <p className="text-sm text-muted-foreground">{record.remarks}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {record.remarks}
+                        </p>
                       </div>
                     )}
                     <p className="text-xs text-muted-foreground">

@@ -1,14 +1,17 @@
 # Website Layout Refactoring Documentation
 
 ## Overview
+
 This document describes the layout refactoring implemented to create a consistent, minimalistic design system across all website sections using ShadCN UI and TailwindCSS.
 
 ## Layout Architecture
 
 ### 1. HomeLayout (`components/layouts/home-layout.tsx`)
+
 **Purpose:** Layout for public-facing home pages
 
 **Features:**
+
 - Sticky navbar at the top with backdrop blur effect
 - Logo and website name on the left
 - Theme toggle button
@@ -18,26 +21,26 @@ This document describes the layout refactoring implemented to create a consisten
 - No footer (content flows naturally)
 
 **Used in:**
+
 - `/` (Home page)
 - Future public pages like `/about`, `/tos`, `/socials` can use this layout
 
 **Example Usage:**
+
 ```tsx
 import { HomeLayout } from "@/components/layouts/home-layout";
 
 export default function Page() {
-  return (
-    <HomeLayout>
-      {/* Page content here */}
-    </HomeLayout>
-  );
+  return <HomeLayout>{/* Page content here */}</HomeLayout>;
 }
 ```
 
 ### 2. AuthLayout (`components/layouts/auth-layout.tsx`)
+
 **Purpose:** Layout for authentication pages
 
 **Features:**
+
 - Centered layout with flex column
 - "Back to Home" button in top-left corner (absolute positioning)
 - No navbar or footer
@@ -45,29 +48,31 @@ export default function Page() {
 - Background color from theme
 
 **Used in:**
+
 - `/auth/signin` (Sign In page)
 - `/auth/signup` (Sign Up page)
 - Can be used for `/auth/forgot-password`, `/auth/reset-password`, etc.
 
 **Example Usage:**
+
 ```tsx
 import { AuthLayout } from "@/components/layouts/auth-layout";
 
 export default function SignInPage() {
   return (
     <AuthLayout>
-      <Card>
-        {/* Auth form here */}
-      </Card>
+      <Card>{/* Auth form here */}</Card>
     </AuthLayout>
   );
 }
 ```
 
 ### 3. DashboardLayout (`components/layouts/dashboard-layout.tsx`)
+
 **Purpose:** Layout for authenticated dashboard pages
 
 **Features:**
+
 - Sticky navbar at the top with backdrop blur effect
 - Logo and dynamic title/description on the left
 - Theme toggle button
@@ -77,11 +82,13 @@ export default function SignInPage() {
 - Footer with copyright information
 
 **Props:**
+
 - `title?: string` - Title shown in navbar (default: "Dashboard")
 - `description?: string` - Optional subtitle shown below title
 - `children: ReactNode` - Page content
 
 **Used in:**
+
 - `/dashboard` (Main dashboard)
 - `/admin` (Admin dashboard)
 - `/teacher` (Teacher portal)
@@ -89,12 +96,16 @@ export default function SignInPage() {
 - All admin sub-pages (students, teachers, classrooms, subjects, timetable, classroom edit)
 
 **Example Usage:**
+
 ```tsx
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
 export default function AdminPage() {
   return (
-    <DashboardLayout title="Admin Portal" description="Amrita School Management">
+    <DashboardLayout
+      title="Admin Portal"
+      description="Amrita School Management"
+    >
       {/* Page content here */}
     </DashboardLayout>
   );
@@ -104,28 +115,33 @@ export default function AdminPage() {
 ## Design System Consistency
 
 ### Typography
+
 - All layouts use the Geist font family defined in root layout
 - Consistent font weights and sizes
 - Text color uses theme-aware foreground colors
 
 ### Spacing
+
 - Container padding: `px-6 py-8` for main content
 - Card spacing: `p-6` for content padding
 - Vertical spacing: `space-y-6` for stacked elements
 - Navbar padding: `px-6 py-4`
 
 ### Rounded Corners
+
 - Cards: `rounded-2xl`
 - Buttons: `rounded-xl`
 - Icons containers: `rounded-xl` or `rounded-full`
 - Input fields: `rounded-xl` (where applicable)
 
 ### Shadows
+
 - Cards: `shadow-sm` for subtle depth
 - Hover states: `hover:shadow-md` for interactive elements
 - Navbar: Uses backdrop blur instead of shadow for modern look
 
 ### Colors
+
 - Uses CSS variables defined by ShadCN theme
 - Supports light and dark mode seamlessly
 - Primary color for branding elements
@@ -133,7 +149,9 @@ export default function AdminPage() {
 - Border colors from theme
 
 ### Components Used
+
 All layouts exclusively use ShadCN UI components:
+
 - `Button` - For all clickable actions
 - `Card`, `CardContent`, `CardHeader`, etc. - For content containers
 - Icons from `lucide-react` - Consistent icon set
@@ -142,14 +160,18 @@ All layouts exclusively use ShadCN UI components:
 ## Migration Notes
 
 ### Deprecated Components
+
 - `SharedLayout` (`components/shared-layout.tsx`) - No longer used in any pages
   - Can be kept for backward compatibility or removed in future cleanup
 
 ### Breaking Changes
+
 None - All existing pages were updated to use new layouts without breaking functionality.
 
 ### Smartboard Pages
+
 As per requirements, all pages under `/smartboard/**` were left unchanged:
+
 - `/smartboard/page.tsx`
 - `/smartboard/login/page.tsx`
 - `/smartboard/display/page.tsx`
@@ -174,6 +196,7 @@ All layouts include responsive design considerations:
 ## Theme Support
 
 All layouts support both light and dark modes:
+
 - Uses `next-themes` for theme management
 - Theme toggle button in all authenticated layouts
 - All colors use CSS variables that adapt to theme
@@ -183,6 +206,7 @@ All layouts support both light and dark modes:
 ## Accessibility
 
 Layouts include accessibility features:
+
 - Semantic HTML (nav, main, footer elements)
 - ARIA labels for icon-only buttons (`sr-only` text)
 - Keyboard navigation support (native with button/link elements)

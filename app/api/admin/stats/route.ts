@@ -8,7 +8,10 @@ export async function GET(req: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
 
-    if (!session?.user || (session.user as { role?: string }).role !== "admin") {
+    if (
+      !session?.user ||
+      (session.user as { role?: string }).role !== "admin"
+    ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -33,7 +36,7 @@ export async function GET(req: NextRequest) {
     // Calculate today's attendance rate
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const todayAttendance = await db
       .select({
         total: count(),
@@ -57,7 +60,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching admin stats:", error);
     return NextResponse.json(
       { error: "Failed to fetch statistics" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 // GET single teacher
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -33,7 +33,7 @@ export async function GET(
     console.error("Error fetching teacher:", error);
     return NextResponse.json(
       { error: "Failed to fetch teacher" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -41,7 +41,7 @@ export async function GET(
 // PUT update teacher
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -65,7 +65,7 @@ export async function PUT(
       if (emailExists) {
         return NextResponse.json(
           { error: "Email already in use" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -93,7 +93,7 @@ export async function PUT(
     console.error("Error updating teacher:", error);
     return NextResponse.json(
       { error: "Failed to update teacher" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -101,7 +101,7 @@ export async function PUT(
 // DELETE teacher
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -123,7 +123,7 @@ export async function DELETE(
     console.error("Error deleting teacher:", error);
     return NextResponse.json(
       { error: "Failed to delete teacher" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

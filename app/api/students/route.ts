@@ -20,7 +20,7 @@ export async function GET() {
     console.error("Error fetching students:", error);
     return NextResponse.json(
       { error: "Failed to fetch students" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -43,10 +43,17 @@ export async function POST(request: NextRequest) {
       admissionDate,
     } = body;
 
-    if (!email || !name || !password || !rollNumber || !admissionNumber || !dateOfBirth) {
+    if (
+      !email ||
+      !name ||
+      !password ||
+      !rollNumber ||
+      !admissionNumber ||
+      !dateOfBirth
+    ) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -58,43 +65,51 @@ export async function POST(request: NextRequest) {
     if (existing) {
       return NextResponse.json(
         { error: "Email already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const passwordHash = await hashPassword(password);
 
     // Create user
-    const [newUser] = await db.insert(users).values({
-      email,
-      name,
-      role: "student",
-      passwordHash,
-      phone,
-      address,
-      emailVerified: true,
-      isActive: true,
-    }).returning();
+    const [newUser] = await db
+      .insert(users)
+      .values({
+        email,
+        name,
+        role: "student",
+        passwordHash,
+        phone,
+        address,
+        emailVerified: true,
+        isActive: true,
+      })
+      .returning();
 
     // Create student record
-    const [newStudent] = await db.insert(students).values({
-      userId: newUser.id,
-      classroomId: classroomId || null,
-      rollNumber,
-      admissionNumber,
-      dateOfBirth: new Date(dateOfBirth),
-      bloodGroup,
-      admissionDate: admissionDate ? new Date(admissionDate) : new Date(),
-    }).returning();
+    const [newStudent] = await db
+      .insert(students)
+      .values({
+        userId: newUser.id,
+        classroomId: classroomId || null,
+        rollNumber,
+        admissionNumber,
+        dateOfBirth: new Date(dateOfBirth),
+        bloodGroup,
+        admissionDate: admissionDate ? new Date(admissionDate) : new Date(),
+      })
+      .returning();
 
     // Update classroom strength if assigned
     if (classroomId) {
       await db
         .update(classrooms)
         .set({
-          currentStrength: (await db.query.students.findMany({
-            where: eq(students.classroomId, classroomId),
-          })).length,
+          currentStrength: (
+            await db.query.students.findMany({
+              where: eq(students.classroomId, classroomId),
+            })
+          ).length,
         })
         .where(eq(classrooms.id, classroomId));
     }
@@ -113,7 +128,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating student:", error);
     return NextResponse.json(
       { error: "Failed to create student" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

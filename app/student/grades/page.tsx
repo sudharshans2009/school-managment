@@ -5,7 +5,13 @@ import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -24,7 +30,14 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2, CheckCircle, XCircle, TrendingUp, TrendingDown, ArrowLeft } from "lucide-react";
+import {
+  Loader2,
+  CheckCircle,
+  XCircle,
+  TrendingUp,
+  TrendingDown,
+  ArrowLeft,
+} from "lucide-react";
 import { format } from "date-fns";
 
 interface Grade {
@@ -70,8 +83,10 @@ export default function StudentGradesPage() {
     queryKey: ["student-grades", filterSubject, filterExamType],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (filterSubject && filterSubject !== "all") params.append("subjectId", filterSubject);
-      if (filterExamType && filterExamType !== "all") params.append("examType", filterExamType);
+      if (filterSubject && filterSubject !== "all")
+        params.append("subjectId", filterSubject);
+      if (filterExamType && filterExamType !== "all")
+        params.append("examType", filterExamType);
 
       const response = await fetch(`/api/students/grades?${params.toString()}`);
       if (!response.ok) throw new Error("Failed to fetch grades");
@@ -81,12 +96,13 @@ export default function StudentGradesPage() {
   });
 
   // Get unique subjects from grades
-  const subjects = grades?.reduce((acc, grade) => {
-    if (!acc.find((s) => s.id === grade.subject.id)) {
-      acc.push(grade.subject);
-    }
-    return acc;
-  }, [] as Subject[]) || [];
+  const subjects =
+    grades?.reduce((acc, grade) => {
+      if (!acc.find((s) => s.id === grade.subject.id)) {
+        acc.push(grade.subject);
+      }
+      return acc;
+    }, [] as Subject[]) || [];
 
   // Calculate statistics
   const stats = {
@@ -94,15 +110,18 @@ export default function StudentGradesPage() {
     averagePercentage:
       grades && grades.length > 0
         ? (
-            grades.reduce((sum, g) => sum + (g.isAbsent ? 0 : parseFloat(g.percentage)), 0) /
-            grades.filter((g) => !g.isAbsent).length
+            grades.reduce(
+              (sum, g) => sum + (g.isAbsent ? 0 : parseFloat(g.percentage)),
+              0,
+            ) / grades.filter((g) => !g.isAbsent).length
           ).toFixed(2)
         : "0",
-    passedExams: grades?.filter((g) => {
-      if (g.isAbsent) return false;
-      const passingMarks = g.exam.passingMarks || g.exam.totalMarks * 0.4;
-      return parseFloat(g.marksObtained) >= passingMarks;
-    }).length || 0,
+    passedExams:
+      grades?.filter((g) => {
+        if (g.isAbsent) return false;
+        const passingMarks = g.exam.passingMarks || g.exam.totalMarks * 0.4;
+        return parseFloat(g.marksObtained) >= passingMarks;
+      }).length || 0,
     absentExams: grades?.filter((g) => g.isAbsent).length || 0,
   };
 
@@ -178,7 +197,9 @@ export default function StudentGradesPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.averagePercentage}%</div>
+              <div className="text-2xl font-bold">
+                {stats.averagePercentage}%
+              </div>
             </CardContent>
           </Card>
 
@@ -190,7 +211,9 @@ export default function StudentGradesPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <div className="text-2xl font-bold text-green-600">{stats.passedExams}</div>
+                <div className="text-2xl font-bold text-green-600">
+                  {stats.passedExams}
+                </div>
                 <CheckCircle className="h-5 w-5 text-green-600" />
               </div>
             </CardContent>
@@ -204,7 +227,9 @@ export default function StudentGradesPage() {
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-2">
-                <div className="text-2xl font-bold text-red-600">{stats.absentExams}</div>
+                <div className="text-2xl font-bold text-red-600">
+                  {stats.absentExams}
+                </div>
                 <XCircle className="h-5 w-5 text-red-600" />
               </div>
             </CardContent>
@@ -237,7 +262,10 @@ export default function StudentGradesPage() {
 
               <div>
                 <Label htmlFor="filterExamType">Filter by Exam Type</Label>
-                <Select value={filterExamType} onValueChange={setFilterExamType}>
+                <Select
+                  value={filterExamType}
+                  onValueChange={setFilterExamType}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="All Types" />
                   </SelectTrigger>
@@ -264,37 +292,51 @@ export default function StudentGradesPage() {
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
               <div className="flex flex-col items-center p-3 bg-primary/10 rounded-lg">
-                <Badge variant="default" className="mb-2">A*</Badge>
+                <Badge variant="default" className="mb-2">
+                  A*
+                </Badge>
                 <span className="text-xs font-medium">Outstanding</span>
                 <span className="text-xs text-muted-foreground">90-100%</span>
               </div>
               <div className="flex flex-col items-center p-3 bg-primary/10 rounded-lg">
-                <Badge variant="default" className="mb-2">A</Badge>
+                <Badge variant="default" className="mb-2">
+                  A
+                </Badge>
                 <span className="text-xs font-medium">Excellent</span>
                 <span className="text-xs text-muted-foreground">80-89%</span>
               </div>
               <div className="flex flex-col items-center p-3 bg-secondary/50 rounded-lg">
-                <Badge variant="secondary" className="mb-2">B</Badge>
+                <Badge variant="secondary" className="mb-2">
+                  B
+                </Badge>
                 <span className="text-xs font-medium">Good</span>
                 <span className="text-xs text-muted-foreground">70-79%</span>
               </div>
               <div className="flex flex-col items-center p-3 bg-secondary/30 rounded-lg">
-                <Badge variant="outline" className="mb-2">C</Badge>
+                <Badge variant="outline" className="mb-2">
+                  C
+                </Badge>
                 <span className="text-xs font-medium">Satisfactory</span>
                 <span className="text-xs text-muted-foreground">60-69%</span>
               </div>
               <div className="flex flex-col items-center p-3 bg-secondary/30 rounded-lg">
-                <Badge variant="outline" className="mb-2">D</Badge>
+                <Badge variant="outline" className="mb-2">
+                  D
+                </Badge>
                 <span className="text-xs font-medium">Pass</span>
                 <span className="text-xs text-muted-foreground">50-59%</span>
               </div>
               <div className="flex flex-col items-center p-3 bg-destructive/10 rounded-lg">
-                <Badge variant="destructive" className="mb-2">E</Badge>
+                <Badge variant="destructive" className="mb-2">
+                  E
+                </Badge>
                 <span className="text-xs font-medium">Marginal Pass</span>
                 <span className="text-xs text-muted-foreground">40-49%</span>
               </div>
               <div className="flex flex-col items-center p-3 bg-destructive/10 rounded-lg">
-                <Badge variant="destructive" className="mb-2">F</Badge>
+                <Badge variant="destructive" className="mb-2">
+                  F
+                </Badge>
                 <span className="text-xs font-medium">Fail</span>
                 <span className="text-xs text-muted-foreground">&lt;40%</span>
               </div>
@@ -332,14 +374,18 @@ export default function StudentGradesPage() {
                 <TableBody>
                   {grades.map((grade) => (
                     <TableRow key={grade.id}>
-                      <TableCell className="font-medium">{grade.exam.name}</TableCell>
+                      <TableCell className="font-medium">
+                        {grade.exam.name}
+                      </TableCell>
                       <TableCell>
                         {grade.subject.name}
                         <span className="text-muted-foreground ml-1">
                           ({grade.subject.code})
                         </span>
                       </TableCell>
-                      <TableCell>{getExamTypeLabel(grade.exam.examType)}</TableCell>
+                      <TableCell>
+                        {getExamTypeLabel(grade.exam.examType)}
+                      </TableCell>
                       <TableCell>
                         {format(new Date(grade.exam.examDate), "MMM dd, yyyy")}
                       </TableCell>
@@ -366,7 +412,9 @@ export default function StudentGradesPage() {
                           <span className="text-muted-foreground">N/A</span>
                         ) : (
                           <div className="flex items-center gap-1">
-                            <span className="font-medium">{grade.percentage}%</span>
+                            <span className="font-medium">
+                              {grade.percentage}%
+                            </span>
                             {parseFloat(grade.percentage) >= 75 ? (
                               <TrendingUp className="h-4 w-4 text-green-600" />
                             ) : parseFloat(grade.percentage) < 40 ? (

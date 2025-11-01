@@ -7,7 +7,7 @@ import { auth } from "@/lib/auth";
 // PUT - Grade/update homework submission
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
@@ -35,7 +35,7 @@ export async function PUT(
     if (submission.length === 0) {
       return NextResponse.json(
         { error: "Submission not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -43,7 +43,7 @@ export async function PUT(
     if (submission[0].teacherId !== session.user.id) {
       return NextResponse.json(
         { error: "You don't have permission to grade this homework" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -65,7 +65,7 @@ export async function PUT(
     console.error("Error updating submission:", error);
     return NextResponse.json(
       { error: "Failed to update submission" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -73,7 +73,7 @@ export async function PUT(
 // DELETE - Remove homework submission
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
@@ -99,7 +99,7 @@ export async function DELETE(
     if (submission.length === 0) {
       return NextResponse.json(
         { error: "Submission not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -107,7 +107,7 @@ export async function DELETE(
     if (submission[0].teacherId !== session.user.id) {
       return NextResponse.json(
         { error: "You don't have permission to delete this submission" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -120,7 +120,7 @@ export async function DELETE(
     console.error("Error deleting submission:", error);
     return NextResponse.json(
       { error: "Failed to delete submission" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

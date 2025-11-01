@@ -19,7 +19,9 @@ export interface DayConfiguration {
  * Get the effective day configuration for a given date
  * Handles default behavior and custom configurations
  */
-export async function getDayConfiguration(date: Date): Promise<DayConfiguration> {
+export async function getDayConfiguration(
+  date: Date,
+): Promise<DayConfiguration> {
   const dateStr = format(date, "yyyy-MM-dd");
   const actualDayOfWeek = getDay(date); // 0 = Sunday, 1 = Monday, etc.
 
@@ -32,7 +34,7 @@ export async function getDayConfiguration(date: Date): Promise<DayConfiguration>
 
   if (customConfig.length > 0) {
     const config = customConfig[0];
-    
+
     return {
       date: dateStr,
       isWorkingDay: config.dayType === "working",
@@ -48,7 +50,7 @@ export async function getDayConfiguration(date: Date): Promise<DayConfiguration>
 
   // Default behavior: Mon-Sat working (1-6), Sunday holiday (0)
   const isWorkingDay = actualDayOfWeek >= 1 && actualDayOfWeek <= 6;
-  
+
   return {
     date: dateStr,
     isWorkingDay,
@@ -67,7 +69,7 @@ export async function getDayConfiguration(date: Date): Promise<DayConfiguration>
  */
 export async function isWorkingDayFor(
   date: Date,
-  userType: "students" | "teachers" | "office"
+  userType: "students" | "teachers" | "office",
 ): Promise<boolean> {
   const config = await getDayConfiguration(date);
 

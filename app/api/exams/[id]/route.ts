@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/database';
-import { exams, subjects, classrooms, studentGrades } from '@/database/schema';
-import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
-import { eq, count } from 'drizzle-orm';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/database";
+import { exams, subjects, classrooms, studentGrades } from "@/database/schema";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { eq, count } from "drizzle-orm";
 
 // GET /api/exams/[id] - Get a single exam with details
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({
@@ -16,7 +16,7 @@ export async function GET(
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -55,7 +55,7 @@ export async function GET(
       .where(eq(exams.id, id));
 
     if (!exam) {
-      return NextResponse.json({ error: 'Exam not found' }, { status: 404 });
+      return NextResponse.json({ error: "Exam not found" }, { status: 404 });
     }
 
     // Get grade statistics
@@ -68,23 +68,26 @@ export async function GET(
 
     return NextResponse.json({ ...exam, stats });
   } catch (error) {
-    console.error('Error fetching exam:', error);
-    return NextResponse.json({ error: 'Failed to fetch exam' }, { status: 500 });
+    console.error("Error fetching exam:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch exam" },
+      { status: 500 },
+    );
   }
 }
 
 // PUT /api/exams/[id] - Update an exam (Admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    if (!session?.user || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user || session.user.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -126,28 +129,31 @@ export async function PUT(
       .returning();
 
     if (!updatedExam) {
-      return NextResponse.json({ error: 'Exam not found' }, { status: 404 });
+      return NextResponse.json({ error: "Exam not found" }, { status: 404 });
     }
 
     return NextResponse.json(updatedExam);
   } catch (error) {
-    console.error('Error updating exam:', error);
-    return NextResponse.json({ error: 'Failed to update exam' }, { status: 500 });
+    console.error("Error updating exam:", error);
+    return NextResponse.json(
+      { error: "Failed to update exam" },
+      { status: 500 },
+    );
   }
 }
 
 // DELETE /api/exams/[id] - Delete an exam (Admin only, only if no grades exist)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    if (!session?.user || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user || session.user.role !== "admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -160,16 +166,19 @@ export async function DELETE(
 
     if (gradeCount.count > 0) {
       return NextResponse.json(
-        { error: 'Cannot delete exam with existing grades' },
-        { status: 400 }
+        { error: "Cannot delete exam with existing grades" },
+        { status: 400 },
       );
     }
 
     await db.delete(exams).where(eq(exams.id, id));
 
-    return NextResponse.json({ message: 'Exam deleted successfully' });
+    return NextResponse.json({ message: "Exam deleted successfully" });
   } catch (error) {
-    console.error('Error deleting exam:', error);
-    return NextResponse.json({ error: 'Failed to delete exam' }, { status: 500 });
+    console.error("Error deleting exam:", error);
+    return NextResponse.json(
+      { error: "Failed to delete exam" },
+      { status: 500 },
+    );
   }
 }

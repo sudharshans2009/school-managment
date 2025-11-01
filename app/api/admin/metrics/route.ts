@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
-import { 
-  attendance, 
-  homework, 
+import {
+  attendance,
+  homework,
   homeworkSubmissions,
   teacherAssignments,
-  timetable
+  timetable,
 } from "@/database/schema";
 import { count, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth";
@@ -14,7 +14,10 @@ export async function GET(req: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
 
-    if (!session?.user || (session.user as { role?: string }).role !== "admin") {
+    if (
+      !session?.user ||
+      (session.user as { role?: string }).role !== "admin"
+    ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -39,9 +42,7 @@ export async function GET(req: NextRequest) {
     const feeCollectionRate = 87.3; // Mock data for now
 
     // Calculate homework completion rate
-    const totalHomework = await db
-      .select({ count: count() })
-      .from(homework);
+    const totalHomework = await db.select({ count: count() }).from(homework);
 
     const completedSubmissions = await db
       .select({ count: count() })
@@ -64,7 +65,10 @@ export async function GET(req: NextRequest) {
 
     const teacherAssignmentRate =
       totalTimetableSlots[0]?.count > 0
-        ? Math.min(100, (assignedSlots[0]?.count / totalTimetableSlots[0].count) * 100)
+        ? Math.min(
+            100,
+            (assignedSlots[0]?.count / totalTimetableSlots[0].count) * 100,
+          )
         : 100;
 
     return NextResponse.json({
@@ -77,7 +81,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching admin metrics:", error);
     return NextResponse.json(
       { error: "Failed to fetch metrics" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

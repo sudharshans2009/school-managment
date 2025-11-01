@@ -5,6 +5,7 @@ A comprehensive, modern school management system with smart classroom dashboards
 ## 🚀 Features
 
 ### 👨‍💼 Admin Dashboard
+
 - Complete system overview and analytics
 - Create and manage classrooms with unique codes and keys
 - Assign teachers to subjects and classrooms
@@ -13,6 +14,7 @@ A comprehensive, modern school management system with smart classroom dashboards
 - Generate reports and insights
 
 ### 👩‍🏫 Teacher Portal
+
 - Manage multiple classrooms and subjects
 - Create and grade homework/assignments
 - Mark and track attendance
@@ -20,6 +22,7 @@ A comprehensive, modern school management system with smart classroom dashboards
 - View student performance analytics
 
 ### 🧑‍🎓 Student Portal
+
 - View assigned homework and projects
 - Submit assignments online
 - Check attendance records
@@ -27,6 +30,7 @@ A comprehensive, modern school management system with smart classroom dashboards
 - Access study materials
 
 ### 📺 Smart Classroom Dashboard
+
 - Real-time display for each classroom
 - Today's timetable and schedule
 - Announcements and homework reminders
@@ -34,6 +38,7 @@ A comprehensive, modern school management system with smart classroom dashboards
 - Motivational messages and school notices
 
 ### 💰 Fee Management
+
 - Flexible fee structure by class/category
 - Online payment integration (Razorpay/Stripe ready)
 - Automated invoice generation
@@ -41,9 +46,10 @@ A comprehensive, modern school management system with smart classroom dashboards
 - Overdue notifications
 
 ### 🔒 Security & Compliance
+
 - **Role-Based Access Control (RBAC)**: Granular permissions for admin, teacher, student, parent, and smartboard roles
 - **Audit Logging**: Comprehensive logging of all system actions for security and compliance
-- **GDPR Compliance**: 
+- **GDPR Compliance**:
   - Right to Data Portability (export user data)
   - Right to be Forgotten (data deletion requests)
   - Consent management system
@@ -66,6 +72,7 @@ A comprehensive, modern school management system with smart classroom dashboards
 ## 📦 Installation
 
 ### Prerequisites
+
 - Bun installed ([https://bun.sh](https://bun.sh))
 - Neon Postgres account ([https://neon.tech](https://neon.tech))
 - Resend account for emails ([https://resend.com](https://resend.com))
@@ -73,6 +80,7 @@ A comprehensive, modern school management system with smart classroom dashboards
 ### Setup Steps
 
 1. **Install dependencies**
+
 ```bash
 bun install
 ```
@@ -98,6 +106,7 @@ NODE_ENV=development
 ```
 
 **Generate a secure auth secret:**
+
 ```bash
 openssl rand -base64 32
 ```
@@ -105,21 +114,25 @@ openssl rand -base64 32
 3. **Setup Database**
 
 Generate migration files:
+
 ```bash
 bun run db:generate
 ```
 
 Push schema to database:
+
 ```bash
 bun run db:push
 ```
 
 (Optional) Open Drizzle Studio to view database:
+
 ```bash
 bun run db:studio
 ```
 
 4. **Run the development server**
+
 ```bash
 bun run dev
 ```
@@ -159,6 +172,7 @@ school-management/
 ## 🗄️ Database Schema
 
 ### Core Tables
+
 - **users** - Admin, teachers, students, parents
 - **classrooms** - Class information with unique codes
 - **subjects** - Subject catalog
@@ -173,6 +187,7 @@ school-management/
 - **timetable** - Class schedules
 
 ### Security & Compliance Tables
+
 - **audit_logs** - System activity audit trail
 - **role_permissions** - Role-based permission configuration
 - **user_permissions** - User-specific permission overrides
@@ -186,6 +201,7 @@ school-management/
 - **timetable** - Class schedules
 
 ### Security & Compliance Tables
+
 - **audit_logs** - System activity audit trail
 - **role_permissions** - Role-based permission configuration
 - **user_permissions** - User-specific permission overrides
@@ -197,6 +213,7 @@ school-management/
 ## 🔐 Authentication
 
 Built with Better Auth for secure, flexible authentication:
+
 - Email/Password authentication
 - Role-based access control (Admin, Teacher, Student, Parent)
 - Granular permissions system (see [Security Documentation](docs/SECURITY_COMPLIANCE.md))
@@ -207,6 +224,7 @@ Built with Better Auth for secure, flexible authentication:
 ## 🎨 UI Components
 
 Using shadcn/ui for beautiful, accessible components:
+
 - Pre-built forms, dialogs, and data tables
 - Dark mode support
 - Responsive design

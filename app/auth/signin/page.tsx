@@ -6,7 +6,14 @@ import { signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
@@ -53,7 +60,7 @@ export default function SignInPage() {
       } else {
         router.push("/dashboard");
       }
-      
+
       router.refresh();
     } catch {
       setError("An error occurred. Please try again.");
@@ -65,7 +72,9 @@ export default function SignInPage() {
     <AuthLayout>
       <Card className="w-full max-w-md rounded-2xl shadow-sm">
         <CardHeader className="space-y-1 pt-8">
-          <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">
+            Welcome Back
+          </CardTitle>
           <CardDescription className="text-center">
             Sign in to your Amrita School Management account
           </CardDescription>

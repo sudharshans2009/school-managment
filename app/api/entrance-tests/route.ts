@@ -30,7 +30,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(tests);
   } catch (error) {
     console.error("Error fetching entrance tests:", error);
-    return NextResponse.json({ error: "Failed to fetch entrance tests" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch entrance tests" },
+      { status: 500 },
+    );
   }
 }
 
@@ -56,10 +59,20 @@ export async function POST(request: NextRequest) {
       syllabus,
     } = body;
 
-    if (!testName || !grade || !testDate || !duration || !totalMarks || !passingMarks) {
+    if (
+      !testName ||
+      !grade ||
+      !testDate ||
+      !duration ||
+      !totalMarks ||
+      !passingMarks
+    ) {
       return NextResponse.json(
-        { error: "Test name, grade, test date, duration, total marks, and passing marks are required" },
-        { status: 400 }
+        {
+          error:
+            "Test name, grade, test date, duration, total marks, and passing marks are required",
+        },
+        { status: 400 },
       );
     }
 
@@ -83,6 +96,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(test, { status: 201 });
   } catch (error) {
     console.error("Error creating entrance test:", error);
-    return NextResponse.json({ error: "Failed to create entrance test" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create entrance test" },
+      { status: 500 },
+    );
   }
 }

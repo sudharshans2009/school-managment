@@ -6,11 +6,37 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { UserPlus, Mail, Phone, MapPin, Search, Edit2, Trash2, Upload, LayoutGrid, Table as TableIcon } from "lucide-react";
+import {
+  UserPlus,
+  Mail,
+  Phone,
+  MapPin,
+  Search,
+  Edit2,
+  Trash2,
+  Upload,
+  LayoutGrid,
+  Table as TableIcon,
+} from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { DataTable } from "@/components/ui/data-table";
 import { createTeacherColumns, Teacher } from "./components/columns";
@@ -23,7 +49,11 @@ export default function TeachersPage() {
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
   const [deletingTeacher, setDeletingTeacher] = useState<Teacher | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [uploadResult, setUploadResult] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
+  const [uploadResult, setUploadResult] = useState<{
+    success: number;
+    failed: number;
+    errors: string[];
+  } | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const queryClient = useQueryClient();
 
@@ -121,7 +151,11 @@ export default function TeachersPage() {
       queryClient.invalidateQueries({ queryKey: ["teachers"] });
       setCsvDialogOpen(false);
       setCsvFile(null);
-      setUploadResult({ success: data.success, failed: data.failed, errors: data.errors || [] });
+      setUploadResult({
+        success: data.success,
+        failed: data.failed,
+        errors: data.errors || [],
+      });
     },
     onError: (error: Error) => {
       setUploadResult({ success: 0, failed: 0, errors: [error.message] });
@@ -132,11 +166,11 @@ export default function TeachersPage() {
     if (!csvFile) return;
 
     const text = await csvFile.text();
-    const lines = text.split("\n").filter(line => line.trim());
-    const headers = lines[0].split(",").map(h => h.trim().toLowerCase());
+    const lines = text.split("\n").filter((line) => line.trim());
+    const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
 
-    const teachers = lines.slice(1).map(line => {
-      const values = line.split(",").map(v => v.trim());
+    const teachers = lines.slice(1).map((line) => {
+      const values = line.split(",").map((v) => v.trim());
       const teacher: Record<string, string> = {};
       headers.forEach((header, index) => {
         teacher[header] = values[index];
@@ -150,7 +184,7 @@ export default function TeachersPage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
+
     const data = {
       name: formData.get("name") as string,
       email: formData.get("email") as string,
@@ -169,9 +203,10 @@ export default function TeachersPage() {
     }
   };
 
-  const filteredTeachers = teachers?.filter((teacher) =>
-    teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    teacher.email.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredTeachers = teachers?.filter(
+    (teacher) =>
+      teacher.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      teacher.email.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   if (isLoading) {
@@ -204,14 +239,18 @@ export default function TeachersPage() {
             </Link>
             <div>
               <h1 className="text-3xl font-bold">Teachers Management</h1>
-              <p className="text-gray-600 mt-1">Manage teachers and their assignments</p>
+              <p className="text-gray-600 mt-1">
+                Manage teachers and their assignments
+              </p>
             </div>
           </div>
           <div className="flex gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setViewMode(viewMode === "grid" ? "table" : "grid")}
+              onClick={() =>
+                setViewMode(viewMode === "grid" ? "table" : "grid")
+              }
               className="rounded-xl"
             >
               {viewMode === "grid" ? (
@@ -247,7 +286,8 @@ export default function TeachersPage() {
                       className="rounded-xl"
                     />
                     <p className="text-sm text-muted-foreground mt-2">
-                      CSV should have headers: name, email, password, phone, address
+                      CSV should have headers: name, email, password, phone,
+                      address
                     </p>
                   </div>
                   <Button
@@ -255,220 +295,294 @@ export default function TeachersPage() {
                     disabled={!csvFile || bulkUploadMutation.isPending}
                     className="w-full rounded-xl"
                   >
-                    {bulkUploadMutation.isPending ? "Uploading..." : "Upload Teachers"}
+                    {bulkUploadMutation.isPending
+                      ? "Uploading..."
+                      : "Upload Teachers"}
                   </Button>
                 </div>
               </DialogContent>
             </Dialog>
-            <Dialog open={open} onOpenChange={(isOpen) => {
-              setOpen(isOpen);
-              if (!isOpen) setEditingTeacher(null);
-            }}>
+            <Dialog
+              open={open}
+              onOpenChange={(isOpen) => {
+                setOpen(isOpen);
+                if (!isOpen) setEditingTeacher(null);
+              }}
+            >
               <DialogTrigger asChild>
                 <Button className="rounded-xl">
                   <UserPlus className="h-4 w-4 mr-2" />
                   Add Teacher
                 </Button>
               </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{editingTeacher ? "Edit Teacher" : "Add New Teacher"}</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <Label htmlFor="name">Full Name *</Label>
-                <Input className="rounded-xl" id="name" name="name" required defaultValue={editingTeacher?.name} />
-              </div>
-              <div>
-                <Label htmlFor="email">Email *</Label>
-                <Input className="rounded-xl" id="email" name="email" type="email" required defaultValue={editingTeacher?.email} />
-              </div>
-              <div>
-                <Label htmlFor="password">Password {editingTeacher ? "" : "*"}</Label>
-                <Input className="rounded-xl" id="password" name="password" type="password" required={!editingTeacher} minLength={6} placeholder={editingTeacher ? "Leave blank to keep current password" : ""} />
-              </div>
-              <div>
-                <Label htmlFor="phone">Phone</Label>
-                <Input className="rounded-xl" id="phone" name="phone" type="tel" defaultValue={editingTeacher?.phone || ''} />
-              </div>
-              <div>
-                <Label htmlFor="address">Address</Label>
-                <Input className="rounded-xl" id="address" name="address" defaultValue={editingTeacher?.address || ''} />
-              </div>
-              {(createMutation.error || updateMutation.error) && (
-                <Alert variant="destructive">
-                  <AlertDescription>
-                    {createMutation.error?.message || updateMutation.error?.message}
-                  </AlertDescription>
-                </Alert>
-              )}
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" className="rounded-xl" onClick={() => {
-                  setOpen(false);
-                  setEditingTeacher(null);
-                }}>
-                  Cancel
-                </Button>
-                <Button type="submit" className="rounded-xl" disabled={createMutation.isPending || updateMutation.isPending}>
-                  {editingTeacher 
-                    ? (updateMutation.isPending ? "Updating..." : "Update Teacher")
-                    : (createMutation.isPending ? "Creating..." : "Create Teacher")
-                  }
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </div>
-
-    {uploadResult && (
-      <Alert variant={uploadResult.failed > 0 ? "destructive" : "default"} className="mb-4">
-        <AlertDescription>
-          <div className="font-semibold mb-2">
-            Bulk Upload Complete: {uploadResult.success} succeeded, {uploadResult.failed} failed
-          </div>
-          {uploadResult.errors.length > 0 && (
-            <ul className="list-disc list-inside text-sm">
-              {uploadResult.errors.map((error, i) => (
-                <li key={i}>{error}</li>
-              ))}
-            </ul>
-          )}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="mt-2"
-            onClick={() => setUploadResult(null)}
-          >
-            Dismiss
-          </Button>
-        </AlertDescription>
-      </Alert>
-    )}
-
-    {viewMode === "table" ? (
-      <DataTable
-        columns={columns}
-        data={filteredTeachers || []}
-        searchKey="name"
-        searchPlaceholder="Search teachers by name..."
-      />
-    ) : (
-      <>
-        <div className="mb-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search teachers..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 rounded-xl"
-            />
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingTeacher ? "Edit Teacher" : "Add New Teacher"}
+                  </DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div>
+                    <Label htmlFor="name">Full Name *</Label>
+                    <Input
+                      className="rounded-xl"
+                      id="name"
+                      name="name"
+                      required
+                      defaultValue={editingTeacher?.name}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="email">Email *</Label>
+                    <Input
+                      className="rounded-xl"
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      defaultValue={editingTeacher?.email}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="password">
+                      Password {editingTeacher ? "" : "*"}
+                    </Label>
+                    <Input
+                      className="rounded-xl"
+                      id="password"
+                      name="password"
+                      type="password"
+                      required={!editingTeacher}
+                      minLength={6}
+                      placeholder={
+                        editingTeacher
+                          ? "Leave blank to keep current password"
+                          : ""
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input
+                      className="rounded-xl"
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      defaultValue={editingTeacher?.phone || ""}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="address">Address</Label>
+                    <Input
+                      className="rounded-xl"
+                      id="address"
+                      name="address"
+                      defaultValue={editingTeacher?.address || ""}
+                    />
+                  </div>
+                  {(createMutation.error || updateMutation.error) && (
+                    <Alert variant="destructive">
+                      <AlertDescription>
+                        {createMutation.error?.message ||
+                          updateMutation.error?.message}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="rounded-xl"
+                      onClick={() => {
+                        setOpen(false);
+                        setEditingTeacher(null);
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      className="rounded-xl"
+                      disabled={
+                        createMutation.isPending || updateMutation.isPending
+                      }
+                    >
+                      {editingTeacher
+                        ? updateMutation.isPending
+                          ? "Updating..."
+                          : "Update Teacher"
+                        : createMutation.isPending
+                          ? "Creating..."
+                          : "Create Teacher"}
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredTeachers?.map((teacher) => (
-          <Card key={teacher.id}>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>{teacher.name}</span>
-                {teacher.isActive && (
-                  <Badge variant="default">Active</Badge>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center text-gray-600">
-                  <Mail className="h-4 w-4 mr-2" />
-                  {teacher.email}
-                </div>
-                {teacher.phone && (
-                  <div className="flex items-center text-gray-600">
-                    <Phone className="h-4 w-4 mr-2" />
-                    {teacher.phone}
-                  </div>
-                )}
-                {teacher.address && (
-                  <div className="flex items-center text-gray-600">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    {teacher.address}
-                  </div>
-                )}
-                {teacher.teacherAssignments.length > 0 && (
-                  <div className="mt-4 pt-4 border-t">
-                    <p className="font-semibold mb-2">Assignments:</p>
-                    {teacher.teacherAssignments.map((assignment, idx) => (
-                      <Badge key={idx} variant="outline" className="mr-1 mb-1">
-                        {assignment.classroom.name} - {assignment.subject.name}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
-                <div className="flex gap-2 mt-4">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="flex-1 rounded-xl"
-                    onClick={() => {
-                      setEditingTeacher(teacher);
-                      setOpen(true);
-                    }}
-                  >
-                    <Edit2 className="h-4 w-4 mr-1" />
-                    Edit
-                  </Button>
-                  <Button 
-                    variant="destructive" 
-                    size="sm"
-                    className="rounded-xl"
-                    onClick={() => setDeletingTeacher(teacher)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
+        {uploadResult && (
+          <Alert
+            variant={uploadResult.failed > 0 ? "destructive" : "default"}
+            className="mb-4"
+          >
+            <AlertDescription>
+              <div className="font-semibold mb-2">
+                Bulk Upload Complete: {uploadResult.success} succeeded,{" "}
+                {uploadResult.failed} failed
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              {uploadResult.errors.length > 0 && (
+                <ul className="list-disc list-inside text-sm">
+                  {uploadResult.errors.map((error, i) => (
+                    <li key={i}>{error}</li>
+                  ))}
+                </ul>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mt-2"
+                onClick={() => setUploadResult(null)}
+              >
+                Dismiss
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
 
-      {filteredTeachers?.length === 0 && (
-        <Card className="rounded-2xl shadow-sm">
-          <CardContent className="text-center py-8">
-            <p className="text-gray-500">No teachers found</p>
-          </CardContent>
-        </Card>
-      )}
-      </>
-    )}
+        {viewMode === "table" ? (
+          <DataTable
+            columns={columns}
+            data={filteredTeachers || []}
+            searchKey="name"
+            searchPlaceholder="Search teachers by name..."
+          />
+        ) : (
+          <>
+            <div className="mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search teachers..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 rounded-xl"
+                />
+              </div>
+            </div>
 
-      <AlertDialog open={!!deletingTeacher} onOpenChange={() => setDeletingTeacher(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Teacher</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete {deletingTeacher?.name}? This will also remove all their classroom and subject assignments. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (deletingTeacher) {
-                  deleteMutation.mutate(deletingTeacher.id);
-                  setDeletingTeacher(null);
-                }
-              }}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredTeachers?.map((teacher) => (
+                <Card key={teacher.id}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span>{teacher.name}</span>
+                      {teacher.isActive && (
+                        <Badge variant="default">Active</Badge>
+                      )}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center text-gray-600">
+                        <Mail className="h-4 w-4 mr-2" />
+                        {teacher.email}
+                      </div>
+                      {teacher.phone && (
+                        <div className="flex items-center text-gray-600">
+                          <Phone className="h-4 w-4 mr-2" />
+                          {teacher.phone}
+                        </div>
+                      )}
+                      {teacher.address && (
+                        <div className="flex items-center text-gray-600">
+                          <MapPin className="h-4 w-4 mr-2" />
+                          {teacher.address}
+                        </div>
+                      )}
+                      {teacher.teacherAssignments.length > 0 && (
+                        <div className="mt-4 pt-4 border-t">
+                          <p className="font-semibold mb-2">Assignments:</p>
+                          {teacher.teacherAssignments.map((assignment, idx) => (
+                            <Badge
+                              key={idx}
+                              variant="outline"
+                              className="mr-1 mb-1"
+                            >
+                              {assignment.classroom.name} -{" "}
+                              {assignment.subject.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                      <div className="flex gap-2 mt-4">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 rounded-xl"
+                          onClick={() => {
+                            setEditingTeacher(teacher);
+                            setOpen(true);
+                          }}
+                        >
+                          <Edit2 className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="rounded-xl"
+                          onClick={() => setDeletingTeacher(teacher)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {filteredTeachers?.length === 0 && (
+              <Card className="rounded-2xl shadow-sm">
+                <CardContent className="text-center py-8">
+                  <p className="text-gray-500">No teachers found</p>
+                </CardContent>
+              </Card>
+            )}
+          </>
+        )}
+
+        <AlertDialog
+          open={!!deletingTeacher}
+          onOpenChange={() => setDeletingTeacher(null)}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Teacher</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete {deletingTeacher?.name}? This
+                will also remove all their classroom and subject assignments.
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  if (deletingTeacher) {
+                    deleteMutation.mutate(deletingTeacher.id);
+                    setDeletingTeacher(null);
+                  }
+                }}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </DashboardLayout>
   );

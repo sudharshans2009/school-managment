@@ -19,9 +19,15 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true, // Email verification required
-    sendVerificationEmail: async ({ user, url }: { user: { email: string; name: string }; url: string }) => {
+    sendVerificationEmail: async ({
+      user,
+      url,
+    }: {
+      user: { email: string; name: string };
+      url: string;
+    }) => {
       const verificationUrl = url;
-      
+
       try {
         await resend.emails.send({
           from: "School Management System <onboarding@resend.dev>",

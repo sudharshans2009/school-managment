@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 // GET - Fetch teachers for a classroom
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -25,6 +25,9 @@ export async function GET(
     return NextResponse.json(teachers);
   } catch (error) {
     console.error("Error fetching classroom teachers:", error);
-    return NextResponse.json({ error: "Failed to fetch teachers" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch teachers" },
+      { status: 500 },
+    );
   }
 }

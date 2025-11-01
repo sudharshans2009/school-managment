@@ -2,18 +2,45 @@
 
 import { useRoleRedirect } from "@/hooks/use-role-redirect";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
-  BookOpen, Calendar, Send, Clock, CheckCircle2, 
-  AlertCircle, Loader2, Users, School, BarChart3
+import {
+  BookOpen,
+  Calendar,
+  Send,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  Users,
+  School,
+  BarChart3,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -78,12 +105,12 @@ export default function StudentPage() {
   const { session, isPending } = useRoleRedirect(["student"]);
   const router = useRouter();
   const queryClient = useQueryClient();
-  
+
   const [messageForm, setMessageForm] = useState({
     receiverId: "",
     subject: "",
     message: "",
-    messageType: "general" as 'absence' | 'query' | 'request' | 'general',
+    messageType: "general" as "absence" | "query" | "request" | "general",
   });
 
   // Fetch student profile
@@ -102,7 +129,9 @@ export default function StudentPage() {
   const { data: homework } = useQuery<Homework[]>({
     queryKey: ["homework", studentProfile?.classroomId],
     queryFn: async () => {
-      const res = await fetch(`/api/homework?classroomId=${studentProfile?.classroomId}`);
+      const res = await fetch(
+        `/api/homework?classroomId=${studentProfile?.classroomId}`,
+      );
       if (!res.ok) throw new Error("Failed to fetch homework");
       return res.json();
     },
@@ -113,7 +142,9 @@ export default function StudentPage() {
   const { data: timetable } = useQuery<TimetableEntry[]>({
     queryKey: ["timetable", studentProfile?.classroomId],
     queryFn: async () => {
-      const res = await fetch(`/api/timetable?classroomId=${studentProfile?.classroomId}`);
+      const res = await fetch(
+        `/api/timetable?classroomId=${studentProfile?.classroomId}`,
+      );
       if (!res.ok) throw new Error("Failed to fetch timetable");
       return res.json();
     },
@@ -124,7 +155,9 @@ export default function StudentPage() {
   const { data: classroomMessages } = useQuery<ClassroomMessage[]>({
     queryKey: ["classroom-messages", studentProfile?.classroomId],
     queryFn: async () => {
-      const res = await fetch(`/api/classroom-messages?classroomId=${studentProfile?.classroomId}`);
+      const res = await fetch(
+        `/api/classroom-messages?classroomId=${studentProfile?.classroomId}`,
+      );
       if (!res.ok) throw new Error("Failed to fetch classroom messages");
       return res.json();
     },
@@ -135,7 +168,9 @@ export default function StudentPage() {
   const { data: teachers } = useQuery<Teacher[]>({
     queryKey: ["teachers", studentProfile?.classroomId],
     queryFn: async () => {
-      const res = await fetch(`/api/classrooms/${studentProfile?.classroomId}/teachers`);
+      const res = await fetch(
+        `/api/classrooms/${studentProfile?.classroomId}/teachers`,
+      );
       if (!res.ok) throw new Error("Failed to fetch teachers");
       return res.json();
     },
@@ -169,7 +204,11 @@ export default function StudentPage() {
   });
 
   const handleSendMessage = () => {
-    if (!messageForm.receiverId || !messageForm.subject || !messageForm.message) {
+    if (
+      !messageForm.receiverId ||
+      !messageForm.subject ||
+      !messageForm.message
+    ) {
       toast.error("Please fill in all fields");
       return;
     }
@@ -181,14 +220,22 @@ export default function StudentPage() {
   };
 
   const getDayName = (dayNum: number) => {
-    const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
     return days[dayNum];
   };
 
   const getHomeworkStatus = (homework: Homework) => {
     const dueDate = new Date(homework.dueDate);
     const today = new Date();
-    
+
     if (homework.status === "submitted") {
       return { variant: "default" as const, text: "Submitted" };
     } else if (dueDate < today) {
@@ -208,12 +255,19 @@ export default function StudentPage() {
 
   if (!session) return null;
 
-  const todayTimetable = timetable?.filter(entry => entry.dayOfWeek === new Date().getDay()) || [];
-  const pendingHomework = homework?.filter(hw => hw.status === "assigned").length || 0;
-  const todayQuote = classroomMessages?.find(msg => msg.messageType === "quote");
+  const todayTimetable =
+    timetable?.filter((entry) => entry.dayOfWeek === new Date().getDay()) || [];
+  const pendingHomework =
+    homework?.filter((hw) => hw.status === "assigned").length || 0;
+  const todayQuote = classroomMessages?.find(
+    (msg) => msg.messageType === "quote",
+  );
 
   return (
-    <DashboardLayout title="Student Portal" description={`Welcome back, ${session.user?.name}`}>
+    <DashboardLayout
+      title="Student Portal"
+      description={`Welcome back, ${session.user?.name}`}
+    >
       <div className="space-y-6">
         {/* Student Info Badge */}
         {studentProfile && (
@@ -230,7 +284,9 @@ export default function StudentPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Pending Homework</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Pending Homework
+                  </p>
                   <p className="text-3xl font-bold mt-2">{pendingHomework}</p>
                 </div>
                 <Clock className="h-8 w-8 text-orange-500" />
@@ -241,8 +297,12 @@ export default function StudentPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Today&apos;s Classes</p>
-                  <p className="text-3xl font-bold mt-2">{todayTimetable.length}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Today&apos;s Classes
+                  </p>
+                  <p className="text-3xl font-bold mt-2">
+                    {todayTimetable.length}
+                  </p>
                 </div>
                 <BookOpen className="h-8 w-8 text-blue-500" />
               </div>
@@ -252,8 +312,12 @@ export default function StudentPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Roll Number</p>
-                  <p className="text-2xl font-bold mt-2">{studentProfile?.rollNumber}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Roll Number
+                  </p>
+                  <p className="text-2xl font-bold mt-2">
+                    {studentProfile?.rollNumber}
+                  </p>
                 </div>
                 <Users className="h-8 w-8 text-green-500" />
               </div>
@@ -263,8 +327,12 @@ export default function StudentPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Today</p>
-                  <p className="text-sm font-bold mt-2">{new Date().toLocaleDateString()}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Today
+                  </p>
+                  <p className="text-sm font-bold mt-2">
+                    {new Date().toLocaleDateString()}
+                  </p>
                 </div>
                 <Calendar className="h-8 w-8 text-purple-500" />
               </div>
@@ -276,7 +344,9 @@ export default function StudentPage() {
         <Card className="rounded-2xl shadow-sm">
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Access your student tools and resources</CardDescription>
+            <CardDescription>
+              Access your student tools and resources
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -288,7 +358,9 @@ export default function StudentPage() {
                 <BookOpen className="h-5 w-5 mr-3 text-blue-500" />
                 <div className="text-left">
                   <div className="font-semibold">My Grades</div>
-                  <div className="text-sm text-muted-foreground">View exam results</div>
+                  <div className="text-sm text-muted-foreground">
+                    View exam results
+                  </div>
                 </div>
               </Button>
               <Button
@@ -299,7 +371,9 @@ export default function StudentPage() {
                 <BarChart3 className="h-5 w-5 mr-3 text-indigo-500" />
                 <div className="text-left">
                   <div className="font-semibold">Analytics</div>
-                  <div className="text-sm text-muted-foreground">View performance metrics</div>
+                  <div className="text-sm text-muted-foreground">
+                    View performance metrics
+                  </div>
                 </div>
               </Button>
               <Button
@@ -310,7 +384,9 @@ export default function StudentPage() {
                 <School className="h-5 w-5 mr-3 text-purple-500" />
                 <div className="text-left">
                   <div className="font-semibold">Dashboard</div>
-                  <div className="text-sm text-muted-foreground">Back to main page</div>
+                  <div className="text-sm text-muted-foreground">
+                    Back to main page
+                  </div>
                 </div>
               </Button>
             </div>
@@ -324,8 +400,12 @@ export default function StudentPage() {
               <div className="flex items-start space-x-3">
                 <School className="h-6 w-6 text-primary mt-1" />
                 <div className="flex-1">
-                  <p className="text-lg font-medium italic">&quot;{todayQuote.content}&quot;</p>
-                  <p className="text-sm text-muted-foreground mt-2">- {todayQuote.teacherName}</p>
+                  <p className="text-lg font-medium italic">
+                    &quot;{todayQuote.content}&quot;
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    - {todayQuote.teacherName}
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -334,10 +414,18 @@ export default function StudentPage() {
 
         <Tabs defaultValue="homework" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4 rounded-xl">
-            <TabsTrigger value="homework" className="rounded-lg">Homework</TabsTrigger>
-            <TabsTrigger value="timetable" className="rounded-lg">Timetable</TabsTrigger>
-            <TabsTrigger value="classroom" className="rounded-lg">Classroom</TabsTrigger>
-            <TabsTrigger value="message" className="rounded-lg">Message Teacher</TabsTrigger>
+            <TabsTrigger value="homework" className="rounded-lg">
+              Homework
+            </TabsTrigger>
+            <TabsTrigger value="timetable" className="rounded-lg">
+              Timetable
+            </TabsTrigger>
+            <TabsTrigger value="classroom" className="rounded-lg">
+              Classroom
+            </TabsTrigger>
+            <TabsTrigger value="message" className="rounded-lg">
+              Message Teacher
+            </TabsTrigger>
           </TabsList>
 
           {/* Homework Tab */}
@@ -345,35 +433,63 @@ export default function StudentPage() {
             <Card className="rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle>My Homework</CardTitle>
-                <CardDescription>Track and submit your assignments</CardDescription>
+                <CardDescription>
+                  Track and submit your assignments
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {homework?.map((hw) => {
                     const status = getHomeworkStatus(hw);
                     return (
-                      <Card key={hw.id} className="rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                      <Card
+                        key={hw.id}
+                        className="rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                      >
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
-                                <Badge variant={status.variant} className="rounded-lg">{status.text}</Badge>
-                                <span className="text-sm font-medium text-muted-foreground">{hw.subjectName}</span>
+                                <Badge
+                                  variant={status.variant}
+                                  className="rounded-lg"
+                                >
+                                  {status.text}
+                                </Badge>
+                                <span className="text-sm font-medium text-muted-foreground">
+                                  {hw.subjectName}
+                                </span>
                               </div>
-                              <h4 className="font-semibold text-lg">{hw.title}</h4>
-                              <p className="text-sm text-muted-foreground mt-1">{hw.description}</p>
+                              <h4 className="font-semibold text-lg">
+                                {hw.title}
+                              </h4>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {hw.description}
+                              </p>
                               <div className="flex items-center gap-4 mt-2 text-sm">
                                 <span className="text-muted-foreground">
                                   <Calendar className="h-3 w-3 inline mr-1" />
-                                  Assigned: {new Date(hw.assignedDate).toLocaleDateString()}
+                                  Assigned:{" "}
+                                  {new Date(
+                                    hw.assignedDate,
+                                  ).toLocaleDateString()}
                                 </span>
                                 <span className="text-muted-foreground">
                                   <AlertCircle className="h-3 w-3 inline mr-1" />
-                                  Due: {new Date(hw.dueDate).toLocaleDateString()}
+                                  Due:{" "}
+                                  {new Date(hw.dueDate).toLocaleDateString()}
                                 </span>
                               </div>
                             </div>
-                            <Button size="sm" variant={hw.status === "submitted" ? "outline" : "default"} className="rounded-xl">
+                            <Button
+                              size="sm"
+                              variant={
+                                hw.status === "submitted"
+                                  ? "outline"
+                                  : "default"
+                              }
+                              className="rounded-xl"
+                            >
                               {hw.status === "submitted" ? "View" : "Submit"}
                             </Button>
                           </div>
@@ -384,7 +500,9 @@ export default function StudentPage() {
                   {(!homework || homework.length === 0) && (
                     <div className="text-center py-12">
                       <CheckCircle2 className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                      <p className="text-muted-foreground">No homework assigned yet</p>
+                      <p className="text-muted-foreground">
+                        No homework assigned yet
+                      </p>
                     </div>
                   )}
                 </div>
@@ -397,14 +515,18 @@ export default function StudentPage() {
             <Card className="rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle>Weekly Timetable</CardTitle>
-                <CardDescription>Your class schedule for the week</CardDescription>
+                <CardDescription>
+                  Your class schedule for the week
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
                   {[1, 2, 3, 4, 5].map((day) => {
-                    const dayEntries = timetable?.filter(entry => entry.dayOfWeek === day) || [];
+                    const dayEntries =
+                      timetable?.filter((entry) => entry.dayOfWeek === day) ||
+                      [];
                     if (dayEntries.length === 0) return null;
-                    
+
                     return (
                       <div key={day} className="space-y-2">
                         <h3 className="font-semibold text-lg flex items-center gap-2">
@@ -439,7 +561,9 @@ export default function StudentPage() {
                   {(!timetable || timetable.length === 0) && (
                     <div className="text-center py-12">
                       <Clock className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                      <p className="text-muted-foreground">Timetable not available yet</p>
+                      <p className="text-muted-foreground">
+                        Timetable not available yet
+                      </p>
                     </div>
                   )}
                 </div>
@@ -460,23 +584,37 @@ export default function StudentPage() {
                     <>
                       <div className="flex justify-between py-2 border-b">
                         <span className="text-muted-foreground">Class</span>
-                        <span className="font-medium">{studentProfile.classroom.name}</span>
+                        <span className="font-medium">
+                          {studentProfile.classroom.name}
+                        </span>
                       </div>
                       <div className="flex justify-between py-2 border-b">
                         <span className="text-muted-foreground">Grade</span>
-                        <span className="font-medium">{studentProfile.classroom.grade}</span>
+                        <span className="font-medium">
+                          {studentProfile.classroom.grade}
+                        </span>
                       </div>
                       <div className="flex justify-between py-2 border-b">
                         <span className="text-muted-foreground">Section</span>
-                        <span className="font-medium">{studentProfile.classroom.section}</span>
+                        <span className="font-medium">
+                          {studentProfile.classroom.section}
+                        </span>
                       </div>
                       <div className="flex justify-between py-2 border-b">
-                        <span className="text-muted-foreground">Roll Number</span>
-                        <span className="font-medium">{studentProfile.rollNumber}</span>
+                        <span className="text-muted-foreground">
+                          Roll Number
+                        </span>
+                        <span className="font-medium">
+                          {studentProfile.rollNumber}
+                        </span>
                       </div>
                       <div className="flex justify-between py-2">
-                        <span className="text-muted-foreground">Admission Number</span>
-                        <span className="font-medium">{studentProfile.admissionNumber}</span>
+                        <span className="text-muted-foreground">
+                          Admission Number
+                        </span>
+                        <span className="font-medium">
+                          {studentProfile.admissionNumber}
+                        </span>
                       </div>
                     </>
                   )}
@@ -490,20 +628,34 @@ export default function StudentPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {classroomMessages?.filter(msg => msg.messageType !== "quote").map((msg) => (
-                      <div key={msg.id} className="p-3 bg-secondary rounded-xl">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge variant="outline" className="rounded-lg">{msg.messageType}</Badge>
-                          <span className="text-xs text-muted-foreground">
-                            {new Date(msg.date).toLocaleDateString()}
-                          </span>
+                    {classroomMessages
+                      ?.filter((msg) => msg.messageType !== "quote")
+                      .map((msg) => (
+                        <div
+                          key={msg.id}
+                          className="p-3 bg-secondary rounded-xl"
+                        >
+                          <div className="flex items-center gap-2 mb-1">
+                            <Badge variant="outline" className="rounded-lg">
+                              {msg.messageType}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              {new Date(msg.date).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <p className="text-sm">{msg.content}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            - {msg.teacherName}
+                          </p>
                         </div>
-                        <p className="text-sm">{msg.content}</p>
-                        <p className="text-xs text-muted-foreground mt-1">- {msg.teacherName}</p>
-                      </div>
-                    ))}
-                    {(!classroomMessages || classroomMessages.filter(msg => msg.messageType !== "quote").length === 0) && (
-                      <p className="text-center py-8 text-muted-foreground">No announcements yet</p>
+                      ))}
+                    {(!classroomMessages ||
+                      classroomMessages.filter(
+                        (msg) => msg.messageType !== "quote",
+                      ).length === 0) && (
+                      <p className="text-center py-8 text-muted-foreground">
+                        No announcements yet
+                      </p>
                     )}
                   </div>
                 </CardContent>
@@ -516,12 +668,20 @@ export default function StudentPage() {
             <Card className="rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle>Send Message to Teacher</CardTitle>
-                <CardDescription>Contact your teachers for queries, absence notifications, or requests</CardDescription>
+                <CardDescription>
+                  Contact your teachers for queries, absence notifications, or
+                  requests
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
                   <Label>Select Teacher</Label>
-                  <Select value={messageForm.receiverId} onValueChange={(value) => setMessageForm(prev => ({ ...prev, receiverId: value }))}>
+                  <Select
+                    value={messageForm.receiverId}
+                    onValueChange={(value) =>
+                      setMessageForm((prev) => ({ ...prev, receiverId: value }))
+                    }
+                  >
                     <SelectTrigger className="rounded-xl">
                       <SelectValue placeholder="Choose a teacher" />
                     </SelectTrigger>
@@ -537,12 +697,22 @@ export default function StudentPage() {
 
                 <div>
                   <Label>Message Type</Label>
-                  <Select value={messageForm.messageType} onValueChange={(value) => setMessageForm(prev => ({ ...prev, messageType: value as typeof messageForm.messageType }))}>
+                  <Select
+                    value={messageForm.messageType}
+                    onValueChange={(value) =>
+                      setMessageForm((prev) => ({
+                        ...prev,
+                        messageType: value as typeof messageForm.messageType,
+                      }))
+                    }
+                  >
                     <SelectTrigger className="rounded-xl">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="absence">Absence Notification</SelectItem>
+                      <SelectItem value="absence">
+                        Absence Notification
+                      </SelectItem>
                       <SelectItem value="query">Query</SelectItem>
                       <SelectItem value="request">Request</SelectItem>
                       <SelectItem value="general">General</SelectItem>
@@ -556,7 +726,12 @@ export default function StudentPage() {
                     className="rounded-xl"
                     placeholder="Enter message subject"
                     value={messageForm.subject}
-                    onChange={(e) => setMessageForm(prev => ({ ...prev, subject: e.target.value }))}
+                    onChange={(e) =>
+                      setMessageForm((prev) => ({
+                        ...prev,
+                        subject: e.target.value,
+                      }))
+                    }
                   />
                 </div>
 
@@ -566,13 +741,24 @@ export default function StudentPage() {
                     className="rounded-xl"
                     placeholder="Write your message..."
                     value={messageForm.message}
-                    onChange={(e) => setMessageForm(prev => ({ ...prev, message: e.target.value }))}
+                    onChange={(e) =>
+                      setMessageForm((prev) => ({
+                        ...prev,
+                        message: e.target.value,
+                      }))
+                    }
                     rows={6}
                   />
                 </div>
 
-                <Button onClick={handleSendMessage} disabled={sendMessageMutation.isPending} className="rounded-xl">
-                  {sendMessageMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                <Button
+                  onClick={handleSendMessage}
+                  disabled={sendMessageMutation.isPending}
+                  className="rounded-xl"
+                >
+                  {sendMessageMutation.isPending && (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  )}
                   <Send className="h-4 w-4 mr-2" />
                   Send Message
                 </Button>

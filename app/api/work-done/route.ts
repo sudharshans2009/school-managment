@@ -18,7 +18,13 @@ export async function GET(request: NextRequest) {
 
     // Only admin and teacher can access work done records
     if (session.user.role !== "admin" && session.user.role !== "teacher") {
-      return NextResponse.json({ error: "Forbidden: Only admin and teachers can view work done records" }, { status: 403 });
+      return NextResponse.json(
+        {
+          error:
+            "Forbidden: Only admin and teachers can view work done records",
+        },
+        { status: 403 },
+      );
     }
 
     const searchParams = request.nextUrl.searchParams;
@@ -56,9 +62,9 @@ export async function GET(request: NextRequest) {
       conditions.push(lte(workDone.date, endDate));
     }
 
-    if (isSubstitute === 'true') {
+    if (isSubstitute === "true") {
       conditions.push(eq(workDone.isSubstitute, true));
-    } else if (isSubstitute === 'false') {
+    } else if (isSubstitute === "false") {
       conditions.push(eq(workDone.isSubstitute, false));
     }
 
@@ -95,7 +101,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(records);
   } catch (error) {
     console.error("Error fetching work done records:", error);
-    return NextResponse.json({ error: "Failed to fetch work done records" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch work done records" },
+      { status: 500 },
+    );
   }
 }
 
@@ -112,7 +121,13 @@ export async function POST(request: NextRequest) {
 
     // Only admin and teacher can create work done records
     if (session.user.role !== "admin" && session.user.role !== "teacher") {
-      return NextResponse.json({ error: "Forbidden: Only admin and teachers can create work done records" }, { status: 403 });
+      return NextResponse.json(
+        {
+          error:
+            "Forbidden: Only admin and teachers can create work done records",
+        },
+        { status: 403 },
+      );
     }
 
     const body = await request.json();
@@ -130,10 +145,20 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validation
-    if (!classroomId || !subjectId || !teacherId || !date || !periodNumber || !topicsCovered) {
+    if (
+      !classroomId ||
+      !subjectId ||
+      !teacherId ||
+      !date ||
+      !periodNumber ||
+      !topicsCovered
+    ) {
       return NextResponse.json(
-        { error: "Required fields: classroomId, subjectId, teacherId, date, periodNumber, topicsCovered" },
-        { status: 400 }
+        {
+          error:
+            "Required fields: classroomId, subjectId, teacherId, date, periodNumber, topicsCovered",
+        },
+        { status: 400 },
       );
     }
 
@@ -157,6 +182,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(newRecord[0], { status: 201 });
   } catch (error) {
     console.error("Error creating work done record:", error);
-    return NextResponse.json({ error: "Failed to create work done record" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create work done record" },
+      { status: 500 },
+    );
   }
 }

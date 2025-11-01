@@ -5,7 +5,13 @@ import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,7 +33,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Plus, CheckCircle, XCircle, Trash2, ArrowLeft } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  CheckCircle,
+  XCircle,
+  Trash2,
+  ArrowLeft,
+} from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -99,8 +112,10 @@ export default function AdminExamsPage() {
     queryKey: ["exams", filterClassroom, filterSubject],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (filterClassroom && filterClassroom !== "all") params.append("classroomId", filterClassroom);
-      if (filterSubject && filterSubject !== "all") params.append("subjectId", filterSubject);
+      if (filterClassroom && filterClassroom !== "all")
+        params.append("classroomId", filterClassroom);
+      if (filterSubject && filterSubject !== "all")
+        params.append("subjectId", filterSubject);
 
       const response = await fetch(`/api/exams?${params.toString()}`);
       if (!response.ok) throw new Error("Failed to fetch exams");
@@ -137,7 +152,9 @@ export default function AdminExamsPage() {
         body: JSON.stringify({
           ...data,
           totalMarks: parseInt(data.totalMarks),
-          passingMarks: data.passingMarks ? parseInt(data.passingMarks) : undefined,
+          passingMarks: data.passingMarks
+            ? parseInt(data.passingMarks)
+            : undefined,
           duration: data.duration ? parseInt(data.duration) : undefined,
         }),
       });
@@ -162,7 +179,13 @@ export default function AdminExamsPage() {
 
   // Finalize exam mutation
   const finalizeExamMutation = useMutation({
-    mutationFn: async ({ examId, isFinalized }: { examId: string; isFinalized: boolean }) => {
+    mutationFn: async ({
+      examId,
+      isFinalized,
+    }: {
+      examId: string;
+      isFinalized: boolean;
+    }) => {
       const response = await fetch(`/api/exams/${examId}/finalize`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -275,7 +298,10 @@ export default function AdminExamsPage() {
               Create and manage exams, upload grades, and finalize results
             </p>
           </div>
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <Dialog
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          >
             <DialogTrigger asChild>
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
@@ -296,7 +322,9 @@ export default function AdminExamsPage() {
                     <Input
                       id="name"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
                       placeholder="e.g., Mathematics Mid-Term Exam"
                       required
                     />
@@ -306,7 +334,9 @@ export default function AdminExamsPage() {
                     <Label htmlFor="examType">Exam Type</Label>
                     <Select
                       value={formData.examType}
-                      onValueChange={(value) => setFormData({ ...formData, examType: value })}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, examType: value })
+                      }
                       required
                     >
                       <SelectTrigger>
@@ -328,7 +358,9 @@ export default function AdminExamsPage() {
                       id="examDate"
                       type="date"
                       value={formData.examDate}
-                      onChange={(e) => setFormData({ ...formData, examDate: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, examDate: e.target.value })
+                      }
                       required
                     />
                   </div>
@@ -337,7 +369,9 @@ export default function AdminExamsPage() {
                     <Label htmlFor="classroomId">Classroom</Label>
                     <Select
                       value={formData.classroomId}
-                      onValueChange={(value) => setFormData({ ...formData, classroomId: value })}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, classroomId: value })
+                      }
                       required
                     >
                       <SelectTrigger>
@@ -357,7 +391,9 @@ export default function AdminExamsPage() {
                     <Label htmlFor="subjectId">Subject</Label>
                     <Select
                       value={formData.subjectId}
-                      onValueChange={(value) => setFormData({ ...formData, subjectId: value })}
+                      onValueChange={(value) =>
+                        setFormData({ ...formData, subjectId: value })
+                      }
                       required
                     >
                       <SelectTrigger>
@@ -379,19 +415,28 @@ export default function AdminExamsPage() {
                       id="totalMarks"
                       type="number"
                       value={formData.totalMarks}
-                      onChange={(e) => setFormData({ ...formData, totalMarks: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, totalMarks: e.target.value })
+                      }
                       placeholder="100"
                       required
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="passingMarks">Passing Marks (Optional)</Label>
+                    <Label htmlFor="passingMarks">
+                      Passing Marks (Optional)
+                    </Label>
                     <Input
                       id="passingMarks"
                       type="number"
                       value={formData.passingMarks}
-                      onChange={(e) => setFormData({ ...formData, passingMarks: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          passingMarks: e.target.value,
+                        })
+                      }
                       placeholder="40"
                     />
                   </div>
@@ -402,7 +447,9 @@ export default function AdminExamsPage() {
                       id="duration"
                       type="number"
                       value={formData.duration}
-                      onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, duration: e.target.value })
+                      }
                       placeholder="180"
                     />
                   </div>
@@ -412,7 +459,12 @@ export default function AdminExamsPage() {
                     <Input
                       id="academicYear"
                       value={formData.academicYear}
-                      onChange={(e) => setFormData({ ...formData, academicYear: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          academicYear: e.target.value,
+                        })
+                      }
                       placeholder="2024"
                       required
                     />
@@ -423,7 +475,9 @@ export default function AdminExamsPage() {
                     <Input
                       id="term"
                       value={formData.term}
-                      onChange={(e) => setFormData({ ...formData, term: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, term: e.target.value })
+                      }
                       placeholder="Term 1"
                     />
                   </div>
@@ -433,18 +487,27 @@ export default function AdminExamsPage() {
                     <Textarea
                       id="syllabus"
                       value={formData.syllabus}
-                      onChange={(e) => setFormData({ ...formData, syllabus: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, syllabus: e.target.value })
+                      }
                       placeholder="Topics covered in this exam..."
                       rows={3}
                     />
                   </div>
 
                   <div className="col-span-2">
-                    <Label htmlFor="instructions">Instructions (Optional)</Label>
+                    <Label htmlFor="instructions">
+                      Instructions (Optional)
+                    </Label>
                     <Textarea
                       id="instructions"
                       value={formData.instructions}
-                      onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          instructions: e.target.value,
+                        })
+                      }
                       placeholder="Exam instructions..."
                       rows={3}
                     />
@@ -480,7 +543,10 @@ export default function AdminExamsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="filterClassroom">Filter by Classroom</Label>
-                <Select value={filterClassroom} onValueChange={setFilterClassroom}>
+                <Select
+                  value={filterClassroom}
+                  onValueChange={setFilterClassroom}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="All Classrooms" />
                   </SelectTrigger>
@@ -542,7 +608,8 @@ export default function AdminExamsPage() {
                         )}
                       </CardTitle>
                       <CardDescription>
-                        {exam.classroom.name} • {exam.subject.name} ({exam.subject.code})
+                        {exam.classroom.name} • {exam.subject.name} (
+                        {exam.subject.code})
                       </CardDescription>
                     </div>
                     <div className="flex items-center gap-2">
@@ -571,7 +638,7 @@ export default function AdminExamsPage() {
                         onClick={() => {
                           if (
                             confirm(
-                              "Are you sure you want to delete this exam? This action cannot be undone."
+                              "Are you sure you want to delete this exam? This action cannot be undone.",
                             )
                           ) {
                             deleteExamMutation.mutate(exam.id);
@@ -592,7 +659,9 @@ export default function AdminExamsPage() {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                     <div>
                       <p className="text-muted-foreground">Type</p>
-                      <p className="font-medium">{getExamTypeLabel(exam.examType)}</p>
+                      <p className="font-medium">
+                        {getExamTypeLabel(exam.examType)}
+                      </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Date</p>

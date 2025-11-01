@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
-import { homework, homeworkSubmissions, students, subjects, users } from "@/database/schema";
+import {
+  homework,
+  homeworkSubmissions,
+  students,
+  subjects,
+  users,
+} from "@/database/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 
@@ -9,7 +15,10 @@ export async function GET(req: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
 
-    if (!session?.user || (session.user.role !== "teacher" && session.user.role !== "admin")) {
+    if (
+      !session?.user ||
+      (session.user.role !== "teacher" && session.user.role !== "admin")
+    ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -21,7 +30,7 @@ export async function GET(req: NextRequest) {
     if (!homeworkId && !classroomId) {
       return NextResponse.json(
         { error: "Either homeworkId or classroomId is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -62,11 +71,13 @@ export async function GET(req: NextRequest) {
       .where(
         and(
           eq(homework.classroomId, classroomId!),
-          session.user.role === "teacher" ? eq(homework.teacherId, session.user.id) : undefined
-        )
+          session.user.role === "teacher"
+            ? eq(homework.teacherId, session.user.id)
+            : undefined,
+        ),
       );
 
-    const homeworkIds = teacherHomeworks.map(h => h.id);
+    const homeworkIds = teacherHomeworks.map((h) => h.id);
 
     if (homeworkIds.length === 0) {
       return NextResponse.json([]);
@@ -95,7 +106,9 @@ export async function GET(req: NextRequest) {
       .innerJoin(users, eq(students.userId, users.id))
       .innerJoin(homework, eq(homeworkSubmissions.homeworkId, homework.id))
       .innerJoin(subjects, eq(homework.subjectId, subjects.id))
-      .where(studentId ? eq(homeworkSubmissions.studentId, studentId) : undefined)
+      .where(
+        studentId ? eq(homeworkSubmissions.studentId, studentId) : undefined,
+      )
       .orderBy(desc(homeworkSubmissions.submittedAt));
 
     return NextResponse.json(submissions);
@@ -103,7 +116,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching homework submissions:", error);
     return NextResponse.json(
       { error: "Failed to fetch submissions" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -123,7 +136,7 @@ export async function POST(req: NextRequest) {
     if (!homeworkId || !studentId) {
       return NextResponse.json(
         { error: "homeworkId and studentId are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -135,13 +148,16 @@ export async function POST(req: NextRequest) {
       .limit(1);
 
     if (homeworkRecord.length === 0) {
-      return NextResponse.json({ error: "Homework not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Homework not found" },
+        { status: 404 },
+      );
     }
 
     if (homeworkRecord[0].teacherId !== session.user.id) {
       return NextResponse.json(
         { error: "You don't have permission to mark this homework" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -152,15 +168,15 @@ export async function POST(req: NextRequest) {
       .where(
         and(
           eq(homeworkSubmissions.homeworkId, homeworkId),
-          eq(homeworkSubmissions.studentId, studentId)
-        )
+          eq(homeworkSubmissions.studentId, studentId),
+        ),
       )
       .limit(1);
 
     if (existing.length > 0) {
       return NextResponse.json(
         { error: "Submission already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -181,7 +197,7 @@ export async function POST(req: NextRequest) {
     console.error("Error creating submission:", error);
     return NextResponse.json(
       { error: "Failed to create submission" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

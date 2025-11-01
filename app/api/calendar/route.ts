@@ -14,16 +14,22 @@ export async function GET(req: NextRequest) {
 
     if (date) {
       // Fetch single date
-      const days = await db.select().from(calendarDays).where(eq(calendarDays.date, date));
+      const days = await db
+        .select()
+        .from(calendarDays)
+        .where(eq(calendarDays.date, date));
       return NextResponse.json(days[0] || null);
     } else if (startDate && endDate) {
       // Fetch range
-      const days = await db.select().from(calendarDays).where(
-        and(
-          gte(calendarDays.date, startDate),
-          lte(calendarDays.date, endDate)
-        )
-      );
+      const days = await db
+        .select()
+        .from(calendarDays)
+        .where(
+          and(
+            gte(calendarDays.date, startDate),
+            lte(calendarDays.date, endDate),
+          ),
+        );
       return NextResponse.json(days);
     } else {
       // Fetch all
@@ -34,7 +40,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching calendar days:", error);
     return NextResponse.json(
       { error: "Failed to fetch calendar days" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -62,7 +68,7 @@ export async function POST(req: NextRequest) {
     if (!date || !dayType || !dayDuration) {
       return NextResponse.json(
         { error: "Date, dayType, and dayDuration are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -111,7 +117,7 @@ export async function POST(req: NextRequest) {
     console.error("Error creating/updating calendar day:", error);
     return NextResponse.json(
       { error: "Failed to create/update calendar day" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -129,10 +135,7 @@ export async function DELETE(req: NextRequest) {
     const date = searchParams.get("date");
 
     if (!date) {
-      return NextResponse.json(
-        { error: "Date is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Date is required" }, { status: 400 });
     }
 
     await db.delete(calendarDays).where(eq(calendarDays.date, date));
@@ -142,7 +145,7 @@ export async function DELETE(req: NextRequest) {
     console.error("Error deleting calendar day:", error);
     return NextResponse.json(
       { error: "Failed to delete calendar day" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

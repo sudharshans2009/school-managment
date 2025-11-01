@@ -8,7 +8,10 @@ export async function POST(req: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
 
-    if (!session?.user || (session.user as { role?: string }).role !== "admin") {
+    if (
+      !session?.user ||
+      (session.user as { role?: string }).role !== "admin"
+    ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -18,7 +21,7 @@ export async function POST(req: NextRequest) {
     if (!teachers || !Array.isArray(teachers)) {
       return NextResponse.json(
         { error: "Invalid data format. Expected array of teachers." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -30,18 +33,14 @@ export async function POST(req: NextRequest) {
 
     for (const teacher of teachers) {
       try {
-        const {
-          name,
-          email,
-          password,
-          phone,
-          address,
-        } = teacher;
+        const { name, email, password, phone, address } = teacher;
 
         // Validate required fields
         if (!name || !email || !password) {
           results.failed++;
-          results.errors.push(`Missing required fields for ${email || "unknown"}`);
+          results.errors.push(
+            `Missing required fields for ${email || "unknown"}`,
+          );
           continue;
         }
 
@@ -60,24 +59,22 @@ export async function POST(req: NextRequest) {
         const passwordHash = await bcrypt.hash(password, 10);
 
         // Create user
-        await db
-          .insert(users)
-          .values({
-            name,
-            email,
-            role: "teacher",
-            passwordHash,
-            phone: phone || null,
-            address: address || null,
-            emailVerified: true,
-            isActive: true,
-          });
+        await db.insert(users).values({
+          name,
+          email,
+          role: "teacher",
+          passwordHash,
+          phone: phone || null,
+          address: address || null,
+          emailVerified: true,
+          isActive: true,
+        });
 
         results.success++;
       } catch (error) {
         results.failed++;
         results.errors.push(
-          `Error creating teacher ${teacher.email}: ${error instanceof Error ? error.message : "Unknown error"}`
+          `Error creating teacher ${teacher.email}: ${error instanceof Error ? error.message : "Unknown error"}`,
         );
       }
     }
@@ -90,7 +87,7 @@ export async function POST(req: NextRequest) {
     console.error("Error in bulk teacher upload:", error);
     return NextResponse.json(
       { error: "Failed to process bulk upload" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

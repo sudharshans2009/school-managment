@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
-import { subjects, timetable, homework, teacherAssignments } from "@/database/schema";
+import {
+  subjects,
+  timetable,
+  homework,
+  teacherAssignments,
+} from "@/database/schema";
 import { eq } from "drizzle-orm";
 
 // GET single subject
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -32,7 +37,7 @@ export async function GET(
     console.error("Error fetching subject:", error);
     return NextResponse.json(
       { error: "Failed to fetch subject" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -40,12 +45,13 @@ export async function GET(
 // PUT update subject
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
     const body = await request.json();
-    const { name, code, description, applicableGrades, applicableSections } = body;
+    const { name, code, description, applicableGrades, applicableSections } =
+      body;
 
     // Check if subject exists
     const existingSubject = await db.query.subjects.findFirst({
@@ -64,7 +70,7 @@ export async function PUT(
       if (codeExists) {
         return NextResponse.json(
           { error: "Subject code already in use" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -75,10 +81,14 @@ export async function PUT(
     if (code) updateData.code = code;
     if (description !== undefined) updateData.description = description;
     if (applicableGrades !== undefined) {
-      updateData.applicableGrades = applicableGrades ? JSON.stringify(applicableGrades) : null;
+      updateData.applicableGrades = applicableGrades
+        ? JSON.stringify(applicableGrades)
+        : null;
     }
     if (applicableSections !== undefined) {
-      updateData.applicableSections = applicableSections ? JSON.stringify(applicableSections) : null;
+      updateData.applicableSections = applicableSections
+        ? JSON.stringify(applicableSections)
+        : null;
     }
 
     const [updatedSubject] = await db
@@ -92,7 +102,7 @@ export async function PUT(
     console.error("Error updating subject:", error);
     return NextResponse.json(
       { error: "Failed to update subject" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -100,7 +110,7 @@ export async function PUT(
 // DELETE subject
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -116,12 +126,14 @@ export async function DELETE(
 
     // Delete related timetable entries first
     await db.delete(timetable).where(eq(timetable.subjectId, id));
-    
+
     // Delete related homework
     await db.delete(homework).where(eq(homework.subjectId, id));
-    
+
     // Delete teacher assignments
-    await db.delete(teacherAssignments).where(eq(teacherAssignments.subjectId, id));
+    await db
+      .delete(teacherAssignments)
+      .where(eq(teacherAssignments.subjectId, id));
 
     // Now delete the subject
     await db.delete(subjects).where(eq(subjects.id, id));
@@ -131,7 +143,7 @@ export async function DELETE(
     console.error("Error deleting subject:", error);
     return NextResponse.json(
       { error: "Failed to delete subject" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

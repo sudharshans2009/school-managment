@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
-import { groupMessages, groupMessageRecipients, users } from "@/database/schema";
+import {
+  groupMessages,
+  groupMessageRecipients,
+  users,
+} from "@/database/schema";
 import { eq, desc, or, and } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 
@@ -35,7 +39,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(messages);
   } catch (error) {
     console.error("Error fetching group messages:", error);
-    return NextResponse.json({ error: "Failed to fetch group messages" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch group messages" },
+      { status: 500 },
+    );
   }
 }
 
@@ -54,7 +61,7 @@ export async function POST(request: NextRequest) {
     if (!subject || !content || !targetGroups || targetGroups.length === 0) {
       return NextResponse.json(
         { error: "Subject, content, and target groups are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -73,6 +80,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(message, { status: 201 });
   } catch (error) {
     console.error("Error sending group message:", error);
-    return NextResponse.json({ error: "Failed to send group message" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to send group message" },
+      { status: 500 },
+    );
   }
 }

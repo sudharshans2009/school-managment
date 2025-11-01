@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching teacher classrooms:", error);
     return NextResponse.json(
       { error: "Failed to fetch classrooms" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

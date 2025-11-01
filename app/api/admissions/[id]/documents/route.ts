@@ -7,7 +7,7 @@ import { auth } from "@/lib/auth";
 // GET documents for an admission application
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -28,7 +28,7 @@ export async function GET(
     console.error("Error fetching admission documents:", error);
     return NextResponse.json(
       { error: "Failed to fetch admission documents" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -36,7 +36,7 @@ export async function GET(
 // POST - Upload a document
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id: applicationId } = await params;
@@ -46,7 +46,7 @@ export async function POST(
     if (!documentType || !documentName || !fileUrl) {
       return NextResponse.json(
         { error: "Document type, name, and file URL are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -64,14 +64,17 @@ export async function POST(
     return NextResponse.json(document, { status: 201 });
   } catch (error) {
     console.error("Error uploading document:", error);
-    return NextResponse.json({ error: "Failed to upload document" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to upload document" },
+      { status: 500 },
+    );
   }
 }
 
 // PUT - Verify/Reject a document (admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -87,7 +90,7 @@ export async function PUT(
     if (!documentId || !status) {
       return NextResponse.json(
         { error: "Document ID and status are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -110,6 +113,9 @@ export async function PUT(
     return NextResponse.json(updatedDocument);
   } catch (error) {
     console.error("Error verifying document:", error);
-    return NextResponse.json({ error: "Failed to verify document" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to verify document" },
+      { status: 500 },
+    );
   }
 }

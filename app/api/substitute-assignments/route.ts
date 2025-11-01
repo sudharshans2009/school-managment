@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
-import { substituteAssignments, users, classrooms, subjects } from "@/database/schema";
+import {
+  substituteAssignments,
+  users,
+  classrooms,
+  subjects,
+} from "@/database/schema";
 import { eq, and, desc } from "drizzle-orm";
 
 // GET - Fetch substitute assignments
@@ -27,7 +32,9 @@ export async function GET(request: NextRequest) {
     }
 
     if (substituteTeacherId) {
-      conditions.push(eq(substituteAssignments.substituteTeacherId, substituteTeacherId));
+      conditions.push(
+        eq(substituteAssignments.substituteTeacherId, substituteTeacherId),
+      );
     }
 
     let query = db
@@ -55,7 +62,10 @@ export async function GET(request: NextRequest) {
       })
       .from(substituteAssignments)
       .leftJoin(users, eq(substituteAssignments.originalTeacherId, users.id))
-      .leftJoin(classrooms, eq(substituteAssignments.classroomId, classrooms.id))
+      .leftJoin(
+        classrooms,
+        eq(substituteAssignments.classroomId, classrooms.id),
+      )
       .leftJoin(subjects, eq(substituteAssignments.subjectId, subjects.id))
       .$dynamic();
 
@@ -69,15 +79,20 @@ export async function GET(request: NextRequest) {
     if (teacherId) {
       return NextResponse.json(
         assignments.filter(
-          (a) => a.originalTeacherId === teacherId || a.substituteTeacherId === teacherId
-        )
+          (a) =>
+            a.originalTeacherId === teacherId ||
+            a.substituteTeacherId === teacherId,
+        ),
       );
     }
 
     return NextResponse.json(assignments);
   } catch (error) {
     console.error("Error fetching substitute assignments:", error);
-    return NextResponse.json({ error: "Failed to fetch substitute assignments" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch substitute assignments" },
+      { status: 500 },
+    );
   }
 }
 
@@ -113,7 +128,7 @@ export async function POST(request: NextRequest) {
     ) {
       return NextResponse.json(
         { error: "All required fields must be provided" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -138,6 +153,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(newAssignment[0], { status: 201 });
   } catch (error) {
     console.error("Error creating substitute assignment:", error);
-    return NextResponse.json({ error: "Failed to create substitute assignment" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create substitute assignment" },
+      { status: 500 },
+    );
   }
 }

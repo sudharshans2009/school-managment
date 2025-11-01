@@ -12,7 +12,10 @@ export async function GET(request: NextRequest) {
     const today = searchParams.get("today"); // If true, only get today's messages
 
     if (!classroomId) {
-      return NextResponse.json({ error: "Classroom ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Classroom ID is required" },
+        { status: 400 },
+      );
     }
 
     const conditions = [
@@ -52,7 +55,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(classMessages);
   } catch (error) {
     console.error("Error fetching classroom messages:", error);
-    return NextResponse.json({ error: "Failed to fetch classroom messages" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch classroom messages" },
+      { status: 500 },
+    );
   }
 }
 
@@ -64,8 +70,11 @@ export async function POST(request: NextRequest) {
 
     if (!classroomId || !teacherId || !messageType || !content) {
       return NextResponse.json(
-        { error: "Classroom ID, Teacher ID, message type, and content are required" },
-        { status: 400 }
+        {
+          error:
+            "Classroom ID, Teacher ID, message type, and content are required",
+        },
+        { status: 400 },
       );
     }
 
@@ -84,6 +93,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(newMessage, { status: 201 });
   } catch (error) {
     console.error("Error creating classroom message:", error);
-    return NextResponse.json({ error: "Failed to create classroom message" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create classroom message" },
+      { status: 500 },
+    );
   }
 }

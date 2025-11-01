@@ -3,11 +3,32 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { School, Plus, Search, Edit, Trash2, Users, LayoutGrid, Table as TableIcon } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  School,
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  Users,
+  LayoutGrid,
+  Table as TableIcon,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -73,11 +94,12 @@ export default function ClassroomsPage() {
     });
   };
 
-  const filteredClassrooms = classrooms?.filter((classroom) =>
-    classroom.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    classroom.grade.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    classroom.section.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    classroom.code.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredClassrooms = classrooms?.filter(
+    (classroom) =>
+      classroom.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      classroom.grade.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      classroom.section.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      classroom.code.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const primaryTeacher = (classroom: Classroom) => {
@@ -107,7 +129,9 @@ export default function ClassroomsPage() {
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center space-x-3">
             <Link href="/admin">
-              <Button variant="ghost" size="sm" className="rounded-xl">← Back</Button>
+              <Button variant="ghost" size="sm" className="rounded-xl">
+                ← Back
+              </Button>
             </Link>
             <School className="h-6 w-6 text-primary" />
             <h1 className="text-2xl font-bold">Classroom Management</h1>
@@ -116,7 +140,9 @@ export default function ClassroomsPage() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setViewMode(viewMode === "grid" ? "table" : "grid")}
+              onClick={() =>
+                setViewMode(viewMode === "grid" ? "table" : "grid")
+              }
               className="rounded-xl"
             >
               {viewMode === "grid" ? (
@@ -131,7 +157,7 @@ export default function ClassroomsPage() {
                 </>
               )}
             </Button>
-          <Dialog open={openCreate} onOpenChange={setOpenCreate}>
+            <Dialog open={openCreate} onOpenChange={setOpenCreate}>
               <DialogTrigger asChild>
                 <Button className="rounded-xl">
                   <Plus className="h-4 w-4 mr-2" />
@@ -145,15 +171,33 @@ export default function ClassroomsPage() {
                 <form onSubmit={handleCreate} className="space-y-4">
                   <div>
                     <Label htmlFor="name">Classroom Name *</Label>
-                    <Input className="rounded-xl" id="name" name="name" placeholder="e.g., Class 10A" required />
+                    <Input
+                      className="rounded-xl"
+                      id="name"
+                      name="name"
+                      placeholder="e.g., Class 10A"
+                      required
+                    />
                   </div>
                   <div>
                     <Label htmlFor="grade">Grade *</Label>
-                    <Input className="rounded-xl" id="grade" name="grade" placeholder="e.g., 10" required />
+                    <Input
+                      className="rounded-xl"
+                      id="grade"
+                      name="grade"
+                      placeholder="e.g., 10"
+                      required
+                    />
                   </div>
                   <div>
                     <Label htmlFor="section">Section *</Label>
-                    <Input className="rounded-xl" id="section" name="section" placeholder="e.g., A" required />
+                    <Input
+                      className="rounded-xl"
+                      id="section"
+                      name="section"
+                      placeholder="e.g., A"
+                      required
+                    />
                   </div>
                   {createMutation.error && (
                     <Alert variant="destructive">
@@ -171,7 +215,11 @@ export default function ClassroomsPage() {
                     >
                       Cancel
                     </Button>
-                    <Button type="submit" className="rounded-xl" disabled={createMutation.isPending}>
+                    <Button
+                      type="submit"
+                      className="rounded-xl"
+                      disabled={createMutation.isPending}
+                    >
                       {createMutation.isPending ? "Creating..." : "Create"}
                     </Button>
                   </div>
@@ -205,72 +253,96 @@ export default function ClassroomsPage() {
             </Card>
 
             {filteredClassrooms && filteredClassrooms.length === 0 ? (
-          <Card className="rounded-2xl shadow-sm">
-            <CardContent className="p-8 text-center text-gray-500">
-              No classrooms found. Create your first classroom to get started.
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredClassrooms?.map((classroom) => (
-              <Card key={classroom.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle>{classroom.name}</CardTitle>
-                      <CardDescription>Code: {classroom.code}</CardDescription>
-                    </div>
-                    <div className="flex space-x-1">
-                      <Link href={`/admin/classrooms/${classroom.id}/edit`}>
-                        <Button variant="ghost" size="icon" title="Manage classroom">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          if (confirm("Are you sure you want to delete this classroom?")) {
-                            deleteMutation.mutate(classroom.id);
-                          }
-                        }}
-                        disabled={deleteMutation.isPending}
-                        title="Delete classroom"
-                      >
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600 dark:text-gray-400">Grade & Section</span>
-                    <span className="font-semibold">{classroom.grade}{classroom.section}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600 dark:text-gray-400 flex items-center">
-                      <Users className="h-4 w-4 mr-1" /> Students
-                    </span>
-                    <span className="font-semibold">
-                      {classroom.students.length}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm pt-2 border-t">
-                    <span className="text-gray-600 dark:text-gray-400">Class Teacher</span>
-                    <span className="font-semibold text-xs">{primaryTeacher(classroom)}</span>
-                  </div>
-                  <div className="pt-2">
-                    <Badge variant="secondary" className="text-xs">
-                      {classroom.teacherAssignments.length} teachers assigned
-                    </Badge>
-                  </div>
+              <Card className="rounded-2xl shadow-sm">
+                <CardContent className="p-8 text-center text-gray-500">
+                  No classrooms found. Create your first classroom to get
+                  started.
                 </CardContent>
               </Card>
-            ))}
-          </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredClassrooms?.map((classroom) => (
+                  <Card
+                    key={classroom.id}
+                    className="hover:shadow-lg transition-shadow"
+                  >
+                    <CardHeader>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle>{classroom.name}</CardTitle>
+                          <CardDescription>
+                            Code: {classroom.code}
+                          </CardDescription>
+                        </div>
+                        <div className="flex space-x-1">
+                          <Link href={`/admin/classrooms/${classroom.id}/edit`}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              title="Manage classroom"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => {
+                              if (
+                                confirm(
+                                  "Are you sure you want to delete this classroom?",
+                                )
+                              ) {
+                                deleteMutation.mutate(classroom.id);
+                              }
+                            }}
+                            disabled={deleteMutation.isPending}
+                            title="Delete classroom"
+                          >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Grade & Section
+                        </span>
+                        <span className="font-semibold">
+                          {classroom.grade}
+                          {classroom.section}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-600 dark:text-gray-400 flex items-center">
+                          <Users className="h-4 w-4 mr-1" /> Students
+                        </span>
+                        <span className="font-semibold">
+                          {classroom.students.length}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm pt-2 border-t">
+                        <span className="text-gray-600 dark:text-gray-400">
+                          Class Teacher
+                        </span>
+                        <span className="font-semibold text-xs">
+                          {primaryTeacher(classroom)}
+                        </span>
+                      </div>
+                      <div className="pt-2">
+                        <Badge variant="secondary" className="text-xs">
+                          {classroom.teacherAssignments.length} teachers
+                          assigned
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </>
         )}
-        </>
-      )}
       </div>
     </DashboardLayout>
   );

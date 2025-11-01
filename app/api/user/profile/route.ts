@@ -11,10 +11,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!session) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const user = await db.query.users.findFirst({
@@ -22,10 +19,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Remove sensitive data
@@ -37,7 +31,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching user profile:", error);
     return NextResponse.json(
       { error: "Failed to fetch profile" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -49,10 +43,7 @@ export async function PATCH(request: NextRequest) {
     });
 
     if (!session) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -65,19 +56,19 @@ export async function PATCH(request: NextRequest) {
     if (!isAdmin && targetUserId !== session.user.id) {
       return NextResponse.json(
         { error: "Forbidden: You can only update your own profile" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
     // Non-admins can only update limited fields
     let allowedUpdates: Record<string, unknown> = {};
-    
+
     if (isAdmin) {
       // Admins can update any field except password (use separate endpoint)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { passwordHash, ...adminUpdates } = updates;
       allowedUpdates = { ...adminUpdates, updatedAt: new Date() };
-      
+
       // If admin is updating email, mark it as verified automatically
       if (adminUpdates.email) {
         allowedUpdates.emailVerified = true;
@@ -86,7 +77,7 @@ export async function PATCH(request: NextRequest) {
       // Regular users can't update via this endpoint (they're view-only)
       return NextResponse.json(
         { error: "Forbidden: Regular users cannot update profile data" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -100,10 +91,7 @@ export async function PATCH(request: NextRequest) {
     });
 
     if (!updatedUser) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -117,7 +105,7 @@ export async function PATCH(request: NextRequest) {
     console.error("Error updating user profile:", error);
     return NextResponse.json(
       { error: "Failed to update profile" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

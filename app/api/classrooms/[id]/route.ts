@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 // GET /api/classrooms/[id] - Get classroom details
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -31,7 +31,7 @@ export async function GET(
     if (!classroom) {
       return NextResponse.json(
         { error: "Classroom not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -40,7 +40,7 @@ export async function GET(
     console.error("Error fetching classroom:", error);
     return NextResponse.json(
       { error: "Failed to fetch classroom" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -48,7 +48,7 @@ export async function GET(
 // PUT /api/classrooms/[id] - Update classroom
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -72,7 +72,7 @@ export async function PUT(
     if (!updatedClassroom) {
       return NextResponse.json(
         { error: "Classroom not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -81,7 +81,7 @@ export async function PUT(
     console.error("Error updating classroom:", error);
     return NextResponse.json(
       { error: "Failed to update classroom" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -89,15 +89,17 @@ export async function PUT(
 // DELETE /api/classrooms/[id] - Delete classroom
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
 
     // Delete related records first
-    await db.delete(teacherAssignments).where(eq(teacherAssignments.classroomId, id));
+    await db
+      .delete(teacherAssignments)
+      .where(eq(teacherAssignments.classroomId, id));
     await db.delete(students).where(eq(students.classroomId, id));
-    
+
     const [deletedClassroom] = await db
       .delete(classrooms)
       .where(eq(classrooms.id, id))
@@ -106,7 +108,7 @@ export async function DELETE(
     if (!deletedClassroom) {
       return NextResponse.json(
         { error: "Classroom not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -115,7 +117,7 @@ export async function DELETE(
     console.error("Error deleting classroom:", error);
     return NextResponse.json(
       { error: "Failed to delete classroom" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

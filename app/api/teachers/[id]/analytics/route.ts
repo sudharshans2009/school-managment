@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/database';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/database";
 import {
   teacherAssignments,
   students,
@@ -11,14 +11,14 @@ import {
   workDone,
   subjects,
   classrooms,
-} from '@/database/schema';
-import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
-import { eq, and, gte } from 'drizzle-orm';
+} from "@/database/schema";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { eq, and, gte } from "drizzle-orm";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({
@@ -26,12 +26,12 @@ export async function GET(
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id: teacherId } = await params;
     const { searchParams } = new URL(request.url);
-    const days = parseInt(searchParams.get('days') || '30');
+    const days = parseInt(searchParams.get("days") || "30");
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
@@ -53,12 +53,7 @@ export async function GET(
     const classroomData = await db
       .select({ id: classrooms.id, name: classrooms.name })
       .from(classrooms)
-      .where(
-        eq(
-          classrooms.id,
-          classroomIds[0] || ''
-        )
-      );
+      .where(eq(classrooms.id, classroomIds[0] || ""));
 
     const subjectData = await db
       .select({ id: subjects.id, name: subjects.name })
@@ -69,7 +64,9 @@ export async function GET(
       .select({ id: students.id, classroomId: students.classroomId })
       .from(students);
 
-    const teacherStudents = classStudents.filter((s) => s.classroomId && classroomIds.includes(s.classroomId));
+    const teacherStudents = classStudents.filter(
+      (s) => s.classroomId && classroomIds.includes(s.classroomId),
+    );
 
     // Classes analytics
     const isPrimaryTeacher = assignments.some((a) => a.isPrimary);
@@ -85,19 +82,29 @@ export async function GET(
       .where(
         and(
           eq(attendance.markedBy, teacherId),
-          gte(attendance.date, startDate)
-        )
+          gte(attendance.date, startDate),
+        ),
       );
 
     const totalMarked = teacherAttendance.length;
-    const presentCount = teacherAttendance.filter((a) => a.status === 'present').length;
-    const averageRate = totalMarked > 0 ? (presentCount / totalMarked) * 100 : 0;
+    const presentCount = teacherAttendance.filter(
+      (a) => a.status === "present",
+    ).length;
+    const averageRate =
+      totalMarked > 0 ? (presentCount / totalMarked) * 100 : 0;
 
     // Attendance by class
     const attendanceByClass = classroomData.map((classroom) => {
-      const classAttendance = teacherAttendance.filter((a) => a.classroomId === classroom.id);
-      const classPresent = classAttendance.filter((a) => a.status === 'present').length;
-      const rate = classAttendance.length > 0 ? (classPresent / classAttendance.length) * 100 : 0;
+      const classAttendance = teacherAttendance.filter(
+        (a) => a.classroomId === classroom.id,
+      );
+      const classPresent = classAttendance.filter(
+        (a) => a.status === "present",
+      ).length;
+      const rate =
+        classAttendance.length > 0
+          ? (classPresent / classAttendance.length) * 100
+          : 0;
       return { className: classroom.name, rate };
     });
 
@@ -111,8 +118,8 @@ export async function GET(
       .where(
         and(
           eq(homework.teacherId, teacherId),
-          gte(homework.assignedDate, startDate)
-        )
+          gte(homework.assignedDate, startDate),
+        ),
       );
 
     const homeworkIds = teacherHomework.map((h) => h.id);
@@ -124,17 +131,21 @@ export async function GET(
       })
       .from(homeworkSubmissions);
 
-    const teacherSubmissions = submissions.filter((s) => homeworkIds.includes(s.homeworkId));
+    const teacherSubmissions = submissions.filter((s) =>
+      homeworkIds.includes(s.homeworkId),
+    );
     const gradedSubmissions = teacherSubmissions.filter(
-      (s) => s.status === 'graded' && s.gradedBy === teacherId
+      (s) => s.status === "graded" && s.gradedBy === teacherId,
     );
     const pendingSubmissions = teacherSubmissions.filter(
-      (s) => s.status === 'submitted' && !s.gradedBy
+      (s) => s.status === "submitted" && !s.gradedBy,
     );
 
     const completionRate =
       teacherHomework.length > 0
-        ? (teacherSubmissions.length / (teacherHomework.length * teacherStudents.length)) * 100
+        ? (teacherSubmissions.length /
+            (teacherHomework.length * teacherStudents.length)) *
+          100
         : 0;
 
     // Exam analytics
@@ -149,7 +160,9 @@ export async function GET(
       .where(eq(exams.isFinalized, false));
 
     const availableExams = teacherExams.filter((e) =>
-      assignments.some((a) => a.subjectId === e.subjectId && a.classroomId === e.classroomId)
+      assignments.some(
+        (a) => a.subjectId === e.subjectId && a.classroomId === e.classroomId,
+      ),
     );
 
     const teacherGrades = await db
@@ -161,7 +174,9 @@ export async function GET(
       .from(studentGrades)
       .where(eq(studentGrades.uploadedBy, teacherId));
 
-    const uniqueStudentsGraded = [...new Set(teacherGrades.map((g) => g.studentId))].length;
+    const uniqueStudentsGraded = [
+      ...new Set(teacherGrades.map((g) => g.studentId)),
+    ].length;
 
     // Work Done analytics
     const teacherWorkDone = await db
@@ -173,18 +188,22 @@ export async function GET(
       .where(
         and(
           eq(workDone.teacherId, teacherId),
-          gte(workDone.date, startDate.toISOString().split('T')[0])
-        )
+          gte(workDone.date, startDate.toISOString().split("T")[0]),
+        ),
       );
 
-    const workDoneBySubject = subjectIds.map((subjectId) => {
-      const subject = subjectData.find((s) => s.id === subjectId);
-      const count = teacherWorkDone.filter((w) => w.subjectId === subjectId).length;
-      return {
-        subject: subject?.name || 'Unknown',
-        count,
-      };
-    }).filter((s) => s.count > 0);
+    const workDoneBySubject = subjectIds
+      .map((subjectId) => {
+        const subject = subjectData.find((s) => s.id === subjectId);
+        const count = teacherWorkDone.filter(
+          (w) => w.subjectId === subjectId,
+        ).length;
+        return {
+          subject: subject?.name || "Unknown",
+          count,
+        };
+      })
+      .filter((s) => s.count > 0);
 
     const analyticsData = {
       classes: {
@@ -218,7 +237,10 @@ export async function GET(
 
     return NextResponse.json(analyticsData);
   } catch (error) {
-    console.error('Error fetching teacher analytics:', error);
-    return NextResponse.json({ error: 'Failed to fetch analytics' }, { status: 500 });
+    console.error("Error fetching teacher analytics:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch analytics" },
+      { status: 500 },
+    );
   }
 }

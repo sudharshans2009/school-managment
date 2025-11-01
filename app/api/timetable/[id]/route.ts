@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 // DELETE /api/timetable/[id] - Delete timetable entry
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -19,16 +19,18 @@ export async function DELETE(
     if (!deleted) {
       return NextResponse.json(
         { error: "Timetable entry not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
-    return NextResponse.json({ message: "Timetable entry deleted successfully" });
+    return NextResponse.json({
+      message: "Timetable entry deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting timetable entry:", error);
     return NextResponse.json(
       { error: "Failed to delete timetable entry" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -36,7 +38,7 @@ export async function DELETE(
 // PUT /api/timetable/[id] - Update timetable entry
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -59,7 +61,7 @@ export async function PUT(
     if (!updated) {
       return NextResponse.json(
         { error: "Timetable entry not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -68,7 +70,7 @@ export async function PUT(
     console.error("Error updating timetable entry:", error);
     return NextResponse.json(
       { error: "Failed to update timetable entry" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

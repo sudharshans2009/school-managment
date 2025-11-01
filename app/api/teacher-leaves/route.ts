@@ -19,7 +19,12 @@ export async function GET(request: NextRequest) {
     }
 
     if (status) {
-      conditions.push(eq(teacherLeaves.status, status as 'pending' | 'approved' | 'rejected' | 'cancelled'));
+      conditions.push(
+        eq(
+          teacherLeaves.status,
+          status as "pending" | "approved" | "rejected" | "cancelled",
+        ),
+      );
     }
 
     if (startDate) {
@@ -55,7 +60,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(leaves);
   } catch (error) {
     console.error("Error fetching teacher leaves:", error);
-    return NextResponse.json({ error: "Failed to fetch teacher leaves" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch teacher leaves" },
+      { status: 500 },
+    );
   }
 }
 
@@ -69,7 +77,7 @@ export async function POST(request: NextRequest) {
     if (!teacherId || !leaveType || !startDate || !endDate || !reason) {
       return NextResponse.json(
         { error: "All fields are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -79,23 +87,29 @@ export async function POST(request: NextRequest) {
     if (start > end) {
       return NextResponse.json(
         { error: "Start date cannot be after end date" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Create leave request
-    const newLeave = await db.insert(teacherLeaves).values({
-      teacherId,
-      leaveType,
-      startDate,
-      endDate,
-      reason,
-      status: 'pending',
-    }).returning();
+    const newLeave = await db
+      .insert(teacherLeaves)
+      .values({
+        teacherId,
+        leaveType,
+        startDate,
+        endDate,
+        reason,
+        status: "pending",
+      })
+      .returning();
 
     return NextResponse.json(newLeave[0], { status: 201 });
   } catch (error) {
     console.error("Error creating leave request:", error);
-    return NextResponse.json({ error: "Failed to create leave request" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create leave request" },
+      { status: 500 },
+    );
   }
 }

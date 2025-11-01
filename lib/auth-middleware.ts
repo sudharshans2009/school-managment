@@ -3,16 +3,16 @@
  * Provides utilities for checking permissions in API routes
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 import {
   hasPermission,
   canAccessResource,
   Permission,
   ResourceType,
   ResourceAction,
-} from '@/lib/permissions';
-import { auditAccessDenied } from '@/lib/audit';
+} from "@/lib/permissions";
+import { auditAccessDenied } from "@/lib/audit";
 
 /**
  * Extended user type with role
@@ -21,23 +21,25 @@ export interface AuthUser {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'teacher' | 'student' | 'parent';
+  role: "admin" | "teacher" | "student" | "parent";
   [key: string]: unknown;
 }
 
 /**
  * Get authenticated user from request
  */
-export async function getAuthUser(request: NextRequest): Promise<AuthUser | null> {
+export async function getAuthUser(
+  request: NextRequest,
+): Promise<AuthUser | null> {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
-    
+
     if (!session?.user) {
       return null;
     }
 
     const user = session.user as AuthUser;
-    
+
     // Ensure role exists
     if (!user.role) {
       return null;
@@ -45,7 +47,7 @@ export async function getAuthUser(request: NextRequest): Promise<AuthUser | null
 
     return user;
   } catch (error) {
-    console.error('Error getting auth user:', error);
+    console.error("Error getting auth user:", error);
     return null;
   }
 }
@@ -54,14 +56,14 @@ export async function getAuthUser(request: NextRequest): Promise<AuthUser | null
  * Require authentication - returns user or error response
  */
 export async function requireAuth(
-  request: NextRequest
+  request: NextRequest,
 ): Promise<{ user: AuthUser } | NextResponse> {
   const user = await getAuthUser(request);
 
   if (!user) {
     return NextResponse.json(
-      { error: 'Unauthorized - Authentication required' },
-      { status: 401 }
+      { error: "Unauthorized - Authentication required" },
+      { status: 401 },
     );
   }
 
@@ -73,7 +75,7 @@ export async function requireAuth(
  */
 export async function requireRole(
   request: NextRequest,
-  allowedRoles: AuthUser['role'][]
+  allowedRoles: AuthUser["role"][],
 ): Promise<{ user: AuthUser } | NextResponse> {
   const authResult = await requireAuth(request);
 
@@ -89,18 +91,18 @@ export async function requireRole(
       user.id,
       user.email,
       user.role,
-      'user',
-      `role:${allowedRoles.join('|')}`,
-      request
+      "user",
+      `role:${allowedRoles.join("|")}`,
+      request,
     );
 
     return NextResponse.json(
       {
-        error: 'Forbidden - Insufficient permissions',
+        error: "Forbidden - Insufficient permissions",
         required: allowedRoles,
         current: user.role,
       },
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -112,7 +114,7 @@ export async function requireRole(
  */
 export async function requirePermission(
   request: NextRequest,
-  permission: Permission
+  permission: Permission,
 ): Promise<{ user: AuthUser } | NextResponse> {
   const authResult = await requireAuth(request);
 
@@ -128,17 +130,17 @@ export async function requirePermission(
       user.id,
       user.email,
       user.role,
-      'user',
+      "user",
       permission,
-      request
+      request,
     );
 
     return NextResponse.json(
       {
-        error: 'Forbidden - Insufficient permissions',
+        error: "Forbidden - Insufficient permissions",
         required: permission,
       },
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -151,7 +153,7 @@ export async function requirePermission(
 export async function requireResourceAccess(
   request: NextRequest,
   resource: ResourceType,
-  action: ResourceAction
+  action: ResourceAction,
 ): Promise<{ user: AuthUser } | NextResponse> {
   const authResult = await requireAuth(request);
 
@@ -169,15 +171,15 @@ export async function requireResourceAccess(
       user.role,
       resource as any,
       `${resource}:${action}`,
-      request
+      request,
     );
 
     return NextResponse.json(
       {
-        error: 'Forbidden - Insufficient permissions',
+        error: "Forbidden - Insufficient permissions",
         required: `${resource}:${action}`,
       },
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -189,7 +191,7 @@ export async function requireResourceAccess(
  */
 export function isResourceOwner(
   user: AuthUser,
-  resourceUserId: string | undefined
+  resourceUserId: string | undefined,
 ): boolean {
   return user.id === resourceUserId;
 }
@@ -198,16 +200,16 @@ export function isResourceOwner(
  * Require admin role - convenience function
  */
 export async function requireAdmin(
-  request: NextRequest
+  request: NextRequest,
 ): Promise<{ user: AuthUser } | NextResponse> {
-  return requireRole(request, ['admin']);
+  return requireRole(request, ["admin"]);
 }
 
 /**
  * Require admin or teacher role - convenience function
  */
 export async function requireAdminOrTeacher(
-  request: NextRequest
+  request: NextRequest,
 ): Promise<{ user: AuthUser } | NextResponse> {
-  return requireRole(request, ['admin', 'teacher']);
+  return requireRole(request, ["admin", "teacher"]);
 }

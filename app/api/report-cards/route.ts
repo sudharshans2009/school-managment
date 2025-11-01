@@ -65,7 +65,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(cards);
   } catch (error) {
     console.error("Error fetching report cards:", error);
-    return NextResponse.json({ error: "Failed to fetch report cards" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch report cards" },
+      { status: 500 },
+    );
   }
 }
 
@@ -96,11 +99,20 @@ export async function POST(request: NextRequest) {
       promotionStatus,
     } = body;
 
-    if (!studentId || !classroomId || !academicYear || !term || 
-        totalMarks === undefined || marksObtained === undefined) {
+    if (
+      !studentId ||
+      !classroomId ||
+      !academicYear ||
+      !term ||
+      totalMarks === undefined ||
+      marksObtained === undefined
+    ) {
       return NextResponse.json(
-        { error: "Student ID, classroom ID, academic year, term, total marks, and marks obtained are required" },
-        { status: 400 }
+        {
+          error:
+            "Student ID, classroom ID, academic year, term, total marks, and marks obtained are required",
+        },
+        { status: 400 },
       );
     }
 
@@ -129,6 +141,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(reportCard, { status: 201 });
   } catch (error) {
     console.error("Error creating report card:", error);
-    return NextResponse.json({ error: "Failed to create report card" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create report card" },
+      { status: 500 },
+    );
   }
 }

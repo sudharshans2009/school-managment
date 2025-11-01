@@ -1,11 +1,17 @@
 "use client";
 
 import { useRoleRedirect } from "@/hooks/use-role-redirect";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  Users, 
-  BookOpen, 
-  GraduationCap, 
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Users,
+  BookOpen,
+  GraduationCap,
   Calendar,
   School,
   UserCheck,
@@ -17,7 +23,7 @@ import {
   DollarSign,
   BookMarked,
   Award,
-  BarChart3
+  BarChart3,
 } from "lucide-react";
 import Link from "next/link";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
@@ -61,7 +67,9 @@ export default function AdminDashboard() {
   });
 
   // Fetch recent activity
-  const { data: recentActivity, isLoading: activityLoading } = useQuery<RecentActivity[]>({
+  const { data: recentActivity, isLoading: activityLoading } = useQuery<
+    RecentActivity[]
+  >({
     queryKey: ["admin-activity"],
     queryFn: async () => {
       const response = await fetch("/api/admin/recent-activity");
@@ -93,92 +101,170 @@ export default function AdminDashboard() {
   if (!session) return null;
 
   const statsCards = [
-    { 
-      title: "Total Students", 
-      value: statsLoading ? "..." : stats?.totalStudents.toLocaleString() || "0", 
-      icon: Users, 
-      color: "text-blue-600", 
-      bgColor: "bg-blue-100" 
+    {
+      title: "Total Students",
+      value: statsLoading
+        ? "..."
+        : stats?.totalStudents.toLocaleString() || "0",
+      icon: Users,
+      color: "text-blue-600",
+      bgColor: "bg-blue-100",
     },
-    { 
-      title: "Total Teachers", 
-      value: statsLoading ? "..." : stats?.totalTeachers.toLocaleString() || "0", 
-      icon: GraduationCap, 
-      color: "text-green-600", 
-      bgColor: "bg-green-100" 
+    {
+      title: "Total Teachers",
+      value: statsLoading
+        ? "..."
+        : stats?.totalTeachers.toLocaleString() || "0",
+      icon: GraduationCap,
+      color: "text-green-600",
+      bgColor: "bg-green-100",
     },
-    { 
-      title: "Active Classrooms", 
-      value: statsLoading ? "..." : stats?.activeClassrooms.toLocaleString() || "0", 
-      icon: School, 
-      color: "text-purple-600", 
-      bgColor: "bg-purple-100" 
+    {
+      title: "Active Classrooms",
+      value: statsLoading
+        ? "..."
+        : stats?.activeClassrooms.toLocaleString() || "0",
+      icon: School,
+      color: "text-purple-600",
+      bgColor: "bg-purple-100",
     },
-    { 
-      title: "Attendance Rate", 
-      value: statsLoading ? "..." : `${stats?.attendanceRate.toFixed(1) || 0}%` || "0%", 
-      icon: UserCheck, 
-      color: "text-orange-600", 
-      bgColor: "bg-orange-100" 
+    {
+      title: "Attendance Rate",
+      value: statsLoading
+        ? "..."
+        : `${stats?.attendanceRate.toFixed(1) || 0}%` || "0%",
+      icon: UserCheck,
+      color: "text-orange-600",
+      bgColor: "bg-orange-100",
     },
   ];
 
   const quickActions = [
-    { title: "Manage Classrooms", href: "/admin/classrooms", icon: School, description: "Create and manage classrooms" },
-    { title: "Manage Students", href: "/admin/students", icon: Users, description: "Enroll and manage students" },
-    { title: "Manage Teachers", href: "/admin/teachers", icon: GraduationCap, description: "Assign teachers to classes" },
-    { title: "Manage Subjects", href: "/admin/subjects", icon: BookOpen, description: "Add and edit subjects" },
-    { title: "Manage Exams", href: "/admin/exams", icon: Award, description: "Create exams and manage grades" },
-    { title: "Analytics Dashboard", href: "/admin/analytics", icon: BarChart3, description: "View school performance metrics" },
-    { title: "Calendar & Holidays", href: "/admin/calendar", icon: Calendar, description: "Manage working days and timetables" },
-    { title: "Attendance Records", href: "/admin/attendance", icon: UserCheck, description: "View and mark attendance" },
-    { title: "Announcements", href: "/admin/announcements", icon: ClipboardList, description: "Create and manage announcements" },
-    { title: "Manage Leaves", href: "/admin/leaves", icon: FileText, description: "Approve and manage teacher leaves" },
-    { title: "Manage Substitutes", href: "/admin/substitutes", icon: UserPlus, description: "Assign substitute teachers" },
-    { title: "View Work Done", href: "/admin/work-done", icon: ClipboardCheck, description: "View all work done records" },
+    {
+      title: "Manage Classrooms",
+      href: "/admin/classrooms",
+      icon: School,
+      description: "Create and manage classrooms",
+    },
+    {
+      title: "Manage Students",
+      href: "/admin/students",
+      icon: Users,
+      description: "Enroll and manage students",
+    },
+    {
+      title: "Manage Teachers",
+      href: "/admin/teachers",
+      icon: GraduationCap,
+      description: "Assign teachers to classes",
+    },
+    {
+      title: "Manage Subjects",
+      href: "/admin/subjects",
+      icon: BookOpen,
+      description: "Add and edit subjects",
+    },
+    {
+      title: "Manage Exams",
+      href: "/admin/exams",
+      icon: Award,
+      description: "Create exams and manage grades",
+    },
+    {
+      title: "Analytics Dashboard",
+      href: "/admin/analytics",
+      icon: BarChart3,
+      description: "View school performance metrics",
+    },
+    {
+      title: "Calendar & Holidays",
+      href: "/admin/calendar",
+      icon: Calendar,
+      description: "Manage working days and timetables",
+    },
+    {
+      title: "Attendance Records",
+      href: "/admin/attendance",
+      icon: UserCheck,
+      description: "View and mark attendance",
+    },
+    {
+      title: "Announcements",
+      href: "/admin/announcements",
+      icon: ClipboardList,
+      description: "Create and manage announcements",
+    },
+    {
+      title: "Manage Leaves",
+      href: "/admin/leaves",
+      icon: FileText,
+      description: "Approve and manage teacher leaves",
+    },
+    {
+      title: "Manage Substitutes",
+      href: "/admin/substitutes",
+      icon: UserPlus,
+      description: "Assign substitute teachers",
+    },
+    {
+      title: "View Work Done",
+      href: "/admin/work-done",
+      icon: ClipboardCheck,
+      description: "View all work done records",
+    },
   ];
 
   const systemMetrics = [
-    { 
-      label: "Attendance Rate", 
-      value: metrics?.attendanceRate || 0, 
+    {
+      label: "Attendance Rate",
+      value: metrics?.attendanceRate || 0,
       color: "bg-green-500",
-      icon: UserCheck
+      icon: UserCheck,
     },
-    { 
-      label: "Fee Collection", 
-      value: metrics?.feeCollectionRate || 0, 
+    {
+      label: "Fee Collection",
+      value: metrics?.feeCollectionRate || 0,
       color: "bg-blue-500",
-      icon: DollarSign
+      icon: DollarSign,
     },
-    { 
-      label: "Homework Completion", 
-      value: metrics?.homeworkCompletionRate || 0, 
+    {
+      label: "Homework Completion",
+      value: metrics?.homeworkCompletionRate || 0,
       color: "bg-purple-500",
-      icon: BookMarked
+      icon: BookMarked,
     },
-    { 
-      label: "Teacher Assignments", 
-      value: metrics?.teacherAssignmentRate || 0, 
+    {
+      label: "Teacher Assignments",
+      value: metrics?.teacherAssignmentRate || 0,
       color: "bg-orange-500",
-      icon: GraduationCap
+      icon: GraduationCap,
     },
   ];
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case "student": return Users;
-      case "homework": return BookOpen;
-      case "fee": return DollarSign;
-      case "teacher": return GraduationCap;
-      case "leave": return FileText;
-      case "substitute": return UserPlus;
-      default: return ClipboardList;
+      case "student":
+        return Users;
+      case "homework":
+        return BookOpen;
+      case "fee":
+        return DollarSign;
+      case "teacher":
+        return GraduationCap;
+      case "leave":
+        return FileText;
+      case "substitute":
+        return UserPlus;
+      default:
+        return ClipboardList;
     }
   };
 
   return (
-    <DashboardLayout title="Admin Portal" description="Amrita School Management">
+    <DashboardLayout
+      title="Admin Portal"
+      description="Amrita School Management"
+    >
       <div className="space-y-6">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -193,7 +279,9 @@ export default function AdminDashboard() {
                 ) : (
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {stat.title}
+                      </p>
                       <p className="text-3xl font-bold mt-2">{stat.value}</p>
                     </div>
                     <div className={`${stat.bgColor} p-3 rounded-xl`}>
@@ -224,7 +312,9 @@ export default function AdminDashboard() {
                         </div>
                         <div>
                           <h3 className="font-semibold">{action.title}</h3>
-                          <p className="text-sm text-muted-foreground mt-1">{action.description}</p>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {action.description}
+                          </p>
                         </div>
                       </div>
                     </CardContent>
@@ -240,7 +330,9 @@ export default function AdminDashboard() {
           <Card className="rounded-2xl shadow-sm">
             <CardHeader>
               <CardTitle>Recent Activity</CardTitle>
-              <CardDescription>Latest updates across the system</CardDescription>
+              <CardDescription>
+                Latest updates across the system
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {activityLoading ? (
@@ -257,21 +349,30 @@ export default function AdminDashboard() {
                   {recentActivity.map((item) => {
                     const Icon = getActivityIcon(item.type);
                     return (
-                      <div key={item.id} className="flex items-start space-x-3 pb-3 border-b last:border-0">
+                      <div
+                        key={item.id}
+                        className="flex items-start space-x-3 pb-3 border-b last:border-0"
+                      >
                         <div className="bg-primary/10 p-2 rounded-full">
                           <Icon className="h-4 w-4 text-primary" />
                         </div>
                         <div className="flex-1">
                           <p className="text-sm font-medium">{item.action}</p>
-                          <p className="text-sm text-muted-foreground">{item.detail}</p>
-                          <p className="text-xs text-muted-foreground mt-1">{item.time}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {item.detail}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {item.time}
+                          </p>
                         </div>
                       </div>
                     );
                   })}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground text-center py-8">No recent activity</p>
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  No recent activity
+                </p>
               )}
             </CardContent>
           </Card>
@@ -298,13 +399,17 @@ export default function AdminDashboard() {
                       <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center space-x-2">
                           <metric.icon className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm font-medium">{metric.label}</span>
+                          <span className="text-sm font-medium">
+                            {metric.label}
+                          </span>
                         </div>
-                        <span className="text-sm font-bold">{metric.value.toFixed(1)}%</span>
+                        <span className="text-sm font-bold">
+                          {metric.value.toFixed(1)}%
+                        </span>
                       </div>
                       <div className="w-full bg-secondary rounded-full h-2">
-                        <div 
-                          className={`${metric.color} h-2 rounded-full transition-all duration-500`} 
+                        <div
+                          className={`${metric.color} h-2 rounded-full transition-all duration-500`}
                           style={{ width: `${metric.value}%` }}
                         ></div>
                       </div>

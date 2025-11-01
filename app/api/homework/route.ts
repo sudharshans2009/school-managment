@@ -63,7 +63,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(homeworkList);
   } catch (error) {
     console.error("Error fetching homework:", error);
-    return NextResponse.json({ error: "Failed to fetch homework" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch homework" },
+      { status: 500 },
+    );
   }
 }
 
@@ -71,12 +74,23 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { classroomId, subjectId, teacherId, title, description, dueDate, totalMarks = 100 } = body;
+    const {
+      classroomId,
+      subjectId,
+      teacherId,
+      title,
+      description,
+      dueDate,
+      totalMarks = 100,
+    } = body;
 
     if (!classroomId || !subjectId || !teacherId || !title || !dueDate) {
       return NextResponse.json(
-        { error: "Classroom ID, Subject ID, Teacher ID, title, and due date are required" },
-        { status: 400 }
+        {
+          error:
+            "Classroom ID, Subject ID, Teacher ID, title, and due date are required",
+        },
+        { status: 400 },
       );
     }
 
@@ -97,6 +111,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(newHomework, { status: 201 });
   } catch (error) {
     console.error("Error creating homework:", error);
-    return NextResponse.json({ error: "Failed to create homework" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create homework" },
+      { status: 500 },
+    );
   }
 }

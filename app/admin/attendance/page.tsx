@@ -5,18 +5,24 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  UserCheck, 
-  Calendar as CalendarIcon, 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
+import {
+  UserCheck,
+  Calendar as CalendarIcon,
+  CheckCircle,
+  XCircle,
+  Clock,
   AlertCircle,
-  Loader2 
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -48,7 +54,9 @@ interface AttendanceRecord {
 
 export default function AdminAttendancePage() {
   const [selectedClassroom, setSelectedClassroom] = useState<string>("");
-  const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), "yyyy-MM-dd"));
+  const [selectedDate, setSelectedDate] = useState<string>(
+    format(new Date(), "yyyy-MM-dd"),
+  );
   const [viewMode, setViewMode] = useState<"view" | "mark">("view");
   const [error, setError] = useState("");
   const queryClient = useQueryClient();
@@ -67,7 +75,9 @@ export default function AdminAttendancePage() {
   const { data: students } = useQuery<Student[]>({
     queryKey: ["students", selectedClassroom],
     queryFn: async () => {
-      const response = await fetch(`/api/students?classroomId=${selectedClassroom}`);
+      const response = await fetch(
+        `/api/students?classroomId=${selectedClassroom}`,
+      );
       if (!response.ok) throw new Error("Failed to fetch students");
       return response.json();
     },
@@ -92,7 +102,15 @@ export default function AdminAttendancePage() {
 
   // Mark attendance mutation
   const markAttendanceMutation = useMutation({
-    mutationFn: async (data: { records: Array<{ studentId: string; classroomId: string; status: string; date: Date }>, markedBy: string }) => {
+    mutationFn: async (data: {
+      records: Array<{
+        studentId: string;
+        classroomId: string;
+        status: string;
+        date: Date;
+      }>;
+      markedBy: string;
+    }) => {
       const response = await fetch("/api/attendance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -117,13 +135,14 @@ export default function AdminAttendancePage() {
   const handleMarkAttendance = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
-    const records = students?.map((student) => ({
-      studentId: student.id,
-      classroomId: selectedClassroom,
-      status: formData.get(`status-${student.id}`) as string,
-      date: new Date(selectedDate),
-    })) || [];
+
+    const records =
+      students?.map((student) => ({
+        studentId: student.id,
+        classroomId: selectedClassroom,
+        status: formData.get(`status-${student.id}`) as string,
+        date: new Date(selectedDate),
+      })) || [];
 
     // Get current user ID (you'll need to get this from session)
     const markedBy = "current-user-id"; // Replace with actual session user ID
@@ -147,15 +166,21 @@ export default function AdminAttendancePage() {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "destructive" | "secondary" | "outline"> = {
+    const variants: Record<
+      string,
+      "default" | "destructive" | "secondary" | "outline"
+    > = {
       present: "default",
       absent: "destructive",
       late: "secondary",
       excused: "outline",
     };
-    
+
     return (
-      <Badge variant={variants[status] || "default"} className="flex items-center gap-1">
+      <Badge
+        variant={variants[status] || "default"}
+        className="flex items-center gap-1"
+      >
         {getStatusIcon(status)}
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
@@ -163,13 +188,15 @@ export default function AdminAttendancePage() {
   };
 
   // Calculate attendance stats
-  const attendanceStats = attendanceRecords ? {
-    present: attendanceRecords.filter(r => r.status === "present").length,
-    absent: attendanceRecords.filter(r => r.status === "absent").length,
-    late: attendanceRecords.filter(r => r.status === "late").length,
-    excused: attendanceRecords.filter(r => r.status === "excused").length,
-    total: students?.length || 0,
-  } : null;
+  const attendanceStats = attendanceRecords
+    ? {
+        present: attendanceRecords.filter((r) => r.status === "present").length,
+        absent: attendanceRecords.filter((r) => r.status === "absent").length,
+        late: attendanceRecords.filter((r) => r.status === "late").length,
+        excused: attendanceRecords.filter((r) => r.status === "excused").length,
+        total: students?.length || 0,
+      }
+    : null;
 
   return (
     <DashboardLayout title="Admin Portal" description="Attendance Management">
@@ -182,9 +209,7 @@ export default function AdminAttendancePage() {
               </Button>
             </Link>
             <UserCheck className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">
-              Attendance Management
-            </h1>
+            <h1 className="text-2xl font-bold">Attendance Management</h1>
           </div>
           {selectedClassroom && students && students.length > 0 && (
             <Button
@@ -202,7 +227,10 @@ export default function AdminAttendancePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label>Select Classroom</Label>
-                <Select value={selectedClassroom} onValueChange={setSelectedClassroom}>
+                <Select
+                  value={selectedClassroom}
+                  onValueChange={setSelectedClassroom}
+                >
                   <SelectTrigger className="rounded-xl">
                     <SelectValue placeholder="Choose a classroom" />
                   </SelectTrigger>
@@ -227,8 +255,13 @@ export default function AdminAttendancePage() {
               <div>
                 <Label>Mode</Label>
                 <div className="pt-2">
-                  <Badge variant={viewMode === "view" ? "default" : "secondary"} className="rounded-lg">
-                    {viewMode === "view" ? "Viewing Records" : "Marking Attendance"}
+                  <Badge
+                    variant={viewMode === "view" ? "default" : "secondary"}
+                    className="rounded-lg"
+                  >
+                    {viewMode === "view"
+                      ? "Viewing Records"
+                      : "Marking Attendance"}
                   </Badge>
                 </div>
               </div>
@@ -303,7 +336,9 @@ export default function AdminAttendancePage() {
             {/* Records Table */}
             <Card className="rounded-2xl shadow-sm">
               <CardHeader>
-                <CardTitle>Attendance Records - {format(new Date(selectedDate), "PPP")}</CardTitle>
+                <CardTitle>
+                  Attendance Records - {format(new Date(selectedDate), "PPP")}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 {attendanceRecords && attendanceRecords.length > 0 ? (
@@ -315,7 +350,9 @@ export default function AdminAttendancePage() {
                       >
                         <div className="flex items-center gap-4">
                           <div>
-                            <div className="font-medium">{record.studentName}</div>
+                            <div className="font-medium">
+                              {record.studentName}
+                            </div>
                             <div className="text-sm text-muted-foreground">
                               Roll No: {record.studentRollNumber}
                             </div>
@@ -334,7 +371,8 @@ export default function AdminAttendancePage() {
                   </div>
                 ) : (
                   <div className="text-center text-gray-500 py-8">
-                    No attendance records found for this date. Click &quot;Mark Attendance&quot; to create records.
+                    No attendance records found for this date. Click &quot;Mark
+                    Attendance&quot; to create records.
                   </div>
                 )}
               </CardContent>
@@ -344,7 +382,9 @@ export default function AdminAttendancePage() {
           /* Mark Attendance Form */
           <Card>
             <CardHeader>
-              <CardTitle>Mark Attendance - {format(new Date(selectedDate), "PPP")}</CardTitle>
+              <CardTitle>
+                Mark Attendance - {format(new Date(selectedDate), "PPP")}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleMarkAttendance} className="space-y-4">
@@ -359,7 +399,10 @@ export default function AdminAttendancePage() {
                         Roll No: {student.rollNumber}
                       </div>
                     </div>
-                    <Select name={`status-${student.id}`} defaultValue="present">
+                    <Select
+                      name={`status-${student.id}`}
+                      defaultValue="present"
+                    >
                       <SelectTrigger className="w-40">
                         <SelectValue />
                       </SelectTrigger>
@@ -380,7 +423,10 @@ export default function AdminAttendancePage() {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={markAttendanceMutation.isPending}>
+                  <Button
+                    type="submit"
+                    disabled={markAttendanceMutation.isPending}
+                  >
                     {markAttendanceMutation.isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />

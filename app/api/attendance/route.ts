@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     if (!classroomId && !studentId) {
       return NextResponse.json(
         { error: "Either Classroom ID or Student ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -59,7 +59,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(attendanceRecords);
   } catch (error) {
     console.error("Error fetching attendance:", error);
-    return NextResponse.json({ error: "Failed to fetch attendance" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch attendance" },
+      { status: 500 },
+    );
   }
 }
 
@@ -72,35 +75,46 @@ export async function POST(request: NextRequest) {
     if (!records || !Array.isArray(records) || records.length === 0) {
       return NextResponse.json(
         { error: "Attendance records array is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!markedBy) {
-      return NextResponse.json({ error: "Teacher ID (markedBy) is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Teacher ID (markedBy) is required" },
+        { status: 400 },
+      );
     }
 
     // Insert multiple attendance records
-    const attendanceData = records.map((record: {
-      studentId: string;
-      classroomId: string;
-      status: 'present' | 'absent' | 'late' | 'excused';
-      date?: Date;
-      remarks?: string;
-    }) => ({
-      studentId: record.studentId,
-      classroomId: record.classroomId,
-      date: record.date || new Date(),
-      status: record.status,
-      remarks: record.remarks,
-      markedBy,
-    }));
+    const attendanceData = records.map(
+      (record: {
+        studentId: string;
+        classroomId: string;
+        status: "present" | "absent" | "late" | "excused";
+        date?: Date;
+        remarks?: string;
+      }) => ({
+        studentId: record.studentId,
+        classroomId: record.classroomId,
+        date: record.date || new Date(),
+        status: record.status,
+        remarks: record.remarks,
+        markedBy,
+      }),
+    );
 
-    const newRecords = await db.insert(attendance).values(attendanceData).returning();
+    const newRecords = await db
+      .insert(attendance)
+      .values(attendanceData)
+      .returning();
 
     return NextResponse.json(newRecords, { status: 201 });
   } catch (error) {
     console.error("Error marking attendance:", error);
-    return NextResponse.json({ error: "Failed to mark attendance" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to mark attendance" },
+      { status: 500 },
+    );
   }
 }

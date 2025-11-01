@@ -3,6 +3,7 @@
 This document describes the new features added to the School Management System.
 
 ## Table of Contents
+
 - [Events & Calendar](#events--calendar)
 - [Parent-Teacher Meetings](#parent-teacher-meetings)
 - [Communication Hub](#communication-hub)
@@ -13,9 +14,11 @@ This document describes the new features added to the School Management System.
 ## Events & Calendar
 
 ### Overview
+
 The Events & Calendar system allows schools to manage and track various school events like sports days, cultural programs, academic events, and more.
 
 ### Features
+
 - Create and manage school events
 - Event registration system
 - Target audience filtering (grade-wise, section-wise, or school-wide)
@@ -26,11 +29,13 @@ The Events & Calendar system allows schools to manage and track various school e
 ### API Endpoints
 
 #### List Events
+
 ```
 GET /api/events?eventType=sports&status=upcoming&startDate=2024-01-01&endDate=2024-12-31&targetAudience=grade-6
 ```
 
 #### Create Event (Admin/Teacher)
+
 ```
 POST /api/events
 {
@@ -49,11 +54,13 @@ POST /api/events
 ```
 
 #### Get Event Details
+
 ```
 GET /api/events/{eventId}
 ```
 
 #### Register for Event
+
 ```
 POST /api/events/{eventId}/register
 {
@@ -63,11 +70,13 @@ POST /api/events/{eventId}/register
 ```
 
 #### Cancel Registration
+
 ```
 DELETE /api/events/{eventId}/register
 ```
 
 ### Event Types
+
 - `academic` - Academic events (exams, workshops)
 - `sports` - Sports events
 - `cultural` - Cultural programs
@@ -76,6 +85,7 @@ DELETE /api/events/{eventId}/register
 - `other` - Other events
 
 ### Access Control
+
 - **Admin**: Full CRUD access
 - **Teacher**: Create and view events
 - **Student**: View and register for events
@@ -86,9 +96,11 @@ DELETE /api/events/{eventId}/register
 ## Parent-Teacher Meetings
 
 ### Overview
+
 A scheduling system for parent-teacher meetings with time slot management.
 
 ### Features
+
 - Teachers create available meeting slots
 - Parents book slots for their children
 - Automatic slot booking tracking
@@ -98,11 +110,13 @@ A scheduling system for parent-teacher meetings with time slot management.
 ### API Endpoints
 
 #### List Meeting Slots
+
 ```
 GET /api/meetings?teacherId={teacherId}&date=2024-06-15&startDate=2024-06-01
 ```
 
 #### Create Meeting Slot (Teacher)
+
 ```
 POST /api/meetings
 {
@@ -116,6 +130,7 @@ POST /api/meetings
 ```
 
 #### Book Meeting (Parent)
+
 ```
 POST /api/meetings/{slotId}/book
 {
@@ -125,12 +140,14 @@ POST /api/meetings/{slotId}/book
 ```
 
 ### Meeting Status
+
 - `scheduled` - Meeting is scheduled
 - `completed` - Meeting completed
 - `cancelled` - Meeting cancelled
 - `rescheduled` - Meeting rescheduled
 
 ### Access Control
+
 - **Teacher**: Create and manage meeting slots
 - **Parent**: View and book meeting slots
 - **Admin**: Full access
@@ -140,11 +157,13 @@ POST /api/meetings/{slotId}/book
 ## Communication Hub
 
 ### Overview
+
 Centralized communication system for school-wide and group-specific messaging.
 
 ### Features
 
 #### 1. Circulars
+
 - Official school circulars with tracking
 - Acknowledgment requirement option
 - Target audience specification
@@ -152,6 +171,7 @@ Centralized communication system for school-wide and group-specific messaging.
 - Attachment support
 
 #### 2. Group Messages
+
 - Class-wise or grade-wise messaging
 - Priority levels
 - Attachment support
@@ -162,11 +182,13 @@ Centralized communication system for school-wide and group-specific messaging.
 #### Circulars
 
 ##### List Circulars
+
 ```
 GET /api/circulars?circularType=urgent&isPublished=true
 ```
 
 ##### Create Circular (Admin)
+
 ```
 POST /api/circulars
 {
@@ -182,6 +204,7 @@ POST /api/circulars
 ```
 
 ##### Acknowledge Circular
+
 ```
 POST /api/circulars/{circularId}
 {
@@ -192,6 +215,7 @@ POST /api/circulars/{circularId}
 #### Group Messages
 
 ##### Send Group Message (Admin/Teacher)
+
 ```
 POST /api/group-messages
 {
@@ -203,11 +227,13 @@ POST /api/group-messages
 ```
 
 ##### List Group Messages
+
 ```
 GET /api/group-messages?targetGroup=grade-6-A
 ```
 
 ### Circular Types
+
 - `general` - General information
 - `urgent` - Urgent notifications
 - `academic` - Academic related
@@ -215,6 +241,7 @@ GET /api/group-messages?targetGroup=grade-6-A
 - `event` - Event related
 
 ### Access Control
+
 - **Admin**: Full access to all features
 - **Teacher**: Send group messages, view circulars
 - **Parent**: View circulars, acknowledge when required
@@ -225,9 +252,11 @@ GET /api/group-messages?targetGroup=grade-6-A
 ## Admission Management
 
 ### Overview
+
 Complete admission workflow from application to enrollment.
 
 ### Features
+
 - Online admission applications
 - Document upload and verification
 - Entrance test management
@@ -237,6 +266,7 @@ Complete admission workflow from application to enrollment.
 ### API Endpoints
 
 #### Submit Application
+
 ```
 POST /api/admissions
 {
@@ -257,11 +287,13 @@ POST /api/admissions
 ```
 
 #### List Applications (Admin)
+
 ```
 GET /api/admissions?status=pending&grade=6
 ```
 
 #### Update Application Status (Admin)
+
 ```
 PUT /api/admissions/{applicationId}
 {
@@ -272,6 +304,7 @@ PUT /api/admissions/{applicationId}
 ```
 
 #### Upload Document
+
 ```
 POST /api/admissions/{applicationId}/documents
 {
@@ -282,6 +315,7 @@ POST /api/admissions/{applicationId}/documents
 ```
 
 #### Verify Document (Admin)
+
 ```
 PUT /api/admissions/{applicationId}/documents
 {
@@ -291,6 +325,7 @@ PUT /api/admissions/{applicationId}/documents
 ```
 
 #### Create Entrance Test (Admin)
+
 ```
 POST /api/entrance-tests
 {
@@ -307,6 +342,7 @@ POST /api/entrance-tests
 ```
 
 ### Admission Status Workflow
+
 1. `pending` - Application submitted
 2. `under_review` - Application being reviewed
 3. `test_scheduled` - Entrance test scheduled
@@ -316,6 +352,7 @@ POST /api/entrance-tests
 7. `waitlisted` - On waiting list
 
 ### Document Types
+
 - `birth_certificate`
 - `transfer_certificate`
 - `mark_sheets`
@@ -324,6 +361,7 @@ POST /api/entrance-tests
 - `other`
 
 ### Access Control
+
 - **Admin**: Full access to all applications
 - **Public**: Submit applications and upload documents
 
@@ -332,9 +370,11 @@ POST /api/entrance-tests
 ## Report Cards
 
 ### Overview
+
 Automated report card generation with GPA calculation and performance tracking.
 
 ### Features
+
 - Automated report card generation
 - GPA and percentage calculation
 - Rank assignment
@@ -346,6 +386,7 @@ Automated report card generation with GPA calculation and performance tracking.
 ### API Endpoints
 
 #### Generate Report Card (Admin/Teacher)
+
 ```
 POST /api/report-cards
 {
@@ -367,20 +408,23 @@ POST /api/report-cards
 ```
 
 #### List Report Cards
+
 ```
 GET /api/report-cards?studentId={studentId}&academicYear=2024-2025&term=Term%201
 ```
 
 ### Grade Scale
+
 - A+ : 90-100
-- A  : 80-89
+- A : 80-89
 - B+ : 70-79
-- B  : 60-69
-- C  : 50-59
-- D  : 40-49
-- F  : Below 40
+- B : 60-69
+- C : 50-59
+- D : 40-49
+- F : Below 40
 
 ### Access Control
+
 - **Admin**: Full access
 - **Teacher**: Create and view report cards for their students
 - **Student**: View own report cards
@@ -391,29 +435,34 @@ GET /api/report-cards?studentId={studentId}&academicYear=2024-2025&term=Term%201
 ## Behavior & Disciplinary Tracking
 
 ### Overview
+
 Comprehensive system for tracking student behavior, incidents, and disciplinary actions.
 
 ### Features
 
 #### 1. Behavior Incidents
+
 - Incident reporting with severity levels
 - Witness documentation
 - Parent notification tracking
 - Follow-up management
 
 #### 2. Disciplinary Actions
+
 - Multiple action types
 - Duration tracking
 - Status monitoring
 - Notes and documentation
 
 #### 3. Merit/Demerit Points
+
 - Point-based reward/penalty system
 - Category-wise tracking
 - Historical records
 - Incident linkage
 
 #### 4. Behavior Notes
+
 - Positive and negative observations
 - Progress tracking
 - Privacy controls
@@ -422,6 +471,7 @@ Comprehensive system for tracking student behavior, incidents, and disciplinary 
 ### API Endpoints
 
 #### Report Incident (Teacher/Admin)
+
 ```
 POST /api/behavior/incidents
 {
@@ -439,11 +489,13 @@ POST /api/behavior/incidents
 ```
 
 #### List Incidents
+
 ```
 GET /api/behavior/incidents?studentId={studentId}&severity=moderate
 ```
 
 #### Create Disciplinary Action (Teacher/Admin)
+
 ```
 POST /api/behavior/actions
 {
@@ -457,6 +509,7 @@ POST /api/behavior/actions
 ```
 
 #### Award Points (Teacher/Admin)
+
 ```
 POST /api/behavior/points
 {
@@ -469,6 +522,7 @@ POST /api/behavior/points
 ```
 
 #### Add Behavior Note (Teacher/Admin)
+
 ```
 POST /api/behavior/notes
 {
@@ -480,12 +534,14 @@ POST /api/behavior/notes
 ```
 
 ### Incident Severity Levels
+
 - `minor` - Small infractions
 - `moderate` - Medium severity
 - `major` - Serious violations
 - `critical` - Very serious incidents
 
 ### Action Types
+
 - `warning` - Verbal/written warning
 - `detention` - After-school detention
 - `suspension` - Temporary suspension
@@ -494,6 +550,7 @@ POST /api/behavior/notes
 - `other` - Other actions
 
 ### Point Categories
+
 - `academics` - Academic performance
 - `sports` - Sports and physical activities
 - `discipline` - Discipline and conduct
@@ -502,12 +559,14 @@ POST /api/behavior/notes
 - `community_service` - Community service
 
 ### Note Types
+
 - `observation` - General observation
 - `concern` - Area of concern
 - `praise` - Positive feedback
 - `progress` - Progress update
 
 ### Access Control
+
 - **Admin**: Full access to all features
 - **Teacher**: Create incidents, actions, award points, add notes
 - **Student**: View own non-private records
@@ -517,43 +576,49 @@ POST /api/behavior/notes
 
 ## Role-Based Access Summary
 
-| Feature | Admin | Teacher | Student | Parent |
-|---------|-------|---------|---------|--------|
-| Events (Create) | ✓ | ✓ | ✗ | ✗ |
-| Events (Register) | ✓ | ✓ | ✓ | ✓ |
-| Meetings (Create) | ✓ | ✓ | ✗ | ✗ |
-| Meetings (Book) | ✓ | ✗ | ✗ | ✓ |
-| Circulars (Create) | ✓ | ✗ | ✗ | ✗ |
-| Group Messages (Send) | ✓ | ✓ | ✗ | ✗ |
-| Admissions (Manage) | ✓ | ✗ | ✗ | ✗ |
-| Report Cards (Create) | ✓ | ✓ | ✗ | ✗ |
-| Report Cards (View) | ✓ | ✓ | Own | Child's |
-| Behavior (Report) | ✓ | ✓ | ✗ | ✗ |
-| Behavior (View) | ✓ | ✓ | Own | Child's |
+| Feature               | Admin | Teacher | Student | Parent  |
+| --------------------- | ----- | ------- | ------- | ------- |
+| Events (Create)       | ✓     | ✓       | ✗       | ✗       |
+| Events (Register)     | ✓     | ✓       | ✓       | ✓       |
+| Meetings (Create)     | ✓     | ✓       | ✗       | ✗       |
+| Meetings (Book)       | ✓     | ✗       | ✗       | ✓       |
+| Circulars (Create)    | ✓     | ✗       | ✗       | ✗       |
+| Group Messages (Send) | ✓     | ✓       | ✗       | ✗       |
+| Admissions (Manage)   | ✓     | ✗       | ✗       | ✗       |
+| Report Cards (Create) | ✓     | ✓       | ✗       | ✗       |
+| Report Cards (View)   | ✓     | ✓       | Own     | Child's |
+| Behavior (Report)     | ✓     | ✓       | ✗       | ✗       |
+| Behavior (View)       | ✓     | ✓       | Own     | Child's |
 
 ---
 
 ## Technical Notes
 
 ### Authentication
+
 All endpoints require authentication using Better Auth. Include the session token in the request headers.
 
 ### Authorization
+
 Role-based access control is enforced at the API level. Unauthorized access attempts will return a 401 status code.
 
 ### Data Formats
+
 - Dates: ISO 8601 format (e.g., "2024-06-15T09:00:00Z")
 - JSON Arrays: Stored as JSON strings in TEXT fields
 - File URLs: Store external file references
 
 ### Performance Considerations
+
 - Use COUNT queries for counting records
 - Apply filters at database level
 - Implement pagination for large datasets
 - Use proper indexes on foreign keys
 
 ### Error Handling
+
 All endpoints return standard HTTP status codes:
+
 - 200: Success
 - 201: Created
 - 400: Bad Request
@@ -566,6 +631,7 @@ All endpoints return standard HTTP status codes:
 ## Future Enhancements
 
 ### Planned Features
+
 - PDF generation for report cards and transcripts
 - Real-time notifications for events and messages
 - Mobile app integration

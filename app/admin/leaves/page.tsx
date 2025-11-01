@@ -2,13 +2,26 @@
 
 import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { CheckCircle, XCircle, Loader2, Calendar, User } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -40,7 +53,11 @@ export default function LeavesManagementPage() {
   const queryClient = useQueryClient();
 
   const [selectedTab, setSelectedTab] = useState("pending");
-  const [approvalDialog, setApprovalDialog] = useState<{ open: boolean; leave: TeacherLeave | null; action: "approve" | "reject" | null }>({
+  const [approvalDialog, setApprovalDialog] = useState<{
+    open: boolean;
+    leave: TeacherLeave | null;
+    action: "approve" | "reject" | null;
+  }>({
     open: false,
     leave: null,
     action: null,
@@ -66,7 +83,15 @@ export default function LeavesManagementPage() {
 
   // Approve/Reject leave mutation
   const updateLeaveMutation = useMutation({
-    mutationFn: async ({ leaveId, status, notes }: { leaveId: string; status: string; notes: string }) => {
+    mutationFn: async ({
+      leaveId,
+      status,
+      notes,
+    }: {
+      leaveId: string;
+      status: string;
+      notes: string;
+    }) => {
       const res = await fetch(`/api/teacher-leaves/${leaveId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -80,7 +105,9 @@ export default function LeavesManagementPage() {
       return res.json();
     },
     onSuccess: (_, variables) => {
-      toast.success(`Leave ${variables.status === "approved" ? "approved" : "rejected"} successfully`);
+      toast.success(
+        `Leave ${variables.status === "approved" ? "approved" : "rejected"} successfully`,
+      );
       setApprovalDialog({ open: false, leave: null, action: null });
       setApprovalNotes("");
       queryClient.invalidateQueries({ queryKey: ["teacher-leaves"] });
@@ -101,8 +128,10 @@ export default function LeavesManagementPage() {
   if (!session) return null;
 
   const pendingLeaves = allLeaves?.filter((l) => l.status === "pending") || [];
-  const approvedLeaves = allLeaves?.filter((l) => l.status === "approved") || [];
-  const rejectedLeaves = allLeaves?.filter((l) => l.status === "rejected") || [];
+  const approvedLeaves =
+    allLeaves?.filter((l) => l.status === "approved") || [];
+  const rejectedLeaves =
+    allLeaves?.filter((l) => l.status === "rejected") || [];
 
   const handleApproval = (action: "approve" | "reject") => {
     if (!approvalDialog.leave) return;
@@ -153,7 +182,9 @@ export default function LeavesManagementPage() {
                 variant="default"
                 size="sm"
                 className="rounded-xl bg-green-600 hover:bg-green-700"
-                onClick={() => setApprovalDialog({ open: true, leave, action: "approve" })}
+                onClick={() =>
+                  setApprovalDialog({ open: true, leave, action: "approve" })
+                }
               >
                 <CheckCircle className="h-4 w-4 mr-1" />
                 Approve
@@ -162,7 +193,9 @@ export default function LeavesManagementPage() {
                 variant="destructive"
                 size="sm"
                 className="rounded-xl"
-                onClick={() => setApprovalDialog({ open: true, leave, action: "reject" })}
+                onClick={() =>
+                  setApprovalDialog({ open: true, leave, action: "reject" })
+                }
               >
                 <XCircle className="h-4 w-4 mr-1" />
                 Reject
@@ -175,7 +208,10 @@ export default function LeavesManagementPage() {
   );
 
   return (
-    <DashboardLayout title="Leave Management" description="Manage teacher leave requests">
+    <DashboardLayout
+      title="Leave Management"
+      description="Manage teacher leave requests"
+    >
       <div className="space-y-6">
         <div className="flex items-center gap-3 mb-6">
           <Link href="/admin">
@@ -185,15 +221,19 @@ export default function LeavesManagementPage() {
           </Link>
           <h1 className="text-2xl font-bold">Leave Management</h1>
         </div>
-        
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Pending</p>
-                  <p className="text-3xl font-bold mt-2">{pendingLeaves.length}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Pending
+                  </p>
+                  <p className="text-3xl font-bold mt-2">
+                    {pendingLeaves.length}
+                  </p>
                 </div>
                 <div className="bg-orange-100 p-3 rounded-xl">
                   <Calendar className="h-6 w-6 text-orange-600" />
@@ -205,8 +245,12 @@ export default function LeavesManagementPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Approved</p>
-                  <p className="text-3xl font-bold mt-2">{approvedLeaves.length}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Approved
+                  </p>
+                  <p className="text-3xl font-bold mt-2">
+                    {approvedLeaves.length}
+                  </p>
                 </div>
                 <div className="bg-green-100 p-3 rounded-xl">
                   <CheckCircle className="h-6 w-6 text-green-600" />
@@ -218,8 +262,12 @@ export default function LeavesManagementPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Rejected</p>
-                  <p className="text-3xl font-bold mt-2">{rejectedLeaves.length}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Rejected
+                  </p>
+                  <p className="text-3xl font-bold mt-2">
+                    {rejectedLeaves.length}
+                  </p>
                 </div>
                 <div className="bg-red-100 p-3 rounded-xl">
                   <XCircle className="h-6 w-6 text-red-600" />
@@ -250,14 +298,18 @@ export default function LeavesManagementPage() {
             <Card className="rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle>Pending Leave Requests</CardTitle>
-                <CardDescription>Review and approve or reject leave requests</CardDescription>
+                <CardDescription>
+                  Review and approve or reject leave requests
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {pendingLeaves.map((leave) => (
                   <LeaveCard key={leave.id} leave={leave} />
                 ))}
                 {pendingLeaves.length === 0 && (
-                  <p className="text-center py-8 text-muted-foreground">No pending leave requests</p>
+                  <p className="text-center py-8 text-muted-foreground">
+                    No pending leave requests
+                  </p>
                 )}
               </CardContent>
             </Card>
@@ -274,7 +326,9 @@ export default function LeavesManagementPage() {
                   <LeaveCard key={leave.id} leave={leave} />
                 ))}
                 {approvedLeaves.length === 0 && (
-                  <p className="text-center py-8 text-muted-foreground">No approved leaves</p>
+                  <p className="text-center py-8 text-muted-foreground">
+                    No approved leaves
+                  </p>
                 )}
               </CardContent>
             </Card>
@@ -291,7 +345,9 @@ export default function LeavesManagementPage() {
                   <LeaveCard key={leave.id} leave={leave} />
                 ))}
                 {rejectedLeaves.length === 0 && (
-                  <p className="text-center py-8 text-muted-foreground">No rejected leaves</p>
+                  <p className="text-center py-8 text-muted-foreground">
+                    No rejected leaves
+                  </p>
                 )}
               </CardContent>
             </Card>
@@ -308,7 +364,9 @@ export default function LeavesManagementPage() {
                   <LeaveCard key={leave.id} leave={leave} />
                 ))}
                 {(!allLeaves || allLeaves.length === 0) && (
-                  <p className="text-center py-8 text-muted-foreground">No leave requests</p>
+                  <p className="text-center py-8 text-muted-foreground">
+                    No leave requests
+                  </p>
                 )}
               </CardContent>
             </Card>
@@ -316,11 +374,18 @@ export default function LeavesManagementPage() {
         </Tabs>
 
         {/* Approval Dialog */}
-        <Dialog open={approvalDialog.open} onOpenChange={(open) => !open && setApprovalDialog({ open: false, leave: null, action: null })}>
+        <Dialog
+          open={approvalDialog.open}
+          onOpenChange={(open) =>
+            !open &&
+            setApprovalDialog({ open: false, leave: null, action: null })
+          }
+        >
           <DialogContent className="rounded-2xl">
             <DialogHeader>
               <DialogTitle>
-                {approvalDialog.action === "approve" ? "Approve" : "Reject"} Leave Request
+                {approvalDialog.action === "approve" ? "Approve" : "Reject"}{" "}
+                Leave Request
               </DialogTitle>
               <DialogDescription>
                 {approvalDialog.action === "approve"
@@ -331,15 +396,20 @@ export default function LeavesManagementPage() {
             <div className="space-y-4">
               {approvalDialog.leave && (
                 <div className="bg-muted p-4 rounded-xl">
-                  <p className="font-semibold">{approvalDialog.leave.teacherName}</p>
+                  <p className="font-semibold">
+                    {approvalDialog.leave.teacherName}
+                  </p>
                   <p className="text-sm text-muted-foreground">
-                    {approvalDialog.leave.startDate} to {approvalDialog.leave.endDate}
+                    {approvalDialog.leave.startDate} to{" "}
+                    {approvalDialog.leave.endDate}
                   </p>
                   <p className="text-sm mt-2">{approvalDialog.leave.reason}</p>
                 </div>
               )}
               <div>
-                <Label>Notes {approvalDialog.action === "reject" && "(Required)"}</Label>
+                <Label>
+                  Notes {approvalDialog.action === "reject" && "(Required)"}
+                </Label>
                 <Textarea
                   className="rounded-xl"
                   rows={3}
@@ -355,9 +425,19 @@ export default function LeavesManagementPage() {
               <div className="flex gap-2">
                 <Button
                   className="flex-1 rounded-xl"
-                  variant={approvalDialog.action === "approve" ? "default" : "destructive"}
-                  onClick={() => approvalDialog.action && handleApproval(approvalDialog.action)}
-                  disabled={updateLeaveMutation.isPending || (approvalDialog.action === "reject" && !approvalNotes)}
+                  variant={
+                    approvalDialog.action === "approve"
+                      ? "default"
+                      : "destructive"
+                  }
+                  onClick={() =>
+                    approvalDialog.action &&
+                    handleApproval(approvalDialog.action)
+                  }
+                  disabled={
+                    updateLeaveMutation.isPending ||
+                    (approvalDialog.action === "reject" && !approvalNotes)
+                  }
                 >
                   {updateLeaveMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -366,12 +446,21 @@ export default function LeavesManagementPage() {
                   ) : (
                     <XCircle className="h-4 w-4 mr-2" />
                   )}
-                  Confirm {approvalDialog.action === "approve" ? "Approval" : "Rejection"}
+                  Confirm{" "}
+                  {approvalDialog.action === "approve"
+                    ? "Approval"
+                    : "Rejection"}
                 </Button>
                 <Button
                   className="rounded-xl"
                   variant="outline"
-                  onClick={() => setApprovalDialog({ open: false, leave: null, action: null })}
+                  onClick={() =>
+                    setApprovalDialog({
+                      open: false,
+                      leave: null,
+                      action: null,
+                    })
+                  }
                   disabled={updateLeaveMutation.isPending}
                 >
                   Cancel

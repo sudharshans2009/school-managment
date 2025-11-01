@@ -6,7 +6,13 @@ import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { TeacherQuickActions } from "@/components/teacher-quick-actions";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -34,7 +40,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Upload, CheckCircle, XCircle, AlertCircle, ArrowLeft } from "lucide-react";
+import {
+  Loader2,
+  Upload,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  ArrowLeft,
+} from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -86,7 +99,9 @@ export default function TeacherExamsPage() {
 
   const [selectedExam, setSelectedExam] = useState<string>("");
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
-  const [gradeInputs, setGradeInputs] = useState<Record<string, GradeInput>>({});
+  const [gradeInputs, setGradeInputs] = useState<Record<string, GradeInput>>(
+    {},
+  );
 
   // Fetch teacher's exams (from their assigned classes/subjects)
   const { data: exams } = useQuery<Exam[]>({
@@ -95,7 +110,7 @@ export default function TeacherExamsPage() {
       const response = await fetch("/api/exams");
       if (!response.ok) throw new Error("Failed to fetch exams");
       const allExams = await response.json();
-      
+
       // Filter for non-finalized exams only (teachers can only upload to draft exams)
       return allExams.filter((exam: Exam) => !exam.isFinalized);
     },
@@ -107,11 +122,13 @@ export default function TeacherExamsPage() {
     queryKey: ["exam-students", selectedExam],
     queryFn: async () => {
       if (!selectedExam) return [];
-      
+
       const examData = exams?.find((e) => e.id === selectedExam);
       if (!examData) return [];
 
-      const response = await fetch(`/api/students?classroomId=${examData.classroom.id}`);
+      const response = await fetch(
+        `/api/students?classroomId=${examData.classroom.id}`,
+      );
       if (!response.ok) throw new Error("Failed to fetch students");
       return response.json();
     },
@@ -123,7 +140,7 @@ export default function TeacherExamsPage() {
     queryKey: ["exam-grades", selectedExam],
     queryFn: async () => {
       if (!selectedExam) return [];
-      
+
       const response = await fetch(`/api/exams/${selectedExam}/grades`);
       if (!response.ok) throw new Error("Failed to fetch grades");
       return response.json();
@@ -149,17 +166,21 @@ export default function TeacherExamsPage() {
     },
     onSuccess: (data) => {
       const { success, errors } = data;
-      
+
       if (errors.length > 0) {
-        toast.error(`Failed to upload ${errors.length} grade(s). Check the details.`);
+        toast.error(
+          `Failed to upload ${errors.length} grade(s). Check the details.`,
+        );
         console.error("Upload errors:", errors);
       }
-      
+
       if (success.length > 0) {
         toast.success(`Successfully uploaded ${success.length} grade(s)`);
       }
 
-      queryClient.invalidateQueries({ queryKey: ["exam-grades", selectedExam] });
+      queryClient.invalidateQueries({
+        queryKey: ["exam-grades", selectedExam],
+      });
       setIsUploadDialogOpen(false);
     },
     onError: (error: Error) => {
@@ -167,7 +188,11 @@ export default function TeacherExamsPage() {
     },
   });
 
-  const handleGradeChange = (studentId: string, field: keyof GradeInput, value: string | boolean) => {
+  const handleGradeChange = (
+    studentId: string,
+    field: keyof GradeInput,
+    value: string | boolean,
+  ) => {
     setGradeInputs((prev) => ({
       ...prev,
       [studentId]: {
@@ -180,7 +205,7 @@ export default function TeacherExamsPage() {
 
   const calculateGrade = (marks: number, totalMarks: number): string => {
     const percentage = (marks / totalMarks) * 100;
-    
+
     if (percentage >= 90) return "A*";
     if (percentage >= 80) return "A";
     if (percentage >= 70) return "B";
@@ -192,11 +217,14 @@ export default function TeacherExamsPage() {
 
   const handleMarksChange = (studentId: string, marks: string) => {
     handleGradeChange(studentId, "marksObtained", marks);
-    
+
     if (marks && selectedExam) {
       const examData = exams?.find((e) => e.id === selectedExam);
       if (examData) {
-        const calculatedGrade = calculateGrade(parseFloat(marks), examData.totalMarks);
+        const calculatedGrade = calculateGrade(
+          parseFloat(marks),
+          examData.totalMarks,
+        );
         handleGradeChange(studentId, "grade", calculatedGrade);
       }
     }
@@ -204,7 +232,7 @@ export default function TeacherExamsPage() {
 
   const handleSubmitGrades = () => {
     const grades = Object.values(gradeInputs).filter(
-      (g) => g.isAbsent || (g.marksObtained && g.marksObtained.trim() !== "")
+      (g) => g.isAbsent || (g.marksObtained && g.marksObtained.trim() !== ""),
     );
 
     if (grades.length === 0) {
@@ -285,7 +313,8 @@ export default function TeacherExamsPage() {
                   <SelectContent>
                     {exams?.map((exam) => (
                       <SelectItem key={exam.id} value={exam.id}>
-                        {exam.name} - {exam.classroom.name} ({exam.subject.name})
+                        {exam.name} - {exam.classroom.name} ({exam.subject.name}
+                        )
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -296,28 +325,41 @@ export default function TeacherExamsPage() {
                 <div className="p-4 bg-muted rounded-lg space-y-2">
                   <div className="flex items-center justify-between">
                     <h3 className="font-semibold">{selectedExamData.name}</h3>
-                    <Badge variant={selectedExamData.isFinalized ? "default" : "secondary"}>
+                    <Badge
+                      variant={
+                        selectedExamData.isFinalized ? "default" : "secondary"
+                      }
+                    >
                       {selectedExamData.isFinalized ? "Finalized" : "Draft"}
                     </Badge>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
                     <div>
                       <p className="text-muted-foreground">Type</p>
-                      <p className="font-medium">{getExamTypeLabel(selectedExamData.examType)}</p>
+                      <p className="font-medium">
+                        {getExamTypeLabel(selectedExamData.examType)}
+                      </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Date</p>
                       <p className="font-medium">
-                        {format(new Date(selectedExamData.examDate), "MMM dd, yyyy")}
+                        {format(
+                          new Date(selectedExamData.examDate),
+                          "MMM dd, yyyy",
+                        )}
                       </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Total Marks</p>
-                      <p className="font-medium">{selectedExamData.totalMarks}</p>
+                      <p className="font-medium">
+                        {selectedExamData.totalMarks}
+                      </p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Passing Marks</p>
-                      <p className="font-medium">{selectedExamData.passingMarks || "N/A"}</p>
+                      <p className="font-medium">
+                        {selectedExamData.passingMarks || "N/A"}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -339,7 +381,11 @@ export default function TeacherExamsPage() {
                 </div>
                 <Button
                   onClick={() => setIsUploadDialogOpen(true)}
-                  disabled={!students || students.length === 0 || selectedExamData?.isFinalized}
+                  disabled={
+                    !students ||
+                    students.length === 0 ||
+                    selectedExamData?.isFinalized
+                  }
                 >
                   <Upload className="h-4 w-4 mr-2" />
                   Upload Grades
@@ -367,13 +413,16 @@ export default function TeacherExamsPage() {
                   <TableBody>
                     {students.map((student) => {
                       const existingGrade = existingGrades?.find(
-                        (g: { student?: { id: string } }) => g.student?.id === student.id
+                        (g: { student?: { id: string } }) =>
+                          g.student?.id === student.id,
                       );
-                      
+
                       return (
                         <TableRow key={student.id}>
                           <TableCell>{student.rollNumber}</TableCell>
-                          <TableCell className="font-medium">{student.user?.name}</TableCell>
+                          <TableCell className="font-medium">
+                            {student.user?.name}
+                          </TableCell>
                           <TableCell>{student.admissionNumber}</TableCell>
                           <TableCell>
                             {existingGrade ? existingGrade.marksObtained : "-"}
@@ -386,7 +435,9 @@ export default function TeacherExamsPage() {
                             )}
                           </TableCell>
                           <TableCell>
-                            {existingGrade ? `${existingGrade.percentage}%` : "-"}
+                            {existingGrade
+                              ? `${existingGrade.percentage}%`
+                              : "-"}
                           </TableCell>
                           <TableCell>
                             {existingGrade ? (
@@ -426,12 +477,15 @@ export default function TeacherExamsPage() {
         <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
           <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Upload Grades - {selectedExamData?.name}</DialogTitle>
+              <DialogTitle>
+                Upload Grades - {selectedExamData?.name}
+              </DialogTitle>
               <DialogDescription>
-                Enter marks for each student. Grade will be calculated automatically.
+                Enter marks for each student. Grade will be calculated
+                automatically.
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-4">
               <Table>
                 <TableHeader>
@@ -448,7 +502,9 @@ export default function TeacherExamsPage() {
                   {students?.map((student) => (
                     <TableRow key={student.id}>
                       <TableCell>{student.rollNumber}</TableCell>
-                      <TableCell className="font-medium">{student.user?.name}</TableCell>
+                      <TableCell className="font-medium">
+                        {student.user?.name}
+                      </TableCell>
                       <TableCell>
                         <Input
                           type="number"
@@ -456,7 +512,9 @@ export default function TeacherExamsPage() {
                           max={selectedExamData?.totalMarks}
                           placeholder="0"
                           value={gradeInputs[student.id]?.marksObtained || ""}
-                          onChange={(e) => handleMarksChange(student.id, e.target.value)}
+                          onChange={(e) =>
+                            handleMarksChange(student.id, e.target.value)
+                          }
                           disabled={gradeInputs[student.id]?.isAbsent}
                           className="w-20"
                         />
@@ -465,7 +523,11 @@ export default function TeacherExamsPage() {
                         <Input
                           value={gradeInputs[student.id]?.grade || ""}
                           onChange={(e) =>
-                            handleGradeChange(student.id, "grade", e.target.value)
+                            handleGradeChange(
+                              student.id,
+                              "grade",
+                              e.target.value,
+                            )
                           }
                           disabled={gradeInputs[student.id]?.isAbsent}
                           className="w-16"
@@ -475,7 +537,11 @@ export default function TeacherExamsPage() {
                         <Input
                           value={gradeInputs[student.id]?.remarks || ""}
                           onChange={(e) =>
-                            handleGradeChange(student.id, "remarks", e.target.value)
+                            handleGradeChange(
+                              student.id,
+                              "remarks",
+                              e.target.value,
+                            )
                           }
                           placeholder="Optional"
                           className="w-32"
@@ -486,7 +552,11 @@ export default function TeacherExamsPage() {
                           type="checkbox"
                           checked={gradeInputs[student.id]?.isAbsent || false}
                           onChange={(e) =>
-                            handleGradeChange(student.id, "isAbsent", e.target.checked)
+                            handleGradeChange(
+                              student.id,
+                              "isAbsent",
+                              e.target.checked,
+                            )
                           }
                           className="h-4 w-4"
                         />
@@ -498,7 +568,10 @@ export default function TeacherExamsPage() {
             </div>
 
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsUploadDialogOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setIsUploadDialogOpen(false)}
+              >
                 Cancel
               </Button>
               <Button

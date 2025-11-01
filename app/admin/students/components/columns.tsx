@@ -3,7 +3,14 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Edit2, Trash2, Mail, Phone, Calendar } from "lucide-react";
+import {
+  ArrowUpDown,
+  Edit2,
+  Trash2,
+  Mail,
+  Phone,
+  Calendar,
+} from "lucide-react";
 
 export interface Student {
   id: string;
@@ -71,7 +78,9 @@ export const createStudentColumns = ({
     accessorKey: "admissionNumber",
     header: "Admission No.",
     cell: ({ row }) => {
-      return <span className="font-mono">{row.getValue("admissionNumber")}</span>;
+      return (
+        <span className="font-mono">{row.getValue("admissionNumber")}</span>
+      );
     },
   },
   {

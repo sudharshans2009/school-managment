@@ -7,7 +7,7 @@ import { auth } from "@/lib/auth";
 // GET single circular
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -25,7 +25,10 @@ export async function GET(
     });
 
     if (!circular) {
-      return NextResponse.json({ error: "Circular not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Circular not found" },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json(circular);
@@ -33,7 +36,7 @@ export async function GET(
     console.error("Error fetching circular:", error);
     return NextResponse.json(
       { error: "Failed to fetch circular" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -41,7 +44,7 @@ export async function GET(
 // PUT update circular (admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -68,7 +71,10 @@ export async function PUT(
     });
 
     if (!existingCircular) {
-      return NextResponse.json({ error: "Circular not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Circular not found" },
+        { status: 404 },
+      );
     }
 
     const updateData: Record<string, unknown> = {
@@ -104,7 +110,7 @@ export async function PUT(
     console.error("Error updating circular:", error);
     return NextResponse.json(
       { error: "Failed to update circular" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -112,7 +118,7 @@ export async function PUT(
 // POST acknowledge circular
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -130,13 +136,16 @@ export async function POST(
     });
 
     if (!circular) {
-      return NextResponse.json({ error: "Circular not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Circular not found" },
+        { status: 404 },
+      );
     }
 
     if (!circular.requiresAcknowledgment) {
       return NextResponse.json(
         { error: "This circular does not require acknowledgment" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -147,14 +156,14 @@ export async function POST(
       .where(
         and(
           eq(circularAcknowledgments.circularId, circularId),
-          eq(circularAcknowledgments.userId, session.user.id)
-        )
+          eq(circularAcknowledgments.userId, session.user.id),
+        ),
       );
 
     if (existingAck.length > 0) {
       return NextResponse.json(
         { error: "Already acknowledged" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -172,7 +181,7 @@ export async function POST(
     console.error("Error acknowledging circular:", error);
     return NextResponse.json(
       { error: "Failed to acknowledge circular" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

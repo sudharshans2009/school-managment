@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/database';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/database";
 import {
   attendance,
   studentGrades,
@@ -11,10 +11,10 @@ import {
   classrooms,
   subjects,
   teacherAssignments,
-} from '@/database/schema';
-import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
-import { eq, gte } from 'drizzle-orm';
+} from "@/database/schema";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { eq, gte } from "drizzle-orm";
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,11 +23,11 @@ export async function GET(request: NextRequest) {
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
-    const days = parseInt(searchParams.get('days') || '30');
+    const days = parseInt(searchParams.get("days") || "30");
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - days);
 
@@ -42,8 +42,11 @@ export async function GET(request: NextRequest) {
       .where(gte(attendance.date, startDate));
 
     const totalAttendance = attendanceRecords.length;
-    const presentCount = attendanceRecords.filter((r) => r.status === 'present').length;
-    const overallAttendanceRate = totalAttendance > 0 ? (presentCount / totalAttendance) * 100 : 0;
+    const presentCount = attendanceRecords.filter(
+      (r) => r.status === "present",
+    ).length;
+    const overallAttendanceRate =
+      totalAttendance > 0 ? (presentCount / totalAttendance) * 100 : 0;
 
     // Attendance by grade
     const classroomData = await db
@@ -54,9 +57,16 @@ export async function GET(request: NextRequest) {
       .from(classrooms);
 
     const attendanceByGrade = classroomData.map((classroom) => {
-      const classAttendance = attendanceRecords.filter((r) => r.classroomId === classroom.id);
-      const classPresent = classAttendance.filter((r) => r.status === 'present').length;
-      const rate = classAttendance.length > 0 ? (classPresent / classAttendance.length) * 100 : 0;
+      const classAttendance = attendanceRecords.filter(
+        (r) => r.classroomId === classroom.id,
+      );
+      const classPresent = classAttendance.filter(
+        (r) => r.status === "present",
+      ).length;
+      const rate =
+        classAttendance.length > 0
+          ? (classPresent / classAttendance.length) * 100
+          : 0;
       return { grade: classroom.grade, rate };
     });
 
@@ -65,22 +75,32 @@ export async function GET(request: NextRequest) {
     for (let i = 6; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-      
+      const dateStr = date.toISOString().split("T")[0];
+
       const dayAttendance = attendanceRecords.filter((r) => {
-        const recordDate = new Date(r.date).toISOString().split('T')[0];
+        const recordDate = new Date(r.date).toISOString().split("T")[0];
         return recordDate === dateStr;
       });
-      
-      const dayPresent = dayAttendance.filter((r) => r.status === 'present').length;
-      const rate = dayAttendance.length > 0 ? (dayPresent / dayAttendance.length) * 100 : 0;
-      
+
+      const dayPresent = dayAttendance.filter(
+        (r) => r.status === "present",
+      ).length;
+      const rate =
+        dayAttendance.length > 0
+          ? (dayPresent / dayAttendance.length) * 100
+          : 0;
+
       attendanceTrend.push({ date: dateStr, rate });
     }
 
     // Grades Analytics
     const finalizedExams = await db
-      .select({ id: exams.id, totalMarks: exams.totalMarks, passingMarks: exams.passingMarks, subjectId: exams.subjectId })
+      .select({
+        id: exams.id,
+        totalMarks: exams.totalMarks,
+        passingMarks: exams.passingMarks,
+        subjectId: exams.subjectId,
+      })
       .from(exams)
       .where(eq(exams.isFinalized, true));
 
@@ -97,38 +117,55 @@ export async function GET(request: NextRequest) {
     const validGrades = allGrades.filter((g) => !g.isAbsent && g.percentage);
     const averagePercentage =
       validGrades.length > 0
-        ? validGrades.reduce((sum, g) => sum + parseFloat(g.percentage || '0'), 0) / validGrades.length
+        ? validGrades.reduce(
+            (sum, g) => sum + parseFloat(g.percentage || "0"),
+            0,
+          ) / validGrades.length
         : 0;
 
     const passingGrades = validGrades.filter((g) => {
       const exam = finalizedExams.find((e) => e.id === g.examId);
       if (!exam) return false;
       const passingMarks = exam.passingMarks || exam.totalMarks * 0.4;
-      return parseFloat(g.marksObtained || '0') >= passingMarks;
+      return parseFloat(g.marksObtained || "0") >= passingMarks;
     });
-    const passingRate = validGrades.length > 0 ? (passingGrades.length / validGrades.length) * 100 : 0;
+    const passingRate =
+      validGrades.length > 0
+        ? (passingGrades.length / validGrades.length) * 100
+        : 0;
 
     // Grades by subject
-    const subjectData = await db.select({ id: subjects.id, name: subjects.name }).from(subjects);
-    const gradesBySubject = subjectData.map((subject) => {
-      const subjectExams = finalizedExams.filter((e) => e.subjectId === subject.id);
-      const subjectGrades = allGrades.filter((g) => subjectExams.some((e) => e.id === g.examId) && !g.isAbsent);
-      const average =
-        subjectGrades.length > 0
-          ? subjectGrades.reduce((sum, g) => sum + parseFloat(g.percentage || '0'), 0) / subjectGrades.length
-          : 0;
-      return { subject: subject.name, average };
-    }).filter((s) => s.average > 0);
+    const subjectData = await db
+      .select({ id: subjects.id, name: subjects.name })
+      .from(subjects);
+    const gradesBySubject = subjectData
+      .map((subject) => {
+        const subjectExams = finalizedExams.filter(
+          (e) => e.subjectId === subject.id,
+        );
+        const subjectGrades = allGrades.filter(
+          (g) => subjectExams.some((e) => e.id === g.examId) && !g.isAbsent,
+        );
+        const average =
+          subjectGrades.length > 0
+            ? subjectGrades.reduce(
+                (sum, g) => sum + parseFloat(g.percentage || "0"),
+                0,
+              ) / subjectGrades.length
+            : 0;
+        return { subject: subject.name, average };
+      })
+      .filter((s) => s.average > 0);
 
     // Grade distribution
     const gradeDistribution = [
-      { grade: 'A+', count: allGrades.filter((g) => g.grade === 'A+').length },
-      { grade: 'A', count: allGrades.filter((g) => g.grade === 'A').length },
-      { grade: 'B+', count: allGrades.filter((g) => g.grade === 'B+').length },
-      { grade: 'B', count: allGrades.filter((g) => g.grade === 'B').length },
-      { grade: 'C', count: allGrades.filter((g) => g.grade === 'C').length },
-      { grade: 'D', count: allGrades.filter((g) => g.grade === 'D').length },
-      { grade: 'F', count: allGrades.filter((g) => g.grade === 'F').length },
+      { grade: "A+", count: allGrades.filter((g) => g.grade === "A+").length },
+      { grade: "A", count: allGrades.filter((g) => g.grade === "A").length },
+      { grade: "B+", count: allGrades.filter((g) => g.grade === "B+").length },
+      { grade: "B", count: allGrades.filter((g) => g.grade === "B").length },
+      { grade: "C", count: allGrades.filter((g) => g.grade === "C").length },
+      { grade: "D", count: allGrades.filter((g) => g.grade === "D").length },
+      { grade: "F", count: allGrades.filter((g) => g.grade === "F").length },
     ].filter((d) => d.count > 0);
 
     // Homework Analytics
@@ -150,28 +187,40 @@ export async function GET(request: NextRequest) {
       .from(homeworkSubmissions);
 
     const totalHomework = allHomework.length;
-    const completedSubmissions = allSubmissions.filter((s) => s.status === 'graded' || s.status === 'submitted');
-    const completionRate = totalHomework > 0 ? (completedSubmissions.length / (totalHomework * 30)) * 100 : 0; // Assuming avg 30 students
+    const completedSubmissions = allSubmissions.filter(
+      (s) => s.status === "graded" || s.status === "submitted",
+    );
+    const completionRate =
+      totalHomework > 0
+        ? (completedSubmissions.length / (totalHomework * 30)) * 100
+        : 0; // Assuming avg 30 students
 
     const onTimeSubmissions = allSubmissions.filter((s) => {
       const hw = allHomework.find((h) => h.id === s.homeworkId);
       if (!hw || !s.submittedAt) return false;
       return new Date(s.submittedAt) <= new Date(hw.dueDate);
     });
-    const onTimeRate = allSubmissions.length > 0 ? (onTimeSubmissions.length / allSubmissions.length) * 100 : 0;
+    const onTimeRate =
+      allSubmissions.length > 0
+        ? (onTimeSubmissions.length / allSubmissions.length) * 100
+        : 0;
 
     // Homework by subject
-    const homeworkBySubject = subjectData.map((subject) => {
-      const subjectHomework = allHomework.filter((h) => h.subjectId === subject.id);
-      const subjectSubmissions = allSubmissions.filter((s) =>
-        subjectHomework.some((h) => h.id === s.homeworkId)
-      );
-      const completion =
-        subjectHomework.length > 0
-          ? (subjectSubmissions.length / (subjectHomework.length * 30)) * 100
-          : 0;
-      return { subject: subject.name, completion };
-    }).filter((s) => s.completion > 0);
+    const homeworkBySubject = subjectData
+      .map((subject) => {
+        const subjectHomework = allHomework.filter(
+          (h) => h.subjectId === subject.id,
+        );
+        const subjectSubmissions = allSubmissions.filter((s) =>
+          subjectHomework.some((h) => h.id === s.homeworkId),
+        );
+        const completion =
+          subjectHomework.length > 0
+            ? (subjectSubmissions.length / (subjectHomework.length * 30)) * 100
+            : 0;
+        return { subject: subject.name, completion };
+      })
+      .filter((s) => s.completion > 0);
 
     // Exam Analytics
     const allExams = await db.select().from(exams);
@@ -180,36 +229,49 @@ export async function GET(request: NextRequest) {
     const pendingCount = totalConducted - finalizedCount;
 
     const examGrades = await db
-      .select({ marksObtained: studentGrades.marksObtained, examId: studentGrades.examId })
+      .select({
+        marksObtained: studentGrades.marksObtained,
+        examId: studentGrades.examId,
+      })
       .from(studentGrades)
       .where(eq(studentGrades.isAbsent, false));
 
     const averageScore =
       examGrades.length > 0
-        ? examGrades.reduce((sum, g) => sum + parseFloat(g.marksObtained || '0'), 0) / examGrades.length
+        ? examGrades.reduce(
+            (sum, g) => sum + parseFloat(g.marksObtained || "0"),
+            0,
+          ) / examGrades.length
         : 0;
 
     // Student Analytics
-    const allStudents = await db.select({ id: students.id, classroomId: students.classroomId }).from(students);
+    const allStudents = await db
+      .select({ id: students.id, classroomId: students.classroomId })
+      .from(students);
     const activeStudents = await db
       .select({ userId: students.userId })
       .from(students)
       .innerJoin(users, eq(students.userId, users.id))
       .where(eq(users.isActive, true));
 
-    const studentsByGrade = classroomData.map((classroom) => ({
-      grade: classroom.grade,
-      count: allStudents.filter((s) => s.classroomId === classroom.id).length,
-    })).filter((g) => g.count > 0);
+    const studentsByGrade = classroomData
+      .map((classroom) => ({
+        grade: classroom.grade,
+        count: allStudents.filter((s) => s.classroomId === classroom.id).length,
+      }))
+      .filter((g) => g.count > 0);
 
     // Teacher Analytics
     const allTeachers = await db
       .select()
       .from(users)
-      .where(eq(users.role, 'teacher'));
+      .where(eq(users.role, "teacher"));
 
     const assignments = await db.select().from(teacherAssignments);
-    const assignmentRate = allTeachers.length > 0 ? (assignments.length / (allTeachers.length * 3)) * 100 : 0; // Assuming avg 3 assignments per teacher
+    const assignmentRate =
+      allTeachers.length > 0
+        ? (assignments.length / (allTeachers.length * 3)) * 100
+        : 0; // Assuming avg 3 assignments per teacher
 
     const analyticsData = {
       attendance: {
@@ -249,7 +311,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(analyticsData);
   } catch (error) {
-    console.error('Error fetching analytics:', error);
-    return NextResponse.json({ error: 'Failed to fetch analytics' }, { status: 500 });
+    console.error("Error fetching analytics:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch analytics" },
+      { status: 500 },
+    );
   }
 }

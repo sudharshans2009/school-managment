@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching meeting slots:", error);
     return NextResponse.json(
       { error: "Failed to fetch meeting slots" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     if (!date || !startTime || !endTime) {
       return NextResponse.json(
         { error: "Date, start time, and end time are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating meeting slot:", error);
     return NextResponse.json(
       { error: "Failed to create meeting slot" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

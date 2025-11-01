@@ -2,14 +2,39 @@
 
 import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { UserPlus, Loader2, AlertCircle, CheckCircle, Trash2 } from "lucide-react";
+import {
+  UserPlus,
+  Loader2,
+  AlertCircle,
+  CheckCircle,
+  Trash2,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -62,8 +87,13 @@ export default function SubstitutesManagementPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
-  const [assignDialog, setAssignDialog] = useState<{ open: boolean; period: UnassignedPeriod | null }>({
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
+  const [assignDialog, setAssignDialog] = useState<{
+    open: boolean;
+    period: UnassignedPeriod | null;
+  }>({
     open: false,
     period: null,
   });
@@ -76,10 +106,14 @@ export default function SubstitutesManagementPage() {
   }, [session, isPending, router]);
 
   // Fetch unassigned periods
-  const { data: unassignedPeriods, isLoading: loadingUnassigned } = useQuery<UnassignedPeriod[]>({
+  const { data: unassignedPeriods, isLoading: loadingUnassigned } = useQuery<
+    UnassignedPeriod[]
+  >({
     queryKey: ["unassigned-periods", selectedDate],
     queryFn: async () => {
-      const res = await fetch(`/api/substitute-assignments/unassigned?date=${selectedDate}`);
+      const res = await fetch(
+        `/api/substitute-assignments/unassigned?date=${selectedDate}`,
+      );
       if (!res.ok) throw new Error("Failed to fetch unassigned periods");
       return res.json();
     },
@@ -87,10 +121,14 @@ export default function SubstitutesManagementPage() {
   });
 
   // Fetch all substitute assignments
-  const { data: assignments, isLoading: loadingAssignments } = useQuery<SubstituteAssignment[]>({
+  const { data: assignments, isLoading: loadingAssignments } = useQuery<
+    SubstituteAssignment[]
+  >({
     queryKey: ["substitute-assignments", selectedDate],
     queryFn: async () => {
-      const res = await fetch(`/api/substitute-assignments?date=${selectedDate}`);
+      const res = await fetch(
+        `/api/substitute-assignments?date=${selectedDate}`,
+      );
       if (!res.ok) throw new Error("Failed to fetch assignments");
       return res.json();
     },
@@ -186,7 +224,10 @@ export default function SubstitutesManagementPage() {
   };
 
   return (
-    <DashboardLayout title="Substitute Management" description="Assign substitute teachers to periods">
+    <DashboardLayout
+      title="Substitute Management"
+      description="Assign substitute teachers to periods"
+    >
       <div className="space-y-6">
         <div className="flex items-center gap-3 mb-6">
           <Link href="/admin">
@@ -196,12 +237,14 @@ export default function SubstitutesManagementPage() {
           </Link>
           <h1 className="text-2xl font-bold">Substitute Management</h1>
         </div>
-        
+
         {/* Date Selector */}
         <Card className="rounded-2xl shadow-sm">
           <CardHeader>
             <CardTitle>Select Date</CardTitle>
-            <CardDescription>Choose a date to view and manage substitutes</CardDescription>
+            <CardDescription>
+              Choose a date to view and manage substitutes
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Input
@@ -219,8 +262,12 @@ export default function SubstitutesManagementPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Unassigned Periods</p>
-                  <p className="text-3xl font-bold mt-2">{unassignedPeriods?.length || 0}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Unassigned Periods
+                  </p>
+                  <p className="text-3xl font-bold mt-2">
+                    {unassignedPeriods?.length || 0}
+                  </p>
                 </div>
                 <div className="bg-red-100 p-3 rounded-xl">
                   <AlertCircle className="h-6 w-6 text-red-600" />
@@ -232,8 +279,12 @@ export default function SubstitutesManagementPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Assigned Substitutes</p>
-                  <p className="text-3xl font-bold mt-2">{assignments?.length || 0}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Assigned Substitutes
+                  </p>
+                  <p className="text-3xl font-bold mt-2">
+                    {assignments?.length || 0}
+                  </p>
                 </div>
                 <div className="bg-green-100 p-3 rounded-xl">
                   <CheckCircle className="h-6 w-6 text-green-600" />
@@ -247,11 +298,16 @@ export default function SubstitutesManagementPage() {
         <Card className="rounded-2xl shadow-sm">
           <CardHeader>
             <CardTitle>Periods Needing Substitutes</CardTitle>
-            <CardDescription>Assign substitute teachers to these periods</CardDescription>
+            <CardDescription>
+              Assign substitute teachers to these periods
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {unassignedPeriods?.map((period) => (
-              <Card key={period.id} className="rounded-xl border-l-4 border-l-red-500">
+              <Card
+                key={period.id}
+                className="rounded-xl border-l-4 border-l-red-500"
+              >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -259,10 +315,13 @@ export default function SubstitutesManagementPage() {
                         <h4 className="font-semibold">
                           {period.classroomName} - {period.subjectName}
                         </h4>
-                        <Badge variant="outline">Period {period.periodNumber}</Badge>
+                        <Badge variant="outline">
+                          Period {period.periodNumber}
+                        </Badge>
                       </div>
                       <p className="text-sm text-muted-foreground mb-1">
-                        <strong>Time:</strong> {period.startTime} - {period.endTime}
+                        <strong>Time:</strong> {period.startTime} -{" "}
+                        {period.endTime}
                       </p>
                       <p className="text-sm text-muted-foreground">
                         <strong>Original Teacher:</strong> {period.teacherName}
@@ -292,11 +351,16 @@ export default function SubstitutesManagementPage() {
         <Card className="rounded-2xl shadow-sm">
           <CardHeader>
             <CardTitle>Assigned Substitutes</CardTitle>
-            <CardDescription>View and manage substitute assignments</CardDescription>
+            <CardDescription>
+              View and manage substitute assignments
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {assignments?.map((assignment) => (
-              <Card key={assignment.id} className="rounded-xl border-l-4 border-l-green-500">
+              <Card
+                key={assignment.id}
+                className="rounded-xl border-l-4 border-l-green-500"
+              >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -304,13 +368,17 @@ export default function SubstitutesManagementPage() {
                         <h4 className="font-semibold">
                           {assignment.classroomName} - {assignment.subjectName}
                         </h4>
-                        <Badge variant="outline">Period {assignment.periodNumber}</Badge>
+                        <Badge variant="outline">
+                          Period {assignment.periodNumber}
+                        </Badge>
                       </div>
                       <p className="text-sm text-muted-foreground mb-1">
-                        <strong>Time:</strong> {assignment.startTime} - {assignment.endTime}
+                        <strong>Time:</strong> {assignment.startTime} -{" "}
+                        {assignment.endTime}
                       </p>
                       <p className="text-sm text-muted-foreground mb-1">
-                        <strong>Original Teacher:</strong> {assignment.originalTeacherName}
+                        <strong>Original Teacher:</strong>{" "}
+                        {assignment.originalTeacherName}
                       </p>
                       {assignment.reason && (
                         <p className="text-sm mb-1">
@@ -332,7 +400,9 @@ export default function SubstitutesManagementPage() {
               </Card>
             ))}
             {(!assignments || assignments.length === 0) && (
-              <p className="text-center py-8 text-muted-foreground">No substitute assignments for this date</p>
+              <p className="text-center py-8 text-muted-foreground">
+                No substitute assignments for this date
+              </p>
             )}
           </CardContent>
         </Card>
@@ -340,29 +410,40 @@ export default function SubstitutesManagementPage() {
         {/* Assignment Dialog */}
         <Dialog
           open={assignDialog.open}
-          onOpenChange={(open) => !open && setAssignDialog({ open: false, period: null })}
+          onOpenChange={(open) =>
+            !open && setAssignDialog({ open: false, period: null })
+          }
         >
           <DialogContent className="rounded-2xl">
             <DialogHeader>
               <DialogTitle>Assign Substitute Teacher</DialogTitle>
-              <DialogDescription>Select a teacher to substitute for this period</DialogDescription>
+              <DialogDescription>
+                Select a teacher to substitute for this period
+              </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               {assignDialog.period && (
                 <div className="bg-muted p-4 rounded-xl">
                   <p className="font-semibold">
-                    {assignDialog.period.classroomName} - {assignDialog.period.subjectName}
+                    {assignDialog.period.classroomName} -{" "}
+                    {assignDialog.period.subjectName}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    Period {assignDialog.period.periodNumber} | {assignDialog.period.startTime} -{" "}
+                    Period {assignDialog.period.periodNumber} |{" "}
+                    {assignDialog.period.startTime} -{" "}
                     {assignDialog.period.endTime}
                   </p>
-                  <p className="text-sm mt-1">Original: {assignDialog.period.teacherName}</p>
+                  <p className="text-sm mt-1">
+                    Original: {assignDialog.period.teacherName}
+                  </p>
                 </div>
               )}
               <div>
                 <Label>Select Substitute Teacher</Label>
-                <Select value={selectedTeacher} onValueChange={setSelectedTeacher}>
+                <Select
+                  value={selectedTeacher}
+                  onValueChange={setSelectedTeacher}
+                >
                   <SelectTrigger className="rounded-xl">
                     <SelectValue placeholder="Choose a teacher" />
                   </SelectTrigger>

@@ -25,7 +25,7 @@ export async function GET() {
     console.error("Error fetching teachers:", error);
     return NextResponse.json(
       { error: "Failed to fetch teachers" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     if (!email || !name || !password) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -51,22 +51,25 @@ export async function POST(request: NextRequest) {
     if (existing) {
       return NextResponse.json(
         { error: "Email already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const passwordHash = await hashPassword(password);
 
-    const [newTeacher] = await db.insert(users).values({
-      email,
-      name,
-      role: "teacher",
-      passwordHash,
-      phone,
-      address,
-      emailVerified: true,
-      isActive: true,
-    }).returning();
+    const [newTeacher] = await db
+      .insert(users)
+      .values({
+        email,
+        name,
+        role: "teacher",
+        passwordHash,
+        phone,
+        address,
+        emailVerified: true,
+        isActive: true,
+      })
+      .returning();
 
     // Remove password hash from response
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -77,7 +80,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating teacher:", error);
     return NextResponse.json(
       { error: "Failed to create teacher" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

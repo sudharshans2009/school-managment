@@ -7,7 +7,7 @@ import { auth } from "@/lib/auth";
 // POST - Register for an event
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -32,7 +32,7 @@ export async function POST(
     if (!event.allowRegistration) {
       return NextResponse.json(
         { error: "Registration is not allowed for this event" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -40,7 +40,7 @@ export async function POST(
     if (event.registrationDeadline && new Date() > event.registrationDeadline) {
       return NextResponse.json(
         { error: "Registration deadline has passed" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -52,15 +52,15 @@ export async function POST(
         .where(
           and(
             eq(eventRegistrations.eventId, eventId),
-            eq(eventRegistrations.status, "registered")
-          )
+            eq(eventRegistrations.status, "registered"),
+          ),
         );
       const registrationCount = Number(countResult[0]?.count || 0);
 
       if (registrationCount >= event.maxParticipants) {
         return NextResponse.json(
           { error: "Maximum participants reached" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -70,14 +70,14 @@ export async function POST(
       where: and(
         eq(eventRegistrations.eventId, eventId),
         eq(eventRegistrations.userId, session.user.id),
-        eq(eventRegistrations.status, "registered")
+        eq(eventRegistrations.status, "registered"),
       ),
     });
 
     if (existingRegistration) {
       return NextResponse.json(
         { error: "Already registered for this event" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -98,7 +98,7 @@ export async function POST(
     console.error("Error registering for event:", error);
     return NextResponse.json(
       { error: "Failed to register for event" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -106,7 +106,7 @@ export async function POST(
 // DELETE - Cancel registration
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -120,14 +120,14 @@ export async function DELETE(
     const registration = await db.query.eventRegistrations.findFirst({
       where: and(
         eq(eventRegistrations.eventId, eventId),
-        eq(eventRegistrations.userId, session.user.id)
+        eq(eventRegistrations.userId, session.user.id),
       ),
     });
 
     if (!registration) {
       return NextResponse.json(
         { error: "Registration not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -136,12 +136,14 @@ export async function DELETE(
       .set({ status: "cancelled" })
       .where(eq(eventRegistrations.id, registration.id));
 
-    return NextResponse.json({ message: "Registration cancelled successfully" });
+    return NextResponse.json({
+      message: "Registration cancelled successfully",
+    });
   } catch (error) {
     console.error("Error cancelling registration:", error);
     return NextResponse.json(
       { error: "Failed to cancel registration" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

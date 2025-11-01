@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 // PUT - Update an announcement
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -16,7 +16,7 @@ export async function PUT(
     if (!title || !content) {
       return NextResponse.json(
         { error: "Title and content are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -34,7 +34,7 @@ export async function PUT(
     if (updated.length === 0) {
       return NextResponse.json(
         { error: "Announcement not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -43,7 +43,7 @@ export async function PUT(
     console.error("Error updating announcement:", error);
     return NextResponse.json(
       { error: "Failed to update announcement" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -51,7 +51,7 @@ export async function PUT(
 // DELETE - Delete an announcement
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -64,7 +64,7 @@ export async function DELETE(
     if (deleted.length === 0) {
       return NextResponse.json(
         { error: "Announcement not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -73,7 +73,7 @@ export async function DELETE(
     console.error("Error deleting announcement:", error);
     return NextResponse.json(
       { error: "Failed to delete announcement" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

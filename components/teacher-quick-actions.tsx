@@ -1,10 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  BookOpen, Users, Home, BarChart3
-} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { BookOpen, Users, Home, BarChart3 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface TeacherQuickActionsProps {
@@ -13,8 +17,7 @@ interface TeacherQuickActionsProps {
   currentPage?: string;
 }
 
-export function TeacherQuickActions({ 
-}: TeacherQuickActionsProps) {
+export function TeacherQuickActions({}: TeacherQuickActionsProps) {
   const router = useRouter();
 
   const actions = [
@@ -92,13 +95,15 @@ export function TeacherQuickActions({
     <Card className="rounded-2xl shadow-sm">
       <CardHeader>
         <CardTitle>Quick Actions</CardTitle>
-        <CardDescription>Access your teaching tools and resources</CardDescription>
+        <CardDescription>
+          Access your teaching tools and resources
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {actions.map((action) => {
             const Icon = action.icon;
-            
+
             return (
               <Button
                 key={action.id}

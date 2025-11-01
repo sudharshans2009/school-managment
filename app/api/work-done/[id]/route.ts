@@ -8,7 +8,7 @@ import { headers } from "next/headers";
 // GET - Get single work done record
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({
@@ -21,7 +21,13 @@ export async function GET(
 
     // Only admin and teacher can access work done records
     if (session.user.role !== "admin" && session.user.role !== "teacher") {
-      return NextResponse.json({ error: "Forbidden: Only admin and teachers can view work done records" }, { status: 403 });
+      return NextResponse.json(
+        {
+          error:
+            "Forbidden: Only admin and teachers can view work done records",
+        },
+        { status: 403 },
+      );
     }
 
     const { id } = await params;
@@ -57,20 +63,26 @@ export async function GET(
       .limit(1);
 
     if (!record || record.length === 0) {
-      return NextResponse.json({ error: "Work done record not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Work done record not found" },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json(record[0]);
   } catch (error) {
     console.error("Error fetching work done record:", error);
-    return NextResponse.json({ error: "Failed to fetch work done record" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch work done record" },
+      { status: 500 },
+    );
   }
 }
 
 // PUT - Update work done record
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({
@@ -83,7 +95,13 @@ export async function PUT(
 
     // Only admin and teacher can update work done records
     if (session.user.role !== "admin" && session.user.role !== "teacher") {
-      return NextResponse.json({ error: "Forbidden: Only admin and teachers can update work done records" }, { status: 403 });
+      return NextResponse.json(
+        {
+          error:
+            "Forbidden: Only admin and teachers can update work done records",
+        },
+        { status: 403 },
+      );
     }
 
     const { id } = await params;
@@ -97,11 +115,15 @@ export async function PUT(
     } = {};
 
     if (topicsCovered) updateData.topicsCovered = topicsCovered;
-    if (homeworkAssigned !== undefined) updateData.homeworkAssigned = homeworkAssigned;
+    if (homeworkAssigned !== undefined)
+      updateData.homeworkAssigned = homeworkAssigned;
     if (remarks !== undefined) updateData.remarks = remarks;
 
     if (Object.keys(updateData).length === 0) {
-      return NextResponse.json({ error: "No fields to update" }, { status: 400 });
+      return NextResponse.json(
+        { error: "No fields to update" },
+        { status: 400 },
+      );
     }
 
     const updated = await db
@@ -111,20 +133,26 @@ export async function PUT(
       .returning();
 
     if (!updated || updated.length === 0) {
-      return NextResponse.json({ error: "Work done record not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Work done record not found" },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json(updated[0]);
   } catch (error) {
     console.error("Error updating work done record:", error);
-    return NextResponse.json({ error: "Failed to update work done record" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update work done record" },
+      { status: 500 },
+    );
   }
 }
 
 // DELETE - Delete work done record
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({
@@ -137,16 +165,27 @@ export async function DELETE(
 
     // Only admin and teacher can delete work done records
     if (session.user.role !== "admin" && session.user.role !== "teacher") {
-      return NextResponse.json({ error: "Forbidden: Only admin and teachers can delete work done records" }, { status: 403 });
+      return NextResponse.json(
+        {
+          error:
+            "Forbidden: Only admin and teachers can delete work done records",
+        },
+        { status: 403 },
+      );
     }
 
     const { id } = await params;
 
     await db.delete(workDone).where(eq(workDone.id, id));
 
-    return NextResponse.json({ message: "Work done record deleted successfully" });
+    return NextResponse.json({
+      message: "Work done record deleted successfully",
+    });
   } catch (error) {
     console.error("Error deleting work done record:", error);
-    return NextResponse.json({ error: "Failed to delete work done record" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete work done record" },
+      { status: 500 },
+    );
   }
 }

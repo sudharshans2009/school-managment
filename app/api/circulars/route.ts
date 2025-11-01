@@ -45,7 +45,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(allCirculars);
   } catch (error) {
     console.error("Error fetching circulars:", error);
-    return NextResponse.json({ error: "Failed to fetch circulars" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch circulars" },
+      { status: 500 },
+    );
   }
 }
 
@@ -74,7 +77,7 @@ export async function POST(request: NextRequest) {
     if (!title || !content || !targetAudience) {
       return NextResponse.json(
         { error: "Title, content, and target audience are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -98,6 +101,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(circular, { status: 201 });
   } catch (error) {
     console.error("Error creating circular:", error);
-    return NextResponse.json({ error: "Failed to create circular" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create circular" },
+      { status: 500 },
+    );
   }
 }

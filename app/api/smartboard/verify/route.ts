@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     if (!classroomId || !classroomKey) {
       return NextResponse.json(
         { error: "Classroom ID and Key are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const classroom = await db.query.classrooms.findFirst({
       where: and(
         eq(classrooms.id, classroomId),
-        eq(classrooms.classroomKey, classroomKey)
+        eq(classrooms.classroomKey, classroomKey),
       ),
       with: {
         teacherAssignments: {
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     if (!classroom) {
       return NextResponse.json(
         { error: "Invalid Classroom ID or Key" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     console.error("Error verifying smartboard credentials:", error);
     return NextResponse.json(
       { error: "Failed to verify credentials" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

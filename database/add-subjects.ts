@@ -89,7 +89,7 @@ async function addSubjects() {
       try {
         // Check if subject already exists
         const existing = await db.query.subjects.findFirst({
-          where: (subjects, { eq }) => eq(subjects.name, subject.name)
+          where: (subjects, { eq }) => eq(subjects.name, subject.name),
         });
 
         if (existing) {
@@ -108,14 +108,13 @@ async function addSubjects() {
     console.log(`\n📊 Summary:`);
     console.log(`   ✅ Successfully added: ${addedCount} subjects`);
     console.log(`   ❌ Errors: ${errors.length}`);
-    
+
     if (errors.length > 0) {
       console.log(`\n⚠️  Errors encountered:`);
-      errors.forEach(err => console.log(`   - ${err}`));
+      errors.forEach((err) => console.log(`   - ${err}`));
     }
 
     console.log("\n✨ Subject addition complete!");
-    
   } catch (error) {
     console.error("❌ Fatal error:", error);
     process.exit(1);

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
-import { 
-  users, 
-  homework, 
+import {
+  users,
+  homework,
   teacherAssignments,
   teacherLeaves,
-  students
+  students,
 } from "@/database/schema";
 import { desc, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth";
@@ -14,7 +14,10 @@ export async function GET(req: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
 
-    if (!session?.user || (session.user as { role?: string }).role !== "admin") {
+    if (
+      !session?.user ||
+      (session.user as { role?: string }).role !== "admin"
+    ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -132,14 +135,14 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching recent activity:", error);
     return NextResponse.json(
       { error: "Failed to fetch recent activity" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 function getRelativeTime(date: Date | null): string {
   if (!date) return "Unknown";
-  
+
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / 60000);
@@ -156,7 +159,7 @@ function getRelativeTime(date: Date | null): string {
 function parseRelativeTime(timeStr: string): number {
   if (timeStr === "Just now") return 0;
   if (timeStr === "Unknown") return Infinity;
-  
+
   const match = timeStr.match(/(\d+)\s+(minute|hour|day)s?\s+ago/);
   if (match) {
     const value = parseInt(match[1]);
@@ -165,6 +168,6 @@ function parseRelativeTime(timeStr: string): number {
     if (unit === "hour") return value * 60;
     if (unit === "day") return value * 1440;
   }
-  
+
   return Infinity;
 }

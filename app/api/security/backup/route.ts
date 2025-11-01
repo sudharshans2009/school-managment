@@ -3,12 +3,19 @@
  * Admin-only endpoint to manage system backups
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/database';
-import { systemBackups, users, students, classrooms, homework, attendance } from '@/database/schema';
-import { desc, eq } from 'drizzle-orm';
-import { requireAdmin } from '@/lib/auth-middleware';
-import { auditBackup } from '@/lib/audit';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/database";
+import {
+  systemBackups,
+  users,
+  students,
+  classrooms,
+  homework,
+  attendance,
+} from "@/database/schema";
+import { desc, eq } from "drizzle-orm";
+import { requireAdmin } from "@/lib/auth-middleware";
+import { auditBackup } from "@/lib/audit";
 
 // GET - List backups
 export async function GET(request: NextRequest) {
@@ -26,10 +33,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ backups });
   } catch (error) {
-    console.error('Error fetching backups:', error);
+    console.error("Error fetching backups:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch backups' },
-      { status: 500 }
+      { error: "Failed to fetch backups" },
+      { status: 500 },
     );
   }
 }
@@ -44,14 +51,14 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { backupType = 'manual' } = body;
+    const { backupType = "manual" } = body;
 
     // Create backup record
     const [backup] = await db
       .insert(systemBackups)
       .values({
         backupType,
-        status: 'in_progress',
+        status: "in_progress",
         createdBy: user.id,
       })
       .returning();
@@ -63,34 +70,38 @@ export async function POST(request: NextRequest) {
       user.role,
       backupType,
       backup.id,
-      request
+      request,
     );
 
     // Generate backup data
     try {
       const backupData = await generateBackupData();
-      
+
       // In a real system, this would be saved to cloud storage
       // For now, we'll just calculate size and create metadata
       const backupJson = JSON.stringify(backupData, null, 2);
-      const fileSizeKB = Buffer.byteLength(backupJson, 'utf8') / 1024;
-      const fileSize = fileSizeKB > 1024 
-        ? `${(fileSizeKB / 1024).toFixed(2)} MB` 
-        : `${fileSizeKB.toFixed(2)} KB`;
+      const fileSizeKB = Buffer.byteLength(backupJson, "utf8") / 1024;
+      const fileSize =
+        fileSizeKB > 1024
+          ? `${(fileSizeKB / 1024).toFixed(2)} MB`
+          : `${fileSizeKB.toFixed(2)} KB`;
 
       // Update backup record
       await db
         .update(systemBackups)
         .set({
-          status: 'completed',
+          status: "completed",
           fileSize,
           location: `/backups/${backup.id}.json`,
           metadata: JSON.stringify({
             tables: Object.keys(backupData),
-            recordCounts: Object.entries(backupData).reduce((acc, [table, records]) => {
-              acc[table] = Array.isArray(records) ? records.length : 0;
-              return acc;
-            }, {} as Record<string, number>),
+            recordCounts: Object.entries(backupData).reduce(
+              (acc, [table, records]) => {
+                acc[table] = Array.isArray(records) ? records.length : 0;
+                return acc;
+              },
+              {} as Record<string, number>,
+            ),
           }),
           completedAt: new Date(),
           expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days
@@ -98,7 +109,7 @@ export async function POST(request: NextRequest) {
         .where(eq(systemBackups.id, backup.id));
 
       return NextResponse.json({
-        message: 'Backup created successfully',
+        message: "Backup created successfully",
         backupId: backup.id,
         fileSize,
         data: backupData, // Return data directly for now
@@ -108,18 +119,19 @@ export async function POST(request: NextRequest) {
       await db
         .update(systemBackups)
         .set({
-          status: 'failed',
-          errorMessage: error instanceof Error ? error.message : 'Unknown error',
+          status: "failed",
+          errorMessage:
+            error instanceof Error ? error.message : "Unknown error",
         })
         .where(eq(systemBackups.id, backup.id));
 
       throw error;
     }
   } catch (error) {
-    console.error('Error creating backup:', error);
+    console.error("Error creating backup:", error);
     return NextResponse.json(
-      { error: 'Failed to create backup' },
-      { status: 500 }
+      { error: "Failed to create backup" },
+      { status: 500 },
     );
   }
 }

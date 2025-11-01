@@ -6,13 +6,14 @@ export async function GET(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
     const dateStr = searchParams.get("date"); // YYYY-MM-DD
-    const userType = searchParams.get("userType") as "students" | "teachers" | "office" | null;
+    const userType = searchParams.get("userType") as
+      | "students"
+      | "teachers"
+      | "office"
+      | null;
 
     if (!dateStr) {
-      return NextResponse.json(
-        { error: "Date is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Date is required" }, { status: 400 });
     }
 
     const date = new Date(dateStr);
@@ -31,7 +32,7 @@ export async function GET(req: NextRequest) {
     console.error("Error checking calendar day:", error);
     return NextResponse.json(
       { error: "Failed to check calendar day" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,7 +1,13 @@
 "use client";
 
 import { useSession } from "@/lib/auth-client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Loader2, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -49,19 +55,21 @@ export default function DashboardPage() {
                   </h3>
                   <dl className="space-y-3">
                     <div>
-                      <dt className="text-sm font-medium text-muted-foreground">Name</dt>
-                      <dd className="text-sm mt-1">
-                        {session.user?.name}
-                      </dd>
+                      <dt className="text-sm font-medium text-muted-foreground">
+                        Name
+                      </dt>
+                      <dd className="text-sm mt-1">{session.user?.name}</dd>
                     </div>
                     <div>
-                      <dt className="text-sm font-medium text-muted-foreground">Email</dt>
-                      <dd className="text-sm mt-1">
-                        {session.user?.email}
-                      </dd>
+                      <dt className="text-sm font-medium text-muted-foreground">
+                        Email
+                      </dt>
+                      <dd className="text-sm mt-1">{session.user?.email}</dd>
                     </div>
                     <div>
-                      <dt className="text-sm font-medium text-muted-foreground">User ID</dt>
+                      <dt className="text-sm font-medium text-muted-foreground">
+                        User ID
+                      </dt>
                       <dd className="text-sm font-mono mt-1 break-all">
                         {session.user?.id}
                       </dd>
@@ -75,7 +83,9 @@ export default function DashboardPage() {
                   <h3 className="font-semibold text-lg mb-4">Session Info</h3>
                   <dl className="space-y-3">
                     <div>
-                      <dt className="text-sm font-medium text-muted-foreground">Status</dt>
+                      <dt className="text-sm font-medium text-muted-foreground">
+                        Status
+                      </dt>
                       <dd className="text-sm mt-1">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
                           Active
@@ -83,7 +93,9 @@ export default function DashboardPage() {
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-sm font-medium text-muted-foreground">Session ID</dt>
+                      <dt className="text-sm font-medium text-muted-foreground">
+                        Session ID
+                      </dt>
                       <dd className="text-sm font-mono mt-1 break-all">
                         {session.session?.id}
                       </dd>
@@ -99,7 +111,8 @@ export default function DashboardPage() {
                   🎉 Authentication Setup Complete!
                 </h4>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Your Better Auth integration is working correctly. You can now build:
+                  Your Better Auth integration is working correctly. You can now
+                  build:
                 </p>
                 <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
                   <li>Admin Dashboard</li>

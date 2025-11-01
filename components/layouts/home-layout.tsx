@@ -18,11 +18,11 @@ export function HomeLayout({ children }: HomeLayoutProps) {
   // Determine dashboard route based on user role
   const getDashboardRoute = () => {
     if (!session?.user) return "/dashboard";
-    
+
     // Type assertion for the role field from Better Auth
     const user = session.user as { role?: string };
     const role = user.role;
-    
+
     switch (role) {
       case "admin":
         return "/admin";
@@ -42,11 +42,16 @@ export function HomeLayout({ children }: HomeLayoutProps) {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo + Website Name */}
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+            <Link
+              href="/"
+              className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+            >
               <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-xl shadow-sm">
                 <GraduationCap className="w-6 h-6 text-primary-foreground" />
               </div>
-              <span className="text-lg font-semibold">Amrita School Management</span>
+              <span className="text-lg font-semibold">
+                Amrita School Management
+              </span>
             </Link>
 
             <div className="flex items-center space-x-3">
@@ -65,9 +70,7 @@ export function HomeLayout({ children }: HomeLayoutProps) {
               {/* Auth Buttons */}
               {session ? (
                 <Link href={getDashboardRoute()}>
-                  <Button className="rounded-xl">
-                    Go to Dashboard
-                  </Button>
+                  <Button className="rounded-xl">Go to Dashboard</Button>
                 </Link>
               ) : (
                 <div className="flex items-center space-x-2">
@@ -89,9 +92,7 @@ export function HomeLayout({ children }: HomeLayoutProps) {
       </nav>
 
       {/* Main Content */}
-      <main>
-        {children}
-      </main>
+      <main>{children}</main>
     </div>
   );
 }

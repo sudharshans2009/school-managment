@@ -2,7 +2,13 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle, XCircle } from "lucide-react";
 import Link from "next/link";
@@ -10,7 +16,9 @@ import Link from "next/link";
 function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [status, setStatus] = useState<"loading" | "success" | "error">(
+    "loading",
+  );
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -25,13 +33,15 @@ function VerifyEmailContent() {
       }
 
       try {
-        const response = await fetch(`/api/auth/verify-email?token=${token}&expires=${expires}`);
+        const response = await fetch(
+          `/api/auth/verify-email?token=${token}&expires=${expires}`,
+        );
         const data = await response.json();
 
         if (response.ok) {
           setStatus("success");
           setMessage("Email verified successfully! You can now sign in.");
-          
+
           // Redirect to signin after 3 seconds
           setTimeout(() => {
             router.push("/auth/signin");
@@ -103,15 +113,17 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
-        <Card className="w-full max-w-md">
-          <CardContent className="flex items-center justify-center py-16">
-            <Loader2 className="h-16 w-16 animate-spin text-blue-600" />
-          </CardContent>
-        </Card>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 p-6">
+          <Card className="w-full max-w-md">
+            <CardContent className="flex items-center justify-center py-16">
+              <Loader2 className="h-16 w-16 animate-spin text-blue-600" />
+            </CardContent>
+          </Card>
+        </div>
+      }
+    >
       <VerifyEmailContent />
     </Suspense>
   );

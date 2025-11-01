@@ -51,7 +51,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(notes);
   } catch (error) {
     console.error("Error fetching behavior notes:", error);
-    return NextResponse.json({ error: "Failed to fetch behavior notes" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch behavior notes" },
+      { status: 500 },
+    );
   }
 }
 
@@ -70,7 +73,7 @@ export async function POST(request: NextRequest) {
     if (!studentId || !noteType || !content) {
       return NextResponse.json(
         { error: "Student ID, note type, and content are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -88,6 +91,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(note, { status: 201 });
   } catch (error) {
     console.error("Error creating behavior note:", error);
-    return NextResponse.json({ error: "Failed to create behavior note" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create behavior note" },
+      { status: 500 },
+    );
   }
 }

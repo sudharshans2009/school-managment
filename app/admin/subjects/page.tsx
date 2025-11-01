@@ -7,10 +7,25 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Plus, Search, Edit2, Trash2, Users, GraduationCap, Filter } from "lucide-react";
+import {
+  BookOpen,
+  Plus,
+  Search,
+  Edit2,
+  Trash2,
+  Users,
+  GraduationCap,
+  Filter,
+} from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
@@ -37,7 +52,20 @@ export default function SubjectsPage() {
   const [allSections, setAllSections] = useState(true);
   const queryClient = useQueryClient();
 
-  const availableGrades = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
+  const availableGrades = [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+  ];
   const availableSections = ["A", "B", "C", "D", "E"];
 
   // Reset filters when dialog opens/closes
@@ -51,8 +79,12 @@ export default function SubjectsPage() {
       setAllSections(true);
     } else if (editingSubject) {
       // Load existing filters when editing
-      const grades = editingSubject.applicableGrades ? JSON.parse(editingSubject.applicableGrades) : [];
-      const sections = editingSubject.applicableSections ? JSON.parse(editingSubject.applicableSections) : [];
+      const grades = editingSubject.applicableGrades
+        ? JSON.parse(editingSubject.applicableGrades)
+        : [];
+      const sections = editingSubject.applicableSections
+        ? JSON.parse(editingSubject.applicableSections)
+        : [];
       setSelectedGrades(grades);
       setSelectedSections(sections);
       setAllGrades(grades.length === 0);
@@ -162,21 +194,23 @@ export default function SubjectsPage() {
   };
 
   const toggleGrade = (grade: string) => {
-    setSelectedGrades(prev =>
-      prev.includes(grade) ? prev.filter(g => g !== grade) : [...prev, grade]
+    setSelectedGrades((prev) =>
+      prev.includes(grade) ? prev.filter((g) => g !== grade) : [...prev, grade],
     );
   };
 
   const toggleSection = (section: string) => {
-    setSelectedSections(prev =>
-      prev.includes(section) ? prev.filter(s => s !== section) : [...prev, section]
+    setSelectedSections((prev) =>
+      prev.includes(section)
+        ? prev.filter((s) => s !== section)
+        : [...prev, section],
     );
   };
 
   const filteredSubjects = subjects?.filter(
     (subject) =>
       subject.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      subject.code.toLowerCase().includes(searchQuery.toLowerCase())
+      subject.code.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const uniqueTeachers = (subject: Subject) => {
@@ -206,164 +240,183 @@ export default function SubjectsPage() {
               </Button>
             </Link>
             <BookOpen className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">
-                Subject Management
-              </h1>
+            <h1 className="text-2xl font-bold">Subject Management</h1>
           </div>
           <Dialog
             open={openCreate || !!editingSubject}
             onOpenChange={handleDialogChange}
           >
-              <DialogTrigger asChild>
-                <Button className="rounded-xl">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Subject
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>
-                    {editingSubject ? "Edit Subject" : "Add New Subject"}
-                  </DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <Label htmlFor="name">Subject Name *</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      placeholder="e.g., Mathematics"
-                      required
-                      defaultValue={editingSubject?.name}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="code">Subject Code *</Label>
-                    <Input
-                      id="code"
-                      name="code"
-                      placeholder="e.g., MATH-101"
-                      required
-                      defaultValue={editingSubject?.code}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      name="description"
-                      placeholder="Brief description of the subject"
-                      rows={3}
-                      defaultValue={editingSubject?.description || ""}
-                    />
-                  </div>
+            <DialogTrigger asChild>
+              <Button className="rounded-xl">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Subject
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingSubject ? "Edit Subject" : "Add New Subject"}
+                </DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="name">Subject Name *</Label>
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder="e.g., Mathematics"
+                    required
+                    defaultValue={editingSubject?.name}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="code">Subject Code *</Label>
+                  <Input
+                    id="code"
+                    name="code"
+                    placeholder="e.g., MATH-101"
+                    required
+                    defaultValue={editingSubject?.code}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    name="description"
+                    placeholder="Brief description of the subject"
+                    rows={3}
+                    defaultValue={editingSubject?.description || ""}
+                  />
+                </div>
 
-                  {/* Grade Filter */}
-                  <div className="space-y-2">
-                    <Label>Applicable for Classes</Label>
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Checkbox
-                        id="allGrades"
-                        checked={allGrades}
-                        onCheckedChange={(checked) => {
-                          setAllGrades(checked as boolean);
-                          if (checked) setSelectedGrades([]);
-                        }}
-                      />
-                      <label htmlFor="allGrades" className="text-sm font-medium cursor-pointer">
-                        All Classes
-                      </label>
-                    </div>
-                    {!allGrades && (
-                      <div className="grid grid-cols-6 gap-2 p-3 border rounded-md">
-                        {availableGrades.map((grade) => (
-                          <div key={grade} className="flex items-center space-x-2">
-                            <Checkbox
-                              id={`grade-${grade}`}
-                              checked={selectedGrades.includes(grade)}
-                              onCheckedChange={() => toggleGrade(grade)}
-                            />
-                            <label htmlFor={`grade-${grade}`} className="text-sm cursor-pointer">
-                              Class {grade}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Section Filter */}
-                  <div className="space-y-2">
-                    <Label>Applicable for Sections</Label>
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Checkbox
-                        id="allSections"
-                        checked={allSections}
-                        onCheckedChange={(checked) => {
-                          setAllSections(checked as boolean);
-                          if (checked) setSelectedSections([]);
-                        }}
-                      />
-                      <label htmlFor="allSections" className="text-sm font-medium cursor-pointer">
-                        All Sections
-                      </label>
-                    </div>
-                    {!allSections && (
-                      <div className="grid grid-cols-5 gap-2 p-3 border rounded-md">
-                        {availableSections.map((section) => (
-                          <div key={section} className="flex items-center space-x-2">
-                            <Checkbox
-                              id={`section-${section}`}
-                              checked={selectedSections.includes(section)}
-                              onCheckedChange={() => toggleSection(section)}
-                            />
-                            <label htmlFor={`section-${section}`} className="text-sm cursor-pointer">
-                              Section {section}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {(createMutation.error || updateMutation.error) && (
-                    <Alert variant="destructive">
-                      <AlertDescription>
-                        {createMutation.error?.message || updateMutation.error?.message}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="rounded-xl"
-                      onClick={() => {
-                        setOpenCreate(false);
-                        setEditingSubject(null);
-                        setSelectedGrades([]);
-                        setSelectedSections([]);
-                        setAllGrades(true);
-                        setAllSections(true);
+                {/* Grade Filter */}
+                <div className="space-y-2">
+                  <Label>Applicable for Classes</Label>
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Checkbox
+                      id="allGrades"
+                      checked={allGrades}
+                      onCheckedChange={(checked) => {
+                        setAllGrades(checked as boolean);
+                        if (checked) setSelectedGrades([]);
                       }}
+                    />
+                    <label
+                      htmlFor="allGrades"
+                      className="text-sm font-medium cursor-pointer"
                     >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      className="rounded-xl"
-                      disabled={createMutation.isPending || updateMutation.isPending}
+                      All Classes
+                    </label>
+                  </div>
+                  {!allGrades && (
+                    <div className="grid grid-cols-6 gap-2 p-3 border rounded-md">
+                      {availableGrades.map((grade) => (
+                        <div
+                          key={grade}
+                          className="flex items-center space-x-2"
+                        >
+                          <Checkbox
+                            id={`grade-${grade}`}
+                            checked={selectedGrades.includes(grade)}
+                            onCheckedChange={() => toggleGrade(grade)}
+                          />
+                          <label
+                            htmlFor={`grade-${grade}`}
+                            className="text-sm cursor-pointer"
+                          >
+                            Class {grade}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Section Filter */}
+                <div className="space-y-2">
+                  <Label>Applicable for Sections</Label>
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Checkbox
+                      id="allSections"
+                      checked={allSections}
+                      onCheckedChange={(checked) => {
+                        setAllSections(checked as boolean);
+                        if (checked) setSelectedSections([]);
+                      }}
+                    />
+                    <label
+                      htmlFor="allSections"
+                      className="text-sm font-medium cursor-pointer"
                     >
-                      {createMutation.isPending || updateMutation.isPending
-                        ? "Saving..."
-                        : editingSubject
+                      All Sections
+                    </label>
+                  </div>
+                  {!allSections && (
+                    <div className="grid grid-cols-5 gap-2 p-3 border rounded-md">
+                      {availableSections.map((section) => (
+                        <div
+                          key={section}
+                          className="flex items-center space-x-2"
+                        >
+                          <Checkbox
+                            id={`section-${section}`}
+                            checked={selectedSections.includes(section)}
+                            onCheckedChange={() => toggleSection(section)}
+                          />
+                          <label
+                            htmlFor={`section-${section}`}
+                            className="text-sm cursor-pointer"
+                          >
+                            Section {section}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {(createMutation.error || updateMutation.error) && (
+                  <Alert variant="destructive">
+                    <AlertDescription>
+                      {createMutation.error?.message ||
+                        updateMutation.error?.message}
+                    </AlertDescription>
+                  </Alert>
+                )}
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-xl"
+                    onClick={() => {
+                      setOpenCreate(false);
+                      setEditingSubject(null);
+                      setSelectedGrades([]);
+                      setSelectedSections([]);
+                      setAllGrades(true);
+                      setAllSections(true);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="rounded-xl"
+                    disabled={
+                      createMutation.isPending || updateMutation.isPending
+                    }
+                  >
+                    {createMutation.isPending || updateMutation.isPending
+                      ? "Saving..."
+                      : editingSubject
                         ? "Update"
                         : "Create"}
-                    </Button>
-                  </div>
-                </form>
-              </DialogContent>
-            </Dialog>
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <Card className="mb-6 rounded-2xl shadow-sm">
@@ -389,7 +442,10 @@ export default function SubjectsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredSubjects?.map((subject) => (
-              <Card key={subject.id} className="hover:shadow-lg transition-shadow">
+              <Card
+                key={subject.id}
+                className="hover:shadow-lg transition-shadow"
+              >
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
@@ -412,7 +468,7 @@ export default function SubjectsPage() {
                         onClick={() => {
                           if (
                             confirm(
-                              "Are you sure you want to delete this subject? This will remove all teacher assignments."
+                              "Are you sure you want to delete this subject? This will remove all teacher assignments.",
                             )
                           ) {
                             deleteMutation.mutate(subject.id);
@@ -431,7 +487,7 @@ export default function SubjectsPage() {
                       {subject.description}
                     </p>
                   )}
-                  
+
                   {/* Class Filter Display */}
                   <div className="pt-2 border-t">
                     <div className="flex items-center justify-between text-sm mb-1">
@@ -440,40 +496,55 @@ export default function SubjectsPage() {
                         Classes
                       </span>
                       <span className="font-semibold text-xs">
-                        {subject.applicableGrades && JSON.parse(subject.applicableGrades).length > 0
+                        {subject.applicableGrades &&
+                        JSON.parse(subject.applicableGrades).length > 0
                           ? `${JSON.parse(subject.applicableGrades).length} classes`
                           : "All Classes"}
                       </span>
                     </div>
-                    {subject.applicableGrades && JSON.parse(subject.applicableGrades).length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {JSON.parse(subject.applicableGrades).map((grade: string) => (
-                          <Badge key={grade} variant="outline" className="text-xs">
-                            Class {grade}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
+                    {subject.applicableGrades &&
+                      JSON.parse(subject.applicableGrades).length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {JSON.parse(subject.applicableGrades).map(
+                            (grade: string) => (
+                              <Badge
+                                key={grade}
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                Class {grade}
+                              </Badge>
+                            ),
+                          )}
+                        </div>
+                      )}
                   </div>
 
                   {/* Section Filter Display */}
-                  {subject.applicableSections && JSON.parse(subject.applicableSections).length > 0 && (
-                    <div className="pt-2 border-t">
-                      <div className="flex items-center justify-between text-sm mb-1">
-                        <span className="text-gray-600 dark:text-gray-400 flex items-center">
-                          <Filter className="h-4 w-4 mr-1" />
-                          Sections
-                        </span>
+                  {subject.applicableSections &&
+                    JSON.parse(subject.applicableSections).length > 0 && (
+                      <div className="pt-2 border-t">
+                        <div className="flex items-center justify-between text-sm mb-1">
+                          <span className="text-gray-600 dark:text-gray-400 flex items-center">
+                            <Filter className="h-4 w-4 mr-1" />
+                            Sections
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {JSON.parse(subject.applicableSections).map(
+                            (section: string) => (
+                              <Badge
+                                key={section}
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                Section {section}
+                              </Badge>
+                            ),
+                          )}
+                        </div>
                       </div>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {JSON.parse(subject.applicableSections).map((section: string) => (
-                          <Badge key={section} variant="outline" className="text-xs">
-                            Section {section}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                    )}
 
                   <div className="flex items-center justify-between text-sm pt-2 border-t">
                     <span className="text-gray-600 dark:text-gray-400 flex items-center">
@@ -488,11 +559,17 @@ export default function SubjectsPage() {
                     <div className="pt-2 border-t">
                       <p className="text-xs text-gray-500 mb-2">Assigned to:</p>
                       <div className="flex flex-wrap gap-1">
-                        {uniqueTeachers(subject).slice(0, 3).map((teacherName, idx) => (
-                          <Badge key={idx} variant="outline" className="text-xs">
-                            {teacherName}
-                          </Badge>
-                        ))}
+                        {uniqueTeachers(subject)
+                          .slice(0, 3)
+                          .map((teacherName, idx) => (
+                            <Badge
+                              key={idx}
+                              variant="outline"
+                              className="text-xs"
+                            >
+                              {teacherName}
+                            </Badge>
+                          ))}
                         {uniqueTeachers(subject).length > 3 && (
                           <Badge variant="outline" className="text-xs">
                             +{uniqueTeachers(subject).length - 3} more

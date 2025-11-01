@@ -3,12 +3,12 @@
  * Allows users to request and download their personal data
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/database';
-import { dataExportRequests, users, students } from '@/database/schema';
-import { eq, desc } from 'drizzle-orm';
-import { requireAuth } from '@/lib/auth-middleware';
-import { auditDataExport } from '@/lib/audit';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/database";
+import { dataExportRequests, users, students } from "@/database/schema";
+import { eq, desc } from "drizzle-orm";
+import { requireAuth } from "@/lib/auth-middleware";
+import { auditDataExport } from "@/lib/audit";
 
 // GET - List user's export requests
 export async function GET(request: NextRequest) {
@@ -28,10 +28,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ requests });
   } catch (error) {
-    console.error('Error fetching export requests:', error);
+    console.error("Error fetching export requests:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch export requests' },
-      { status: 500 }
+      { error: "Failed to fetch export requests" },
+      { status: 500 },
     );
   }
 }
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { requestType = 'full_export', dataCategories = [] } = body;
+    const { requestType = "full_export", dataCategories = [] } = body;
 
     // Create export request
     const [exportRequest] = await db
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
         userId: user.id,
         requestType,
         dataCategories: JSON.stringify(dataCategories),
-        status: 'pending',
+        status: "pending",
       })
       .returning();
 
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       user.role,
       requestType,
       dataCategories,
-      request
+      request,
     );
 
     // In a real system, this would trigger a background job to generate the export
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     await db
       .update(dataExportRequests)
       .set({
-        status: 'completed',
+        status: "completed",
         fileUrl,
         expiresAt,
         completedAt: new Date(),
@@ -89,18 +89,18 @@ export async function POST(request: NextRequest) {
       .where(eq(dataExportRequests.id, exportRequest.id));
 
     return NextResponse.json({
-      message: 'Data export request created successfully',
+      message: "Data export request created successfully",
       exportId: exportRequest.id,
-      status: 'completed',
+      status: "completed",
       fileUrl,
       expiresAt,
       data: exportData, // Return data directly for now
     });
   } catch (error) {
-    console.error('Error creating export request:', error);
+    console.error("Error creating export request:", error);
     return NextResponse.json(
-      { error: 'Failed to create export request' },
-      { status: 500 }
+      { error: "Failed to create export request" },
+      { status: 500 },
     );
   }
 }
@@ -129,7 +129,7 @@ async function generateUserDataExport(userId: string) {
   };
 
   // Get student data if applicable
-  if (userProfile.role === 'student') {
+  if (userProfile.role === "student") {
     const studentData = await db
       .select()
       .from(students)
@@ -149,7 +149,7 @@ async function generateUserDataExport(userId: string) {
   // - Any other personal data
 
   exportData.exportedAt = new Date().toISOString();
-  exportData.format = 'JSON';
-  
+  exportData.format = "JSON";
+
   return exportData;
 }

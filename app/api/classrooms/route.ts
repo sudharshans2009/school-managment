@@ -20,7 +20,10 @@ export async function GET() {
           },
         },
       },
-      orderBy: (classrooms, { asc }) => [asc(classrooms.grade), asc(classrooms.section)],
+      orderBy: (classrooms, { asc }) => [
+        asc(classrooms.grade),
+        asc(classrooms.section),
+      ],
     });
 
     return NextResponse.json(allClassrooms);
@@ -28,7 +31,7 @@ export async function GET() {
     console.error("Error fetching classrooms:", error);
     return NextResponse.json(
       { error: "Failed to fetch classrooms" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -42,29 +45,32 @@ export async function POST(request: NextRequest) {
     if (!name || !grade || !section || !academicYear) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const classroomCode = generateClassroomCode();
     const classroomKey = generateClassroomKey();
 
-    const [newClassroom] = await db.insert(classrooms).values({
-      name,
-      grade,
-      section,
-      classroomCode,
-      classroomKey,
-      currentStrength: 0,
-      academicYear,
-    }).returning();
+    const [newClassroom] = await db
+      .insert(classrooms)
+      .values({
+        name,
+        grade,
+        section,
+        classroomCode,
+        classroomKey,
+        currentStrength: 0,
+        academicYear,
+      })
+      .returning();
 
     return NextResponse.json(newClassroom, { status: 201 });
   } catch (error) {
     console.error("Error creating classroom:", error);
     return NextResponse.json(
       { error: "Failed to create classroom" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

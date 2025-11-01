@@ -3,6 +3,7 @@
 This document describes the security and compliance features implemented in the School Management System.
 
 ## Table of Contents
+
 - [Role-Based Permissions](#role-based-permissions)
 - [Audit Logging](#audit-logging)
 - [Data Encryption](#data-encryption)
@@ -14,7 +15,9 @@ This document describes the security and compliance features implemented in the 
 ## Role-Based Permissions
 
 ### Overview
+
 The system implements a comprehensive role-based permission system with four primary roles:
+
 - **Admin**: Full system access
 - **Teacher**: Classroom and student management
 - **Student**: View own data and submit work
@@ -24,6 +27,7 @@ The system implements a comprehensive role-based permission system with four pri
 ### Permission Categories
 
 #### Student Permissions
+
 - `view_own_data` - View their own profile and data
 - `submit_homework` - Submit homework assignments
 - `view_own_attendance` - View their attendance records
@@ -32,6 +36,7 @@ The system implements a comprehensive role-based permission system with four pri
 - `view_announcements` - View school announcements
 
 #### Teacher Permissions
+
 - `manage_homework` - Create, update, and grade homework
 - `mark_attendance` - Mark student attendance
 - `view_student_data` - View student information
@@ -41,6 +46,7 @@ The system implements a comprehensive role-based permission system with four pri
 - `view_reports` - View student reports
 
 #### Admin Permissions
+
 - `manage_users` - Create, update, delete users
 - `manage_classrooms` - Manage classroom settings
 - `manage_subjects` - Manage subjects
@@ -53,6 +59,7 @@ The system implements a comprehensive role-based permission system with four pri
 - `manage_backups` - Create and manage backups
 
 #### Smartboard Permissions
+
 - `view_classroom_dashboard` - View classroom dashboard
 - `view_timetable` - View class timetable
 - `view_classroom_announcements` - View announcements
@@ -60,11 +67,13 @@ The system implements a comprehensive role-based permission system with four pri
 ### Implementation
 
 The permission system is implemented in `/lib/permissions.ts` and provides:
+
 - `hasPermission(role, permission)` - Check if a role has a permission
 - `canAccessResource(role, resource, action)` - Check resource-level access
 - `DEFAULT_ROLE_PERMISSIONS` - Default permissions for each role
 
 Authorization middleware in `/lib/auth-middleware.ts` provides:
+
 - `requireAuth(request)` - Require authentication
 - `requireRole(request, roles)` - Require specific role
 - `requirePermission(request, permission)` - Require specific permission
@@ -73,7 +82,7 @@ Authorization middleware in `/lib/auth-middleware.ts` provides:
 ### Usage Example
 
 ```typescript
-import { requireAdmin, requirePermission } from '@/lib/auth-middleware';
+import { requireAdmin, requirePermission } from "@/lib/auth-middleware";
 
 export async function POST(request: NextRequest) {
   // Require admin role
@@ -82,13 +91,13 @@ export async function POST(request: NextRequest) {
     return authResult;
   }
   const { user } = authResult;
-  
+
   // Or require specific permission
-  const authResult = await requirePermission(request, 'manage_homework');
+  const authResult = await requirePermission(request, "manage_homework");
   if (authResult instanceof NextResponse) {
     return authResult;
   }
-  
+
   // Continue with authorized logic...
 }
 ```
@@ -98,9 +107,11 @@ export async function POST(request: NextRequest) {
 ## Audit Logging
 
 ### Overview
+
 All significant actions in the system are logged for security and compliance purposes.
 
 ### Logged Actions
+
 - User login/logout
 - Create, read, update, delete operations on resources
 - Permission changes
@@ -109,6 +120,7 @@ All significant actions in the system are logged for security and compliance pur
 - Access denials
 
 ### Audit Log Fields
+
 - `userId` - ID of the user who performed the action
 - `userEmail` - Email of the user (preserved even if user deleted)
 - `userRole` - Role of the user at the time of action
@@ -124,11 +136,13 @@ All significant actions in the system are logged for security and compliance pur
 ### API Endpoints
 
 #### View Audit Logs (Admin Only)
+
 ```
 GET /api/security/audit-logs?userId=<id>&action=<action>&resource=<resource>&startDate=<date>&endDate=<date>&search=<query>
 ```
 
 Query Parameters:
+
 - `userId` - Filter by user ID
 - `action` - Filter by action type
 - `resource` - Filter by resource type
@@ -141,19 +155,19 @@ Query Parameters:
 ### Usage Example
 
 ```typescript
-import { auditResourceAccess } from '@/lib/audit';
+import { auditResourceAccess } from "@/lib/audit";
 
 // Log resource access
 await auditResourceAccess(
   user.id,
   user.email,
   user.role,
-  'create',
-  'homework',
+  "create",
+  "homework",
   homeworkId,
-  'Created homework assignment',
-  { title: 'Math Assignment', dueDate: '2024-06-15' },
-  request
+  "Created homework assignment",
+  { title: "Math Assignment", dueDate: "2024-06-15" },
+  request,
 );
 ```
 
@@ -162,21 +176,25 @@ await auditResourceAccess(
 ## Data Encryption
 
 ### Overview
+
 Sensitive data is encrypted to protect user privacy and comply with security standards.
 
 ### Encrypted Data
+
 - **Passwords**: Hashed using bcrypt (already implemented in Better Auth)
 - **Personal Identifiable Information (PII)**: Should be encrypted at rest
 - **Session tokens**: Securely managed by Better Auth
 - **API keys**: Stored encrypted in environment variables
 
 ### Implementation Notes
+
 - Passwords are automatically hashed by Better Auth before storage
 - Database connections use SSL/TLS encryption
 - Environment variables should never be committed to source control
 - Sensitive fields in database can be encrypted using field-level encryption
 
 ### Best Practices
+
 1. Never store plain text passwords
 2. Use environment variables for secrets
 3. Enable SSL/TLS for database connections
@@ -189,14 +207,17 @@ Sensitive data is encrypted to protect user privacy and comply with security sta
 ## GDPR Compliance
 
 ### Overview
+
 The system implements GDPR (General Data Protection Regulation) compliance features to protect user privacy and data rights.
 
 ### Features Implemented
 
 #### 1. Right to Data Portability
+
 Users can request a complete export of their personal data.
 
 **API Endpoint:**
+
 ```
 POST /api/security/gdpr/export
 {
@@ -208,6 +229,7 @@ GET /api/security/gdpr/export
 ```
 
 **Exported Data Includes:**
+
 - User profile information
 - Student academic records (if applicable)
 - Attendance records
@@ -218,9 +240,11 @@ GET /api/security/gdpr/export
 - Report cards
 
 #### 2. Right to be Forgotten
+
 Users can request deletion of their personal data.
 
 **API Endpoints:**
+
 ```
 POST /api/security/gdpr/deletion
 {
@@ -239,6 +263,7 @@ PUT /api/security/gdpr/deletion (Admin only)
 ```
 
 **Deletion Workflow:**
+
 1. User submits deletion request
 2. Request status: `pending`
 3. Admin reviews and approves/rejects
@@ -247,9 +272,11 @@ PUT /api/security/gdpr/deletion (Admin only)
 6. Status changes to `completed`
 
 #### 3. Consent Management
+
 Track user consent for various types of data processing.
 
 **API Endpoints:**
+
 ```
 POST /api/security/gdpr/consent
 {
@@ -268,6 +295,7 @@ PUT /api/security/gdpr/consent
 ```
 
 **Consent Types:**
+
 - `data_processing` - Essential data processing
 - `marketing` - Marketing communications
 - `analytics` - Analytics and tracking
@@ -276,6 +304,7 @@ PUT /api/security/gdpr/consent
 - `privacy_policy` - Privacy policy acceptance
 
 ### GDPR Compliance Checklist
+
 - [x] Right to data portability (export)
 - [x] Right to be forgotten (deletion)
 - [x] Consent management
@@ -291,9 +320,11 @@ PUT /api/security/gdpr/consent
 ## Backup and Restore
 
 ### Overview
+
 Regular backups ensure data can be recovered in case of system failure or data loss.
 
 ### Backup Types
+
 - **Manual**: Initiated by administrator
 - **Scheduled**: Automated backups (to be configured via cron/scheduler)
 - **Full**: Complete database backup
@@ -302,6 +333,7 @@ Regular backups ensure data can be recovered in case of system failure or data l
 ### API Endpoints
 
 #### Create Backup (Admin Only)
+
 ```
 POST /api/security/backup
 {
@@ -310,11 +342,13 @@ POST /api/security/backup
 ```
 
 #### List Backups (Admin Only)
+
 ```
 GET /api/security/backup
 ```
 
 ### Backup Details
+
 - **Format**: JSON
 - **Retention**: 90 days
 - **Location**: Configured storage location
@@ -322,6 +356,7 @@ GET /api/security/backup
 - **Integrity**: Checksum verification (future enhancement)
 
 ### Backup Contents
+
 - Users and authentication data
 - Students and academic records
 - Classrooms and subjects
@@ -331,6 +366,7 @@ GET /api/security/backup
 - All other system data
 
 ### Restore Procedure
+
 1. Administrator accesses backup system
 2. Selects backup to restore
 3. Downloads backup file
@@ -341,6 +377,7 @@ GET /api/security/backup
 **Note:** Restore procedure should be documented and tested regularly.
 
 ### Best Practices
+
 1. Test backups regularly
 2. Store backups in multiple locations
 3. Encrypt backups at rest
@@ -354,6 +391,7 @@ GET /api/security/backup
 ## Security Best Practices
 
 ### For Administrators
+
 1. Regularly review audit logs for suspicious activity
 2. Implement strong password policies
 3. Enable two-factor authentication (future enhancement)
@@ -363,6 +401,7 @@ GET /api/security/backup
 7. Regularly update system and dependencies
 
 ### For Developers
+
 1. Use authorization middleware for all protected routes
 2. Log all sensitive operations
 3. Never commit secrets to source control
@@ -372,6 +411,7 @@ GET /api/security/backup
 7. Follow secure coding practices
 
 ### For Users
+
 1. Use strong, unique passwords
 2. Don't share credentials
 3. Report suspicious activity
@@ -383,24 +423,25 @@ GET /api/security/backup
 
 ## Access Control Summary
 
-| Feature | Student | Teacher | Parent | Admin | Smartboard |
-|---------|---------|---------|--------|-------|------------|
-| View Own Data | ✓ | ✓ | ✓ | ✓ | - |
-| Manage Homework | - | ✓ | - | ✓ | - |
-| Mark Attendance | - | ✓ | - | ✓ | - |
-| View Student Data | Own | Class | Children | All | - |
-| Manage Users | - | - | - | ✓ | - |
-| View Audit Logs | - | - | - | ✓ | - |
-| Export Data | Own | - | Children | All | - |
-| Manage Backups | - | - | - | ✓ | - |
-| View Dashboard | - | - | - | ✓ | ✓ |
-| GDPR Requests | ✓ | ✓ | ✓ | Manage | - |
+| Feature           | Student | Teacher | Parent   | Admin  | Smartboard |
+| ----------------- | ------- | ------- | -------- | ------ | ---------- |
+| View Own Data     | ✓       | ✓       | ✓        | ✓      | -          |
+| Manage Homework   | -       | ✓       | -        | ✓      | -          |
+| Mark Attendance   | -       | ✓       | -        | ✓      | -          |
+| View Student Data | Own     | Class   | Children | All    | -          |
+| Manage Users      | -       | -       | -        | ✓      | -          |
+| View Audit Logs   | -       | -       | -        | ✓      | -          |
+| Export Data       | Own     | -       | Children | All    | -          |
+| Manage Backups    | -       | -       | -        | ✓      | -          |
+| View Dashboard    | -       | -       | -        | ✓      | ✓          |
+| GDPR Requests     | ✓       | ✓       | ✓        | Manage | -          |
 
 ---
 
 ## Future Enhancements
 
 ### Planned Security Features
+
 - [ ] Two-factor authentication (2FA)
 - [ ] Single Sign-On (SSO) integration
 - [ ] Rate limiting and DDoS protection
@@ -418,6 +459,7 @@ GET /api/security/backup
 - [ ] Webhook security
 
 ### Compliance
+
 - [ ] SOC 2 compliance
 - [ ] ISO 27001 certification
 - [ ] FERPA compliance (for US schools)
@@ -428,6 +470,7 @@ GET /api/security/backup
 ## Support
 
 For security concerns or questions:
+
 1. Review this documentation
 2. Check audit logs for unusual activity
 3. Contact system administrator

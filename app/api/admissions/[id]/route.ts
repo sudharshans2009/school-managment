@@ -7,7 +7,7 @@ import { auth } from "@/lib/auth";
 // GET single admission application
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -28,7 +28,10 @@ export async function GET(
     });
 
     if (!application) {
-      return NextResponse.json({ error: "Application not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Application not found" },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json(application);
@@ -36,7 +39,7 @@ export async function GET(
     console.error("Error fetching admission application:", error);
     return NextResponse.json(
       { error: "Failed to fetch admission application" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -44,7 +47,7 @@ export async function GET(
 // PUT update admission application
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -70,7 +73,10 @@ export async function PUT(
     });
 
     if (!existingApplication) {
-      return NextResponse.json({ error: "Application not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Application not found" },
+        { status: 404 },
+      );
     }
 
     const updateData: Record<string, unknown> = {
@@ -80,13 +86,15 @@ export async function PUT(
     };
 
     if (status) updateData.status = status;
-    if (entranceTestId !== undefined) updateData.entranceTestId = entranceTestId;
+    if (entranceTestId !== undefined)
+      updateData.entranceTestId = entranceTestId;
     if (testScore !== undefined) updateData.testScore = testScore;
     if (interviewDate !== undefined)
       updateData.interviewDate = interviewDate ? new Date(interviewDate) : null;
     if (admissionDate !== undefined)
       updateData.admissionDate = admissionDate ? new Date(admissionDate) : null;
-    if (rejectionReason !== undefined) updateData.rejectionReason = rejectionReason;
+    if (rejectionReason !== undefined)
+      updateData.rejectionReason = rejectionReason;
     if (notes !== undefined) updateData.notes = notes;
 
     const [updatedApplication] = await db
@@ -100,7 +108,7 @@ export async function PUT(
     console.error("Error updating admission application:", error);
     return NextResponse.json(
       { error: "Failed to update admission application" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -2,7 +2,13 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // Routes that require authentication
-const protectedRoutes = ["/dashboard", "/admin", "/teacher", "/student", "/smartboard"];
+const protectedRoutes = [
+  "/dashboard",
+  "/admin",
+  "/teacher",
+  "/student",
+  "/smartboard",
+];
 
 // Routes that should redirect to dashboard if authenticated
 const authRoutes = ["/auth/signin", "/auth/signup"];
@@ -12,7 +18,7 @@ export async function proxy(request: NextRequest) {
 
   // Check if the route is protected
   const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
+    pathname.startsWith(route),
   );
 
   // Check if the route is an auth route

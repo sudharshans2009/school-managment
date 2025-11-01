@@ -3,7 +3,15 @@
 import { ReactNode } from "react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { GraduationCap, LogOut, Moon, Sun, Home, Bell, User } from "lucide-react";
+import {
+  GraduationCap,
+  LogOut,
+  Moon,
+  Sun,
+  Home,
+  Bell,
+  User,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,10 +22,10 @@ interface DashboardLayoutProps {
   description?: string;
 }
 
-export function DashboardLayout({ 
-  children, 
+export function DashboardLayout({
+  children,
   title = "Dashboard",
-  description 
+  description,
 }: DashboardLayoutProps) {
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
@@ -35,7 +43,10 @@ export function DashboardLayout({
       <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+            <Link
+              href="/"
+              className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+            >
               <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-xl shadow-sm">
                 <GraduationCap className="w-6 h-6 text-primary-foreground" />
               </div>
@@ -55,12 +66,12 @@ export function DashboardLayout({
                   <span className="hidden sm:inline">Home</span>
                 </Button>
               </Link>
-              
+
               <Button variant="ghost" size="sm" className="rounded-xl">
                 <Bell className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Notifications</span>
               </Button>
-              
+
               <Button variant="ghost" size="sm" className="rounded-xl">
                 <User className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Profile</span>
@@ -96,15 +107,14 @@ export function DashboardLayout({
       </nav>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
-        {children}
-      </main>
+      <main className="container mx-auto px-6 py-8">{children}</main>
 
       {/* Footer */}
       <footer className="border-t border-border mt-auto">
         <div className="container mx-auto px-6 py-6">
           <p className="text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Amrita School Management System. Built with Next.js & ShadCN UI.
+            © {new Date().getFullYear()} Amrita School Management System. Built
+            with Next.js & ShadCN UI.
           </p>
         </div>
       </footer>

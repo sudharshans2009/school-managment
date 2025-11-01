@@ -8,7 +8,10 @@ export async function POST(req: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
 
-    if (!session?.user || (session.user as { role?: string }).role !== "admin") {
+    if (
+      !session?.user ||
+      (session.user as { role?: string }).role !== "admin"
+    ) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -18,7 +21,7 @@ export async function POST(req: NextRequest) {
     if (!studentData || !Array.isArray(studentData)) {
       return NextResponse.json(
         { error: "Invalid data format. Expected array of students." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -48,7 +51,9 @@ export async function POST(req: NextRequest) {
         // Validate required fields
         if (!name || !email || !password) {
           results.failed++;
-          results.errors.push(`Missing required fields for ${email || "unknown"}`);
+          results.errors.push(
+            `Missing required fields for ${email || "unknown"}`,
+          );
           continue;
         }
 
@@ -97,7 +102,7 @@ export async function POST(req: NextRequest) {
       } catch (error) {
         results.failed++;
         results.errors.push(
-          `Error creating student ${student.email}: ${error instanceof Error ? error.message : "Unknown error"}`
+          `Error creating student ${student.email}: ${error instanceof Error ? error.message : "Unknown error"}`,
         );
       }
     }
@@ -110,7 +115,7 @@ export async function POST(req: NextRequest) {
     console.error("Error in bulk student upload:", error);
     return NextResponse.json(
       { error: "Failed to process bulk upload" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

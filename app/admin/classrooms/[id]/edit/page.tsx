@@ -6,11 +6,30 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserPlus, Trash2, Star, Calendar, Settings, BookOpen } from "lucide-react";
+import {
+  UserPlus,
+  Trash2,
+  Star,
+  Calendar,
+  Settings,
+  BookOpen,
+} from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
@@ -76,14 +95,32 @@ const DAYS = [
 const PERIODS = [
   { period: 1, startTime: "08:45", endTime: "09:25", label: "Period I" },
   { period: 2, startTime: "09:25", endTime: "10:05", label: "Period II" },
-  { period: "BREAK1", startTime: "10:05", endTime: "10:15", label: "BREAK", isBreak: true },
+  {
+    period: "BREAK1",
+    startTime: "10:05",
+    endTime: "10:15",
+    label: "BREAK",
+    isBreak: true,
+  },
   { period: 3, startTime: "10:15", endTime: "10:55", label: "Period III" },
   { period: 4, startTime: "10:55", endTime: "11:35", label: "Period IV" },
   { period: 5, startTime: "11:35", endTime: "12:15", label: "Period V" },
-  { period: "LUNCH", startTime: "12:15", endTime: "12:55", label: "LUNCH", isBreak: true },
+  {
+    period: "LUNCH",
+    startTime: "12:15",
+    endTime: "12:55",
+    label: "LUNCH",
+    isBreak: true,
+  },
   { period: 6, startTime: "12:55", endTime: "13:35", label: "Period VI" },
   { period: 7, startTime: "13:35", endTime: "14:15", label: "Period VII" },
-  { period: "BREAK2", startTime: "14:15", endTime: "14:25", label: "BREAK", isBreak: true },
+  {
+    period: "BREAK2",
+    startTime: "14:15",
+    endTime: "14:25",
+    label: "BREAK",
+    isBreak: true,
+  },
   { period: 8, startTime: "14:25", endTime: "15:05", label: "Period VIII" },
   { period: 9, startTime: "15:05", endTime: "15:45", label: "Period IX" },
 ];
@@ -146,7 +183,9 @@ export default function EditClassroomPage({
   const { data: timetable } = useQuery<TimetableEntry[]>({
     queryKey: ["timetable", resolvedParams.id],
     queryFn: async () => {
-      const response = await fetch(`/api/timetable?classroomId=${resolvedParams.id}`);
+      const response = await fetch(
+        `/api/timetable?classroomId=${resolvedParams.id}`,
+      );
       if (!response.ok) throw new Error("Failed to fetch timetable");
       return response.json();
     },
@@ -168,7 +207,9 @@ export default function EditClassroomPage({
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["classroom", resolvedParams.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["classroom", resolvedParams.id],
+      });
       queryClient.invalidateQueries({ queryKey: ["classrooms"] });
       setOpenSettings(false);
     },
@@ -180,11 +221,14 @@ export default function EditClassroomPage({
       subjectId: string;
       isPrimary: boolean;
     }) => {
-      const response = await fetch(`/api/classrooms/${resolvedParams.id}/assign-teacher`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        `/api/classrooms/${resolvedParams.id}/assign-teacher`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        },
+      );
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || "Failed to assign teacher");
@@ -192,7 +236,9 @@ export default function EditClassroomPage({
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["classroom", resolvedParams.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["classroom", resolvedParams.id],
+      });
       setOpenTeacher(false);
     },
   });
@@ -201,13 +247,15 @@ export default function EditClassroomPage({
     mutationFn: async (assignmentId: string) => {
       const response = await fetch(
         `/api/classrooms/${resolvedParams.id}/assign-teacher?assignmentId=${assignmentId}`,
-        { method: "DELETE" }
+        { method: "DELETE" },
       );
       if (!response.ok) throw new Error("Failed to remove teacher");
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["classroom", resolvedParams.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["classroom", resolvedParams.id],
+      });
     },
   });
 
@@ -222,7 +270,9 @@ export default function EditClassroomPage({
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["classroom", resolvedParams.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["classroom", resolvedParams.id],
+      });
       queryClient.invalidateQueries({ queryKey: ["students"] });
       queryClient.invalidateQueries({ queryKey: ["classrooms"] });
       setOpenStudent(false);
@@ -240,7 +290,9 @@ export default function EditClassroomPage({
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["classroom", resolvedParams.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["classroom", resolvedParams.id],
+      });
       queryClient.invalidateQueries({ queryKey: ["students"] });
       queryClient.invalidateQueries({ queryKey: ["classrooms"] });
     },
@@ -279,7 +331,9 @@ export default function EditClassroomPage({
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["timetable", resolvedParams.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["timetable", resolvedParams.id],
+      });
       setEditingPeriod(null);
     },
   });
@@ -293,7 +347,9 @@ export default function EditClassroomPage({
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["timetable", resolvedParams.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["timetable", resolvedParams.id],
+      });
     },
   });
 
@@ -342,11 +398,13 @@ export default function EditClassroomPage({
 
   const getTimetableEntry = (dayOfWeek: number, startTime: string) => {
     return timetable?.find(
-      (entry) => entry.dayOfWeek === dayOfWeek && entry.startTime === startTime
+      (entry) => entry.dayOfWeek === dayOfWeek && entry.startTime === startTime,
     );
   };
 
-  const unassignedStudents = allStudents?.filter((student) => !student.classroomId);
+  const unassignedStudents = allStudents?.filter(
+    (student) => !student.classroomId,
+  );
 
   if (isLoading) {
     return (
@@ -396,7 +454,12 @@ export default function EditClassroomPage({
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="grade">Grade *</Label>
-                  <Input id="grade" name="grade" defaultValue={classroom.grade} required />
+                  <Input
+                    id="grade"
+                    name="grade"
+                    defaultValue={classroom.grade}
+                    required
+                  />
                 </div>
                 <div>
                   <Label htmlFor="section">Section *</Label>
@@ -425,7 +488,10 @@ export default function EditClassroomPage({
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={updateClassroomMutation.isPending}>
+                <Button
+                  type="submit"
+                  disabled={updateClassroomMutation.isPending}
+                >
                   {updateClassroomMutation.isPending ? "Updating..." : "Update"}
                 </Button>
               </div>
@@ -472,7 +538,9 @@ export default function EditClassroomPage({
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-blue-700 font-medium mb-1">Classroom ID</p>
+                <p className="text-sm text-blue-700 font-medium mb-1">
+                  Classroom ID
+                </p>
                 <div className="flex items-center gap-2">
                   <code className="flex-1 p-2 bg-white rounded border border-blue-300 font-mono text-sm text-blue-900 break-all">
                     {classroom.id}
@@ -489,7 +557,9 @@ export default function EditClassroomPage({
                 </div>
               </div>
               <div>
-                <p className="text-sm text-blue-700 font-medium mb-1">Classroom Key</p>
+                <p className="text-sm text-blue-700 font-medium mb-1">
+                  Classroom Key
+                </p>
                 <div className="flex items-center gap-2">
                   <code className="flex-1 p-2 bg-white rounded border border-blue-300 font-mono text-sm text-blue-900">
                     {classroom.classroomKey}
@@ -507,7 +577,8 @@ export default function EditClassroomPage({
               </div>
             </div>
             <p className="text-xs text-blue-600 mt-3">
-              📺 Use these credentials to log into the smartboard at <strong>/smartboard/login</strong>
+              📺 Use these credentials to log into the smartboard at{" "}
+              <strong>/smartboard/login</strong>
             </p>
           </div>
         </CardContent>
@@ -596,8 +667,13 @@ export default function EditClassroomPage({
                         >
                           Cancel
                         </Button>
-                        <Button type="submit" disabled={assignTeacherMutation.isPending}>
-                          {assignTeacherMutation.isPending ? "Assigning..." : "Assign"}
+                        <Button
+                          type="submit"
+                          disabled={assignTeacherMutation.isPending}
+                        >
+                          {assignTeacherMutation.isPending
+                            ? "Assigning..."
+                            : "Assign"}
                         </Button>
                       </div>
                     </form>
@@ -607,7 +683,9 @@ export default function EditClassroomPage({
             </CardHeader>
             <CardContent>
               {classroom.teacherAssignments.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">No teachers assigned yet</p>
+                <p className="text-gray-500 text-center py-4">
+                  No teachers assigned yet
+                </p>
               ) : (
                 <div className="space-y-2">
                   {classroom.teacherAssignments.map((assignment) => (
@@ -620,8 +698,12 @@ export default function EditClassroomPage({
                           <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
                         )}
                         <div>
-                          <p className="font-semibold">{assignment.teacher.name}</p>
-                          <p className="text-sm text-gray-600">{assignment.subject.name}</p>
+                          <p className="font-semibold">
+                            {assignment.teacher.name}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {assignment.subject.name}
+                          </p>
                         </div>
                         {assignment.isPrimary && (
                           <Badge variant="default">Class Teacher</Badge>
@@ -630,7 +712,9 @@ export default function EditClassroomPage({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeTeacherMutation.mutate(assignment.id)}
+                        onClick={() =>
+                          removeTeacherMutation.mutate(assignment.id)
+                        }
                         disabled={removeTeacherMutation.isPending}
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
@@ -698,7 +782,9 @@ export default function EditClassroomPage({
                             unassignedStudents?.length === 0
                           }
                         >
-                          {assignStudentMutation.isPending ? "Adding..." : "Add Student"}
+                          {assignStudentMutation.isPending
+                            ? "Adding..."
+                            : "Add Student"}
                         </Button>
                       </div>
                     </form>
@@ -708,7 +794,9 @@ export default function EditClassroomPage({
             </CardHeader>
             <CardContent>
               {classroom.students.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">No students enrolled yet</p>
+                <p className="text-gray-500 text-center py-4">
+                  No students enrolled yet
+                </p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {classroom.students.map((student) => (
@@ -718,14 +806,20 @@ export default function EditClassroomPage({
                     >
                       <div>
                         <p className="font-semibold">{student.user.name}</p>
-                        <p className="text-sm text-gray-600">Roll: {student.rollNumber}</p>
-                        <p className="text-xs text-gray-500">{student.user.email}</p>
+                        <p className="text-sm text-gray-600">
+                          Roll: {student.rollNumber}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {student.user.email}
+                        </p>
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => {
-                          if (confirm("Remove this student from the classroom?")) {
+                          if (
+                            confirm("Remove this student from the classroom?")
+                          ) {
                             removeStudentMutation.mutate(student.id);
                           }
                         }}
@@ -787,13 +881,18 @@ export default function EditClassroomPage({
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
                             <BookOpen className="h-4 w-4 text-primary" />
-                            <span className="font-semibold">{period.label}</span>
+                            <span className="font-semibold">
+                              {period.label}
+                            </span>
                             <Badge variant="secondary" className="text-xs">
                               {period.startTime} - {period.endTime}
                             </Badge>
                           </div>
                           {(() => {
-                            const entry = getTimetableEntry(selectedDay, period.startTime);
+                            const entry = getTimetableEntry(
+                              selectedDay,
+                              period.startTime,
+                            );
                             return entry ? (
                               <div className="ml-6">
                                 <p className="font-medium text-blue-600">
@@ -804,13 +903,18 @@ export default function EditClassroomPage({
                                 </p>
                               </div>
                             ) : (
-                              <p className="ml-6 text-sm text-gray-400">Not scheduled</p>
+                              <p className="ml-6 text-sm text-gray-400">
+                                Not scheduled
+                              </p>
                             );
                           })()}
                         </div>
                         <div className="flex gap-1">
                           {(() => {
-                            const entry = getTimetableEntry(selectedDay, period.startTime);
+                            const entry = getTimetableEntry(
+                              selectedDay,
+                              period.startTime,
+                            );
                             return entry ? (
                               <>
                                 <Button
@@ -831,7 +935,9 @@ export default function EditClassroomPage({
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => {
-                                    if (confirm("Delete this timetable entry?")) {
+                                    if (
+                                      confirm("Delete this timetable entry?")
+                                    ) {
                                       deleteTimetableMutation.mutate(entry.id);
                                     }
                                   }}
@@ -860,7 +966,7 @@ export default function EditClassroomPage({
                         </div>
                       </div>
                     </div>
-                  )
+                  ),
                 )}
               </div>
             </CardContent>
@@ -869,12 +975,16 @@ export default function EditClassroomPage({
       </Tabs>
 
       {/* Timetable Edit Dialog */}
-      <Dialog open={!!editingPeriod} onOpenChange={() => setEditingPeriod(null)}>
+      <Dialog
+        open={!!editingPeriod}
+        onOpenChange={() => setEditingPeriod(null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
               {editingPeriod?.existingEntry ? "Edit" : "Add"} Period{" "}
-              {editingPeriod?.period} - {DAYS.find((d) => d.value === selectedDay)?.label}
+              {editingPeriod?.period} -{" "}
+              {DAYS.find((d) => d.value === selectedDay)?.label}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSaveTimetable} className="space-y-4">

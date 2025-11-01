@@ -101,7 +101,7 @@ export const bulkAttendanceSchema = z.object({
       studentId: z.string().uuid(),
       status: z.enum(["present", "absent", "late", "excused"]),
       remarks: z.string().optional(),
-    })
+    }),
   ),
 });
 
@@ -141,8 +141,12 @@ export const createTimetableSchema = z.object({
   subjectId: z.string().uuid(),
   teacherId: z.string().uuid(),
   dayOfWeek: z.number().min(0).max(6),
-  startTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format (HH:MM)"),
-  endTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format (HH:MM)"),
+  startTime: z
+    .string()
+    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format (HH:MM)"),
+  endTime: z
+    .string()
+    .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Invalid time format (HH:MM)"),
   room: z.string().optional(),
 });
 

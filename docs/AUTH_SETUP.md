@@ -5,6 +5,7 @@
 ### Authentication Pages
 
 #### 1. **Sign In Page** (`/auth/signin`)
+
 - Email/password authentication
 - Password visibility toggle
 - Error handling with user-friendly messages
@@ -14,6 +15,7 @@
 - Responsive design with gradient background
 
 **Features:**
+
 - ✅ Form validation
 - ✅ Show/hide password
 - ✅ Loading spinner during login
@@ -22,6 +24,7 @@
 - ✅ Dark mode support
 
 #### 2. **Sign Up Page** (`/auth/signup`)
+
 - User registration with Better Auth
 - Full name input
 - Email and password fields
@@ -32,6 +35,7 @@
 - Show/hide password for both fields
 
 **Features:**
+
 - ✅ Multi-field form
 - ✅ Password confirmation matching
 - ✅ Role selection dropdown
@@ -41,6 +45,7 @@
 - ✅ Auto-redirect after signup
 
 #### 3. **Dashboard Page** (`/dashboard`)
+
 - Protected route (requires authentication)
 - Displays user information
 - Session details
@@ -49,6 +54,7 @@
 - Welcome message
 
 **Features:**
+
 - ✅ Session validation
 - ✅ Auto-redirect if not authenticated
 - ✅ Display user data
@@ -56,6 +62,7 @@
 - ✅ Loading state
 
 #### 4. **Home Page** (`/`)
+
 - Beautiful landing page
 - Feature highlights
 - Call-to-action buttons
@@ -63,6 +70,7 @@
 - Dark mode support
 
 **Features:**
+
 - ✅ Hero section
 - ✅ Feature cards
 - ✅ Sign in/Sign up CTAs
@@ -71,11 +79,13 @@
 ### Security & Protection
 
 #### 5. **Middleware** (`middleware.ts`)
+
 - Route protection
 - Session validation
 - Auto-redirect logic
 
 **Protected Routes:**
+
 - `/dashboard` - Main dashboard
 - `/admin` - Admin portal
 - `/teacher` - Teacher portal
@@ -83,10 +93,12 @@
 - `/smartboard` - Classroom display
 
 **Auth Routes:**
+
 - `/auth/signin` - Sign in page
 - `/auth/signup` - Sign up page
 
 **Logic:**
+
 - ✅ Redirects to signin if accessing protected route without session
 - ✅ Redirects to dashboard if accessing auth pages with valid session
 - ✅ Preserves original URL in `from` parameter for post-login redirect
@@ -102,9 +114,11 @@ bun run dev
 ```
 
 ### 2. Visit the Home Page
+
 Navigate to: http://localhost:3000
 
 You should see:
+
 - Landing page with features
 - "Sign In" and "Create Account" buttons
 
@@ -137,6 +151,7 @@ You should see:
 ### 6. Test Route Protection
 
 Try accessing these URLs directly:
+
 - http://localhost:3000/dashboard
 - http://localhost:3000/admin
 - http://localhost:3000/teacher
@@ -290,11 +305,13 @@ if (!/[0-9]/.test(formData.password)) {
 ### "Invalid email or password" Error
 
 **Possible causes:**
+
 1. User doesn't exist in database
 2. Wrong password
 3. Database connection issue
 
 **Solution:**
+
 - Check if database is connected (run `bun run db:studio`)
 - Verify user exists in the `users` table
 - Try creating a new account
@@ -302,10 +319,12 @@ if (!/[0-9]/.test(formData.password)) {
 ### Redirect Loop
 
 **Possible causes:**
+
 - Session cookie not being set
 - BETTER_AUTH_URL mismatch
 
 **Solution:**
+
 - Check `.env.local` has correct `BETTER_AUTH_URL`
 - Clear browser cookies
 - Check middleware configuration
@@ -313,16 +332,19 @@ if (!/[0-9]/.test(formData.password)) {
 ### "Session not found"
 
 **Possible causes:**
+
 - No session token in cookies
 - Session expired
 
 **Solution:**
+
 - Sign in again
 - Check session expiry settings in `lib/auth.ts`
 
 ### TypeScript Errors
 
 **Solution:**
+
 ```bash
 # Restart TypeScript server in VS Code
 Ctrl+Shift+P → "TypeScript: Restart TS Server"
@@ -333,26 +355,31 @@ Ctrl+Shift+P → "TypeScript: Restart TS Server"
 ## 🚀 Next Steps
 
 ### 1. Add Email Verification
+
 - Set up Resend API
 - Enable email verification in auth config
 - Create verification email template
 
 ### 2. Implement Forgot Password
+
 - Create `/auth/forgot-password` page
 - Send reset password email
 - Create reset password form
 
 ### 3. Role-Based Routing
+
 - Create separate portals for each role
 - Add role checks in middleware
 - Create role-specific dashboards
 
 ### 4. Add Profile Management
+
 - Create `/profile` page
 - Allow users to update info
 - Add profile picture upload
 
 ### 5. Add Two-Factor Authentication
+
 - Install 2FA plugin for Better Auth
 - Add QR code generation
 - Create verification input
@@ -383,7 +410,7 @@ Better Auth automatically creates these endpoints:
 ✅ **Session Management** - Better Auth integration  
 ✅ **Error Handling** - User-friendly messages  
 ✅ **Dark Mode** - Full theme support  
-✅ **Responsive Design** - Mobile-friendly  
+✅ **Responsive Design** - Mobile-friendly
 
 **Your authentication system is now fully functional!** 🚀
 

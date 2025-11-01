@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 // GET single student
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -30,7 +30,7 @@ export async function GET(
     console.error("Error fetching student:", error);
     return NextResponse.json(
       { error: "Failed to fetch student" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -38,7 +38,7 @@ export async function GET(
 // PUT update student
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -90,7 +90,7 @@ export async function PUT(
         if (emailExists) {
           return NextResponse.json(
             { error: "Email already in use" },
-            { status: 400 }
+            { status: 400 },
           );
         }
         userUpdateData.email = email;
@@ -158,7 +158,7 @@ export async function PUT(
     console.error("Error updating student:", error);
     return NextResponse.json(
       { error: "Failed to update student" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -166,7 +166,7 @@ export async function PUT(
 // DELETE student
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -202,7 +202,7 @@ export async function DELETE(
     console.error("Error deleting student:", error);
     return NextResponse.json(
       { error: "Failed to delete student" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

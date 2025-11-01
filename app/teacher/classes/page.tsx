@@ -2,17 +2,34 @@
 
 import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { 
-  CheckCircle, XCircle, Loader2, ArrowLeft
-} from "lucide-react";
+import { CheckCircle, XCircle, Loader2, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -53,10 +70,14 @@ export default function TeacherClassesPage() {
   const { data: session, isPending } = useSession();
   const router = useRouter();
   const queryClient = useQueryClient();
-  
+
   const [selectedClass, setSelectedClass] = useState<string>("");
-  const [attendanceDate, setAttendanceDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [attendanceRecords, setAttendanceRecords] = useState<Record<string, 'present' | 'absent' | 'late' | 'excused'>>({});
+  const [attendanceDate, setAttendanceDate] = useState<string>(
+    new Date().toISOString().split("T")[0],
+  );
+  const [attendanceRecords, setAttendanceRecords] = useState<
+    Record<string, "present" | "absent" | "late" | "excused">
+  >({});
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -88,7 +109,15 @@ export default function TeacherClassesPage() {
 
   // Submit attendance mutation
   const attendanceMutation = useMutation({
-    mutationFn: async (data: { records: { studentId: string; classroomId: string; status: 'present' | 'absent' | 'late' | 'excused'; date: Date }[]; markedBy: string }) => {
+    mutationFn: async (data: {
+      records: {
+        studentId: string;
+        classroomId: string;
+        status: "present" | "absent" | "late" | "excused";
+        date: Date;
+      }[];
+      markedBy: string;
+    }) => {
       const res = await fetch("/api/attendance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -113,12 +142,14 @@ export default function TeacherClassesPage() {
       return;
     }
 
-    const records = Object.entries(attendanceRecords).map(([studentId, status]) => ({
-      studentId,
-      classroomId: selectedClass,
-      status,
-      date: new Date(attendanceDate),
-    }));
+    const records = Object.entries(attendanceRecords).map(
+      ([studentId, status]) => ({
+        studentId,
+        classroomId: selectedClass,
+        status,
+        date: new Date(attendanceDate),
+      }),
+    );
 
     if (records.length === 0) {
       toast.error("Please mark attendance for at least one student");
@@ -131,10 +162,12 @@ export default function TeacherClassesPage() {
     });
   };
 
-  const markAllStudents = (status: 'present' | 'absent' | 'late' | 'excused') => {
+  const markAllStudents = (
+    status: "present" | "absent" | "late" | "excused",
+  ) => {
     if (!students) return;
     const newRecords: Record<string, typeof status> = {};
-    students.forEach(student => {
+    students.forEach((student) => {
       newRecords[student.id] = status;
     });
     setAttendanceRecords(newRecords);
@@ -151,7 +184,10 @@ export default function TeacherClassesPage() {
   if (!session) return null;
 
   return (
-    <DashboardLayout title="My Classes & Attendance" description="Teacher Portal">
+    <DashboardLayout
+      title="My Classes & Attendance"
+      description="Teacher Portal"
+    >
       <div className="space-y-6">
         <Button
           variant="outline"
@@ -166,8 +202,12 @@ export default function TeacherClassesPage() {
 
         <Tabs defaultValue="classes" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 rounded-xl">
-            <TabsTrigger value="classes" className="rounded-lg">My Classes</TabsTrigger>
-            <TabsTrigger value="attendance" className="rounded-lg">Mark Attendance</TabsTrigger>
+            <TabsTrigger value="classes" className="rounded-lg">
+              My Classes
+            </TabsTrigger>
+            <TabsTrigger value="attendance" className="rounded-lg">
+              Mark Attendance
+            </TabsTrigger>
           </TabsList>
 
           {/* My Classes Tab */}
@@ -175,23 +215,38 @@ export default function TeacherClassesPage() {
             <Card className="rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle>My Assigned Classes</CardTitle>
-                <CardDescription>Classes and subjects you teach</CardDescription>
+                <CardDescription>
+                  Classes and subjects you teach
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {assignments?.map((assignment) => (
-                    <Card key={assignment.id} className="rounded-xl shadow-sm hover:shadow-lg transition-shadow">
+                    <Card
+                      key={assignment.id}
+                      className="rounded-xl shadow-sm hover:shadow-lg transition-shadow"
+                    >
                       <CardContent className="p-6">
                         <div className="flex items-start justify-between mb-3">
-                          <h3 className="font-bold text-lg">{assignment.classroom.name}</h3>
+                          <h3 className="font-bold text-lg">
+                            {assignment.classroom.name}
+                          </h3>
                           {assignment.isPrimary && (
-                            <Badge variant="default" className="rounded-lg">Class Teacher</Badge>
+                            <Badge variant="default" className="rounded-lg">
+                              Class Teacher
+                            </Badge>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground mb-2">{assignment.subject.name}</p>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {assignment.subject.name}
+                        </p>
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">Students:</span>
-                          <span className="font-medium">{assignment.classroom.currentStrength}</span>
+                          <span className="text-muted-foreground">
+                            Students:
+                          </span>
+                          <span className="font-medium">
+                            {assignment.classroom.currentStrength}
+                          </span>
                         </div>
                       </CardContent>
                     </Card>
@@ -211,20 +266,29 @@ export default function TeacherClassesPage() {
             <Card className="rounded-2xl shadow-sm">
               <CardHeader>
                 <CardTitle>Mark Attendance</CardTitle>
-                <CardDescription>Record student attendance for your classes</CardDescription>
+                <CardDescription>
+                  Record student attendance for your classes
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label>Select Class</Label>
-                    <Select value={selectedClass} onValueChange={setSelectedClass}>
+                    <Select
+                      value={selectedClass}
+                      onValueChange={setSelectedClass}
+                    >
                       <SelectTrigger className="rounded-xl">
                         <SelectValue placeholder="Choose a class" />
                       </SelectTrigger>
                       <SelectContent>
                         {assignments?.map((assignment) => (
-                          <SelectItem key={assignment.classroomId} value={assignment.classroomId}>
-                            {assignment.classroom.name} - {assignment.subject.name}
+                          <SelectItem
+                            key={assignment.classroomId}
+                            value={assignment.classroomId}
+                          >
+                            {assignment.classroom.name} -{" "}
+                            {assignment.subject.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -232,7 +296,8 @@ export default function TeacherClassesPage() {
                   </div>
                   <div>
                     <Label>Date</Label>
-                    <Input className="rounded-xl"
+                    <Input
+                      className="rounded-xl"
                       type="date"
                       value={attendanceDate}
                       onChange={(e) => setAttendanceDate(e.target.value)}
@@ -243,10 +308,21 @@ export default function TeacherClassesPage() {
                 {selectedClass && students && students.length > 0 && (
                   <>
                     <div className="flex gap-2">
-                      <Button className="rounded-xl" size="sm" variant="outline" onClick={() => markAllStudents('present')}>
-                        <CheckCircle className="h-4 w-4 mr-1" /> Mark All Present
+                      <Button
+                        className="rounded-xl"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => markAllStudents("present")}
+                      >
+                        <CheckCircle className="h-4 w-4 mr-1" /> Mark All
+                        Present
                       </Button>
-                      <Button className="rounded-xl" size="sm" variant="outline" onClick={() => markAllStudents('absent')}>
+                      <Button
+                        className="rounded-xl"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => markAllStudents("absent")}
+                      >
                         <XCircle className="h-4 w-4 mr-1" /> Mark All Absent
                       </Button>
                     </div>
@@ -262,15 +338,21 @@ export default function TeacherClassesPage() {
                       <TableBody>
                         {students.map((student) => (
                           <TableRow key={student.id}>
-                            <TableCell className="font-medium">{student.rollNumber}</TableCell>
+                            <TableCell className="font-medium">
+                              {student.rollNumber}
+                            </TableCell>
                             <TableCell>{student.user.name}</TableCell>
                             <TableCell>
                               <Select
                                 value={attendanceRecords[student.id] || ""}
                                 onValueChange={(value) => {
-                                  setAttendanceRecords(prev => ({
+                                  setAttendanceRecords((prev) => ({
                                     ...prev,
-                                    [student.id]: value as 'present' | 'absent' | 'late' | 'excused',
+                                    [student.id]: value as
+                                      | "present"
+                                      | "absent"
+                                      | "late"
+                                      | "excused",
                                   }));
                                 }}
                               >
@@ -278,10 +360,14 @@ export default function TeacherClassesPage() {
                                   <SelectValue placeholder="Select" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="present">Present</SelectItem>
+                                  <SelectItem value="present">
+                                    Present
+                                  </SelectItem>
                                   <SelectItem value="absent">Absent</SelectItem>
                                   <SelectItem value="late">Late</SelectItem>
-                                  <SelectItem value="excused">Excused</SelectItem>
+                                  <SelectItem value="excused">
+                                    Excused
+                                  </SelectItem>
                                 </SelectContent>
                               </Select>
                             </TableCell>
@@ -292,16 +378,23 @@ export default function TeacherClassesPage() {
 
                     <Button
                       onClick={handleMarkAttendance}
-                      disabled={attendanceMutation.isPending || Object.keys(attendanceRecords).length === 0}
+                      disabled={
+                        attendanceMutation.isPending ||
+                        Object.keys(attendanceRecords).length === 0
+                      }
                     >
-                      {attendanceMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                      {attendanceMutation.isPending && (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      )}
                       Submit Attendance
                     </Button>
                   </>
                 )}
 
                 {selectedClass && (!students || students.length === 0) && (
-                  <p className="text-center py-8 text-muted-foreground">No students found in this class</p>
+                  <p className="text-center py-8 text-muted-foreground">
+                    No students found in this class
+                  </p>
                 )}
               </CardContent>
             </Card>

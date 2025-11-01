@@ -22,7 +22,7 @@ export async function GET() {
     console.error("Error fetching subjects:", error);
     return NextResponse.json(
       { error: "Failed to fetch subjects" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -31,12 +31,13 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, code, description, applicableGrades, applicableSections } = body;
+    const { name, code, description, applicableGrades, applicableSections } =
+      body;
 
     if (!name || !code) {
       return NextResponse.json(
         { error: "Name and code are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
     if (existingSubject) {
       return NextResponse.json(
         { error: "Subject code already exists" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -58,8 +59,12 @@ export async function POST(request: NextRequest) {
         name,
         code,
         description: description || null,
-        applicableGrades: applicableGrades ? JSON.stringify(applicableGrades) : null,
-        applicableSections: applicableSections ? JSON.stringify(applicableSections) : null,
+        applicableGrades: applicableGrades
+          ? JSON.stringify(applicableGrades)
+          : null,
+        applicableSections: applicableSections
+          ? JSON.stringify(applicableSections)
+          : null,
       })
       .returning();
 
@@ -68,7 +73,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating subject:", error);
     return NextResponse.json(
       { error: "Failed to create subject" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

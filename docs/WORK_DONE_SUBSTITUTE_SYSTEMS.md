@@ -5,9 +5,11 @@ This document describes the implementation of two interconnected systems for the
 ## Overview
 
 ### 1. Work Done System
+
 Tracks what was taught in each period, homework assigned, and provides visibility to teachers, students, and administrators.
 
 ### 2. Substitute Management System
+
 Manages teacher leave requests, automatically detects periods needing substitutes, and facilitates substitute teacher assignments.
 
 ## Database Schema
@@ -15,70 +17,75 @@ Manages teacher leave requests, automatically detects periods needing substitute
 ### New Tables
 
 #### `teacherLeaves`
+
 Stores teacher leave requests with approval workflow.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| id | UUID | Primary key |
-| teacherId | UUID | Foreign key to users table |
-| leaveType | ENUM | Type of leave (sick, casual, earned, duty, emergency) |
-| startDate | VARCHAR(10) | Start date in YYYY-MM-DD format |
-| endDate | VARCHAR(10) | End date in YYYY-MM-DD format |
-| reason | TEXT | Reason for leave |
-| status | ENUM | Status (pending, approved, rejected, cancelled) |
-| approvedBy | UUID | Admin who approved/rejected |
-| approvalNotes | TEXT | Notes from admin |
-| approvedAt | TIMESTAMP | When approved/rejected |
-| createdAt | TIMESTAMP | When created |
-| updatedAt | TIMESTAMP | Last updated |
+| Field         | Type        | Description                                           |
+| ------------- | ----------- | ----------------------------------------------------- |
+| id            | UUID        | Primary key                                           |
+| teacherId     | UUID        | Foreign key to users table                            |
+| leaveType     | ENUM        | Type of leave (sick, casual, earned, duty, emergency) |
+| startDate     | VARCHAR(10) | Start date in YYYY-MM-DD format                       |
+| endDate       | VARCHAR(10) | End date in YYYY-MM-DD format                         |
+| reason        | TEXT        | Reason for leave                                      |
+| status        | ENUM        | Status (pending, approved, rejected, cancelled)       |
+| approvedBy    | UUID        | Admin who approved/rejected                           |
+| approvalNotes | TEXT        | Notes from admin                                      |
+| approvedAt    | TIMESTAMP   | When approved/rejected                                |
+| createdAt     | TIMESTAMP   | When created                                          |
+| updatedAt     | TIMESTAMP   | Last updated                                          |
 
 #### `substituteAssignments`
+
 Links substitute teachers to periods affected by leaves.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| id | UUID | Primary key |
-| leaveId | UUID | Related leave request (optional) |
-| originalTeacherId | UUID | Teacher who is absent |
-| substituteTeacherId | UUID | Substitute teacher assigned |
-| classroomId | UUID | Affected classroom |
-| subjectId | UUID | Subject to teach |
-| date | VARCHAR(10) | Date in YYYY-MM-DD format |
-| periodNumber | INTEGER | Period number (1-9) |
-| startTime | VARCHAR(10) | Start time HH:MM |
-| endTime | VARCHAR(10) | End time HH:MM |
-| reason | TEXT | Reason for substitution |
-| assignedBy | UUID | Admin who assigned |
-| createdAt | TIMESTAMP | When created |
-| updatedAt | TIMESTAMP | Last updated |
+| Field               | Type        | Description                      |
+| ------------------- | ----------- | -------------------------------- |
+| id                  | UUID        | Primary key                      |
+| leaveId             | UUID        | Related leave request (optional) |
+| originalTeacherId   | UUID        | Teacher who is absent            |
+| substituteTeacherId | UUID        | Substitute teacher assigned      |
+| classroomId         | UUID        | Affected classroom               |
+| subjectId           | UUID        | Subject to teach                 |
+| date                | VARCHAR(10) | Date in YYYY-MM-DD format        |
+| periodNumber        | INTEGER     | Period number (1-9)              |
+| startTime           | VARCHAR(10) | Start time HH:MM                 |
+| endTime             | VARCHAR(10) | End time HH:MM                   |
+| reason              | TEXT        | Reason for substitution          |
+| assignedBy          | UUID        | Admin who assigned               |
+| createdAt           | TIMESTAMP   | When created                     |
+| updatedAt           | TIMESTAMP   | Last updated                     |
 
 #### `workDone`
+
 Records what was taught in each period.
 
-| Field | Type | Description |
-|-------|------|-------------|
-| id | UUID | Primary key |
-| classroomId | UUID | Classroom |
-| subjectId | UUID | Subject |
-| teacherId | UUID | Teacher (regular or substitute) |
-| date | VARCHAR(10) | Date in YYYY-MM-DD format |
-| periodNumber | INTEGER | Period number (1-9) |
-| topicsCovered | TEXT | Topics covered (required) |
-| homeworkAssigned | TEXT | Homework assigned (optional) |
-| remarks | TEXT | Additional remarks (optional) |
-| isSubstitute | BOOLEAN | Whether taught by substitute |
-| substituteAssignmentId | UUID | Link to substitute assignment |
-| createdAt | TIMESTAMP | When created |
-| updatedAt | TIMESTAMP | Last updated |
+| Field                  | Type        | Description                     |
+| ---------------------- | ----------- | ------------------------------- |
+| id                     | UUID        | Primary key                     |
+| classroomId            | UUID        | Classroom                       |
+| subjectId              | UUID        | Subject                         |
+| teacherId              | UUID        | Teacher (regular or substitute) |
+| date                   | VARCHAR(10) | Date in YYYY-MM-DD format       |
+| periodNumber           | INTEGER     | Period number (1-9)             |
+| topicsCovered          | TEXT        | Topics covered (required)       |
+| homeworkAssigned       | TEXT        | Homework assigned (optional)    |
+| remarks                | TEXT        | Additional remarks (optional)   |
+| isSubstitute           | BOOLEAN     | Whether taught by substitute    |
+| substituteAssignmentId | UUID        | Link to substitute assignment   |
+| createdAt              | TIMESTAMP   | When created                    |
+| updatedAt              | TIMESTAMP   | Last updated                    |
 
 ## API Endpoints
 
 ### Teacher Leaves API
 
 #### `GET /api/teacher-leaves`
+
 Fetch leave requests with optional filters.
 
 **Query Parameters:**
+
 - `teacherId` - Filter by teacher
 - `status` - Filter by status (pending, approved, rejected, cancelled)
 - `startDate` - Filter by start date
@@ -87,9 +94,11 @@ Fetch leave requests with optional filters.
 **Response:** Array of leave requests with teacher information
 
 #### `POST /api/teacher-leaves`
+
 Create a new leave request.
 
 **Request Body:**
+
 ```json
 {
   "teacherId": "uuid",
@@ -101,12 +110,15 @@ Create a new leave request.
 ```
 
 #### `GET /api/teacher-leaves/[id]`
+
 Get a single leave request by ID.
 
 #### `PUT /api/teacher-leaves/[id]`
+
 Update leave request (approve/reject/cancel).
 
 **Request Body:**
+
 ```json
 {
   "status": "approved|rejected|cancelled",
@@ -116,23 +128,28 @@ Update leave request (approve/reject/cancel).
 ```
 
 #### `DELETE /api/teacher-leaves/[id]`
+
 Delete a pending leave request.
 
 ### Substitute Assignments API
 
 #### `GET /api/substitute-assignments`
+
 Fetch substitute assignments with optional filters.
 
 **Query Parameters:**
+
 - `date` - Filter by date
 - `teacherId` - Filter by original or substitute teacher
 - `classroomId` - Filter by classroom
 - `substituteTeacherId` - Filter by substitute teacher
 
 #### `POST /api/substitute-assignments`
+
 Create a substitute assignment.
 
 **Request Body:**
+
 ```json
 {
   "leaveId": "uuid (optional)",
@@ -150,18 +167,23 @@ Create a substitute assignment.
 ```
 
 #### `GET /api/substitute-assignments/[id]`
+
 Get a single assignment by ID.
 
 #### `PUT /api/substitute-assignments/[id]`
+
 Update a substitute assignment.
 
 #### `DELETE /api/substitute-assignments/[id]`
+
 Delete a substitute assignment.
 
 #### `GET /api/substitute-assignments/unassigned`
+
 Get periods needing substitutes based on approved leaves.
 
 **Query Parameters:**
+
 - `date` - Date to check (defaults to today)
 
 **Response:** Array of periods without teachers that need substitutes
@@ -169,9 +191,11 @@ Get periods needing substitutes based on approved leaves.
 ### Work Done API
 
 #### `GET /api/work-done`
+
 Fetch work done records with optional filters.
 
 **Query Parameters:**
+
 - `classroomId` - Filter by classroom
 - `subjectId` - Filter by subject
 - `teacherId` - Filter by teacher
@@ -181,9 +205,11 @@ Fetch work done records with optional filters.
 - `isSubstitute` - Filter substitute-only (true/false)
 
 #### `POST /api/work-done`
+
 Create a work done record.
 
 **Request Body:**
+
 ```json
 {
   "classroomId": "uuid",
@@ -200,12 +226,15 @@ Create a work done record.
 ```
 
 #### `GET /api/work-done/[id]`
+
 Get a single work done record by ID.
 
 #### `PUT /api/work-done/[id]`
+
 Update a work done record.
 
 **Request Body:**
+
 ```json
 {
   "topicsCovered": "text (optional)",
@@ -215,6 +244,7 @@ Update a work done record.
 ```
 
 #### `DELETE /api/work-done/[id]`
+
 Delete a work done record.
 
 ## User Interfaces
@@ -222,6 +252,7 @@ Delete a work done record.
 ### Teacher Portal
 
 #### My Leaves Tab
+
 - View all leave requests with status badges
 - "Request Leave" button opens dialog form
 - Leave form fields:
@@ -232,12 +263,14 @@ Delete a work done record.
 - View leave history with approval notes
 
 #### Substitute Duties Tab
+
 - View upcoming substitute assignments
 - Shows date, period, classroom, subject
 - Displays original teacher name and reason
 - Indicates completed periods
 
 #### Work Done Tab
+
 - "Record Work Done" button opens dialog
 - Work done form fields:
   - Class dropdown
@@ -253,6 +286,7 @@ Delete a work done record.
 ### Admin Portal
 
 #### Leaves Management (`/admin/leaves`)
+
 - Stats cards showing pending, approved, and rejected counts
 - Tabs: Pending, Approved, Rejected, All
 - Each leave request card shows:
@@ -263,6 +297,7 @@ Delete a work done record.
 - Approval dialog with notes field
 
 #### Substitutes Management (`/admin/substitutes`)
+
 - Date selector for viewing/managing substitutes
 - Stats cards showing unassigned and assigned counts
 - Two sections:
@@ -276,6 +311,7 @@ Delete a work done record.
 - Assignment dialog with teacher selection
 
 #### Work Done Records (`/admin/work-done`)
+
 - Comprehensive filters:
   - Date range picker
   - Classroom dropdown
@@ -286,6 +322,7 @@ Delete a work done record.
 - Export placeholder (future enhancement)
 
 #### Admin Dashboard Updates
+
 - New quick action cards:
   - "Manage Leaves"
   - "Manage Substitutes"
@@ -294,6 +331,7 @@ Delete a work done record.
 ### Student Portal
 
 #### Work Done Tab
+
 - View work done records for student's classroom
 - Grouped by date and subject
 - Shows:
@@ -306,18 +344,22 @@ Delete a work done record.
 ## Features
 
 ### Auto-Detection of Missing Teachers
+
 The system automatically identifies periods needing substitutes:
+
 1. Checks approved leaves for the selected date
 2. Finds timetable periods taught by absent teachers
 3. Excludes periods that already have substitutes assigned
 4. Displays in admin "Periods Needing Substitutes" view
 
 ### Role-Based Access Control
+
 - **Teachers**: Request leave, view own leaves, mark work done, view own substitute assignments
 - **Admins**: Approve/reject leaves, assign substitutes, view all work done records
 - **Students**: View work done records for their classroom (read-only)
 
 ### Validation & Error Handling
+
 - All forms include client-side validation
 - API routes validate required fields
 - Proper error messages via toast notifications
@@ -325,6 +367,7 @@ The system automatically identifies periods needing substitutes:
 - Permission checks at API level
 
 ### UI/UX Design
+
 - Minimalist design following ShadCN patterns
 - Responsive layouts for all screen sizes
 - Status badges with color coding
@@ -336,15 +379,19 @@ The system automatically identifies periods needing substitutes:
 ## Migration Steps
 
 1. **Update Database Schema**
+
    ```bash
    npm run db:push
    ```
+
    This applies the new tables and enums to the database.
 
 2. **Seed Sample Data (Optional)**
+
    ```bash
    npm run db:seed
    ```
+
    Add sample leave requests, substitutes, and work done records.
 
 3. **Verify Permissions**
@@ -367,23 +414,27 @@ The system automatically identifies periods needing substitutes:
 ## Future Enhancements
 
 ### Notifications
+
 - Notify teachers when leave is approved/rejected
 - Notify substitute teachers when assigned
 - Notify admins of new leave requests
 - Email/SMS integration
 
 ### Duty Roster
+
 - Extend to handle non-leave duty assignments
 - Rotating duty schedules
 - Duty swap requests
 
 ### Reports & Analytics
+
 - Leave pattern analysis
 - Substitute utilization reports
 - Work done coverage statistics
 - Export to CSV/PDF
 
 ### Mobile App
+
 - React Native or Progressive Web App
 - Push notifications
 - Offline support

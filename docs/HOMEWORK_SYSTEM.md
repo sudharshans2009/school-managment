@@ -1,6 +1,7 @@
 # Homework Submission System - Implementation Summary
 
 ## Overview
+
 Physical homework submission tracking system that allows teachers to mark when students submit homework physically and grade them. Class teachers have full access to their class's homework reports.
 
 ## Features Implemented
@@ -8,14 +9,16 @@ Physical homework submission tracking system that allows teachers to mark when s
 ### 1. Teacher Homework Management Page (`/teacher/homework`)
 
 **Key Features:**
+
 - **Classroom Selection**: Teachers see only their assigned classrooms
 - **Homework Selection**: Filter by specific homework assignments
-- **View Modes**: 
+- **View Modes**:
   - By Homework: See all submissions for a specific assignment
   - By Students: See all homework for specific students
 
 **Submission Management:**
-- **Mark Physical Submissions**: 
+
+- **Mark Physical Submissions**:
   - See list of students who haven't submitted
   - One-click marking as "submitted"
   - Records submission timestamp
@@ -26,18 +29,22 @@ Physical homework submission tracking system that allows teachers to mark when s
 - **Delete Submissions**: Remove incorrect submission records
 
 **Permissions:**
+
 - Subject teachers can only manage homework for subjects they teach
 - Class teachers (isPrimary = true) have full access to all homework in their class
 
 ### 2. API Endpoints
 
 #### `/api/homework/submissions` (GET, POST)
+
 **GET** - Fetch submissions
+
 - Query params: `homeworkId`, `classroomId`, `studentId`
 - Returns submissions with student details
 - Filters by teacher's assigned subjects
 
 **POST** - Mark as submitted
+
 ```json
 {
   "homeworkId": "uuid",
@@ -45,12 +52,15 @@ Physical homework submission tracking system that allows teachers to mark when s
   "submissionText": "Physical submission received" // optional
 }
 ```
+
 - Validates teacher has permission
 - Prevents duplicate submissions
 - Auto-timestamps submission
 
 #### `/api/homework/submissions/[id]` (PUT, DELETE)
+
 **PUT** - Grade submission
+
 ```json
 {
   "marksObtained": 85,
@@ -58,21 +68,25 @@ Physical homework submission tracking system that allows teachers to mark when s
   "status": "graded"
 }
 ```
+
 - Updates marks and feedback
 - Records grader and timestamp
 - Changes status to "graded"
 
 **DELETE** - Remove submission
+
 - Verifies teacher permission
 - Deletes submission record
 
 #### `/api/teachers/classrooms` (GET)
+
 - Returns classrooms where teacher has assignments
 - Used to populate classroom dropdown
 
 ### 3. Database Schema (Existing)
 
 **homework table:**
+
 ```typescript
 {
   id: uuid
@@ -89,6 +103,7 @@ Physical homework submission tracking system that allows teachers to mark when s
 ```
 
 **homeworkSubmissions table:**
+
 ```typescript
 {
   id: uuid
@@ -107,6 +122,7 @@ Physical homework submission tracking system that allows teachers to mark when s
 ## User Workflows
 
 ### Subject Teacher Workflow
+
 1. Navigate to `/teacher/homework`
 2. Select classroom from dropdown
 3. Select homework assignment
@@ -122,12 +138,15 @@ Physical homework submission tracking system that allows teachers to mark when s
 7. View graded submissions with marks and feedback
 
 ### Class Teacher Workflow
+
 (Same as subject teacher, plus:)
+
 - Access to all subjects' homework in their class
 - Complete overview of student homework completion
 - Can manage homework for any subject in their class
 
 ### Student Perspective
+
 - Submits homework physically to teacher
 - Teacher marks it as received in system
 - Teacher grades and provides feedback
@@ -140,28 +159,34 @@ Physical homework submission tracking system that allows teachers to mark when s
 ## UI Components
 
 ### Submissions Table
-| Roll No | Student Name | Submitted At | Marks | Status | Actions |
-|---------|--------------|--------------|-------|--------|---------|
+
+| Roll No | Student Name | Submitted At     | Marks  | Status | Actions      |
+| ------- | ------------ | ---------------- | ------ | ------ | ------------ |
 | 11B001  | Student 1    | Oct 29, 10:30 AM | 85/100 | Graded | Edit, Delete |
 
 **Status Badges:**
+
 - 🕐 Submitted (Secondary badge)
 - ✅ Graded (Success badge)
 
 ### Mark Submission Dialog
+
 - Student name display
 - Confirmation message
 - Cancel / Confirm buttons
 - Loading state during submission
 
 ### Grade Submission Dialog
+
 - Student name (read-only)
 - Marks input (number, validated against total)
 - Feedback textarea
 - Cancel / Submit buttons
 
 ### Pending Students Cards
+
 Grid of students who haven't submitted:
+
 ```
 ┌─────────────────────────────┐
 │ Student Name                │
@@ -173,18 +198,21 @@ Grid of students who haven't submitted:
 ## Permissions & Access Control
 
 ### Teacher Permissions
+
 - ✅ Can mark submissions for their subject's homework
 - ✅ Can grade submissions for their subject's homework
 - ✅ Can delete submissions for their subject's homework
 - ❌ Cannot mark/grade other teachers' homework
 
 ### Class Teacher (isPrimary) Permissions
+
 - ✅ All subject teacher permissions
 - ✅ Access to all homework in their class
 - ✅ Can view complete homework reports
 - ✅ Can manage any subject's homework in their class
 
 ### Validation
+
 - Teacher must be assigned to the subject
 - Homework must exist
 - Student must be in the classroom
@@ -194,11 +222,13 @@ Grid of students who haven't submitted:
 ## Integration Points
 
 ### Teacher Dashboard
+
 - Quick action card: "Homework Submissions"
 - Description: "Mark & grade homework"
 - Routes to `/teacher/homework`
 
 ### Student Dashboard (Future)
+
 - View assigned homework
 - See submission status
 - Check marks and feedback
@@ -217,6 +247,7 @@ Grid of students who haven't submitted:
 ## Example Scenarios
 
 ### Scenario 1: Marking Physical Submissions
+
 ```
 Teacher receives 25 homework notebooks
 1. Opens /teacher/homework
@@ -231,6 +262,7 @@ Teacher receives 25 homework notebooks
 ```
 
 ### Scenario 2: Grading Homework
+
 ```
 Teacher has marked homework and wants to grade
 1. Views submissions table
@@ -244,6 +276,7 @@ Teacher has marked homework and wants to grade
 ```
 
 ### Scenario 3: Class Teacher Overview
+
 ```
 Class teacher wants to see homework completion
 1. Selects their class "Class 11B"

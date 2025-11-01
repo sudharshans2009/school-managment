@@ -1,4 +1,5 @@
 # 🎓 Amrita School Management System
+
 ## Setup Summary
 
 ---
@@ -7,18 +8,18 @@
 
 ### 📦 Dependencies Installed (using Bun)
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| drizzle-orm | Latest | Type-safe ORM |
-| @neondatabase/serverless | Latest | PostgreSQL driver |
-| drizzle-kit | Latest | Database migrations |
-| better-auth | Latest | Authentication |
-| @tanstack/react-query | 5.90.5 | Server state |
-| zod | Latest | Validation |
-| bcryptjs | Latest | Password hashing |
-| nanoid | Latest | ID generation |
-| resend | Latest | Email service |
-| next-themes | Latest | Theme support |
+| Package                  | Version | Purpose             |
+| ------------------------ | ------- | ------------------- |
+| drizzle-orm              | Latest  | Type-safe ORM       |
+| @neondatabase/serverless | Latest  | PostgreSQL driver   |
+| drizzle-kit              | Latest  | Database migrations |
+| better-auth              | Latest  | Authentication      |
+| @tanstack/react-query    | 5.90.5  | Server state        |
+| zod                      | Latest  | Validation          |
+| bcryptjs                 | Latest  | Password hashing    |
+| nanoid                   | Latest  | ID generation       |
+| resend                   | Latest  | Email service       |
+| next-themes              | Latest  | Theme support       |
 
 ---
 
@@ -55,11 +56,13 @@ school-managment/
 ## 🗄️ Database Schema Overview
 
 ### User Management
+
 - **users** - All user types with roles
 - **students** - Extended student info
 - **teacher_assignments** - Teacher-Classroom-Subject mapping
 
 ### Academic Management
+
 - **classrooms** - With unique codes & keys
 - **subjects** - Subject catalog
 - **homework** - Assignments
@@ -67,6 +70,7 @@ school-managment/
 - **timetable** - Class schedules
 
 ### Operations
+
 - **attendance** - Daily tracking
 - **fee_structures** - Fee configuration
 - **fee_payments** - Payment records
@@ -88,16 +92,19 @@ school-managment/
 ## 🎯 Configuration Checklist
 
 ### 1. Database (Neon) ⚠️ Required
+
 - [ ] Create Neon project
 - [ ] Get connection string
 - [ ] Add to `.env.local` as `DATABASE_URL`
 - [ ] Run `bun run db:push`
 
 ### 2. Auth Secret ⚠️ Required
+
 - [ ] Generate: `openssl rand -base64 32`
 - [ ] Add to `.env.local` as `BETTER_AUTH_SECRET`
 
 ### 3. Email Service (Optional)
+
 - [ ] Get Resend API key
 - [ ] Add to `.env.local` as `RESEND_API_KEY`
 
@@ -125,7 +132,9 @@ bun run dev            # Start Next.js server
 ## 📊 Next Development Phases
 
 ### Phase 1: API Routes ⏭️ NEXT
+
 Create RESTful endpoints:
+
 - `POST /api/classrooms` - Create classroom
 - `GET /api/classrooms` - List classrooms
 - `POST /api/students` - Add student
@@ -133,24 +142,28 @@ Create RESTful endpoints:
 - `POST /api/attendance` - Mark attendance
 
 ### Phase 2: Admin Dashboard
+
 - Overview statistics
 - Classroom management UI
 - Teacher assignment interface
 - Student enrollment forms
 
 ### Phase 3: Teacher Portal
+
 - My classrooms view
 - Homework creation/grading
 - Attendance marking interface
 - Student analytics
 
 ### Phase 4: Student Portal
+
 - Homework list & submission
 - Attendance viewer
 - Timetable display
 - Announcements feed
 
 ### Phase 5: Smartboard
+
 - Real-time classroom display
 - Auto-updating content
 - Visual attendance charts
@@ -163,25 +176,30 @@ Create RESTful endpoints:
 Already installed and ready to use:
 
 **Forms & Input**
+
 - Button, Input, Textarea
 - Select, Checkbox, Radio
 - Switch, Slider, Label
 
 **Layout**
+
 - Card, Dialog, Sheet
 - Tabs, Accordion
 - Separator, Scroll Area
 
 **Data Display**
+
 - Table, DataTable
 - Avatar, Badge
 - Progress, Tooltip
 
 **Navigation**
+
 - Dropdown Menu, Context Menu
 - Navigation Menu, Menubar
 
 **Feedback**
+
 - Alert, Alert Dialog
 - Toast (Sonner), HoverCard
 
@@ -190,21 +208,23 @@ Already installed and ready to use:
 ## 💡 Code Examples
 
 ### Using Auth Hook
+
 ```typescript
 'use client';
 import { useSession } from '@/lib/auth-client';
 
 export function Dashboard() {
   const { data: session, isPending } = useSession();
-  
+
   if (isPending) return <div>Loading...</div>;
   if (!session) return <div>Not logged in</div>;
-  
+
   return <div>Welcome, {session.user.name}!</div>;
 }
 ```
 
 ### Using React Query
+
 ```typescript
 import { useQuery } from '@tanstack/react-query';
 
@@ -216,18 +236,19 @@ export function ClassroomList() {
       return res.json();
     },
   });
-  
+
   if (isLoading) return <div>Loading...</div>;
-  
+
   return <div>{/* Render classrooms */}</div>;
 }
 ```
 
 ### Database Query Example
+
 ```typescript
-import { db } from '@/lib/db';
-import { classrooms } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { db } from "@/lib/db";
+import { classrooms } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 // Get classroom by ID
 const classroom = await db.query.classrooms.findFirst({
@@ -248,24 +269,25 @@ const classroom = await db.query.classrooms.findFirst({
 
 ## 📈 Project Status
 
-| Feature | Status |
-|---------|--------|
-| Database Schema | ✅ Complete |
-| Authentication | ✅ Complete |
-| React Query | ✅ Complete |
+| Feature            | Status      |
+| ------------------ | ----------- |
+| Database Schema    | ✅ Complete |
+| Authentication     | ✅ Complete |
+| React Query        | ✅ Complete |
 | Validation Schemas | ✅ Complete |
-| Helper Functions | ✅ Complete |
-| API Routes | ⏳ Pending |
-| Admin Dashboard | ⏳ Pending |
-| Teacher Portal | ⏳ Pending |
-| Student Portal | ⏳ Pending |
-| Smartboard | ⏳ Pending |
+| Helper Functions   | ✅ Complete |
+| API Routes         | ⏳ Pending  |
+| Admin Dashboard    | ⏳ Pending  |
+| Teacher Portal     | ⏳ Pending  |
+| Student Portal     | ⏳ Pending  |
+| Smartboard         | ⏳ Pending  |
 
 ---
 
 ## 🎉 You're Ready to Build!
 
 All foundations are in place. You now have:
+
 - ✅ Type-safe database with Drizzle
 - ✅ Secure authentication with Better Auth
 - ✅ Efficient state management with React Query
@@ -281,4 +303,4 @@ All foundations are in place. You now have:
 📖 **README**: See `README.md` for project overview  
 🐛 **Issues**: Check `SETUP_COMPLETE.md` troubleshooting section
 
-*Happy coding! 🚀*
+_Happy coding! 🚀_

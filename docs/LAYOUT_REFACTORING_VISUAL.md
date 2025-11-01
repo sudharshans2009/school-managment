@@ -5,11 +5,13 @@
 ### 1. Home Page (/)
 
 **Before:**
+
 - No navbar
 - Just content centered on page
 - Auth buttons embedded in page content
 
 **After:**
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ [Logo] Amrita School Management    [Theme] [Sign In/Up] │ ← Navbar
@@ -29,10 +31,12 @@
 ### 2. Auth Pages (/auth/signin, /auth/signup)
 
 **Before:**
+
 - No navigation back to home
 - Just centered form
 
 **After:**
+
 ```
 [← Back to Home]                                          ← Absolute positioned
 ┌─────────────────────────────────────────────────────────┐
@@ -52,10 +56,12 @@
 ### 3. Dashboard Pages (/dashboard, /admin, /teacher, /student)
 
 **Before:**
+
 - Used SharedLayout
 - Inconsistent navbar content
 
 **After:**
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ [Logo] Dashboard              [Theme] [User] [Sign Out] │ ← Navbar
@@ -80,6 +86,7 @@
 ## Component Structure
 
 ### HomeLayout
+
 ```tsx
 <div className="min-h-screen bg-background">
   <nav className="sticky top-0 z-50 border-b backdrop-blur">
@@ -91,6 +98,7 @@
 ```
 
 ### AuthLayout
+
 ```tsx
 <div className="min-h-screen flex flex-col items-center justify-center">
   <BackButton className="absolute top-4 left-4" />
@@ -99,6 +107,7 @@
 ```
 
 ### DashboardLayout
+
 ```tsx
 <div className="min-h-screen bg-background">
   <nav className="sticky top-0 z-50 border-b backdrop-blur">
@@ -117,6 +126,7 @@
 ## Design System Elements
 
 ### Colors (Theme-aware)
+
 ```
 Primary: For branding, CTAs
 Background: Page background
@@ -126,6 +136,7 @@ Border: Dividers, outlines
 ```
 
 ### Spacing Scale
+
 ```
 p-4:  1rem    (16px) - Small padding
 p-6:  1.5rem  (24px) - Standard padding
@@ -134,6 +145,7 @@ space-y-6: 1.5rem gap between elements
 ```
 
 ### Border Radius
+
 ```
 rounded-2xl: 1rem    (16px) - Cards
 rounded-xl:  0.75rem (12px) - Buttons, Inputs
@@ -141,6 +153,7 @@ rounded-full: 50%          - Icon containers
 ```
 
 ### Shadows
+
 ```
 shadow-sm:        Subtle depth for cards
 hover:shadow-md:  Interactive feedback
@@ -150,16 +163,19 @@ backdrop-blur:    Modern navbar effect
 ## Responsive Breakpoints
 
 ### Mobile (< 640px)
+
 - Single column layouts
 - Stacked navigation items
 - Hidden user info in navbar
 
 ### Tablet (640px - 1024px)
+
 - Two column grids
 - Visible user info
 - Side-by-side buttons
 
 ### Desktop (> 1024px)
+
 - Three+ column grids
 - Full feature visibility
 - Optimal spacing
@@ -167,6 +183,7 @@ backdrop-blur:    Modern navbar effect
 ## Theme Support
 
 ### Light Mode
+
 ```
 Background: White/Light gray
 Foreground: Dark text
@@ -175,6 +192,7 @@ Primary: Brand color (bright)
 ```
 
 ### Dark Mode
+
 ```
 Background: Dark gray/Black
 Foreground: Light text
@@ -185,6 +203,7 @@ Primary: Brand color (adjusted)
 ## Files Changed Summary
 
 ### Created (4 files):
+
 1. `components/layouts/home-layout.tsx` - Public pages layout
 2. `components/layouts/auth-layout.tsx` - Authentication pages layout
 3. `components/layouts/dashboard-layout.tsx` - Protected pages layout
@@ -192,6 +211,7 @@ Primary: Brand color (adjusted)
 5. `docs/LAYOUT_REFACTORING.md` - Full documentation
 
 ### Modified (13 files):
+
 1. `app/page.tsx` - Home page
 2. `app/auth/signin/page.tsx` - Sign in page
 3. `app/auth/signup/page.tsx` - Sign up page
@@ -207,6 +227,7 @@ Primary: Brand color (adjusted)
 13. `app/admin/classrooms/[id]/edit/page.tsx` - Classroom edit
 
 ### Unchanged (As Required):
+
 - All `/smartboard/**` pages - Left as-is per requirements
 
 ## Impact Summary

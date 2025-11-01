@@ -6,8 +6,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Plus, Trash2, Edit2 } from "lucide-react";
@@ -54,11 +66,23 @@ const PERIODS = [
   { period: 1, startTime: "08:00", endTime: "08:50", label: "Period 1" },
   { period: 2, startTime: "08:50", endTime: "09:40", label: "Period 2" },
   { period: 3, startTime: "09:40", endTime: "10:30", label: "Period 3" },
-  { period: "BREAK1", startTime: "10:30", endTime: "11:00", label: "BREAK", isBreak: true },
+  {
+    period: "BREAK1",
+    startTime: "10:30",
+    endTime: "11:00",
+    label: "BREAK",
+    isBreak: true,
+  },
   { period: 5, startTime: "11:00", endTime: "11:50", label: "Period 5" },
   { period: 6, startTime: "11:50", endTime: "12:40", label: "Period 6" },
   { period: 7, startTime: "12:40", endTime: "13:30", label: "Period 7" },
-  { period: "LUNCH", startTime: "13:30", endTime: "14:15", label: "LUNCH", isBreak: true },
+  {
+    period: "LUNCH",
+    startTime: "13:30",
+    endTime: "14:15",
+    label: "LUNCH",
+    isBreak: true,
+  },
   { period: 9, startTime: "14:15", endTime: "15:05", label: "Period 9" },
   { period: 10, startTime: "15:05", endTime: "15:55", label: "Period 10" },
   { period: 11, startTime: "15:55", endTime: "16:45", label: "Period 11" },
@@ -206,7 +230,9 @@ export default function TimetablePage() {
     }
   };
 
-  const filteredTimetable = timetable?.filter((entry) => entry.dayOfWeek === selectedDay);
+  const filteredTimetable = timetable?.filter(
+    (entry) => entry.dayOfWeek === selectedDay,
+  );
 
   return (
     <DashboardLayout title="Timetable Management" description="Admin Portal">
@@ -219,9 +245,7 @@ export default function TimetablePage() {
               </Button>
             </Link>
             <Calendar className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">
-              Timetable Management
-            </h1>
+            <h1 className="text-2xl font-bold">Timetable Management</h1>
           </div>
           <Dialog
             open={openCreate || !!editingEntry}
@@ -230,140 +254,149 @@ export default function TimetablePage() {
               if (!open) setEditingEntry(null);
             }}
           >
-              <DialogTrigger asChild>
-                <Button disabled={!selectedClassroom}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Period
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>
-                    {editingEntry ? "Edit Period" : "Add New Period"}
-                  </DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4">
+            <DialogTrigger asChild>
+              <Button disabled={!selectedClassroom}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Period
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>
+                  {editingEntry ? "Edit Period" : "Add New Period"}
+                </DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="subjectId">Subject *</Label>
+                  <Select
+                    name="subjectId"
+                    required
+                    defaultValue={editingEntry?.subject.id}
+                  >
+                    <SelectTrigger id="subjectId">
+                      <SelectValue placeholder="Select subject" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {subjects?.map((subject) => (
+                        <SelectItem key={subject.id} value={subject.id}>
+                          {subject.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="teacherId">Teacher *</Label>
+                  <Select
+                    name="teacherId"
+                    required
+                    defaultValue={editingEntry?.teacher.id}
+                  >
+                    <SelectTrigger id="teacherId">
+                      <SelectValue placeholder="Select teacher" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {teachers?.map((teacher) => (
+                        <SelectItem key={teacher.id} value={teacher.id}>
+                          {teacher.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="dayOfWeek">Day of Week *</Label>
+                  <Select
+                    name="dayOfWeek"
+                    required
+                    defaultValue={
+                      editingEntry?.dayOfWeek.toString() ||
+                      selectedDay.toString()
+                    }
+                  >
+                    <SelectTrigger id="dayOfWeek">
+                      <SelectValue placeholder="Select day" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DAYS.map((day) => (
+                        <SelectItem
+                          key={day.value}
+                          value={day.value.toString()}
+                        >
+                          {day.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="subjectId">Subject *</Label>
-                    <Select
-                      name="subjectId"
-                      required
-                      defaultValue={editingEntry?.subject.id}
-                    >
-                      <SelectTrigger id="subjectId">
-                        <SelectValue placeholder="Select subject" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {subjects?.map((subject) => (
-                          <SelectItem key={subject.id} value={subject.id}>
-                            {subject.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="teacherId">Teacher *</Label>
-                    <Select
-                      name="teacherId"
-                      required
-                      defaultValue={editingEntry?.teacher.id}
-                    >
-                      <SelectTrigger id="teacherId">
-                        <SelectValue placeholder="Select teacher" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {teachers?.map((teacher) => (
-                          <SelectItem key={teacher.id} value={teacher.id}>
-                            {teacher.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="dayOfWeek">Day of Week *</Label>
-                    <Select
-                      name="dayOfWeek"
-                      required
-                      defaultValue={editingEntry?.dayOfWeek.toString() || selectedDay.toString()}
-                    >
-                      <SelectTrigger id="dayOfWeek">
-                        <SelectValue placeholder="Select day" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {DAYS.map((day) => (
-                          <SelectItem key={day.value} value={day.value.toString()}>
-                            {day.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="startTime">Start Time *</Label>
-                      <Input
-                        id="startTime"
-                        name="startTime"
-                        type="time"
-                        required
-                        defaultValue={editingEntry?.startTime}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="endTime">End Time *</Label>
-                      <Input
-                        id="endTime"
-                        name="endTime"
-                        type="time"
-                        required
-                        defaultValue={editingEntry?.endTime}
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="roomNumber">Room Number *</Label>
+                    <Label htmlFor="startTime">Start Time *</Label>
                     <Input
-                      id="roomNumber"
-                      name="roomNumber"
-                      placeholder="e.g., 101"
+                      id="startTime"
+                      name="startTime"
+                      type="time"
                       required
-                      defaultValue={editingEntry?.roomNumber}
+                      defaultValue={editingEntry?.startTime}
                     />
                   </div>
-                  {(createMutation.error || updateMutation.error) && (
-                    <Alert variant="destructive">
-                      <AlertDescription>
-                        {createMutation.error?.message || updateMutation.error?.message}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setOpenCreate(false);
-                        setEditingEntry(null);
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      disabled={createMutation.isPending || updateMutation.isPending}
-                    >
-                      {createMutation.isPending || updateMutation.isPending
-                        ? "Saving..."
-                        : editingEntry
+                  <div>
+                    <Label htmlFor="endTime">End Time *</Label>
+                    <Input
+                      id="endTime"
+                      name="endTime"
+                      type="time"
+                      required
+                      defaultValue={editingEntry?.endTime}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="roomNumber">Room Number *</Label>
+                  <Input
+                    id="roomNumber"
+                    name="roomNumber"
+                    placeholder="e.g., 101"
+                    required
+                    defaultValue={editingEntry?.roomNumber}
+                  />
+                </div>
+                {(createMutation.error || updateMutation.error) && (
+                  <Alert variant="destructive">
+                    <AlertDescription>
+                      {createMutation.error?.message ||
+                        updateMutation.error?.message}
+                    </AlertDescription>
+                  </Alert>
+                )}
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setOpenCreate(false);
+                      setEditingEntry(null);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={
+                      createMutation.isPending || updateMutation.isPending
+                    }
+                  >
+                    {createMutation.isPending || updateMutation.isPending
+                      ? "Saving..."
+                      : editingEntry
                         ? "Update"
                         : "Create"}
-                    </Button>
-                  </div>
-                </form>
-              </DialogContent>
-            </Dialog>
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
 
         <Card className="mb-6 rounded-2xl shadow-sm">
@@ -371,7 +404,10 @@ export default function TimetablePage() {
             <div className="flex gap-4">
               <div className="flex-1">
                 <Label>Select Classroom</Label>
-                <Select value={selectedClassroom} onValueChange={setSelectedClassroom}>
+                <Select
+                  value={selectedClassroom}
+                  onValueChange={setSelectedClassroom}
+                >
                   <SelectTrigger className="rounded-xl">
                     <SelectValue placeholder="Choose a classroom" />
                   </SelectTrigger>
@@ -415,7 +451,8 @@ export default function TimetablePage() {
         ) : filteredTimetable && filteredTimetable.length === 0 ? (
           <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-8 text-center text-gray-500">
-              No periods scheduled for {DAYS.find((d) => d.value === selectedDay)?.label}. Click
+              No periods scheduled for{" "}
+              {DAYS.find((d) => d.value === selectedDay)?.label}. Click
               &quot;Add Period&quot; to create one.
             </CardContent>
           </Card>
@@ -424,11 +461,16 @@ export default function TimetablePage() {
             {filteredTimetable
               ?.sort((a, b) => a.startTime.localeCompare(b.startTime))
               .map((entry) => (
-                <Card key={entry.id} className="hover:shadow-md transition-shadow">
+                <Card
+                  key={entry.id}
+                  className="hover:shadow-md transition-shadow"
+                >
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
-                        <CardTitle className="text-lg">{entry.subject.name}</CardTitle>
+                        <CardTitle className="text-lg">
+                          {entry.subject.name}
+                        </CardTitle>
                         <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                           {entry.teacher.name} • Room {entry.roomNumber}
                         </p>
@@ -448,7 +490,11 @@ export default function TimetablePage() {
                           variant="ghost"
                           size="icon"
                           onClick={() => {
-                            if (confirm("Are you sure you want to delete this period?")) {
+                            if (
+                              confirm(
+                                "Are you sure you want to delete this period?",
+                              )
+                            ) {
                               deleteMutation.mutate(entry.id);
                             }
                           }}

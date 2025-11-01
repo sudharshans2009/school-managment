@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 // GET - Get single leave request
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -34,20 +34,26 @@ export async function GET(
       .limit(1);
 
     if (!leave || leave.length === 0) {
-      return NextResponse.json({ error: "Leave request not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Leave request not found" },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json(leave[0]);
   } catch (error) {
     console.error("Error fetching leave request:", error);
-    return NextResponse.json({ error: "Failed to fetch leave request" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch leave request" },
+      { status: 500 },
+    );
   }
 }
 
 // PUT - Update leave request (approve/reject by admin, cancel by teacher)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -56,11 +62,14 @@ export async function PUT(
 
     // Validation
     if (!status) {
-      return NextResponse.json({ error: "Status is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Status is required" },
+        { status: 400 },
+      );
     }
 
     const updateData: {
-      status: 'pending' | 'approved' | 'rejected' | 'cancelled';
+      status: "pending" | "approved" | "rejected" | "cancelled";
       approvedBy?: string;
       approvalNotes?: string;
       approvedAt?: Date;
@@ -69,9 +78,12 @@ export async function PUT(
     };
 
     // Add approval data if status is approved or rejected
-    if (status === 'approved' || status === 'rejected') {
+    if (status === "approved" || status === "rejected") {
       if (!approvedBy) {
-        return NextResponse.json({ error: "Approver ID is required" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Approver ID is required" },
+          { status: 400 },
+        );
       }
       updateData.approvedBy = approvedBy;
       updateData.approvalNotes = approvalNotes || null;
@@ -85,20 +97,26 @@ export async function PUT(
       .returning();
 
     if (!updated || updated.length === 0) {
-      return NextResponse.json({ error: "Leave request not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Leave request not found" },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json(updated[0]);
   } catch (error) {
     console.error("Error updating leave request:", error);
-    return NextResponse.json({ error: "Failed to update leave request" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update leave request" },
+      { status: 500 },
+    );
   }
 }
 
 // DELETE - Delete leave request (only if pending)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -111,13 +129,16 @@ export async function DELETE(
       .limit(1);
 
     if (!leave || leave.length === 0) {
-      return NextResponse.json({ error: "Leave request not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Leave request not found" },
+        { status: 404 },
+      );
     }
 
-    if (leave[0].status !== 'pending') {
+    if (leave[0].status !== "pending") {
       return NextResponse.json(
         { error: "Only pending leave requests can be deleted" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -126,6 +147,9 @@ export async function DELETE(
     return NextResponse.json({ message: "Leave request deleted successfully" });
   } catch (error) {
     console.error("Error deleting leave request:", error);
-    return NextResponse.json({ error: "Failed to delete leave request" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to delete leave request" },
+      { status: 500 },
+    );
   }
 }

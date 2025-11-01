@@ -4,7 +4,13 @@ import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -138,7 +144,9 @@ export default function AdminAnalyticsPage() {
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm font-medium">Attendance Rate</CardTitle>
+                    <CardTitle className="text-sm font-medium">
+                      Attendance Rate
+                    </CardTitle>
                     <UserCheck className="h-4 w-4 text-muted-foreground" />
                   </div>
                 </CardHeader>
@@ -156,7 +164,9 @@ export default function AdminAnalyticsPage() {
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm font-medium">Average Grades</CardTitle>
+                    <CardTitle className="text-sm font-medium">
+                      Average Grades
+                    </CardTitle>
                     <Award className="h-4 w-4 text-muted-foreground" />
                   </div>
                 </CardHeader>
@@ -165,7 +175,9 @@ export default function AdminAnalyticsPage() {
                     {analytics?.grades.averagePercentage.toFixed(1)}%
                   </div>
                   <div className="flex items-center text-xs text-muted-foreground mt-1">
-                    <span>Passing rate: {analytics?.grades.passingRate.toFixed(1)}%</span>
+                    <span>
+                      Passing rate: {analytics?.grades.passingRate.toFixed(1)}%
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -173,15 +185,20 @@ export default function AdminAnalyticsPage() {
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm font-medium">Homework</CardTitle>
+                    <CardTitle className="text-sm font-medium">
+                      Homework
+                    </CardTitle>
                     <BookOpen className="h-4 w-4 text-muted-foreground" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{analytics?.homework.totalAssigned}</div>
+                  <div className="text-2xl font-bold">
+                    {analytics?.homework.totalAssigned}
+                  </div>
                   <div className="flex items-center text-xs text-muted-foreground mt-1">
                     <span>
-                      {analytics?.homework.completionRate.toFixed(1)}% completion rate
+                      {analytics?.homework.completionRate.toFixed(1)}%
+                      completion rate
                     </span>
                   </div>
                 </CardContent>
@@ -195,7 +212,9 @@ export default function AdminAnalyticsPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{analytics?.exams.totalConducted}</div>
+                  <div className="text-2xl font-bold">
+                    {analytics?.exams.totalConducted}
+                  </div>
                   <div className="flex items-center text-xs text-muted-foreground mt-1">
                     <span>{analytics?.exams.finalized} finalized</span>
                   </div>
@@ -218,14 +237,18 @@ export default function AdminAnalyticsPage() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Attendance by Grade</CardTitle>
-                      <CardDescription>Average attendance rates per grade level</CardDescription>
+                      <CardDescription>
+                        Average attendance rates per grade level
+                      </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       {analytics?.attendance.byGrade.map((item) => (
                         <div key={item.grade} className="space-y-2">
                           <div className="flex items-center justify-between text-sm">
                             <span className="font-medium">{item.grade}</span>
-                            <span className="text-muted-foreground">{item.rate.toFixed(1)}%</span>
+                            <span className="text-muted-foreground">
+                              {item.rate.toFixed(1)}%
+                            </span>
                           </div>
                           <div className="h-2 bg-secondary rounded-full overflow-hidden">
                             <div
@@ -241,23 +264,34 @@ export default function AdminAnalyticsPage() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Attendance Trend</CardTitle>
-                      <CardDescription>Daily attendance over selected period</CardDescription>
+                      <CardDescription>
+                        Daily attendance over selected period
+                      </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-2">
-                        {analytics?.attendance.trend.slice(-7).map((item, index) => (
-                          <div key={index} className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">{item.date}</span>
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium">{item.rate.toFixed(1)}%</span>
-                              {item.rate >= 90 ? (
-                                <TrendingUp className="h-4 w-4 text-green-600" />
-                              ) : (
-                                <TrendingDown className="h-4 w-4 text-red-600" />
-                              )}
+                        {analytics?.attendance.trend
+                          .slice(-7)
+                          .map((item, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center justify-between text-sm"
+                            >
+                              <span className="text-muted-foreground">
+                                {item.date}
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">
+                                  {item.rate.toFixed(1)}%
+                                </span>
+                                {item.rate >= 90 ? (
+                                  <TrendingUp className="h-4 w-4 text-green-600" />
+                                ) : (
+                                  <TrendingDown className="h-4 w-4 text-red-600" />
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
                       </div>
                     </CardContent>
                   </Card>
@@ -270,7 +304,9 @@ export default function AdminAnalyticsPage() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Performance by Subject</CardTitle>
-                      <CardDescription>Average scores across subjects</CardDescription>
+                      <CardDescription>
+                        Average scores across subjects
+                      </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       {analytics?.grades.bySubject.map((item) => (
@@ -287,8 +323,8 @@ export default function AdminAnalyticsPage() {
                                 item.average >= 80
                                   ? "bg-green-500"
                                   : item.average >= 60
-                                  ? "bg-yellow-500"
-                                  : "bg-red-500"
+                                    ? "bg-yellow-500"
+                                    : "bg-red-500"
                               }`}
                               style={{ width: `${item.average}%` }}
                             />
@@ -301,7 +337,9 @@ export default function AdminAnalyticsPage() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Grade Distribution</CardTitle>
-                      <CardDescription>Student count by grade category</CardDescription>
+                      <CardDescription>
+                        Student count by grade category
+                      </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       {analytics?.grades.distribution.map((item) => (
@@ -318,7 +356,9 @@ export default function AdminAnalyticsPage() {
                           >
                             {item.grade}
                           </Badge>
-                          <span className="font-medium">{item.count} students</span>
+                          <span className="font-medium">
+                            {item.count} students
+                          </span>
                         </div>
                       ))}
                     </CardContent>
@@ -332,19 +372,27 @@ export default function AdminAnalyticsPage() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Homework Statistics</CardTitle>
-                      <CardDescription>Overall homework metrics</CardDescription>
+                      <CardDescription>
+                        Overall homework metrics
+                      </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="flex items-center justify-between p-4 rounded-lg bg-secondary">
                         <div>
-                          <p className="text-sm text-muted-foreground">Total Assigned</p>
-                          <p className="text-2xl font-bold">{analytics?.homework.totalAssigned}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Total Assigned
+                          </p>
+                          <p className="text-2xl font-bold">
+                            {analytics?.homework.totalAssigned}
+                          </p>
                         </div>
                         <BookOpen className="h-8 w-8 text-primary" />
                       </div>
                       <div className="flex items-center justify-between p-4 rounded-lg bg-secondary">
                         <div>
-                          <p className="text-sm text-muted-foreground">Completion Rate</p>
+                          <p className="text-sm text-muted-foreground">
+                            Completion Rate
+                          </p>
                           <p className="text-2xl font-bold">
                             {analytics?.homework.completionRate.toFixed(1)}%
                           </p>
@@ -353,7 +401,9 @@ export default function AdminAnalyticsPage() {
                       </div>
                       <div className="flex items-center justify-between p-4 rounded-lg bg-secondary">
                         <div>
-                          <p className="text-sm text-muted-foreground">On-Time Submission</p>
+                          <p className="text-sm text-muted-foreground">
+                            On-Time Submission
+                          </p>
                           <p className="text-2xl font-bold">
                             {analytics?.homework.onTimeRate.toFixed(1)}%
                           </p>
@@ -366,7 +416,9 @@ export default function AdminAnalyticsPage() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Completion by Subject</CardTitle>
-                      <CardDescription>Homework completion rates per subject</CardDescription>
+                      <CardDescription>
+                        Homework completion rates per subject
+                      </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       {analytics?.homework.bySubject.map((item) => (
@@ -399,22 +451,34 @@ export default function AdminAnalyticsPage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
-                        <p className="text-sm text-muted-foreground">Total Students</p>
-                        <p className="text-3xl font-bold">{analytics?.students.total}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Total Students
+                        </p>
+                        <p className="text-3xl font-bold">
+                          {analytics?.students.total}
+                        </p>
                       </div>
                       <div className="space-y-2">
-                        <p className="text-sm text-muted-foreground">Active Students</p>
+                        <p className="text-sm text-muted-foreground">
+                          Active Students
+                        </p>
                         <p className="text-3xl font-bold text-green-600">
                           {analytics?.students.active}
                         </p>
                       </div>
                       <div className="pt-4 border-t">
                         <div className="flex items-center justify-between">
-                          <span className="text-sm text-muted-foreground">Total Teachers</span>
-                          <span className="font-bold">{analytics?.teachers.total}</span>
+                          <span className="text-sm text-muted-foreground">
+                            Total Teachers
+                          </span>
+                          <span className="font-bold">
+                            {analytics?.teachers.total}
+                          </span>
                         </div>
                         <div className="flex items-center justify-between mt-2">
-                          <span className="text-sm text-muted-foreground">Assignment Rate</span>
+                          <span className="text-sm text-muted-foreground">
+                            Assignment Rate
+                          </span>
                           <span className="font-bold">
                             {analytics?.teachers.assignmentRate.toFixed(1)}%
                           </span>
@@ -426,7 +490,9 @@ export default function AdminAnalyticsPage() {
                   <Card className="col-span-2">
                     <CardHeader>
                       <CardTitle>Students by Grade</CardTitle>
-                      <CardDescription>Distribution across grade levels</CardDescription>
+                      <CardDescription>
+                        Distribution across grade levels
+                      </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-2 gap-4">
@@ -436,7 +502,9 @@ export default function AdminAnalyticsPage() {
                             className="flex items-center justify-between p-4 rounded-lg bg-secondary"
                           >
                             <div>
-                              <p className="text-sm text-muted-foreground">Grade {item.grade}</p>
+                              <p className="text-sm text-muted-foreground">
+                                Grade {item.grade}
+                              </p>
                               <p className="text-2xl font-bold">{item.count}</p>
                             </div>
                             <Users className="h-8 w-8 text-primary" />

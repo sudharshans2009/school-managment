@@ -8,18 +8,23 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  Bell, 
-  Plus, 
-  Edit2, 
-  Trash2, 
-  Loader2,
-  AlertCircle
-} from "lucide-react";
+import { Bell, Plus, Edit2, Trash2, Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
@@ -44,7 +49,8 @@ interface Announcement {
 export default function AdminAnnouncementsPage() {
   const { data: session } = useSession();
   const [openCreate, setOpenCreate] = useState(false);
-  const [editingAnnouncement, setEditingAnnouncement] = useState<Announcement | null>(null);
+  const [editingAnnouncement, setEditingAnnouncement] =
+    useState<Announcement | null>(null);
   const [error, setError] = useState("");
   const [filterClassroom, setFilterClassroom] = useState<string>("");
   const queryClient = useQueryClient();
@@ -72,7 +78,12 @@ export default function AdminAnnouncementsPage() {
 
   // Create mutation
   const createMutation = useMutation({
-    mutationFn: async (data: { title: string; content: string; priority: string; classroomId: string | null }) => {
+    mutationFn: async (data: {
+      title: string;
+      content: string;
+      priority: string;
+      classroomId: string | null;
+    }) => {
       const response = await fetch("/api/announcements", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -99,7 +110,13 @@ export default function AdminAnnouncementsPage() {
 
   // Update mutation
   const updateMutation = useMutation({
-    mutationFn: async (data: { id: string; title: string; content: string; priority: string; classroomId: string | null }) => {
+    mutationFn: async (data: {
+      id: string;
+      title: string;
+      content: string;
+      priority: string;
+      classroomId: string | null;
+    }) => {
       const { id, ...body } = data;
       const response = await fetch(`/api/announcements/${id}`, {
         method: "PUT",
@@ -156,7 +173,10 @@ export default function AdminAnnouncementsPage() {
   };
 
   const getPriorityBadge = (priority: string) => {
-    const variants: Record<string, "default" | "destructive" | "secondary" | "outline"> = {
+    const variants: Record<
+      string,
+      "default" | "destructive" | "secondary" | "outline"
+    > = {
       low: "outline",
       normal: "secondary",
       high: "default",
@@ -171,7 +191,10 @@ export default function AdminAnnouncementsPage() {
     };
 
     return (
-      <Badge variant={variants[priority] || "secondary"} className={colors[priority]}>
+      <Badge
+        variant={variants[priority] || "secondary"}
+        className={colors[priority]}
+      >
         {priority.charAt(0).toUpperCase() + priority.slice(1)}
       </Badge>
     );
@@ -188,9 +211,7 @@ export default function AdminAnnouncementsPage() {
               </Button>
             </Link>
             <Bell className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">
-              Announcements
-            </h1>
+            <h1 className="text-2xl font-bold">Announcements</h1>
           </div>
           <Dialog
             open={openCreate || !!editingAnnouncement}
@@ -206,106 +227,116 @@ export default function AdminAnnouncementsPage() {
                 New Announcement
               </Button>
             </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>
-                    {editingAnnouncement ? "Edit Announcement" : "Create New Announcement"}
-                  </DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4">
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingAnnouncement
+                    ? "Edit Announcement"
+                    : "Create New Announcement"}
+                </DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Label htmlFor="title">Title *</Label>
+                  <Input
+                    id="title"
+                    name="title"
+                    className="rounded-xl"
+                    placeholder="e.g., Mid-term Examination Schedule"
+                    required
+                    defaultValue={editingAnnouncement?.title}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="content">Content *</Label>
+                  <Textarea
+                    id="content"
+                    name="content"
+                    className="rounded-xl"
+                    placeholder="Enter announcement details..."
+                    rows={6}
+                    required
+                    defaultValue={editingAnnouncement?.content}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="title">Title *</Label>
-                    <Input
-                      id="title"
-                      name="title"
-                      className="rounded-xl"
-                      placeholder="e.g., Mid-term Examination Schedule"
-                      required
-                      defaultValue={editingAnnouncement?.title}
-                    />
+                    <Label htmlFor="priority">Priority *</Label>
+                    <Select
+                      name="priority"
+                      defaultValue={editingAnnouncement?.priority || "normal"}
+                    >
+                      <SelectTrigger id="priority" className="rounded-xl">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="normal">Normal</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                        <SelectItem value="urgent">Urgent</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div>
-                    <Label htmlFor="content">Content *</Label>
-                    <Textarea
-                      id="content"
-                      name="content"
-                      className="rounded-xl"
-                      placeholder="Enter announcement details..."
-                      rows={6}
-                      required
-                      defaultValue={editingAnnouncement?.content}
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="priority">Priority *</Label>
-                      <Select name="priority" defaultValue={editingAnnouncement?.priority || "normal"}>
-                        <SelectTrigger id="priority" className="rounded-xl">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="normal">Normal</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                          <SelectItem value="urgent">Urgent</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label htmlFor="classroomId">Target Classroom</Label>
-                      <Select name="classroomId" defaultValue={editingAnnouncement?.classroomId || "all"}>
-                        <SelectTrigger id="classroomId" className="rounded-xl">
-                          <SelectValue placeholder="All Classrooms" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Classrooms</SelectItem>
-                          {classrooms?.map((classroom) => (
-                            <SelectItem key={classroom.id} value={classroom.id}>
-                              {classroom.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  {error && (
-                    <Alert variant="destructive" className="rounded-xl">
-                      <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                  )}
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="rounded-xl"
-                      onClick={() => {
-                        setOpenCreate(false);
-                        setEditingAnnouncement(null);
-                        setError("");
-                      }}
+                    <Label htmlFor="classroomId">Target Classroom</Label>
+                    <Select
+                      name="classroomId"
+                      defaultValue={editingAnnouncement?.classroomId || "all"}
                     >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      className="rounded-xl"
-                      disabled={createMutation.isPending || updateMutation.isPending}
-                    >
-                      {createMutation.isPending || updateMutation.isPending ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Saving...
-                        </>
-                      ) : editingAnnouncement ? (
-                        "Update"
-                      ) : (
-                        "Create"
-                      )}
-                    </Button>
+                      <SelectTrigger id="classroomId" className="rounded-xl">
+                        <SelectValue placeholder="All Classrooms" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Classrooms</SelectItem>
+                        {classrooms?.map((classroom) => (
+                          <SelectItem key={classroom.id} value={classroom.id}>
+                            {classroom.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                </form>
-              </DialogContent>
-            </Dialog>
+                </div>
+                {error && (
+                  <Alert variant="destructive" className="rounded-xl">
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-xl"
+                    onClick={() => {
+                      setOpenCreate(false);
+                      setEditingAnnouncement(null);
+                      setError("");
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="rounded-xl"
+                    disabled={
+                      createMutation.isPending || updateMutation.isPending
+                    }
+                  >
+                    {createMutation.isPending || updateMutation.isPending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : editingAnnouncement ? (
+                      "Update"
+                    ) : (
+                      "Create"
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Filter */}
@@ -313,7 +344,12 @@ export default function AdminAnnouncementsPage() {
           <CardContent className="p-4">
             <div className="flex items-center gap-4">
               <Label>Filter by Classroom:</Label>
-              <Select value={filterClassroom || "all"} onValueChange={(val) => setFilterClassroom(val === "all" ? "" : val)}>
+              <Select
+                value={filterClassroom || "all"}
+                onValueChange={(val) =>
+                  setFilterClassroom(val === "all" ? "" : val)
+                }
+              >
                 <SelectTrigger className="w-64 rounded-xl">
                   <SelectValue placeholder="All Classrooms" />
                 </SelectTrigger>
@@ -327,7 +363,12 @@ export default function AdminAnnouncementsPage() {
                 </SelectContent>
               </Select>
               {filterClassroom && (
-                <Button variant="outline" size="sm" className="rounded-xl" onClick={() => setFilterClassroom("")}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-xl"
+                  onClick={() => setFilterClassroom("")}
+                >
                   Clear Filter
                 </Button>
               )}
@@ -343,12 +384,17 @@ export default function AdminAnnouncementsPage() {
         ) : announcements && announcements.length > 0 ? (
           <div className="space-y-4">
             {announcements.map((announcement) => (
-              <Card key={announcement.id} className="rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <Card
+                key={announcement.id}
+                className="rounded-2xl shadow-sm hover:shadow-md transition-shadow"
+              >
                 <CardHeader>
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <CardTitle className="text-xl">{announcement.title}</CardTitle>
+                        <CardTitle className="text-xl">
+                          {announcement.title}
+                        </CardTitle>
                         {getPriorityBadge(announcement.priority)}
                         {announcement.priority === "urgent" && (
                           <AlertCircle className="h-5 w-5 text-red-500 animate-pulse" />
@@ -361,7 +407,8 @@ export default function AdminAnnouncementsPage() {
                         </span>
                         <span>•</span>
                         <span>
-                          <strong>Posted by:</strong> {announcement.createdByName}
+                          <strong>Posted by:</strong>{" "}
+                          {announcement.createdByName}
                         </span>
                         <span>•</span>
                         <span>
@@ -383,7 +430,11 @@ export default function AdminAnnouncementsPage() {
                         size="icon"
                         className="rounded-xl"
                         onClick={() => {
-                          if (confirm("Are you sure you want to delete this announcement?")) {
+                          if (
+                            confirm(
+                              "Are you sure you want to delete this announcement?",
+                            )
+                          ) {
                             deleteMutation.mutate(announcement.id);
                           }
                         }}
@@ -405,7 +456,8 @@ export default function AdminAnnouncementsPage() {
         ) : (
           <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-8 text-center text-muted-foreground">
-              No announcements found. Click &quot;New Announcement&quot; to create one.
+              No announcements found. Click &quot;New Announcement&quot; to
+              create one.
             </CardContent>
           </Card>
         )}

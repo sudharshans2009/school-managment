@@ -7,7 +7,7 @@ import { auth } from "@/lib/auth";
 // GET single event
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -34,7 +34,7 @@ export async function GET(
     console.error("Error fetching event:", error);
     return NextResponse.json(
       { error: "Failed to fetch event" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -42,7 +42,7 @@ export async function GET(
 // PUT update event (admin/teacher only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -90,11 +90,17 @@ export async function PUT(
     if (location !== undefined) updateData.location = location;
     if (organizer !== undefined) updateData.organizer = organizer;
     if (targetAudience !== undefined)
-      updateData.targetAudience = targetAudience ? JSON.stringify(targetAudience) : null;
-    if (maxParticipants !== undefined) updateData.maxParticipants = maxParticipants;
+      updateData.targetAudience = targetAudience
+        ? JSON.stringify(targetAudience)
+        : null;
+    if (maxParticipants !== undefined)
+      updateData.maxParticipants = maxParticipants;
     if (registrationDeadline !== undefined)
-      updateData.registrationDeadline = registrationDeadline ? new Date(registrationDeadline) : null;
-    if (allowRegistration !== undefined) updateData.allowRegistration = allowRegistration;
+      updateData.registrationDeadline = registrationDeadline
+        ? new Date(registrationDeadline)
+        : null;
+    if (allowRegistration !== undefined)
+      updateData.allowRegistration = allowRegistration;
     if (attachments !== undefined)
       updateData.attachments = attachments ? JSON.stringify(attachments) : null;
 
@@ -109,7 +115,7 @@ export async function PUT(
     console.error("Error updating event:", error);
     return NextResponse.json(
       { error: "Failed to update event" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -117,7 +123,7 @@ export async function PUT(
 // DELETE event (admin only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -143,7 +149,7 @@ export async function DELETE(
     console.error("Error deleting event:", error);
     return NextResponse.json(
       { error: "Failed to delete event" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

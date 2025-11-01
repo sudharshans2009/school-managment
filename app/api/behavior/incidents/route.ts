@@ -54,7 +54,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(incidents);
   } catch (error) {
     console.error("Error fetching behavior incidents:", error);
-    return NextResponse.json({ error: "Failed to fetch behavior incidents" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch behavior incidents" },
+      { status: 500 },
+    );
   }
 }
 
@@ -82,10 +85,19 @@ export async function POST(request: NextRequest) {
       followUpNotes,
     } = body;
 
-    if (!studentId || !incidentDate || !incidentType || !severity || !description) {
+    if (
+      !studentId ||
+      !incidentDate ||
+      !incidentType ||
+      !severity ||
+      !description
+    ) {
       return NextResponse.json(
-        { error: "Student ID, incident date, type, severity, and description are required" },
-        { status: 400 }
+        {
+          error:
+            "Student ID, incident date, type, severity, and description are required",
+        },
+        { status: 400 },
       );
     }
 
@@ -111,6 +123,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(incident, { status: 201 });
   } catch (error) {
     console.error("Error creating behavior incident:", error);
-    return NextResponse.json({ error: "Failed to create behavior incident" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create behavior incident" },
+      { status: 500 },
+    );
   }
 }

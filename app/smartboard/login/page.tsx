@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,7 +60,9 @@ export default function SmartboardLoginPage() {
           <div className="mx-auto bg-linear-to-br from-blue-500 to-purple-600 p-4 rounded-2xl w-fit">
             <Monitor className="h-12 w-12 text-white" />
           </div>
-          <CardTitle className="text-3xl font-bold">Smartboard Access</CardTitle>
+          <CardTitle className="text-3xl font-bold">
+            Smartboard Access
+          </CardTitle>
           <CardDescription className="text-base">
             Enter your classroom credentials to access the smartboard display
           </CardDescription>
@@ -62,7 +70,10 @@ export default function SmartboardLoginPage() {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="classroomId" className="flex items-center text-sm font-medium">
+              <Label
+                htmlFor="classroomId"
+                className="flex items-center text-sm font-medium"
+              >
                 <Hash className="h-4 w-4 mr-2" />
                 Classroom ID
               </Label>
@@ -81,7 +92,10 @@ export default function SmartboardLoginPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="classroomKey" className="flex items-center text-sm font-medium">
+              <Label
+                htmlFor="classroomKey"
+                className="flex items-center text-sm font-medium"
+              >
                 <Key className="h-4 w-4 mr-2" />
                 Classroom Key
               </Label>
@@ -104,8 +118,8 @@ export default function SmartboardLoginPage() {
               </Alert>
             )}
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               disabled={loading}
             >
@@ -118,8 +132,9 @@ export default function SmartboardLoginPage() {
               📋 Need your credentials?
             </p>
             <p className="text-xs text-blue-700">
-              Contact your school administrator to get your Classroom ID and Key. 
-              These credentials are displayed in the Classroom Management section.
+              Contact your school administrator to get your Classroom ID and
+              Key. These credentials are displayed in the Classroom Management
+              section.
             </p>
           </div>
         </CardContent>

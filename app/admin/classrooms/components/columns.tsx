@@ -45,7 +45,9 @@ export const createClassroomColumns = ({
       return (
         <div className="flex flex-col">
           <span className="font-medium">{classroom.name}</span>
-          <span className="text-xs text-muted-foreground">Code: {classroom.code}</span>
+          <span className="text-xs text-muted-foreground">
+            Code: {classroom.code}
+          </span>
         </div>
       );
     },
@@ -57,7 +59,8 @@ export const createClassroomColumns = ({
       const classroom = row.original;
       return (
         <Badge variant="secondary">
-          {classroom.grade}{classroom.section}
+          {classroom.grade}
+          {classroom.section}
         </Badge>
       );
     },
@@ -108,11 +111,7 @@ export const createClassroomColumns = ({
       return (
         <div className="flex gap-2">
           <Link href={`/admin/classrooms/${classroom.id}/edit`}>
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-xl"
-            >
+            <Button variant="outline" size="sm" className="rounded-xl">
               <Edit className="h-4 w-4 mr-1" />
               Manage
             </Button>

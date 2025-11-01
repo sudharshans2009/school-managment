@@ -4,7 +4,13 @@ import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,7 +42,13 @@ interface StudentAnalytics {
     passed: number;
     failed: number;
     bySubject: { subject: string; average: number; grade: string }[];
-    recentGrades: { exam: string; marks: number; total: number; grade: string; date: string }[];
+    recentGrades: {
+      exam: string;
+      marks: number;
+      total: number;
+      grade: string;
+      date: string;
+    }[];
   };
   homework: {
     totalAssigned: number;
@@ -125,15 +137,20 @@ export default function StudentAnalyticsPage() {
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm font-medium">Attendance</CardTitle>
+                    <CardTitle className="text-sm font-medium">
+                      Attendance
+                    </CardTitle>
                     <UserCheck className="h-4 w-4 text-muted-foreground" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{analytics?.attendance.rate.toFixed(1)}%</div>
+                  <div className="text-2xl font-bold">
+                    {analytics?.attendance.rate.toFixed(1)}%
+                  </div>
                   <div className="flex items-center text-xs text-muted-foreground mt-1">
                     <span>
-                      {analytics?.attendance.present}/{analytics?.attendance.totalDays} days
+                      {analytics?.attendance.present}/
+                      {analytics?.attendance.totalDays} days
                     </span>
                   </div>
                 </CardContent>
@@ -142,14 +159,20 @@ export default function StudentAnalyticsPage() {
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm font-medium">Average Grade</CardTitle>
+                    <CardTitle className="text-sm font-medium">
+                      Average Grade
+                    </CardTitle>
                     <Award className="h-4 w-4 text-muted-foreground" />
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{analytics?.grades.averageGrade}</div>
+                  <div className="text-2xl font-bold">
+                    {analytics?.grades.averageGrade}
+                  </div>
                   <div className="flex items-center text-xs text-muted-foreground mt-1">
-                    <span>{analytics?.grades.averagePercentage.toFixed(1)}% overall</span>
+                    <span>
+                      {analytics?.grades.averagePercentage.toFixed(1)}% overall
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -157,16 +180,21 @@ export default function StudentAnalyticsPage() {
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm font-medium">Homework</CardTitle>
+                    <CardTitle className="text-sm font-medium">
+                      Homework
+                    </CardTitle>
                     <BookOpen className="h-4 w-4 text-muted-foreground" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {analytics?.homework.submitted}/{analytics?.homework.totalAssigned}
+                    {analytics?.homework.submitted}/
+                    {analytics?.homework.totalAssigned}
                   </div>
                   <div className="flex items-center text-xs text-muted-foreground mt-1">
-                    <span>{analytics?.homework.onTimeRate.toFixed(1)}% on time</span>
+                    <span>
+                      {analytics?.homework.onTimeRate.toFixed(1)}% on time
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -174,7 +202,9 @@ export default function StudentAnalyticsPage() {
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm font-medium">Class Rank</CardTitle>
+                    <CardTitle className="text-sm font-medium">
+                      Class Rank
+                    </CardTitle>
                     <TrendingUp className="h-4 w-4 text-muted-foreground" />
                   </div>
                 </CardHeader>
@@ -194,10 +224,12 @@ export default function StudentAnalyticsPage() {
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-muted-foreground">Overall Performance</p>
+                    <p className="text-sm text-muted-foreground">
+                      Overall Performance
+                    </p>
                     <p
                       className={`text-3xl font-bold mt-1 ${getPerformanceColor(
-                        analytics?.overall.performanceLevel || ""
+                        analytics?.overall.performanceLevel || "",
                       )}`}
                     >
                       {analytics?.overall.performanceLevel}
@@ -224,7 +256,9 @@ export default function StudentAnalyticsPage() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Performance by Subject</CardTitle>
-                      <CardDescription>Your scores across all subjects</CardDescription>
+                      <CardDescription>
+                        Your scores across all subjects
+                      </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       {analytics?.grades.bySubject.map((item) => (
@@ -244,8 +278,8 @@ export default function StudentAnalyticsPage() {
                                 item.average >= 80
                                   ? "bg-green-500"
                                   : item.average >= 60
-                                  ? "bg-yellow-500"
-                                  : "bg-red-500"
+                                    ? "bg-yellow-500"
+                                    : "bg-red-500"
                               }`}
                               style={{ width: `${item.average}%` }}
                             />
@@ -261,23 +295,27 @@ export default function StudentAnalyticsPage() {
                       <CardDescription>Your latest test scores</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      {analytics?.grades.recentGrades.slice(0, 5).map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between p-3 rounded-lg bg-secondary"
-                        >
-                          <div className="flex-1">
-                            <p className="font-medium text-sm">{item.exam}</p>
-                            <p className="text-xs text-muted-foreground">{item.date}</p>
+                      {analytics?.grades.recentGrades
+                        .slice(0, 5)
+                        .map((item, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between p-3 rounded-lg bg-secondary"
+                          >
+                            <div className="flex-1">
+                              <p className="font-medium text-sm">{item.exam}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {item.date}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium">
+                                {item.marks}/{item.total}
+                              </span>
+                              <Badge>{item.grade}</Badge>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium">
-                              {item.marks}/{item.total}
-                            </span>
-                            <Badge>{item.grade}</Badge>
-                          </div>
-                        </div>
-                      ))}
+                        ))}
                     </CardContent>
                   </Card>
 
@@ -288,17 +326,25 @@ export default function StudentAnalyticsPage() {
                     <CardContent>
                       <div className="grid grid-cols-3 gap-4">
                         <div className="text-center p-4 rounded-lg bg-secondary">
-                          <p className="text-sm text-muted-foreground">Total Exams</p>
-                          <p className="text-2xl font-bold mt-1">{analytics?.grades.totalExams}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Total Exams
+                          </p>
+                          <p className="text-2xl font-bold mt-1">
+                            {analytics?.grades.totalExams}
+                          </p>
                         </div>
                         <div className="text-center p-4 rounded-lg bg-green-50">
-                          <p className="text-sm text-muted-foreground">Passed</p>
+                          <p className="text-sm text-muted-foreground">
+                            Passed
+                          </p>
                           <p className="text-2xl font-bold text-green-600 mt-1">
                             {analytics?.grades.passed}
                           </p>
                         </div>
                         <div className="text-center p-4 rounded-lg bg-red-50">
-                          <p className="text-sm text-muted-foreground">Failed</p>
+                          <p className="text-sm text-muted-foreground">
+                            Failed
+                          </p>
                           <p className="text-2xl font-bold text-red-600 mt-1">
                             {analytics?.grades.failed}
                           </p>
@@ -315,15 +361,21 @@ export default function StudentAnalyticsPage() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Attendance Summary</CardTitle>
-                      <CardDescription>Your attendance breakdown</CardDescription>
+                      <CardDescription>
+                        Your attendance breakdown
+                      </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="flex items-center justify-between p-4 rounded-lg bg-green-50">
                         <div className="flex items-center gap-3">
                           <CheckCircle className="h-8 w-8 text-green-600" />
                           <div>
-                            <p className="text-sm text-muted-foreground">Present</p>
-                            <p className="text-2xl font-bold">{analytics?.attendance.present}</p>
+                            <p className="text-sm text-muted-foreground">
+                              Present
+                            </p>
+                            <p className="text-2xl font-bold">
+                              {analytics?.attendance.present}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -332,8 +384,12 @@ export default function StudentAnalyticsPage() {
                         <div className="flex items-center gap-3">
                           <XCircle className="h-8 w-8 text-red-600" />
                           <div>
-                            <p className="text-sm text-muted-foreground">Absent</p>
-                            <p className="text-2xl font-bold">{analytics?.attendance.absent}</p>
+                            <p className="text-sm text-muted-foreground">
+                              Absent
+                            </p>
+                            <p className="text-2xl font-bold">
+                              {analytics?.attendance.absent}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -342,8 +398,12 @@ export default function StudentAnalyticsPage() {
                         <div className="flex items-center gap-3">
                           <Clock className="h-8 w-8 text-yellow-600" />
                           <div>
-                            <p className="text-sm text-muted-foreground">Late</p>
-                            <p className="text-2xl font-bold">{analytics?.attendance.late}</p>
+                            <p className="text-sm text-muted-foreground">
+                              Late
+                            </p>
+                            <p className="text-2xl font-bold">
+                              {analytics?.attendance.late}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -353,28 +413,32 @@ export default function StudentAnalyticsPage() {
                   <Card>
                     <CardHeader>
                       <CardTitle>Recent Attendance</CardTitle>
-                      <CardDescription>Last 7 days attendance record</CardDescription>
+                      <CardDescription>
+                        Last 7 days attendance record
+                      </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-2">
-                      {analytics?.attendance.recentTrend.slice(-7).map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between p-3 rounded-lg bg-secondary"
-                        >
-                          <span className="text-sm">{item.date}</span>
-                          <Badge
-                            variant={
-                              item.status === "present"
-                                ? "default"
-                                : item.status === "absent"
-                                ? "destructive"
-                                : "secondary"
-                            }
+                      {analytics?.attendance.recentTrend
+                        .slice(-7)
+                        .map((item, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between p-3 rounded-lg bg-secondary"
                           >
-                            {item.status}
-                          </Badge>
-                        </div>
-                      ))}
+                            <span className="text-sm">{item.date}</span>
+                            <Badge
+                              variant={
+                                item.status === "present"
+                                  ? "default"
+                                  : item.status === "absent"
+                                    ? "destructive"
+                                    : "secondary"
+                              }
+                            >
+                              {item.status}
+                            </Badge>
+                          </div>
+                        ))}
                     </CardContent>
                   </Card>
                 </div>
@@ -388,7 +452,9 @@ export default function StudentAnalyticsPage() {
                       <CardTitle>Submitted</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-4xl font-bold">{analytics?.homework.submitted}</div>
+                      <div className="text-4xl font-bold">
+                        {analytics?.homework.submitted}
+                      </div>
                       <p className="text-sm text-muted-foreground mt-2">
                         Out of {analytics?.homework.totalAssigned} assigned
                       </p>
@@ -414,7 +480,9 @@ export default function StudentAnalyticsPage() {
                       <CardTitle>Pending</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-4xl font-bold">{analytics?.homework.pending}</div>
+                      <div className="text-4xl font-bold">
+                        {analytics?.homework.pending}
+                      </div>
                       <p className="text-sm text-muted-foreground mt-2">
                         Assignments to complete
                       </p>
@@ -430,10 +498,13 @@ export default function StudentAnalyticsPage() {
                     <div className="space-y-4">
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm text-muted-foreground">Submission Rate</span>
+                          <span className="text-sm text-muted-foreground">
+                            Submission Rate
+                          </span>
                           <span className="font-medium">
                             {(
-                              ((analytics?.homework.submitted || 0) / (analytics?.homework.totalAssigned || 1)) *
+                              ((analytics?.homework.submitted || 0) /
+                                (analytics?.homework.totalAssigned || 1)) *
                               100
                             ).toFixed(1)}
                             %
@@ -444,7 +515,8 @@ export default function StudentAnalyticsPage() {
                             className="h-full bg-primary transition-all"
                             style={{
                               width: `${
-                                ((analytics?.homework.submitted || 0) / (analytics?.homework.totalAssigned || 1)) *
+                                ((analytics?.homework.submitted || 0) /
+                                  (analytics?.homework.totalAssigned || 1)) *
                                 100
                               }%`,
                             }}
@@ -454,7 +526,9 @@ export default function StudentAnalyticsPage() {
 
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm text-muted-foreground">On-Time Rate</span>
+                          <span className="text-sm text-muted-foreground">
+                            On-Time Rate
+                          </span>
                           <span className="font-medium">
                             {analytics?.homework.onTimeRate.toFixed(1)}%
                           </span>
@@ -462,7 +536,9 @@ export default function StudentAnalyticsPage() {
                         <div className="h-2 bg-secondary rounded-full overflow-hidden">
                           <div
                             className="h-full bg-green-500 transition-all"
-                            style={{ width: `${analytics?.homework.onTimeRate}%` }}
+                            style={{
+                              width: `${analytics?.homework.onTimeRate}%`,
+                            }}
                           />
                         </div>
                       </div>

@@ -56,7 +56,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(actions);
   } catch (error) {
     console.error("Error fetching disciplinary actions:", error);
-    return NextResponse.json({ error: "Failed to fetch disciplinary actions" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch disciplinary actions" },
+      { status: 500 },
+    );
   }
 }
 
@@ -82,8 +85,11 @@ export async function POST(request: NextRequest) {
 
     if (!studentId || !actionType || !description || !startDate) {
       return NextResponse.json(
-        { error: "Student ID, action type, description, and start date are required" },
-        { status: 400 }
+        {
+          error:
+            "Student ID, action type, description, and start date are required",
+        },
+        { status: 400 },
       );
     }
 
@@ -105,6 +111,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(action, { status: 201 });
   } catch (error) {
     console.error("Error creating disciplinary action:", error);
-    return NextResponse.json({ error: "Failed to create disciplinary action" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create disciplinary action" },
+      { status: 500 },
+    );
   }
 }

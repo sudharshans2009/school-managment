@@ -3,7 +3,13 @@
 import { useSession } from "@/lib/auth-client";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,7 +33,11 @@ export default function SettingsPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const updateSettingsMutation = useMutation({
-    mutationFn: async (data: { email?: string; currentPassword?: string; newPassword?: string }) => {
+    mutationFn: async (data: {
+      email?: string;
+      currentPassword?: string;
+      newPassword?: string;
+    }) => {
       const response = await fetch("/api/user/settings", {
         method: "PATCH",
         headers: {
@@ -45,15 +55,15 @@ export default function SettingsPage() {
     },
     onSuccess: (data) => {
       toast.success(data.message);
-      
+
       // Clear password fields
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-      
+
       // Invalidate profile query to refetch
       queryClient.invalidateQueries({ queryKey: ["profile"] });
-      
+
       // If email changed, show verification message
       if (data.emailChanged) {
         toast.info("Please check your new email for a verification link.");
@@ -165,7 +175,8 @@ export default function SettingsPage() {
             Password
           </CardTitle>
           <CardDescription>
-            Change your password. Make sure it&apos;s at least 8 characters long.
+            Change your password. Make sure it&apos;s at least 8 characters
+            long.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -250,11 +261,13 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {newPassword && confirmPassword && newPassword !== confirmPassword && (
-            <Alert variant="destructive">
-              <AlertDescription>Passwords do not match</AlertDescription>
-            </Alert>
-          )}
+          {newPassword &&
+            confirmPassword &&
+            newPassword !== confirmPassword && (
+              <Alert variant="destructive">
+                <AlertDescription>Passwords do not match</AlertDescription>
+              </Alert>
+            )}
 
           <Button
             onClick={handleUpdatePassword}
@@ -276,7 +289,8 @@ export default function SettingsPage() {
 
       <Alert>
         <AlertDescription>
-          <strong>Note:</strong> If you change your email, you will need to verify it before you can log in again.
+          <strong>Note:</strong> If you change your email, you will need to
+          verify it before you can log in again.
         </AlertDescription>
       </Alert>
     </div>

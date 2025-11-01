@@ -6,12 +6,44 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { UserPlus, Mail, Phone, Calendar, Search, Edit2, Trash2, Upload, LayoutGrid, Table as TableIcon } from "lucide-react";
+import {
+  UserPlus,
+  Mail,
+  Phone,
+  Calendar,
+  Search,
+  Edit2,
+  Trash2,
+  Upload,
+  LayoutGrid,
+  Table as TableIcon,
+} from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { DataTable } from "@/components/ui/data-table";
 import { createStudentColumns, Student } from "./components/columns";
@@ -31,7 +63,11 @@ export default function StudentsPage() {
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [deletingStudent, setDeletingStudent] = useState<Student | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [uploadResult, setUploadResult] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
+  const [uploadResult, setUploadResult] = useState<{
+    success: number;
+    failed: number;
+    errors: string[];
+  } | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const queryClient = useQueryClient();
 
@@ -149,7 +185,11 @@ export default function StudentsPage() {
       queryClient.invalidateQueries({ queryKey: ["students"] });
       setCsvDialogOpen(false);
       setCsvFile(null);
-      setUploadResult({ success: data.success, failed: data.failed, errors: data.errors || [] });
+      setUploadResult({
+        success: data.success,
+        failed: data.failed,
+        errors: data.errors || [],
+      });
     },
     onError: (error: Error) => {
       setUploadResult({ success: 0, failed: 0, errors: [error.message] });
@@ -160,11 +200,11 @@ export default function StudentsPage() {
     if (!csvFile) return;
 
     const text = await csvFile.text();
-    const lines = text.split("\n").filter(line => line.trim());
-    const headers = lines[0].split(",").map(h => h.trim().toLowerCase());
-    
-    const students = lines.slice(1).map(line => {
-      const values = line.split(",").map(v => v.trim());
+    const lines = text.split("\n").filter((line) => line.trim());
+    const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
+
+    const students = lines.slice(1).map((line) => {
+      const values = line.split(",").map((v) => v.trim());
       const student: Record<string, string> = {};
       headers.forEach((header, index) => {
         student[header] = values[index] || "";
@@ -178,7 +218,7 @@ export default function StudentsPage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    
+
     const data = {
       name: formData.get("name") as string,
       email: formData.get("email") as string,
@@ -202,10 +242,11 @@ export default function StudentsPage() {
     }
   };
 
-  const filteredStudents = students?.filter((student) =>
-    student.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    student.rollNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    student.admissionNumber.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredStudents = students?.filter(
+    (student) =>
+      student.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.rollNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      student.admissionNumber.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const columns = createStudentColumns({
@@ -238,14 +279,18 @@ export default function StudentsPage() {
             </Link>
             <div>
               <h1 className="text-3xl font-bold">Students Management</h1>
-              <p className="text-muted-foreground mt-1">Manage students and their enrollment</p>
+              <p className="text-muted-foreground mt-1">
+                Manage students and their enrollment
+              </p>
             </div>
           </div>
           <div className="flex gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setViewMode(viewMode === "grid" ? "table" : "grid")}
+              onClick={() =>
+                setViewMode(viewMode === "grid" ? "table" : "grid")
+              }
               className="rounded-xl"
             >
               {viewMode === "grid" ? (
@@ -281,7 +326,9 @@ export default function StudentsPage() {
                       className="rounded-xl"
                     />
                     <p className="text-sm text-muted-foreground mt-2">
-                      CSV should have headers: name, email, password, phone, address, rollNumber, admissionNumber, dateOfBirth, bloodGroup, classroomId
+                      CSV should have headers: name, email, password, phone,
+                      address, rollNumber, admissionNumber, dateOfBirth,
+                      bloodGroup, classroomId
                     </p>
                   </div>
                   <Button
@@ -289,15 +336,20 @@ export default function StudentsPage() {
                     disabled={!csvFile || bulkUploadMutation.isPending}
                     className="w-full rounded-xl"
                   >
-                    {bulkUploadMutation.isPending ? "Uploading..." : "Upload Students"}
+                    {bulkUploadMutation.isPending
+                      ? "Uploading..."
+                      : "Upload Students"}
                   </Button>
                 </div>
               </DialogContent>
             </Dialog>
-            <Dialog open={open} onOpenChange={(isOpen) => {
-              setOpen(isOpen);
-              if (!isOpen) setEditingStudent(null);
-            }}>
+            <Dialog
+              open={open}
+              onOpenChange={(isOpen) => {
+                setOpen(isOpen);
+                if (!isOpen) setEditingStudent(null);
+              }}
+            >
               <DialogTrigger asChild>
                 <Button className="rounded-xl">
                   <UserPlus className="h-4 w-4 mr-2" />
@@ -305,261 +357,352 @@ export default function StudentsPage() {
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
-              <DialogHeader>
-                <DialogTitle>{editingStudent ? "Edit Student" : "Add New Student"}</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="name">Full Name *</Label>
-                    <Input id="name" name="name" required defaultValue={editingStudent?.user.name} className="rounded-xl" />
+                <DialogHeader>
+                  <DialogTitle>
+                    {editingStudent ? "Edit Student" : "Add New Student"}
+                  </DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="name">Full Name *</Label>
+                      <Input
+                        id="name"
+                        name="name"
+                        required
+                        defaultValue={editingStudent?.user.name}
+                        className="rounded-xl"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="email">Email *</Label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                        defaultValue={editingStudent?.user.email}
+                        className="rounded-xl"
+                      />
+                    </div>
                   </div>
                   <div>
-                    <Label htmlFor="email">Email *</Label>
-                    <Input id="email" name="email" type="email" required defaultValue={editingStudent?.user.email} className="rounded-xl" />
+                    <Label htmlFor="password">
+                      Password {editingStudent ? "" : "*"}
+                    </Label>
+                    <Input
+                      id="password"
+                      name="password"
+                      type="password"
+                      required={!editingStudent}
+                      minLength={6}
+                      placeholder={
+                        editingStudent
+                          ? "Leave blank to keep current password"
+                          : ""
+                      }
+                      className="rounded-xl"
+                    />
                   </div>
-                </div>
-                <div>
-                  <Label htmlFor="password">Password {editingStudent ? "" : "*"}</Label>
-                <Input id="password" name="password" type="password" required={!editingStudent} minLength={6} placeholder={editingStudent ? "Leave blank to keep current password" : ""} className="rounded-xl" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="rollNumber">Roll Number *</Label>
-                  <Input id="rollNumber" name="rollNumber" required defaultValue={editingStudent?.rollNumber} />
-                </div>
-                <div>
-                  <Label htmlFor="admissionNumber">Admission Number *</Label>
-                  <Input id="admissionNumber" name="admissionNumber" required defaultValue={editingStudent?.admissionNumber} />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="dateOfBirth">Date of Birth *</Label>
-                  <Input id="dateOfBirth" name="dateOfBirth" type="date" required defaultValue={editingStudent?.dateOfBirth ? new Date(editingStudent.dateOfBirth).toISOString().split('T')[0] : ''} />
-                </div>
-                <div>
-                  <Label htmlFor="bloodGroup">Blood Group</Label>
-                  <Select name="bloodGroup" defaultValue={editingStudent?.bloodGroup || undefined}>
-                    <SelectTrigger id="bloodGroup">
-                      <SelectValue placeholder="Select blood group" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="A+">A+</SelectItem>
-                      <SelectItem value="A-">A-</SelectItem>
-                      <SelectItem value="B+">B+</SelectItem>
-                      <SelectItem value="B-">B-</SelectItem>
-                      <SelectItem value="O+">O+</SelectItem>
-                      <SelectItem value="O-">O-</SelectItem>
-                      <SelectItem value="AB+">AB+</SelectItem>
-                      <SelectItem value="AB-">AB-</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="classroomId">Assign to Classroom</Label>
-                <Select name="classroomId">
-                  <SelectTrigger id="classroomId">
-                    <SelectValue placeholder="Select classroom" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {classrooms?.map((classroom) => (
-                      <SelectItem key={classroom.id} value={classroom.id}>
-                        {classroom.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" name="phone" type="tel" defaultValue={editingStudent?.user.phone || ''} />
-                </div>
-                <div>
-                  <Label htmlFor="address">Address</Label>
-                  <Input id="address" name="address" />
-                </div>
-              </div>
-              {(createMutation.error || updateMutation.error) && (
-                <Alert variant="destructive">
-                  <AlertDescription>
-                    {createMutation.error?.message || updateMutation.error?.message}
-                  </AlertDescription>
-                </Alert>
-              )}
-              <div className="flex justify-end gap-2">
-                <Button type="button" variant="outline" className="rounded-xl" onClick={() => {
-                  setOpen(false);
-                  setEditingStudent(null);
-                }}>
-                  Cancel
-                </Button>
-                <Button type="submit" className="rounded-xl" disabled={createMutation.isPending || updateMutation.isPending}>
-                  {editingStudent 
-                    ? (updateMutation.isPending ? "Updating..." : "Update Student")
-                    : (createMutation.isPending ? "Creating..." : "Create Student")
-                  }
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
-      </div>
-    </div>
-
-    {uploadResult && (
-      <Alert variant={uploadResult.failed > 0 ? "destructive" : "default"} className="mb-4">
-        <AlertDescription>
-          <div className="font-semibold mb-2">
-            Bulk Upload Complete: {uploadResult.success} succeeded, {uploadResult.failed} failed
-          </div>
-          {uploadResult.errors.length > 0 && (
-            <ul className="list-disc list-inside text-sm">
-              {uploadResult.errors.map((error, i) => (
-                <li key={i}>{error}</li>
-              ))}
-            </ul>
-          )}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="mt-2"
-            onClick={() => setUploadResult(null)}
-          >
-            Dismiss
-          </Button>
-        </AlertDescription>
-      </Alert>
-    )}
-
-    {viewMode === "table" ? (
-      <DataTable
-        columns={columns}
-        data={filteredStudents || []}
-        searchKey="name"
-        searchPlaceholder="Search students by name, roll number, or admission number..."
-      />
-    ) : (
-      <>
-        <div className="mb-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search students..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 rounded-xl"
-            />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="rollNumber">Roll Number *</Label>
+                      <Input
+                        id="rollNumber"
+                        name="rollNumber"
+                        required
+                        defaultValue={editingStudent?.rollNumber}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="admissionNumber">
+                        Admission Number *
+                      </Label>
+                      <Input
+                        id="admissionNumber"
+                        name="admissionNumber"
+                        required
+                        defaultValue={editingStudent?.admissionNumber}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                      <Input
+                        id="dateOfBirth"
+                        name="dateOfBirth"
+                        type="date"
+                        required
+                        defaultValue={
+                          editingStudent?.dateOfBirth
+                            ? new Date(editingStudent.dateOfBirth)
+                                .toISOString()
+                                .split("T")[0]
+                            : ""
+                        }
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="bloodGroup">Blood Group</Label>
+                      <Select
+                        name="bloodGroup"
+                        defaultValue={editingStudent?.bloodGroup || undefined}
+                      >
+                        <SelectTrigger id="bloodGroup">
+                          <SelectValue placeholder="Select blood group" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="A+">A+</SelectItem>
+                          <SelectItem value="A-">A-</SelectItem>
+                          <SelectItem value="B+">B+</SelectItem>
+                          <SelectItem value="B-">B-</SelectItem>
+                          <SelectItem value="O+">O+</SelectItem>
+                          <SelectItem value="O-">O-</SelectItem>
+                          <SelectItem value="AB+">AB+</SelectItem>
+                          <SelectItem value="AB-">AB-</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="classroomId">Assign to Classroom</Label>
+                    <Select name="classroomId">
+                      <SelectTrigger id="classroomId">
+                        <SelectValue placeholder="Select classroom" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {classrooms?.map((classroom) => (
+                          <SelectItem key={classroom.id} value={classroom.id}>
+                            {classroom.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        defaultValue={editingStudent?.user.phone || ""}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="address">Address</Label>
+                      <Input id="address" name="address" />
+                    </div>
+                  </div>
+                  {(createMutation.error || updateMutation.error) && (
+                    <Alert variant="destructive">
+                      <AlertDescription>
+                        {createMutation.error?.message ||
+                          updateMutation.error?.message}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="rounded-xl"
+                      onClick={() => {
+                        setOpen(false);
+                        setEditingStudent(null);
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      className="rounded-xl"
+                      disabled={
+                        createMutation.isPending || updateMutation.isPending
+                      }
+                    >
+                      {editingStudent
+                        ? updateMutation.isPending
+                          ? "Updating..."
+                          : "Update Student"
+                        : createMutation.isPending
+                          ? "Creating..."
+                          : "Create Student"}
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredStudents?.map((student) => (
-          <Card key={student.id}>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>{student.user.name}</span>
-                {student.classroom && (
-                  <Badge variant="default">{student.classroom.name}</Badge>
-                )}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-center text-gray-600">
-                  <Mail className="h-4 w-4 mr-2" />
-                  {student.user.email}
-                </div>
-                {student.user.phone && (
-                  <div className="flex items-center text-gray-600">
-                    <Phone className="h-4 w-4 mr-2" />
-                    {student.user.phone}
-                  </div>
-                )}
-                <div className="flex items-center text-gray-600">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  DOB: {new Date(student.dateOfBirth).toLocaleDateString()}
-                </div>
-                <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-2">
-                  <div>
-                    <p className="text-xs text-gray-500">Roll Number</p>
-                    <p className="font-semibold">{student.rollNumber}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500">Admission No.</p>
-                    <p className="font-semibold">{student.admissionNumber}</p>
-                  </div>
-                  {student.bloodGroup && (
-                    <div>
-                      <p className="text-xs text-gray-500">Blood Group</p>
-                      <p className="font-semibold">{student.bloodGroup}</p>
-                    </div>
-                  )}
-                </div>
-                <div className="flex gap-2 mt-4">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="flex-1 rounded-xl"
-                    onClick={() => {
-                      setEditingStudent(student);
-                      setOpen(true);
-                    }}
-                  >
-                    <Edit2 className="h-4 w-4 mr-1" />
-                    Edit
-                  </Button>
-                  <Button 
-                    variant="destructive" 
-                    size="sm"
-                    className="rounded-xl"
-                    onClick={() => setDeletingStudent(student)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
+        {uploadResult && (
+          <Alert
+            variant={uploadResult.failed > 0 ? "destructive" : "default"}
+            className="mb-4"
+          >
+            <AlertDescription>
+              <div className="font-semibold mb-2">
+                Bulk Upload Complete: {uploadResult.success} succeeded,{" "}
+                {uploadResult.failed} failed
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              {uploadResult.errors.length > 0 && (
+                <ul className="list-disc list-inside text-sm">
+                  {uploadResult.errors.map((error, i) => (
+                    <li key={i}>{error}</li>
+                  ))}
+                </ul>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mt-2"
+                onClick={() => setUploadResult(null)}
+              >
+                Dismiss
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
 
-      {filteredStudents?.length === 0 && (
-        <Card className="rounded-2xl shadow-sm">
-          <CardContent className="text-center py-8">
-            <p className="text-gray-500">No students found</p>
-          </CardContent>
-        </Card>
-      )}
-      </>
-    )}
+        {viewMode === "table" ? (
+          <DataTable
+            columns={columns}
+            data={filteredStudents || []}
+            searchKey="name"
+            searchPlaceholder="Search students by name, roll number, or admission number..."
+          />
+        ) : (
+          <>
+            <div className="mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search students..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 rounded-xl"
+                />
+              </div>
+            </div>
 
-      <AlertDialog open={!!deletingStudent} onOpenChange={() => setDeletingStudent(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Student</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete {deletingStudent?.user.name}? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (deletingStudent) {
-                  deleteMutation.mutate(deletingStudent.id);
-                  setDeletingStudent(null);
-                }
-              }}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredStudents?.map((student) => (
+                <Card key={student.id}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span>{student.user.name}</span>
+                      {student.classroom && (
+                        <Badge variant="default">
+                          {student.classroom.name}
+                        </Badge>
+                      )}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center text-gray-600">
+                        <Mail className="h-4 w-4 mr-2" />
+                        {student.user.email}
+                      </div>
+                      {student.user.phone && (
+                        <div className="flex items-center text-gray-600">
+                          <Phone className="h-4 w-4 mr-2" />
+                          {student.user.phone}
+                        </div>
+                      )}
+                      <div className="flex items-center text-gray-600">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        DOB:{" "}
+                        {new Date(student.dateOfBirth).toLocaleDateString()}
+                      </div>
+                      <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-2">
+                        <div>
+                          <p className="text-xs text-gray-500">Roll Number</p>
+                          <p className="font-semibold">{student.rollNumber}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500">Admission No.</p>
+                          <p className="font-semibold">
+                            {student.admissionNumber}
+                          </p>
+                        </div>
+                        {student.bloodGroup && (
+                          <div>
+                            <p className="text-xs text-gray-500">Blood Group</p>
+                            <p className="font-semibold">
+                              {student.bloodGroup}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex gap-2 mt-4">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 rounded-xl"
+                          onClick={() => {
+                            setEditingStudent(student);
+                            setOpen(true);
+                          }}
+                        >
+                          <Edit2 className="h-4 w-4 mr-1" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="rounded-xl"
+                          onClick={() => setDeletingStudent(student)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {filteredStudents?.length === 0 && (
+              <Card className="rounded-2xl shadow-sm">
+                <CardContent className="text-center py-8">
+                  <p className="text-gray-500">No students found</p>
+                </CardContent>
+              </Card>
+            )}
+          </>
+        )}
+
+        <AlertDialog
+          open={!!deletingStudent}
+          onOpenChange={() => setDeletingStudent(null)}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Student</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete {deletingStudent?.user.name}?
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  if (deletingStudent) {
+                    deleteMutation.mutate(deletingStudent.id);
+                    setDeletingStudent(null);
+                  }
+                }}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </DashboardLayout>
   );

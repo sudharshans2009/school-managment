@@ -3,30 +3,38 @@
  * Tracks all important actions in the system for security and compliance
  */
 
-import { db } from '@/database';
-import { auditLogs } from '@/database/schema';
+import { db } from "@/database";
+import { auditLogs } from "@/database/schema";
 
-export type AuditAction = 'create' | 'update' | 'delete' | 'view' | 'export' | 'login' | 'logout' | 'access_denied';
+export type AuditAction =
+  | "create"
+  | "update"
+  | "delete"
+  | "view"
+  | "export"
+  | "login"
+  | "logout"
+  | "access_denied";
 
-export type AuditResource = 
-  | 'user'
-  | 'student'
-  | 'teacher'
-  | 'classroom'
-  | 'subject'
-  | 'homework'
-  | 'attendance'
-  | 'fee'
-  | 'announcement'
-  | 'event'
-  | 'meeting'
-  | 'circular'
-  | 'admission'
-  | 'report_card'
-  | 'behavior'
-  | 'backup'
-  | 'system_settings'
-  | 'audit_log';
+export type AuditResource =
+  | "user"
+  | "student"
+  | "teacher"
+  | "classroom"
+  | "subject"
+  | "homework"
+  | "attendance"
+  | "fee"
+  | "announcement"
+  | "event"
+  | "meeting"
+  | "circular"
+  | "admission"
+  | "report_card"
+  | "behavior"
+  | "backup"
+  | "system_settings"
+  | "audit_log";
 
 export interface AuditLogEntry {
   userId?: string;
@@ -60,7 +68,7 @@ export async function createAuditLog(entry: AuditLogEntry): Promise<void> {
     });
   } catch (error) {
     // Log to console but don't throw - audit logging should not break the main flow
-    console.error('Failed to create audit log:', error);
+    console.error("Failed to create audit log:", error);
   }
 }
 
@@ -73,8 +81,9 @@ export function getRequestMetadata(request: Request): {
 } {
   const headers = request.headers;
   return {
-    ipAddress: headers.get('x-forwarded-for') || headers.get('x-real-ip') || undefined,
-    userAgent: headers.get('user-agent') || undefined,
+    ipAddress:
+      headers.get("x-forwarded-for") || headers.get("x-real-ip") || undefined,
+    userAgent: headers.get("user-agent") || undefined,
   };
 }
 
@@ -85,17 +94,17 @@ export async function auditUserSession(
   userId: string,
   userEmail: string,
   userRole: string,
-  action: 'login' | 'logout',
-  request?: Request
+  action: "login" | "logout",
+  request?: Request,
 ): Promise<void> {
   const metadata = request ? getRequestMetadata(request) : {};
-  
+
   await createAuditLog({
     userId,
     userEmail,
     userRole,
     action,
-    resource: 'user',
+    resource: "user",
     resourceId: userId,
     description: `User ${action}`,
     ...metadata,
@@ -114,10 +123,10 @@ export async function auditResourceAccess(
   resourceId?: string,
   description?: string,
   metadata?: Record<string, unknown>,
-  request?: Request
+  request?: Request,
 ): Promise<void> {
   const requestMetadata = request ? getRequestMetadata(request) : {};
-  
+
   await createAuditLog({
     userId,
     userEmail,
@@ -140,15 +149,15 @@ export async function auditAccessDenied(
   userRole: string | undefined,
   resource: AuditResource,
   requiredPermission: string,
-  request?: Request
+  request?: Request,
 ): Promise<void> {
   const requestMetadata = request ? getRequestMetadata(request) : {};
-  
+
   await createAuditLog({
     userId,
     userEmail,
     userRole,
-    action: 'access_denied',
+    action: "access_denied",
     resource,
     description: `Access denied - missing permission: ${requiredPermission}`,
     metadata: { requiredPermission },
@@ -165,16 +174,16 @@ export async function auditDataExport(
   userRole: string,
   exportType: string,
   dataCategories: string[],
-  request?: Request
+  request?: Request,
 ): Promise<void> {
   const requestMetadata = request ? getRequestMetadata(request) : {};
-  
+
   await createAuditLog({
     userId,
     userEmail,
     userRole,
-    action: 'export',
-    resource: 'user',
+    action: "export",
+    resource: "user",
     resourceId: userId,
     description: `Data export requested: ${exportType}`,
     metadata: { exportType, dataCategories },
@@ -191,16 +200,16 @@ export async function auditBackup(
   userRole: string,
   backupType: string,
   backupId: string,
-  request?: Request
+  request?: Request,
 ): Promise<void> {
   const requestMetadata = request ? getRequestMetadata(request) : {};
-  
+
   await createAuditLog({
     userId,
     userEmail,
     userRole,
-    action: 'create',
-    resource: 'backup',
+    action: "create",
+    resource: "backup",
     resourceId: backupId,
     description: `Backup initiated: ${backupType}`,
     metadata: { backupType },

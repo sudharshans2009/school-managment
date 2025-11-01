@@ -50,7 +50,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(points);
   } catch (error) {
     console.error("Error fetching behavior points:", error);
-    return NextResponse.json({ error: "Failed to fetch behavior points" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch behavior points" },
+      { status: 500 },
+    );
   }
 }
 
@@ -64,19 +67,27 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { studentId, pointType, points, reason, category, incidentId, notes } = body;
+    const {
+      studentId,
+      pointType,
+      points,
+      reason,
+      category,
+      incidentId,
+      notes,
+    } = body;
 
     if (!studentId || !pointType || !points || !reason) {
       return NextResponse.json(
         { error: "Student ID, point type, points, and reason are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!["merit", "demerit"].includes(pointType)) {
       return NextResponse.json(
         { error: "Point type must be either 'merit' or 'demerit'" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -98,6 +109,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(behaviorPoint, { status: 201 });
   } catch (error) {
     console.error("Error awarding behavior points:", error);
-    return NextResponse.json({ error: "Failed to award behavior points" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to award behavior points" },
+      { status: 500 },
+    );
   }
 }

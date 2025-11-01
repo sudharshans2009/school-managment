@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { GraduationCap, BookOpen, Users, LayoutDashboard, UserCog, Presentation } from "lucide-react";
+import {
+  GraduationCap,
+  BookOpen,
+  Users,
+  LayoutDashboard,
+  UserCog,
+  Presentation,
+} from "lucide-react";
 import { HomeLayout } from "@/components/layouts/home-layout";
 
 export default function Home() {
@@ -20,8 +27,9 @@ export default function Home() {
               Amrita School Management System
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Modern, efficient, and intelligent school management with real-time classroom dashboards, 
-              attendance tracking, fee management, and more.
+              Modern, efficient, and intelligent school management with
+              real-time classroom dashboards, attendance tracking, fee
+              management, and more.
             </p>
           </div>
 
@@ -101,13 +109,20 @@ export default function Home() {
           {/* General Auth Buttons */}
           <div className="flex flex-col sm:flex-row gap-4">
             <Link href="/auth/signin">
-              <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-6 rounded-2xl shadow-sm">
+              <Button
+                size="lg"
+                className="w-full sm:w-auto text-lg px-8 py-6 rounded-2xl shadow-sm"
+              >
                 <LayoutDashboard className="mr-2 h-5 w-5" />
                 Sign In
               </Button>
             </Link>
             <Link href="/auth/signup">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg px-8 py-6 rounded-2xl shadow-sm">
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full sm:w-auto text-lg px-8 py-6 rounded-2xl shadow-sm"
+              >
                 <Users className="mr-2 h-5 w-5" />
                 Create Account
               </Button>
@@ -121,11 +136,10 @@ export default function Home() {
                 <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
                   <LayoutDashboard className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">
-                  Smart Dashboards
-                </h3>
+                <h3 className="text-lg font-semibold mb-2">Smart Dashboards</h3>
                 <p className="text-muted-foreground text-sm">
-                  Real-time classroom displays with schedules, announcements, and attendance charts
+                  Real-time classroom displays with schedules, announcements,
+                  and attendance charts
                 </p>
               </CardContent>
             </Card>
@@ -139,7 +153,8 @@ export default function Home() {
                   Homework Management
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Create, submit, and grade assignments with file attachments and feedback
+                  Create, submit, and grade assignments with file attachments
+                  and feedback
                 </p>
               </CardContent>
             </Card>
@@ -153,7 +168,8 @@ export default function Home() {
                   Complete Management
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Attendance tracking, fee management, timetables, and comprehensive reporting
+                  Attendance tracking, fee management, timetables, and
+                  comprehensive reporting
                 </p>
               </CardContent>
             </Card>
@@ -161,7 +177,9 @@ export default function Home() {
 
           {/* Footer */}
           <div className="pt-16 text-sm text-muted-foreground">
-            <p>Built with Next.js, Drizzle ORM, Better Auth, and TanStack Query</p>
+            <p>
+              Built with Next.js, Drizzle ORM, Better Auth, and TanStack Query
+            </p>
           </div>
         </div>
       </div>

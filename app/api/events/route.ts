@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
       conditions.push(
         and(
           gte(events.startDate, new Date(startDate)),
-          lte(events.endDate, new Date(endDate))
-        )
+          lte(events.endDate, new Date(endDate)),
+        ),
       );
     }
 
@@ -65,7 +65,9 @@ export async function GET(request: NextRequest) {
         if (!event.targetAudience) return true;
         try {
           const audiences = JSON.parse(event.targetAudience);
-          return audiences.includes("all") || audiences.includes(targetAudience);
+          return (
+            audiences.includes("all") || audiences.includes(targetAudience)
+          );
         } catch {
           return true;
         }
@@ -77,7 +79,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching events:", error);
     return NextResponse.json(
       { error: "Failed to fetch events" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -110,8 +112,11 @@ export async function POST(request: NextRequest) {
 
     if (!title || !description || !eventType || !startDate || !endDate) {
       return NextResponse.json(
-        { error: "Title, description, event type, start date, and end date are required" },
-        { status: 400 }
+        {
+          error:
+            "Title, description, event type, start date, and end date are required",
+        },
+        { status: 400 },
       );
     }
 
@@ -128,7 +133,9 @@ export async function POST(request: NextRequest) {
         organizer,
         targetAudience: targetAudience ? JSON.stringify(targetAudience) : null,
         maxParticipants,
-        registrationDeadline: registrationDeadline ? new Date(registrationDeadline) : null,
+        registrationDeadline: registrationDeadline
+          ? new Date(registrationDeadline)
+          : null,
         allowRegistration: allowRegistration || false,
         attachments: attachments ? JSON.stringify(attachments) : null,
         createdBy: session.user.id,
@@ -140,7 +147,7 @@ export async function POST(request: NextRequest) {
     console.error("Error creating event:", error);
     return NextResponse.json(
       { error: "Failed to create event" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

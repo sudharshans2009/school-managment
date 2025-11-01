@@ -2,20 +2,26 @@
 
 import { useSession } from "@/lib/auth-client";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Calendar, 
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
   Shield,
   CheckCircle,
-  XCircle
+  XCircle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -37,7 +43,11 @@ export default function ProfilePage() {
   const { data: session, isPending: sessionPending } = useSession();
   const router = useRouter();
 
-  const { data: profile, isLoading, error } = useQuery<UserProfile>({
+  const {
+    data: profile,
+    isLoading,
+    error,
+  } = useQuery<UserProfile>({
     queryKey: ["profile"],
     queryFn: async () => {
       const response = await fetch("/api/user/profile");
@@ -133,12 +143,18 @@ export default function ProfilePage() {
                   {profile.role.charAt(0).toUpperCase() + profile.role.slice(1)}
                 </Badge>
                 {profile.isActive ? (
-                  <Badge variant="outline" className="text-green-600 border-green-600">
+                  <Badge
+                    variant="outline"
+                    className="text-green-600 border-green-600"
+                  >
                     <CheckCircle className="h-3 w-3 mr-1" />
                     Active
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="text-red-600 border-red-600">
+                  <Badge
+                    variant="outline"
+                    className="text-red-600 border-red-600"
+                  >
                     <XCircle className="h-3 w-3 mr-1" />
                     Inactive
                   </Badge>
@@ -157,12 +173,18 @@ export default function ProfilePage() {
               <p className="text-sm font-medium flex items-center gap-2">
                 {profile.email}
                 {profile.emailVerified ? (
-                  <Badge variant="outline" className="text-green-600 border-green-600 text-xs">
+                  <Badge
+                    variant="outline"
+                    className="text-green-600 border-green-600 text-xs"
+                  >
                     <CheckCircle className="h-3 w-3 mr-1" />
                     Verified
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="text-orange-600 border-orange-600 text-xs">
+                  <Badge
+                    variant="outline"
+                    className="text-orange-600 border-orange-600 text-xs"
+                  >
                     <XCircle className="h-3 w-3 mr-1" />
                     Not Verified
                   </Badge>
@@ -240,7 +262,8 @@ export default function ProfilePage() {
           {!profile.emailVerified && (
             <Alert>
               <AlertDescription>
-                Your email is not verified. Please check your inbox for a verification email.
+                Your email is not verified. Please check your inbox for a
+                verification email.
               </AlertDescription>
             </Alert>
           )}

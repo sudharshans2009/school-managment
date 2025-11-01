@@ -3,12 +3,12 @@
  * Allows users to request deletion of their personal data (Right to be Forgotten)
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/database';
-import { dataDeletionRequests } from '@/database/schema';
-import { eq, desc } from 'drizzle-orm';
-import { requireAuth, requireAdmin } from '@/lib/auth-middleware';
-import { auditResourceAccess } from '@/lib/audit';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/database";
+import { dataDeletionRequests } from "@/database/schema";
+import { eq, desc } from "drizzle-orm";
+import { requireAuth, requireAdmin } from "@/lib/auth-middleware";
+import { auditResourceAccess } from "@/lib/audit";
 
 // GET - List deletion requests
 export async function GET(request: NextRequest) {
@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
 
   try {
     let requests;
-    
-    if (user.role === 'admin') {
+
+    if (user.role === "admin") {
       // Admin can see all requests
       requests = await db
         .select()
@@ -40,10 +40,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ requests });
   } catch (error) {
-    console.error('Error fetching deletion requests:', error);
+    console.error("Error fetching deletion requests:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch deletion requests' },
-      { status: 500 }
+      { error: "Failed to fetch deletion requests" },
+      { status: 500 },
     );
   }
 }
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
         userId: user.id,
         requestReason,
         anonymizeData,
-        status: 'pending',
+        status: "pending",
       })
       .returning();
 
@@ -76,25 +76,25 @@ export async function POST(request: NextRequest) {
       user.id,
       user.email,
       user.role,
-      'delete',
-      'user',
+      "delete",
+      "user",
       user.id,
-      'Data deletion requested',
+      "Data deletion requested",
       { requestReason, anonymizeData },
-      request
+      request,
     );
 
     return NextResponse.json({
-      message: 'Data deletion request created successfully',
+      message: "Data deletion request created successfully",
       requestId: deletionRequest.id,
-      status: 'pending',
-      note: 'Your request will be reviewed by an administrator. This process may take up to 30 days.',
+      status: "pending",
+      note: "Your request will be reviewed by an administrator. This process may take up to 30 days.",
     });
   } catch (error) {
-    console.error('Error creating deletion request:', error);
+    console.error("Error creating deletion request:", error);
     return NextResponse.json(
-      { error: 'Failed to create deletion request' },
-      { status: 500 }
+      { error: "Failed to create deletion request" },
+      { status: 500 },
     );
   }
 }
@@ -113,8 +113,8 @@ export async function PUT(request: NextRequest) {
 
     if (!requestId || !status) {
       return NextResponse.json(
-        { error: 'requestId and status are required' },
-        { status: 400 }
+        { error: "requestId and status are required" },
+        { status: 400 },
       );
     }
 
@@ -126,15 +126,15 @@ export async function PUT(request: NextRequest) {
         reviewedBy: user.id,
         reviewNotes,
         reviewedAt: new Date(),
-        completedAt: status === 'completed' ? new Date() : undefined,
+        completedAt: status === "completed" ? new Date() : undefined,
       })
       .where(eq(dataDeletionRequests.id, requestId))
       .returning();
 
     if (!updatedRequest) {
       return NextResponse.json(
-        { error: 'Deletion request not found' },
-        { status: 404 }
+        { error: "Deletion request not found" },
+        { status: 404 },
       );
     }
 
@@ -143,33 +143,33 @@ export async function PUT(request: NextRequest) {
       user.id,
       user.email,
       user.role,
-      'update',
-      'user',
+      "update",
+      "user",
       updatedRequest.userId,
       `Deletion request ${status}`,
       { requestId, status, reviewNotes },
-      request
+      request,
     );
 
     // If approved, process the deletion
-    if (status === 'approved') {
+    if (status === "approved") {
       // In a real system, this would trigger a background job to anonymize/delete data
       // For now, we'll just mark it as processing
       await db
         .update(dataDeletionRequests)
-        .set({ status: 'processing' })
+        .set({ status: "processing" })
         .where(eq(dataDeletionRequests.id, requestId));
     }
 
     return NextResponse.json({
-      message: 'Deletion request updated successfully',
+      message: "Deletion request updated successfully",
       request: updatedRequest,
     });
   } catch (error) {
-    console.error('Error updating deletion request:', error);
+    console.error("Error updating deletion request:", error);
     return NextResponse.json(
-      { error: 'Failed to update deletion request' },
-      { status: 500 }
+      { error: "Failed to update deletion request" },
+      { status: 500 },
     );
   }
 }

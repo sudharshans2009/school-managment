@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/database';
-import { studentGrades, exams, subjects, students } from '@/database/schema';
-import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
-import { eq, and, desc } from 'drizzle-orm';
+import { NextRequest, NextResponse } from "next/server";
+import { db } from "@/database";
+import { studentGrades, exams, subjects, students } from "@/database/schema";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { eq, and, desc } from "drizzle-orm";
 
 // GET /api/students/grades - Get student's grades (finalized exams only)
 export async function GET(request: NextRequest) {
@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get student record
@@ -23,12 +23,15 @@ export async function GET(request: NextRequest) {
       .where(eq(students.userId, session.user.id));
 
     if (!studentRecord) {
-      return NextResponse.json({ error: 'Student record not found' }, { status: 404 });
+      return NextResponse.json(
+        { error: "Student record not found" },
+        { status: 404 },
+      );
     }
 
     const { searchParams } = new URL(request.url);
-    const subjectId = searchParams.get('subjectId');
-    const examType = searchParams.get('examType');
+    const subjectId = searchParams.get("subjectId");
+    const examType = searchParams.get("examType");
 
     // Build conditions
     const conditions = [
@@ -41,7 +44,17 @@ export async function GET(request: NextRequest) {
     }
 
     if (examType) {
-      conditions.push(eq(exams.examType, examType as 'class_test' | 'unit_test' | 'quarterly' | 'midterm' | 'final_exam'));
+      conditions.push(
+        eq(
+          exams.examType,
+          examType as
+            | "class_test"
+            | "unit_test"
+            | "quarterly"
+            | "midterm"
+            | "final_exam",
+        ),
+      );
     }
 
     const grades = await db
@@ -77,7 +90,10 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(grades);
   } catch (error) {
-    console.error('Error fetching student grades:', error);
-    return NextResponse.json({ error: 'Failed to fetch grades' }, { status: 500 });
+    console.error("Error fetching student grades:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch grades" },
+      { status: 500 },
+    );
   }
 }
