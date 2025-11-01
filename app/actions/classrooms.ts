@@ -262,7 +262,7 @@ export async function deleteClassroom(id: string): Promise<ActionResult> {
       };
     }
 
-    if (classroom.students && classroom.students.length > 0) {
+    if (classroom.students.length > 0) {
       return {
         success: false,
         error: "Cannot delete classroom with enrolled students. Please transfer students first.",

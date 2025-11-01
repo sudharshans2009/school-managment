@@ -144,7 +144,6 @@ export function SubjectForm({ initialData, onSubmit, isLoading }: SubjectFormPro
                         render={({ field }) => {
                           return (
                             <FormItem
-                              key={grade}
                               className="flex flex-row items-start space-x-2 space-y-0"
                             >
                               <FormControl>
@@ -211,7 +210,6 @@ export function SubjectForm({ initialData, onSubmit, isLoading }: SubjectFormPro
                         render={({ field }) => {
                           return (
                             <FormItem
-                              key={section}
                               className="flex flex-row items-start space-x-2 space-y-0"
                             >
                               <FormControl>

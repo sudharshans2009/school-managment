@@ -114,9 +114,7 @@ export default function SubjectsPage() {
   };
 
   const handleDialogChange = (open: boolean) => {
-    if (openCreate) {
-      setOpenCreate(open);
-    }
+    setOpenCreate(open);
     if (!open) {
       setEditingSubject(null);
     }

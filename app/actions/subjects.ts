@@ -116,6 +116,8 @@ export async function createSubject(data: SubjectFormData): Promise<ActionResult
         name,
         code,
         description: description || null,
+        // Note: Arrays stored as JSON strings to match existing schema.
+        // For complex filtering needs, consider using a junction table or JSONB column type.
         applicableGrades: applicableGrades ? JSON.stringify(applicableGrades) : null,
         applicableSections: applicableSections ? JSON.stringify(applicableSections) : null,
       })
