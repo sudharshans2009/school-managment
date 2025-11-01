@@ -25,6 +25,30 @@ export const documentStatusEnum = pgEnum('document_status', ['pending', 'submitt
 export const incidentSeverityEnum = pgEnum('incident_severity', ['minor', 'moderate', 'major', 'critical']);
 export const actionTypeEnum = pgEnum('action_type', ['warning', 'detention', 'suspension', 'counseling', 'parent_meeting', 'other']);
 
+// Security & Compliance Enums
+export const permissionEnum = pgEnum('permission', [
+  // Student permissions
+  'view_own_data', 'submit_homework', 'view_own_attendance', 'view_own_grades',
+  'register_for_events', 'view_announcements',
+  // Teacher permissions
+  'manage_homework', 'mark_attendance', 'view_student_data', 'grade_assignments',
+  'create_announcements', 'manage_classroom', 'view_reports',
+  // Admin permissions
+  'manage_users', 'manage_classrooms', 'manage_subjects', 'manage_fees',
+  'view_all_data', 'manage_admissions', 'manage_system_settings',
+  'view_audit_logs', 'export_data', 'manage_backups',
+  // Smartboard permissions
+  'view_classroom_dashboard', 'view_timetable', 'view_classroom_announcements'
+]);
+export const consentTypeEnum = pgEnum('consent_type', [
+  'data_processing', 'marketing', 'analytics', 'third_party_sharing',
+  'terms_of_service', 'privacy_policy'
+]);
+export const exportStatusEnum = pgEnum('export_status', ['pending', 'processing', 'completed', 'failed', 'expired']);
+export const deletionStatusEnum = pgEnum('deletion_status', ['pending', 'approved', 'rejected', 'processing', 'completed', 'cancelled']);
+export const backupStatusEnum = pgEnum('backup_status', ['initiated', 'in_progress', 'completed', 'failed']);
+export const backupTypeEnum = pgEnum('backup_type', ['full', 'incremental', 'manual', 'scheduled']);
+
 // Users Table
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -892,4 +916,133 @@ export const behaviorPointsRelations = relations(behaviorPoints, ({ one }) => ({
 export const behaviorNotesRelations = relations(behaviorNotes, ({ one }) => ({
   student: one(students, { fields: [behaviorNotes.studentId], references: [students.id] }),
   creator: one(users, { fields: [behaviorNotes.createdBy], references: [users.id] }),
+}));
+
+// ============================================
+// Security & Compliance Tables
+// ============================================
+
+// Audit Logs - Track all important actions in the system
+export const auditLogs = pgTable('audit_logs', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }), // null if user deleted
+  userEmail: varchar('user_email', { length: 255 }), // Keep email even if user deleted
+  userRole: varchar('user_role', { length: 50 }),
+  action: varchar('action', { length: 100 }).notNull(), // e.g., 'create', 'update', 'delete', 'view'
+  resource: varchar('resource', { length: 100 }).notNull(), // e.g., 'student', 'homework', 'attendance'
+  resourceId: uuid('resource_id'), // ID of the affected resource
+  description: text('description'), // Human-readable description
+  metadata: text('metadata'), // JSON with additional context (old/new values, etc.)
+  ipAddress: varchar('ip_address', { length: 45 }),
+  userAgent: text('user_agent'),
+  timestamp: timestamp('timestamp').defaultNow().notNull(),
+});
+
+// Permissions - Granular permission system
+export const rolePermissions = pgTable('role_permissions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  role: userRoleEnum('role').notNull(),
+  permission: permissionEnum('permission').notNull(),
+  isGranted: boolean('is_granted').default(true).notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// User-specific permission overrides
+export const userPermissions = pgTable('user_permissions', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  permission: permissionEnum('permission').notNull(),
+  isGranted: boolean('is_granted').notNull(), // true = granted, false = revoked
+  grantedBy: uuid('granted_by').references(() => users.id),
+  reason: text('reason'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// GDPR Compliance - User consent tracking
+export const userConsents = pgTable('user_consents', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  consentType: consentTypeEnum('consent_type').notNull(),
+  isGranted: boolean('is_granted').notNull(),
+  version: varchar('version', { length: 20 }).notNull(), // Policy version
+  ipAddress: varchar('ip_address', { length: 45 }),
+  userAgent: text('user_agent'),
+  consentedAt: timestamp('consented_at').defaultNow().notNull(),
+});
+
+// Data Export Requests - GDPR Right to Data Portability
+export const dataExportRequests = pgTable('data_export_requests', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  requestType: varchar('request_type', { length: 50 }).notNull(), // 'full_export', 'specific_data'
+  dataCategories: text('data_categories'), // JSON array of requested data types
+  status: exportStatusEnum('status').default('pending').notNull(),
+  fileUrl: text('file_url'), // URL to download the exported data
+  expiresAt: timestamp('expires_at'), // When the download link expires
+  requestedAt: timestamp('requested_at').defaultNow().notNull(),
+  completedAt: timestamp('completed_at'),
+  failureReason: text('failure_reason'),
+});
+
+// Data Deletion Requests - GDPR Right to be Forgotten
+export const dataDeletionRequests = pgTable('data_deletion_requests', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  requestReason: text('request_reason'),
+  status: deletionStatusEnum('status').default('pending').notNull(),
+  reviewedBy: uuid('reviewed_by').references(() => users.id),
+  reviewNotes: text('review_notes'),
+  anonymizeData: boolean('anonymize_data').default(true), // Anonymize instead of hard delete
+  requestedAt: timestamp('requested_at').defaultNow().notNull(),
+  reviewedAt: timestamp('reviewed_at'),
+  completedAt: timestamp('completed_at'),
+});
+
+// Backup Metadata - Track system backups
+export const systemBackups = pgTable('system_backups', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  backupType: backupTypeEnum('backup_type').notNull(),
+  status: backupStatusEnum('status').default('initiated').notNull(),
+  fileSize: varchar('file_size', { length: 50 }), // e.g., "1.5 GB"
+  location: text('location'), // Storage location/path
+  checksum: varchar('checksum', { length: 128 }), // For integrity verification
+  createdBy: uuid('created_by').references(() => users.id),
+  metadata: text('metadata'), // JSON with backup details (tables included, record counts, etc.)
+  startedAt: timestamp('started_at').defaultNow().notNull(),
+  completedAt: timestamp('completed_at'),
+  expiresAt: timestamp('expires_at'), // Retention policy
+  errorMessage: text('error_message'),
+});
+
+// Relations for new security tables
+export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
+  user: one(users, { fields: [auditLogs.userId], references: [users.id] }),
+}));
+
+export const rolePermissionsRelations = relations(rolePermissions, ({ one }) => ({
+  // No direct relations to users, as this is role-based
+}));
+
+export const userPermissionsRelations = relations(userPermissions, ({ one }) => ({
+  user: one(users, { fields: [userPermissions.userId], references: [users.id], relationName: 'permissionsGranted' }),
+  grantor: one(users, { fields: [userPermissions.grantedBy], references: [users.id], relationName: 'permissionsGrantedBy' }),
+}));
+
+export const userConsentsRelations = relations(userConsents, ({ one }) => ({
+  user: one(users, { fields: [userConsents.userId], references: [users.id] }),
+}));
+
+export const dataExportRequestsRelations = relations(dataExportRequests, ({ one }) => ({
+  user: one(users, { fields: [dataExportRequests.userId], references: [users.id] }),
+}));
+
+export const dataDeletionRequestsRelations = relations(dataDeletionRequests, ({ one }) => ({
+  user: one(users, { fields: [dataDeletionRequests.userId], references: [users.id] }),
+  reviewer: one(users, { fields: [dataDeletionRequests.reviewedBy], references: [users.id] }),
+}));
+
+export const systemBackupsRelations = relations(systemBackups, ({ one }) => ({
+  creator: one(users, { fields: [systemBackups.createdBy], references: [users.id] }),
 }));
