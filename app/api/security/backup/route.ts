@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/database';
 import { systemBackups, users, students, classrooms, homework, attendance } from '@/database/schema';
-import { desc } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import { requireAdmin } from '@/lib/auth-middleware';
 import { auditBackup } from '@/lib/audit';
 
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
           completedAt: new Date(),
           expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000), // 90 days
         })
-        .where(db.$with('id').eq(backup.id));
+        .where(eq(systemBackups.id, backup.id));
 
       return NextResponse.json({
         message: 'Backup created successfully',
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
           status: 'failed',
           errorMessage: error instanceof Error ? error.message : 'Unknown error',
         })
-        .where(db.$with('id').eq(backup.id));
+        .where(eq(systemBackups.id, backup.id));
 
       throw error;
     }

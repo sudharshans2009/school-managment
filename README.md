@@ -40,6 +40,16 @@ A comprehensive, modern school management system with smart classroom dashboards
 - Payment history and receipts
 - Overdue notifications
 
+### 🔒 Security & Compliance
+- **Role-Based Access Control (RBAC)**: Granular permissions for admin, teacher, student, parent, and smartboard roles
+- **Audit Logging**: Comprehensive logging of all system actions for security and compliance
+- **GDPR Compliance**: 
+  - Right to Data Portability (export user data)
+  - Right to be Forgotten (data deletion requests)
+  - Consent management system
+- **Data Encryption**: Sensitive data encryption utilities for PII protection
+- **Backup & Restore**: System backup capabilities with metadata tracking
+
 ## 🛠️ Tech Stack
 
 - **Framework:** Next.js 16 with App Router
@@ -134,6 +144,10 @@ school-management/
 │   ├── providers/         # React providers (Query, Theme)
 │   ├── auth.ts            # Better Auth config
 │   ├── auth-client.ts     # Client-side auth
+│   ├── auth-middleware.ts # Authorization middleware
+│   ├── permissions.ts     # Permission system
+│   ├── audit.ts          # Audit logging
+│   ├── encryption.ts     # Data encryption utilities
 │   ├── validations.ts     # Zod schemas
 │   ├── helpers.ts         # Utility functions
 │   └── utils.ts           # General utilities
@@ -158,13 +172,37 @@ school-management/
 - **announcements** - School and class announcements
 - **timetable** - Class schedules
 
+### Security & Compliance Tables
+- **audit_logs** - System activity audit trail
+- **role_permissions** - Role-based permission configuration
+- **user_permissions** - User-specific permission overrides
+- **user_consents** - GDPR consent tracking
+- **data_export_requests** - Data portability requests
+- **data_deletion_requests** - Right to be forgotten requests
+- **system_backups** - Backup metadata and tracking
+- **fee_structures** - Fee configuration
+- **fee_payments** - Payment transactions
+- **announcements** - School and class announcements
+- **timetable** - Class schedules
+
+### Security & Compliance Tables
+- **audit_logs** - System activity audit trail
+- **role_permissions** - Role-based permission configuration
+- **user_permissions** - User-specific permission overrides
+- **user_consents** - GDPR consent tracking
+- **data_export_requests** - Data portability requests
+- **data_deletion_requests** - Right to be forgotten requests
+- **system_backups** - Backup metadata and tracking
+
 ## 🔐 Authentication
 
 Built with Better Auth for secure, flexible authentication:
 - Email/Password authentication
 - Role-based access control (Admin, Teacher, Student, Parent)
+- Granular permissions system (see [Security Documentation](docs/SECURITY_COMPLIANCE.md))
 - Secure session management
 - Classroom code + key verification for smartboards
+- Audit logging for all actions
 
 ## 🎨 UI Components
 

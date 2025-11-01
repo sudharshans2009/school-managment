@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/database';
 import { userConsents } from '@/database/schema';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 import { requireAuth } from '@/lib/auth-middleware';
 import { auditResourceAccess } from '@/lib/audit';
 
