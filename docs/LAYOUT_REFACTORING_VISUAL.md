@@ -12,7 +12,7 @@
 **After:**
 ```
 ┌─────────────────────────────────────────────────────────┐
-│ [Logo] Smart School Management    [Theme] [Sign In/Up] │ ← Navbar
+│ [Logo] Amrita School Management    [Theme] [Sign In/Up] │ ← Navbar
 └─────────────────────────────────────────────────────────┘
 │                                                         │
 │              [Logo Icon]                                │

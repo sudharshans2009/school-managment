@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "@/lib/auth-client";
+import { useRoleRedirect } from "@/hooks/use-role-redirect";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -113,7 +113,7 @@ interface ClassroomMessage {
 }
 
 export default function TeacherPage() {
-  const { data: session, isPending } = useSession();
+  const { session, isPending } = useRoleRedirect(["teacher"]);
   const router = useRouter();
   const queryClient = useQueryClient();
   

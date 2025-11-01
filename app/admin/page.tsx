@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "@/lib/auth-client";
+import { useRoleRedirect } from "@/hooks/use-role-redirect";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   Users, 
@@ -20,8 +20,6 @@ import {
   BarChart3
 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -49,14 +47,7 @@ interface SystemMetrics {
 }
 
 export default function AdminDashboard() {
-  const { data: session, isPending } = useSession();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isPending && !session) {
-      router.push("/auth/signin");
-    }
-  }, [session, isPending, router]);
+  const { session, isPending } = useRoleRedirect(["admin"]);
 
   // Fetch dashboard stats
   const { data: stats, isLoading: statsLoading } = useQuery<DashboardStats>({
@@ -187,7 +178,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <DashboardLayout title="Admin Portal" description="Smart School Management">
+    <DashboardLayout title="Admin Portal" description="Amrita School Management">
       <div className="space-y-6">
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

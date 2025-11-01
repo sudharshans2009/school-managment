@@ -67,7 +67,7 @@ export default function SignInPage() {
         <CardHeader className="space-y-1 pt-8">
           <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
           <CardDescription className="text-center">
-            Sign in to your Smart School Management account
+            Sign in to your Amrita School Management account
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>

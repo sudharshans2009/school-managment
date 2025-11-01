@@ -17,7 +17,7 @@ interface SharedLayoutProps {
 
 export function SharedLayout({ 
   children, 
-  title = "Smart School Management", 
+  title = "Amrita School Management", 
   description,
   showAuth = true 
 }: SharedLayoutProps) {

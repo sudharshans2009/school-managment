@@ -77,6 +77,11 @@ export async function PATCH(request: NextRequest) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { passwordHash, ...adminUpdates } = updates;
       allowedUpdates = { ...adminUpdates, updatedAt: new Date() };
+      
+      // If admin is updating email, mark it as verified automatically
+      if (adminUpdates.email) {
+        allowedUpdates.emailVerified = true;
+      }
     } else {
       // Regular users can't update via this endpoint (they're view-only)
       return NextResponse.json(

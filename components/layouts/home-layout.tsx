@@ -46,7 +46,7 @@ export function HomeLayout({ children }: HomeLayoutProps) {
               <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-xl shadow-sm">
                 <GraduationCap className="w-6 h-6 text-primary-foreground" />
               </div>
-              <span className="text-lg font-semibold">Smart School Management</span>
+              <span className="text-lg font-semibold">Amrita School Management</span>
             </Link>
 
             <div className="flex items-center space-x-3">

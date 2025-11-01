@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "@/lib/auth-client";
+import { useRoleRedirect } from "@/hooks/use-role-redirect";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,7 +16,7 @@ import {
   AlertCircle, Loader2, Users, School, BarChart3
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
@@ -75,7 +75,7 @@ interface Teacher {
 }
 
 export default function StudentPage() {
-  const { data: session, isPending } = useSession();
+  const { session, isPending } = useRoleRedirect(["student"]);
   const router = useRouter();
   const queryClient = useQueryClient();
   
@@ -85,12 +85,6 @@ export default function StudentPage() {
     message: "",
     messageType: "general" as 'absence' | 'query' | 'request' | 'general',
   });
-
-  useEffect(() => {
-    if (!isPending && !session) {
-      router.push("/auth/signin");
-    }
-  }, [session, isPending, router]);
 
   // Fetch student profile
   const { data: studentProfile } = useQuery<Student>({

@@ -94,7 +94,7 @@ import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
 export default function AdminPage() {
   return (
-    <DashboardLayout title="Admin Portal" description="Smart School Management">
+    <DashboardLayout title="Admin Portal" description="Amrita School Management">
       {/* Page content here */}
     </DashboardLayout>
   );
