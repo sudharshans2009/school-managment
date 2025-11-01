@@ -14,7 +14,6 @@ import crypto from 'crypto';
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 16; // Initialization Vector length
 const AUTH_TAG_LENGTH = 16; // Authentication tag length
-const SALT_LENGTH = 64;
 const KEY_LENGTH = 32;
 const ITERATIONS = 100000;
 
@@ -180,7 +179,7 @@ export function decryptFields<T extends Record<string, unknown>>(
 /**
  * Example usage for sensitive student data
  */
-export interface SensitiveStudentData {
+export interface SensitiveStudentData extends Record<string, unknown> {
   medicalInfo?: string;
   emergencyContact?: string;
   address?: string;

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
-import { classrooms, timetable, attendance, homework, announcements, students } from "@/database/schema";
+import { classrooms, timetable, attendance, homework, announcements, students, classroomMessages } from "@/database/schema";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
+import { TIMETABLE_STRUCTURE } from "@/lib/timetable-structure";
 
 export async function GET(
   request: NextRequest,
@@ -117,6 +118,42 @@ export async function GET(
       limit: 10,
     });
 
+    // Get today's quote from classroom messages
+    const todayQuote = await db.query.classroomMessages.findFirst({
+      where: and(
+        eq(classroomMessages.classroomId, classroomId),
+        eq(classroomMessages.messageType, "quote")
+      ),
+      with: {
+        teacher: true,
+      },
+      orderBy: [desc(classroomMessages.date)],
+    });
+
+    // Build complete timetable with fixed structure
+    // Map fetched schedule to period numbers
+    const scheduleMap = new Map(
+      todaySchedule.map((item) => [item.periodNumber, item])
+    );
+
+    // Create complete schedule following the fixed structure
+    // Filter out breaks as per user requirement - breaks are separate fixed timings
+    const completeSchedule = TIMETABLE_STRUCTURE
+      .filter(period => !period.isBreak) // Only show teaching periods
+      .map((period) => {
+        // Get scheduled subject for this period
+        const scheduled = scheduleMap.get(period.periodNumber);
+        
+        return {
+          period: period.periodNumber,
+          time: `${period.startTime} - ${period.endTime}`,
+          subject: scheduled?.subject?.name || 'Not Scheduled',
+          teacher: scheduled?.teacher?.name || '-',
+          room: scheduled?.room || 'TBA',
+          type: scheduled ? 'Lecture' : 'Free',
+        };
+      });
+
     // Format the response
     const response = {
       classroom: {
@@ -127,14 +164,7 @@ export async function GET(
         classTeacher: classroom.teacherAssignments.find((ta) => ta.isPrimary)?.teacher?.name || "Not Assigned",
         totalStrength: totalStudents.length,
       },
-      schedule: todaySchedule.map((item, index) => ({
-        period: index + 1,
-        time: `${item.startTime} - ${item.endTime}`,
-        subject: item.subject?.name || "Unknown",
-        teacher: item.teacher?.name || "Unknown",
-        room: item.room || "TBA",
-        type: item.subject?.name === "Break" ? "Break" : "Lecture",
-      })),
+      schedule: completeSchedule,
       attendance: {
         present: presentCount,
         absent: absentCount,
@@ -163,6 +193,11 @@ export async function GET(
         postedBy: "Administration",
         icon: ann.priority === "high" ? "🔔" : ann.priority === "medium" ? "📢" : "ℹ️",
       })),
+      quote: todayQuote ? {
+        content: todayQuote.content,
+        author: todayQuote.teacher?.name || "Class Teacher",
+        date: todayQuote.date ? new Date(todayQuote.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "",
+      } : null,
     };
 
     return NextResponse.json(response);

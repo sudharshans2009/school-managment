@@ -98,6 +98,20 @@ interface WorkDone {
   createdAt: string;
 }
 
+interface ClassroomMessage {
+  id: string;
+  classroomId: string;
+  teacherId: string;
+  content: string;
+  messageType: string;
+  date: string;
+  createdAt: string;
+  classroom?: {
+    id: string;
+    name: string;
+  };
+}
+
 export default function TeacherPage() {
   const { data: session, isPending } = useSession();
   const router = useRouter();
@@ -208,6 +222,23 @@ export default function TeacherPage() {
       // Fetch work done for all primary classes
       const promises = primaryClasses.map(async (assignment) => {
         const res = await fetch(`/api/work-done?classroomId=${assignment.classroomId}`);
+        if (!res.ok) return [];
+        return res.json();
+      });
+      const results = await Promise.all(promises);
+      return results.flat();
+    },
+    enabled: primaryClasses.length > 0,
+  });
+
+  // Fetch classroom messages (quotes) for primary classes
+  const { data: classroomMessages } = useQuery<ClassroomMessage[]>({
+    queryKey: ["classroom-messages", primaryClasses.map(c => c.classroomId)],
+    queryFn: async () => {
+      if (primaryClasses.length === 0) return [];
+      // Fetch messages for all primary classes
+      const promises = primaryClasses.map(async (assignment) => {
+        const res = await fetch(`/api/classroom-messages?classroomId=${assignment.classroomId}`);
         if (!res.ok) return [];
         return res.json();
       });
@@ -585,6 +616,33 @@ export default function TeacherPage() {
               <CardContent className="space-y-4">
                 {primaryClasses.length > 0 ? (
                   <>
+                    {/* Current Quote Display */}
+                    {classroomMessages && classroomMessages.filter((msg) => msg.messageType === "quote").length > 0 && (
+                      <div className="mb-6 space-y-3">
+                        <Label className="text-base font-semibold">Current Class Quotes</Label>
+                        <div className="space-y-2">
+                          {classroomMessages
+                            .filter((msg) => msg.messageType === "quote")
+                            .slice(0, 3)
+                            .map((msg) => (
+                              <div key={msg.id} className="p-4 bg-primary/5 border border-primary/20 rounded-xl">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    <p className="text-sm font-medium italic">&ldquo;{msg.content}&rdquo;</p>
+                                    <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                                      <span>{msg.classroom?.name || "Class"}</span>
+                                      <span>•</span>
+                                      <span>{new Date(msg.date).toLocaleDateString()}</span>
+                                    </div>
+                                  </div>
+                                  <Quote className="h-5 w-5 text-primary/40 ml-3" />
+                                </div>
+                              </div>
+                            ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div>
                       <Label>Select Your Class</Label>
                       <Select value={quoteForm.classroomId} onValueChange={(value) => setQuoteForm(prev => ({ ...prev, classroomId: value }))}>

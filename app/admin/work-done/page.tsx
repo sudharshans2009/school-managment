@@ -50,9 +50,9 @@ export default function WorkDoneManagementPage() {
   const [filters, setFilters] = useState({
     startDate: "",
     endDate: "",
-    classroomId: "",
-    subjectId: "",
-    isSubstitute: "",
+    classroomId: "all",
+    subjectId: "all",
+    isSubstitute: "all",
   });
 
   useEffect(() => {
@@ -66,9 +66,9 @@ export default function WorkDoneManagementPage() {
     const params = new URLSearchParams();
     if (filters.startDate) params.append("startDate", filters.startDate);
     if (filters.endDate) params.append("endDate", filters.endDate);
-    if (filters.classroomId) params.append("classroomId", filters.classroomId);
-    if (filters.subjectId) params.append("subjectId", filters.subjectId);
-    if (filters.isSubstitute) params.append("isSubstitute", filters.isSubstitute);
+    if (filters.classroomId && filters.classroomId !== "all") params.append("classroomId", filters.classroomId);
+    if (filters.subjectId && filters.subjectId !== "all") params.append("subjectId", filters.subjectId);
+    if (filters.isSubstitute && filters.isSubstitute !== "all") params.append("isSubstitute", filters.isSubstitute);
     return params.toString();
   };
 
@@ -174,7 +174,7 @@ export default function WorkDoneManagementPage() {
                     <SelectValue placeholder="All classrooms" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All classrooms</SelectItem>
+                    <SelectItem value="all">All classrooms</SelectItem>
                     {classrooms?.map((classroom) => (
                       <SelectItem key={classroom.id} value={classroom.id}>
                         {classroom.name}
@@ -190,7 +190,7 @@ export default function WorkDoneManagementPage() {
                     <SelectValue placeholder="All subjects" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All subjects</SelectItem>
+                    <SelectItem value="all">All subjects</SelectItem>
                     {subjects?.map((subject) => (
                       <SelectItem key={subject.id} value={subject.id}>
                         {subject.name}
@@ -206,7 +206,7 @@ export default function WorkDoneManagementPage() {
                     <SelectValue placeholder="All records" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All records</SelectItem>
+                    <SelectItem value="all">All records</SelectItem>
                     <SelectItem value="true">Substitute only</SelectItem>
                     <SelectItem value="false">Regular only</SelectItem>
                   </SelectContent>

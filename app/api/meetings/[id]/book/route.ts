@@ -36,7 +36,7 @@ export async function POST(
       return NextResponse.json({ error: "Meeting slot is not active" }, { status: 400 });
     }
 
-    if (slot.currentBookings >= (slot.maxBookings || 1)) {
+    if ((slot.currentBookings || 0) >= (slot.maxBookings || 1)) {
       return NextResponse.json({ error: "Meeting slot is fully booked" }, { status: 400 });
     }
 

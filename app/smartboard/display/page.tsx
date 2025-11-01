@@ -59,12 +59,19 @@ interface Announcement {
   icon: string;
 }
 
+interface Quote {
+  content: string;
+  author: string;
+  date: string;
+}
+
 interface SmartboardData {
   classroom: ClassroomInfo;
   schedule: ScheduleItem[];
   attendance: AttendanceData;
   homework: Homework[];
   announcements: Announcement[];
+  quote: Quote | null;
 }
 
 export default function SmartboardDisplayPage() {
@@ -173,14 +180,16 @@ export default function SmartboardDisplayPage() {
     <div className="min-h-screen bg-linear-to-br from-pink-500 via-blue-500 to-indigo-500 p-4">
       <div className="max-w-[1920px] mx-auto">
         {/* Motivational Quote */}
-        <div className="bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl shadow-lg mb-4 overflow-hidden">
-          <div className="p-6 text-center backdrop-blur-sm bg-white/5">
-            <p className="text-xl md:text-2xl font-medium text-white/95 leading-relaxed mb-2">
-              &ldquo;The beautiful thing about learning is that no one can take it away from you.&rdquo;
-            </p>
-            <p className="text-base text-white/75 font-light">- B.B. King</p>
+        {data.quote && (
+          <div className="bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl shadow-lg mb-4 overflow-hidden">
+            <div className="p-6 text-center backdrop-blur-sm bg-white/5">
+              <p className="text-xl md:text-2xl font-medium text-white/95 leading-relaxed mb-2">
+                &ldquo;{data.quote.content}&rdquo;
+              </p>
+              <p className="text-base text-white/75 font-light">- {data.quote.author}</p>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Header - Classroom Info & Time */}
         <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6 mb-4">

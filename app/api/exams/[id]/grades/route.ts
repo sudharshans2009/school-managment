@@ -4,6 +4,7 @@ import { studentGrades, exams, teacherAssignments, students } from '@/database/s
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { eq, and } from 'drizzle-orm';
+import { calculateLetterGrade } from '@/lib/helpers';
 
 // GET /api/exams/[id]/grades - Get all grades for an exam
 export async function GET(
@@ -154,7 +155,7 @@ export async function POST(
     // Process each grade
     for (const gradeData of grades) {
       try {
-        const { studentId, marksObtained, grade, remarks, isAbsent } = gradeData;
+        const { studentId, marksObtained, remarks, isAbsent } = gradeData;
 
         if (!studentId) {
           results.errors.push({ studentId: 'unknown', error: 'Student ID is required' });
@@ -176,7 +177,11 @@ export async function POST(
         }
 
         // Calculate percentage
-        const percentage = isAbsent ? 0 : ((marksObtained / exam.totalMarks) * 100).toFixed(2);
+        const percentage = isAbsent ? 0 : ((marksObtained / exam.totalMarks) * 100);
+        const percentageStr = percentage.toFixed(2);
+        
+        // Automatically calculate letter grade based on percentage
+        const letterGrade = isAbsent ? 'F' : calculateLetterGrade(percentage);
 
         // Check if grade already exists
         const existingGrade = await db
@@ -195,8 +200,8 @@ export async function POST(
             .update(studentGrades)
             .set({
               marksObtained: marksObtained?.toString(),
-              grade,
-              percentage: percentage.toString(),
+              grade: letterGrade,
+              percentage: percentageStr,
               remarks,
               isAbsent: isAbsent || false,
               uploadedBy: session.user.id,
@@ -209,8 +214,8 @@ export async function POST(
             examId: id,
             studentId,
             marksObtained: marksObtained?.toString(),
-            grade,
-            percentage: percentage.toString(),
+            grade: letterGrade,
+            percentage: percentageStr,
             remarks,
             isAbsent: isAbsent || false,
             uploadedBy: session.user.id,

@@ -74,29 +74,6 @@ interface Teacher {
   email: string;
 }
 
-interface WorkDone {
-  id: string;
-  classroomId: string;
-  classroomName?: string;
-  classroomGrade?: string;
-  classroomSection?: string;
-  subjectId: string;
-  subjectName: string;
-  subjectCode?: string;
-  teacherId: string;
-  teacherName: string;
-  teacherEmail?: string;
-  date: string;
-  periodNumber: number;
-  topicsCovered: string;
-  homeworkAssigned?: string;
-  remarks?: string;
-  isSubstitute: boolean;
-  substituteAssignmentId?: string;
-  createdAt: string;
-  updatedAt?: string;
-}
-
 export default function StudentPage() {
   const { data: session, isPending } = useSession();
   const router = useRouter();
@@ -166,17 +143,6 @@ export default function StudentPage() {
     queryFn: async () => {
       const res = await fetch(`/api/classrooms/${studentProfile?.classroomId}/teachers`);
       if (!res.ok) throw new Error("Failed to fetch teachers");
-      return res.json();
-    },
-    enabled: !!studentProfile?.classroomId,
-  });
-
-  // Fetch work done records for classroom
-  const { data: workDoneRecords } = useQuery<WorkDone[]>({
-    queryKey: ["work-done", studentProfile?.classroomId],
-    queryFn: async () => {
-      const res = await fetch(`/api/work-done?classroomId=${studentProfile?.classroomId}`);
-      if (!res.ok) throw new Error("Failed to fetch work done records");
       return res.json();
     },
     enabled: !!studentProfile?.classroomId,
@@ -373,12 +339,11 @@ export default function StudentPage() {
         )}
 
         <Tabs defaultValue="homework" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 rounded-xl">
+          <TabsList className="grid w-full grid-cols-4 rounded-xl">
             <TabsTrigger value="homework" className="rounded-lg">Homework</TabsTrigger>
             <TabsTrigger value="timetable" className="rounded-lg">Timetable</TabsTrigger>
             <TabsTrigger value="classroom" className="rounded-lg">Classroom</TabsTrigger>
             <TabsTrigger value="message" className="rounded-lg">Message Teacher</TabsTrigger>
-            <TabsTrigger value="work-done" className="rounded-lg">Work Done</TabsTrigger>
           </TabsList>
 
           {/* Homework Tab */}
@@ -617,59 +582,6 @@ export default function StudentPage() {
                   <Send className="h-4 w-4 mr-2" />
                   Send Message
                 </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Work Done Tab */}
-          <TabsContent value="work-done">
-            <Card className="rounded-2xl shadow-sm">
-              <CardHeader>
-                <CardTitle>Work Done</CardTitle>
-                <CardDescription>View what was taught in your class</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {workDoneRecords?.map((record) => (
-                  <Card key={record.id} className="rounded-xl">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-semibold">{record.subjectName}</h4>
-                            <Badge variant="outline">Period {record.periodNumber}</Badge>
-                            {record.isSubstitute && <Badge variant="secondary">Substitute</Badge>}
-                          </div>
-                          <p className="text-sm text-muted-foreground mb-2">
-                            <strong>Teacher:</strong> {record.teacherName} | <strong>Date:</strong> {record.date}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <div>
-                          <p className="text-sm font-medium">Topics Covered:</p>
-                          <p className="text-sm text-muted-foreground">{record.topicsCovered}</p>
-                        </div>
-                        {record.homeworkAssigned && (
-                          <div>
-                            <p className="text-sm font-medium">Homework Assigned:</p>
-                            <p className="text-sm text-muted-foreground">{record.homeworkAssigned}</p>
-                          </div>
-                        )}
-                        {record.remarks && (
-                          <div>
-                            <p className="text-sm font-medium">Remarks:</p>
-                            <p className="text-sm text-muted-foreground">{record.remarks}</p>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-                {(!workDoneRecords || workDoneRecords.length === 0) && (
-                  <p className="text-center py-8 text-muted-foreground">
-                    No work done records available for your class yet
-                  </p>
-                )}
               </CardContent>
             </Card>
           </TabsContent>

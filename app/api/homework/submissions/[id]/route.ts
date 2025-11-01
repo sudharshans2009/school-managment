@@ -7,7 +7,7 @@ import { auth } from "@/lib/auth";
 // PUT - Grade/update homework submission
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
@@ -16,7 +16,7 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const submissionId = params.id;
+    const { id: submissionId } = await params;
     const body = await req.json();
     const { marksObtained, feedback, status } = body;
 
@@ -73,7 +73,7 @@ export async function PUT(
 // DELETE - Remove homework submission
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
@@ -82,7 +82,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const submissionId = params.id;
+    const { id: submissionId } = await params;
 
     // Fetch submission with homework details
     const submission = await db

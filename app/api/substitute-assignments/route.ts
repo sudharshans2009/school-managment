@@ -56,7 +56,8 @@ export async function GET(request: NextRequest) {
       .from(substituteAssignments)
       .leftJoin(users, eq(substituteAssignments.originalTeacherId, users.id))
       .leftJoin(classrooms, eq(substituteAssignments.classroomId, classrooms.id))
-      .leftJoin(subjects, eq(substituteAssignments.subjectId, subjects.id));
+      .leftJoin(subjects, eq(substituteAssignments.subjectId, subjects.id))
+      .$dynamic();
 
     if (conditions.length > 0) {
       query = query.where(and(...conditions));

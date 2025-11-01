@@ -2,10 +2,25 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { workDone, users, classrooms, subjects } from "@/database/schema";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 // GET - Fetch work done records
 export async function GET(request: NextRequest) {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Only admin and teacher can access work done records
+    if (session.user.role !== "admin" && session.user.role !== "teacher") {
+      return NextResponse.json({ error: "Forbidden: Only admin and teachers can view work done records" }, { status: 403 });
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const classroomId = searchParams.get("classroomId");
     const subjectId = searchParams.get("subjectId");
@@ -87,6 +102,19 @@ export async function GET(request: NextRequest) {
 // POST - Create work done record (after period ends)
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Only admin and teacher can create work done records
+    if (session.user.role !== "admin" && session.user.role !== "teacher") {
+      return NextResponse.json({ error: "Forbidden: Only admin and teachers can create work done records" }, { status: 403 });
+    }
+
     const body = await request.json();
     const {
       classroomId,

@@ -85,3 +85,28 @@ export function getHomeworkStatus(dueDate: Date, submittedAt: Date | null): 'ass
   const now = new Date();
   return now > dueDate ? 'overdue' : 'assigned';
 }
+
+// Grade calculation based on percentage
+export function calculateLetterGrade(percentage: number): string {
+  if (percentage >= 90) return 'A*';
+  if (percentage >= 80) return 'A';
+  if (percentage >= 70) return 'B';
+  if (percentage >= 60) return 'C';
+  if (percentage >= 50) return 'D';
+  if (percentage >= 40) return 'E';
+  return 'F';
+}
+
+// Grade description helper
+export function getGradeDescription(grade: string): string {
+  const descriptions: Record<string, string> = {
+    'A*': 'Outstanding',
+    'A': 'Excellent',
+    'B': 'Good',
+    'C': 'Satisfactory',
+    'D': 'Pass',
+    'E': 'Marginal Pass',
+    'F': 'Fail',
+  };
+  return descriptions[grade] || '';
+}

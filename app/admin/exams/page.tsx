@@ -76,8 +76,8 @@ export default function AdminExamsPage() {
   const queryClient = useQueryClient();
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [filterClassroom, setFilterClassroom] = useState<string>("");
-  const [filterSubject, setFilterSubject] = useState<string>("");
+  const [filterClassroom, setFilterClassroom] = useState<string>("all");
+  const [filterSubject, setFilterSubject] = useState<string>("all");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -99,8 +99,8 @@ export default function AdminExamsPage() {
     queryKey: ["exams", filterClassroom, filterSubject],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (filterClassroom) params.append("classroomId", filterClassroom);
-      if (filterSubject) params.append("subjectId", filterSubject);
+      if (filterClassroom && filterClassroom !== "all") params.append("classroomId", filterClassroom);
+      if (filterSubject && filterSubject !== "all") params.append("subjectId", filterSubject);
 
       const response = await fetch(`/api/exams?${params.toString()}`);
       if (!response.ok) throw new Error("Failed to fetch exams");
@@ -485,7 +485,7 @@ export default function AdminExamsPage() {
                     <SelectValue placeholder="All Classrooms" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Classrooms</SelectItem>
+                    <SelectItem value="all">All Classrooms</SelectItem>
                     {classrooms?.map((classroom) => (
                       <SelectItem key={classroom.id} value={classroom.id}>
                         {classroom.name}
@@ -502,7 +502,7 @@ export default function AdminExamsPage() {
                     <SelectValue placeholder="All Subjects" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Subjects</SelectItem>
+                    <SelectItem value="all">All Subjects</SelectItem>
                     {subjects?.map((subject) => (
                       <SelectItem key={subject.id} value={subject.id}>
                         {subject.name}

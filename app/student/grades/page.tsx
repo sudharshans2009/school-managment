@@ -62,16 +62,16 @@ export default function StudentGradesPage() {
   const { data: session, isPending: sessionPending } = useSession();
   const router = useRouter();
 
-  const [filterSubject, setFilterSubject] = useState<string>("");
-  const [filterExamType, setFilterExamType] = useState<string>("");
+  const [filterSubject, setFilterSubject] = useState<string>("all");
+  const [filterExamType, setFilterExamType] = useState<string>("all");
 
   // Fetch student grades (finalized only)
   const { data: grades, isLoading: gradesLoading } = useQuery<Grade[]>({
     queryKey: ["student-grades", filterSubject, filterExamType],
     queryFn: async () => {
       const params = new URLSearchParams();
-      if (filterSubject) params.append("subjectId", filterSubject);
-      if (filterExamType) params.append("examType", filterExamType);
+      if (filterSubject && filterSubject !== "all") params.append("subjectId", filterSubject);
+      if (filterExamType && filterExamType !== "all") params.append("examType", filterExamType);
 
       const response = await fetch(`/api/students/grades?${params.toString()}`);
       if (!response.ok) throw new Error("Failed to fetch grades");
@@ -133,10 +133,10 @@ export default function StudentGradesPage() {
   };
 
   const getGradeBadgeVariant = (grade: string) => {
-    if (grade === "A+" || grade === "A") return "default";
-    if (grade === "B+" || grade === "B") return "secondary";
-    if (grade === "C+" || grade === "C") return "outline";
-    return "destructive";
+    if (grade === "A*" || grade === "A") return "default";
+    if (grade === "B") return "secondary";
+    if (grade === "C" || grade === "D") return "outline";
+    return "destructive"; // E and F
   };
 
   return (
@@ -225,7 +225,7 @@ export default function StudentGradesPage() {
                     <SelectValue placeholder="All Subjects" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Subjects</SelectItem>
+                    <SelectItem value="all">All Subjects</SelectItem>
                     {subjects.map((subject) => (
                       <SelectItem key={subject.id} value={subject.id}>
                         {subject.name} ({subject.code})
@@ -242,7 +242,7 @@ export default function StudentGradesPage() {
                     <SelectValue placeholder="All Types" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">All Types</SelectItem>
+                    <SelectItem value="all">All Types</SelectItem>
                     <SelectItem value="class_test">Class Test</SelectItem>
                     <SelectItem value="unit_test">Unit Test</SelectItem>
                     <SelectItem value="quarterly">Quarterly</SelectItem>
@@ -250,6 +250,53 @@ export default function StudentGradesPage() {
                     <SelectItem value="final_exam">Final Exam</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Grade Legend */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Grading System</CardTitle>
+            <CardDescription>Understanding your grades</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+              <div className="flex flex-col items-center p-3 bg-primary/10 rounded-lg">
+                <Badge variant="default" className="mb-2">A*</Badge>
+                <span className="text-xs font-medium">Outstanding</span>
+                <span className="text-xs text-muted-foreground">90-100%</span>
+              </div>
+              <div className="flex flex-col items-center p-3 bg-primary/10 rounded-lg">
+                <Badge variant="default" className="mb-2">A</Badge>
+                <span className="text-xs font-medium">Excellent</span>
+                <span className="text-xs text-muted-foreground">80-89%</span>
+              </div>
+              <div className="flex flex-col items-center p-3 bg-secondary/50 rounded-lg">
+                <Badge variant="secondary" className="mb-2">B</Badge>
+                <span className="text-xs font-medium">Good</span>
+                <span className="text-xs text-muted-foreground">70-79%</span>
+              </div>
+              <div className="flex flex-col items-center p-3 bg-secondary/30 rounded-lg">
+                <Badge variant="outline" className="mb-2">C</Badge>
+                <span className="text-xs font-medium">Satisfactory</span>
+                <span className="text-xs text-muted-foreground">60-69%</span>
+              </div>
+              <div className="flex flex-col items-center p-3 bg-secondary/30 rounded-lg">
+                <Badge variant="outline" className="mb-2">D</Badge>
+                <span className="text-xs font-medium">Pass</span>
+                <span className="text-xs text-muted-foreground">50-59%</span>
+              </div>
+              <div className="flex flex-col items-center p-3 bg-destructive/10 rounded-lg">
+                <Badge variant="destructive" className="mb-2">E</Badge>
+                <span className="text-xs font-medium">Marginal Pass</span>
+                <span className="text-xs text-muted-foreground">40-49%</span>
+              </div>
+              <div className="flex flex-col items-center p-3 bg-destructive/10 rounded-lg">
+                <Badge variant="destructive" className="mb-2">F</Badge>
+                <span className="text-xs font-medium">Fail</span>
+                <span className="text-xs text-muted-foreground">&lt;40%</span>
               </div>
             </div>
           </CardContent>

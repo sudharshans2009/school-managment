@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { workDone, users, classrooms, subjects } from "@/database/schema";
 import { eq } from "drizzle-orm";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 // GET - Get single work done record
 export async function GET(
@@ -9,6 +11,19 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Only admin and teacher can access work done records
+    if (session.user.role !== "admin" && session.user.role !== "teacher") {
+      return NextResponse.json({ error: "Forbidden: Only admin and teachers can view work done records" }, { status: 403 });
+    }
+
     const { id } = await params;
 
     const record = await db
@@ -58,6 +73,19 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Only admin and teacher can update work done records
+    if (session.user.role !== "admin" && session.user.role !== "teacher") {
+      return NextResponse.json({ error: "Forbidden: Only admin and teachers can update work done records" }, { status: 403 });
+    }
+
     const { id } = await params;
     const body = await request.json();
     const { topicsCovered, homeworkAssigned, remarks } = body;
@@ -99,6 +127,19 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Only admin and teacher can delete work done records
+    if (session.user.role !== "admin" && session.user.role !== "teacher") {
+      return NextResponse.json({ error: "Forbidden: Only admin and teachers can delete work done records" }, { status: 403 });
+    }
+
     const { id } = await params;
 
     await db.delete(workDone).where(eq(workDone.id, id));
