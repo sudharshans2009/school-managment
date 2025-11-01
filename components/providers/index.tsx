@@ -2,6 +2,7 @@
 
 import { QueryProvider } from "./query-provider";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "sonner";
 import { type ReactNode } from "react";
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -12,7 +13,10 @@ export function Providers({ children }: { children: ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <QueryProvider>{children}</QueryProvider>
+      <QueryProvider>
+        {children}
+        <Toaster richColors position="top-right" />
+      </QueryProvider>
     </ThemeProvider>
   );
 }

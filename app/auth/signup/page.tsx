@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { signUp } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +13,6 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { AuthLayout } from "@/components/layouts/auth-layout";
 
 export default function SignUpPage() {
-  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -24,10 +22,12 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccessMessage("");
 
     // Validation
     if (formData.password.length < 6) {
@@ -56,9 +56,19 @@ export default function SignUpPage() {
         return;
       }
 
-      // Redirect to dashboard after successful signup
-      router.push("/dashboard");
-      router.refresh();
+      // Show success message instead of redirecting
+      setSuccessMessage(
+        "Account created successfully! Please check your email to verify your account before signing in."
+      );
+      setIsLoading(false);
+      
+      // Clear form
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        role: "student",
+      });
     } catch {
       setError("An error occurred. Please try again.");
       setIsLoading(false);
@@ -80,6 +90,14 @@ export default function SignUpPage() {
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
+            {successMessage && (
+              <Alert className="border-green-500 bg-green-50">
+                <AlertDescription className="text-green-700">
+                  {successMessage}
+                </AlertDescription>
+              </Alert>
+            )}
+            
             {error && (
               <Alert variant="destructive">
                 <AlertDescription>{error}</AlertDescription>
