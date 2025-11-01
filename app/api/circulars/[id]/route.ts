@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { circulars, circularAcknowledgments } from "@/database/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 
 // GET single circular
@@ -140,12 +140,18 @@ export async function POST(
       );
     }
 
-    // Check if already acknowledged
-    const existingAck = await db.query.circularAcknowledgments.findFirst({
-      where: eq(circularAcknowledgments.circularId, circularId),
-    });
+    // Check if already acknowledged by this user
+    const existingAck = await db
+      .select()
+      .from(circularAcknowledgments)
+      .where(
+        and(
+          eq(circularAcknowledgments.circularId, circularId),
+          eq(circularAcknowledgments.userId, session.user.id)
+        )
+      );
 
-    if (existingAck) {
+    if (existingAck.length > 0) {
       return NextResponse.json(
         { error: "Already acknowledged" },
         { status: 400 }

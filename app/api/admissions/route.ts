@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { admissionApplications } from "@/database/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 
 // GET - Fetch admission applications
@@ -30,6 +30,7 @@ export async function GET(request: NextRequest) {
     const applications = await db
       .select()
       .from(admissionApplications)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(admissionApplications.createdAt));
 
     return NextResponse.json(applications);
@@ -68,9 +69,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate application number
-    const count = await db.select().from(admissionApplications);
-    const applicationNumber = `ADM-${academicYear}-${String(count.length + 1).padStart(4, "0")}`;
+    // Generate application number using count
+    const countResult = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(admissionApplications);
+    const count = Number(countResult[0]?.count || 0);
+    const applicationNumber = `ADM-${academicYear}-${String(count + 1).padStart(4, "0")}`;
 
     const [application] = await db
       .insert(admissionApplications)

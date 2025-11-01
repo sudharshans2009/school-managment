@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { events, eventRegistrations } from "@/database/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 
 // POST - Register for an event
@@ -44,10 +44,10 @@ export async function POST(
       );
     }
 
-    // Check if max participants reached
+    // Check if max participants reached using count
     if (event.maxParticipants) {
-      const registrationCount = await db
-        .select()
+      const countResult = await db
+        .select({ count: sql<number>`count(*)` })
         .from(eventRegistrations)
         .where(
           and(
@@ -55,8 +55,9 @@ export async function POST(
             eq(eventRegistrations.status, "registered")
           )
         );
+      const registrationCount = Number(countResult[0]?.count || 0);
 
-      if (registrationCount.length >= event.maxParticipants) {
+      if (registrationCount >= event.maxParticipants) {
         return NextResponse.json(
           { error: "Maximum participants reached" },
           { status: 400 }
@@ -64,11 +65,12 @@ export async function POST(
       }
     }
 
-    // Check if already registered
+    // Check if already registered (excluding cancelled registrations)
     const existingRegistration = await db.query.eventRegistrations.findFirst({
       where: and(
         eq(eventRegistrations.eventId, eventId),
-        eq(eventRegistrations.userId, session.user.id)
+        eq(eventRegistrations.userId, session.user.id),
+        eq(eventRegistrations.status, "registered")
       ),
     });
 

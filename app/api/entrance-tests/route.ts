@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { entranceTests } from "@/database/schema";
-import { eq, desc, gte } from "drizzle-orm";
+import { eq, desc, gte, and } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 
 // GET - Fetch entrance tests
@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
     const tests = await db
       .select()
       .from(entranceTests)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(entranceTests.testDate));
 
     return NextResponse.json(tests);

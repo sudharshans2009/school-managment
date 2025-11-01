@@ -96,9 +96,10 @@ export async function POST(request: NextRequest) {
       promotionStatus,
     } = body;
 
-    if (!studentId || !classroomId || !academicYear || !term) {
+    if (!studentId || !classroomId || !academicYear || !term || 
+        totalMarks === undefined || marksObtained === undefined) {
       return NextResponse.json(
-        { error: "Student ID, classroom ID, academic year, and term are required" },
+        { error: "Student ID, classroom ID, academic year, term, total marks, and marks obtained are required" },
         { status: 400 }
       );
     }
