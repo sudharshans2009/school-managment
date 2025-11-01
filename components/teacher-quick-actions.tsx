@@ -3,8 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
-  BookOpen, Users, MessageSquare, FileText, UserCheck, ClipboardList, Quote,
-  Home
+  BookOpen, Users, Home, BarChart3
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -15,9 +14,6 @@ interface TeacherQuickActionsProps {
 }
 
 export function TeacherQuickActions({ 
-  unreadMessages = 0, 
-  isPrimaryTeacher = false,
-  currentPage = ""
 }: TeacherQuickActionsProps) {
   const router = useRouter();
 
@@ -37,6 +33,14 @@ export function TeacherQuickActions({
       icon: BookOpen,
       color: "text-green-500",
       onClick: () => router.push("/teacher/homework"),
+    },
+    {
+      id: "analytics",
+      title: "Analytics",
+      description: "View performance metrics",
+      icon: BarChart3,
+      color: "text-indigo-500",
+      onClick: () => router.push("/teacher/analytics"),
     },
     {
       id: "home",

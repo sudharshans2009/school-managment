@@ -14,6 +14,7 @@ export const dayDurationEnum = pgEnum('day_duration', ['full', 'half']);
 export const holidayForEnum = pgEnum('holiday_for', ['all', 'students', 'teachers', 'office']);
 export const leaveTypeEnum = pgEnum('leave_type', ['sick', 'casual', 'earned', 'duty', 'emergency']);
 export const leaveStatusEnum = pgEnum('leave_status', ['pending', 'approved', 'rejected', 'cancelled']);
+export const examTypeEnum = pgEnum('exam_type', ['class_test', 'unit_test', 'quarterly', 'midterm', 'final_exam']);
 
 // Users Table
 export const users = pgTable('users', {
@@ -317,6 +318,44 @@ export const workDone = pgTable('work_done', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// Exams Table
+export const exams = pgTable('exams', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: varchar('name', { length: 255 }).notNull(),
+  examType: examTypeEnum('exam_type').notNull(),
+  subjectId: uuid('subject_id').notNull().references(() => subjects.id),
+  classroomId: uuid('classroom_id').notNull().references(() => classrooms.id, { onDelete: 'cascade' }),
+  examDate: timestamp('exam_date').notNull(),
+  totalMarks: integer('total_marks').notNull(),
+  passingMarks: integer('passing_marks'),
+  duration: integer('duration'), // in minutes
+  syllabus: text('syllabus'), // Topics covered in the exam
+  instructions: text('instructions'), // Exam instructions
+  isFinalized: boolean('is_finalized').default(false),
+  createdBy: uuid('created_by').notNull().references(() => users.id),
+  finalizedBy: uuid('finalized_by').references(() => users.id),
+  finalizedAt: timestamp('finalized_at'),
+  academicYear: varchar('academic_year', { length: 20 }).notNull(),
+  term: varchar('term', { length: 50 }), // 'Term 1', 'Term 2', etc.
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Student Grades Table
+export const studentGrades = pgTable('student_grades', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  examId: uuid('exam_id').notNull().references(() => exams.id, { onDelete: 'cascade' }),
+  studentId: uuid('student_id').notNull().references(() => students.id, { onDelete: 'cascade' }),
+  marksObtained: decimal('marks_obtained', { precision: 5, scale: 2 }).notNull(),
+  grade: varchar('grade', { length: 5 }), // A+, A, B+, etc.
+  percentage: decimal('percentage', { precision: 5, scale: 2 }),
+  remarks: text('remarks'),
+  isAbsent: boolean('is_absent').default(false),
+  uploadedBy: uuid('uploaded_by').notNull().references(() => users.id), // Teacher who uploaded
+  uploadedAt: timestamp('uploaded_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   teacherAssignments: many(teacherAssignments),
@@ -335,6 +374,9 @@ export const usersRelations = relations(users, ({ many }) => ({
   substituteAssignmentsAsSubstitute: many(substituteAssignments, { relationName: 'substituteTeacher' }),
   substituteAssignmentsAssigned: many(substituteAssignments, { relationName: 'assignedBy' }),
   workDone: many(workDone),
+  examsCreated: many(exams, { relationName: 'examsCreated' }),
+  examsFinalized: many(exams, { relationName: 'examsFinalized' }),
+  gradesUploaded: many(studentGrades),
 }));
 
 export const classroomsRelations = relations(classrooms, ({ many }) => ({
@@ -348,6 +390,7 @@ export const classroomsRelations = relations(classrooms, ({ many }) => ({
   classroomMessages: many(classroomMessages),
   substituteAssignments: many(substituteAssignments),
   workDone: many(workDone),
+  exams: many(exams),
 }));
 
 export const subjectsRelations = relations(subjects, ({ many }) => ({
@@ -356,6 +399,7 @@ export const subjectsRelations = relations(subjects, ({ many }) => ({
   timetable: many(timetable),
   substituteAssignments: many(substituteAssignments),
   workDone: many(workDone),
+  exams: many(exams),
 }));
 
 export const teacherAssignmentsRelations = relations(teacherAssignments, ({ one }) => ({
@@ -371,6 +415,7 @@ export const studentsRelations = relations(students, ({ one, many }) => ({
   homeworkSubmissions: many(homeworkSubmissions),
   attendance: many(attendance),
   feePayments: many(feePayments),
+  grades: many(studentGrades),
 }));
 
 export const homeworkRelations = relations(homework, ({ one, many }) => ({
@@ -448,4 +493,18 @@ export const workDoneRelations = relations(workDone, ({ one }) => ({
   subject: one(subjects, { fields: [workDone.subjectId], references: [subjects.id] }),
   teacher: one(users, { fields: [workDone.teacherId], references: [users.id] }),
   substituteAssignment: one(substituteAssignments, { fields: [workDone.substituteAssignmentId], references: [substituteAssignments.id] }),
+}));
+
+export const examsRelations = relations(exams, ({ one, many }) => ({
+  subject: one(subjects, { fields: [exams.subjectId], references: [subjects.id] }),
+  classroom: one(classrooms, { fields: [exams.classroomId], references: [classrooms.id] }),
+  createdBy: one(users, { fields: [exams.createdBy], references: [users.id], relationName: 'examsCreated' }),
+  finalizedBy: one(users, { fields: [exams.finalizedBy], references: [users.id], relationName: 'examsFinalized' }),
+  grades: many(studentGrades),
+}));
+
+export const studentGradesRelations = relations(studentGrades, ({ one }) => ({
+  exam: one(exams, { fields: [studentGrades.examId], references: [exams.id] }),
+  student: one(students, { fields: [studentGrades.studentId], references: [students.id] }),
+  uploadedBy: one(users, { fields: [studentGrades.uploadedBy], references: [users.id] }),
 }));

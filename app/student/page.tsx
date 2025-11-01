@@ -13,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   BookOpen, Calendar, Send, Clock, CheckCircle2, 
-  AlertCircle, Loader2, Users, School 
+  AlertCircle, Loader2, Users, School, BarChart3
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -311,6 +311,51 @@ export default function StudentPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Quick Actions */}
+        <Card className="rounded-2xl shadow-sm">
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Access your student tools and resources</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Button
+                variant="outline"
+                className="h-auto p-4 justify-start hover:border-primary hover:bg-primary/5"
+                onClick={() => router.push("/student/grades")}
+              >
+                <BookOpen className="h-5 w-5 mr-3 text-blue-500" />
+                <div className="text-left">
+                  <div className="font-semibold">My Grades</div>
+                  <div className="text-sm text-muted-foreground">View exam results</div>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto p-4 justify-start hover:border-primary hover:bg-primary/5"
+                onClick={() => router.push("/student/analytics")}
+              >
+                <BarChart3 className="h-5 w-5 mr-3 text-indigo-500" />
+                <div className="text-left">
+                  <div className="font-semibold">Analytics</div>
+                  <div className="text-sm text-muted-foreground">View performance metrics</div>
+                </div>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto p-4 justify-start hover:border-primary hover:bg-primary/5"
+                onClick={() => router.push("/student")}
+              >
+                <School className="h-5 w-5 mr-3 text-purple-500" />
+                <div className="text-left">
+                  <div className="font-semibold">Dashboard</div>
+                  <div className="text-sm text-muted-foreground">Back to main page</div>
+                </div>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Today's Quote */}
         {todayQuote && (

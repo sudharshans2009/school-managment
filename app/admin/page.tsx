@@ -15,7 +15,9 @@ import {
   UserPlus,
   ClipboardCheck,
   DollarSign,
-  BookMarked
+  BookMarked,
+  Award,
+  BarChart3
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -135,6 +137,8 @@ export default function AdminDashboard() {
     { title: "Manage Students", href: "/admin/students", icon: Users, description: "Enroll and manage students" },
     { title: "Manage Teachers", href: "/admin/teachers", icon: GraduationCap, description: "Assign teachers to classes" },
     { title: "Manage Subjects", href: "/admin/subjects", icon: BookOpen, description: "Add and edit subjects" },
+    { title: "Manage Exams", href: "/admin/exams", icon: Award, description: "Create exams and manage grades" },
+    { title: "Analytics Dashboard", href: "/admin/analytics", icon: BarChart3, description: "View school performance metrics" },
     { title: "Calendar & Holidays", href: "/admin/calendar", icon: Calendar, description: "Manage working days and timetables" },
     { title: "Attendance Records", href: "/admin/attendance", icon: UserCheck, description: "View and mark attendance" },
     { title: "Announcements", href: "/admin/announcements", icon: ClipboardList, description: "Create and manage announcements" },
