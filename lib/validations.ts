@@ -33,7 +33,8 @@ export const createSubjectSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   code: z.string().min(2, "Code is required"),
   description: z.string().optional(),
-  credits: z.number().min(1).default(1),
+  applicableGrades: z.array(z.string()).optional(),
+  applicableSections: z.array(z.string()).optional(),
 });
 
 // Teacher Assignment Schema

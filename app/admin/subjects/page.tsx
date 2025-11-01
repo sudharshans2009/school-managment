@@ -5,15 +5,20 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Plus, Search, Edit2, Trash2, Users, GraduationCap, Filter } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { BookOpen, Plus, Search, Edit2, Trash2, Users } from "lucide-react";
 import Link from "next/link";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { SubjectForm } from "@/components/forms/subject-form";
+import {
+  createSubject,
+  updateSubject,
+  deleteSubject,
+  getSubjects,
+  type SubjectFormData,
+} from "@/app/actions/subjects";
+import { toast } from "sonner";
 
 interface Subject {
   id: string;
@@ -31,146 +36,90 @@ export default function SubjectsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
-  const [selectedGrades, setSelectedGrades] = useState<string[]>([]);
-  const [selectedSections, setSelectedSections] = useState<string[]>([]);
-  const [allGrades, setAllGrades] = useState(true);
-  const [allSections, setAllSections] = useState(true);
   const queryClient = useQueryClient();
 
-  const availableGrades = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
-  const availableSections = ["A", "B", "C", "D", "E"];
+  // Use TanStack Query to fetch subjects via server action
+  const { data: subjectsResult, isLoading } = useQuery({
+    queryKey: ["subjects"],
+    queryFn: getSubjects,
+  });
 
-  // Reset filters when dialog opens/closes
+  const subjects = subjectsResult?.success ? (subjectsResult.data as Subject[]) : [];
+
+  // Create mutation using server action
+  const createMutation = useMutation({
+    mutationFn: createSubject,
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["subjects"] });
+        setOpenCreate(false);
+        toast.success("Subject created successfully");
+      } else {
+        toast.error(result.error || "Failed to create subject");
+      }
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  // Update mutation using server action
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: SubjectFormData }) =>
+      updateSubject(id, data),
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["subjects"] });
+        setEditingSubject(null);
+        toast.success("Subject updated successfully");
+      } else {
+        toast.error(result.error || "Failed to update subject");
+      }
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  // Delete mutation using server action
+  const deleteMutation = useMutation({
+    mutationFn: deleteSubject,
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["subjects"] });
+        toast.success("Subject deleted successfully");
+      } else {
+        toast.error(result.error || "Failed to delete subject");
+      }
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleCreate = async (data: SubjectFormData) => {
+    await createMutation.mutateAsync(data);
+  };
+
+  const handleUpdate = async (data: SubjectFormData) => {
+    if (editingSubject) {
+      await updateMutation.mutateAsync({ id: editingSubject.id, data });
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (confirm("Are you sure you want to delete this subject?")) {
+      await deleteMutation.mutateAsync(id);
+    }
+  };
+
   const handleDialogChange = (open: boolean) => {
-    setOpenCreate(open);
+    if (openCreate) {
+      setOpenCreate(open);
+    }
     if (!open) {
       setEditingSubject(null);
-      setSelectedGrades([]);
-      setSelectedSections([]);
-      setAllGrades(true);
-      setAllSections(true);
-    } else if (editingSubject) {
-      // Load existing filters when editing
-      const grades = editingSubject.applicableGrades ? JSON.parse(editingSubject.applicableGrades) : [];
-      const sections = editingSubject.applicableSections ? JSON.parse(editingSubject.applicableSections) : [];
-      setSelectedGrades(grades);
-      setSelectedSections(sections);
-      setAllGrades(grades.length === 0);
-      setAllSections(sections.length === 0);
     }
-  };
-
-  const { data: subjects, isLoading } = useQuery<Subject[]>({
-    queryKey: ["subjects"],
-    queryFn: async () => {
-      const response = await fetch("/api/subjects");
-      if (!response.ok) throw new Error("Failed to fetch subjects");
-      return response.json();
-    },
-  });
-
-  const createMutation = useMutation({
-    mutationFn: async (data: {
-      name: string;
-      code: string;
-      description?: string;
-      applicableGrades?: string[];
-      applicableSections?: string[];
-    }) => {
-      const response = await fetch("/api/subjects", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to create subject");
-      }
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["subjects"] });
-      setOpenCreate(false);
-      setSelectedGrades([]);
-      setSelectedSections([]);
-      setAllGrades(true);
-      setAllSections(true);
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async (data: {
-      id: string;
-      name?: string;
-      code?: string;
-      description?: string;
-      applicableGrades?: string[];
-      applicableSections?: string[];
-    }) => {
-      const { id, ...body } = data;
-      const response = await fetch(`/api/subjects/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to update subject");
-      }
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["subjects"] });
-      setEditingSubject(null);
-      setSelectedGrades([]);
-      setSelectedSections([]);
-      setAllGrades(true);
-      setAllSections(true);
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const response = await fetch(`/api/subjects/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to delete subject");
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["subjects"] });
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-
-    const data = {
-      name: formData.get("name") as string,
-      code: formData.get("code") as string,
-      description: formData.get("description") as string,
-      applicableGrades: allGrades ? [] : selectedGrades,
-      applicableSections: allSections ? [] : selectedSections,
-    };
-
-    if (editingSubject) {
-      updateMutation.mutate({ id: editingSubject.id, ...data });
-    } else {
-      createMutation.mutate(data);
-    }
-  };
-
-  const toggleGrade = (grade: string) => {
-    setSelectedGrades(prev =>
-      prev.includes(grade) ? prev.filter(g => g !== grade) : [...prev, grade]
-    );
-  };
-
-  const toggleSection = (section: string) => {
-    setSelectedSections(prev =>
-      prev.includes(section) ? prev.filter(s => s !== section) : [...prev, section]
-    );
   };
 
   const filteredSubjects = subjects?.filter(
@@ -185,6 +134,20 @@ export default function SubjectsPage() {
       teacherMap.set(assignment.teacher.id, assignment.teacher.name);
     });
     return Array.from(teacherMap.values());
+  };
+
+  const getGradesDisplay = (applicableGrades: string | null) => {
+    if (!applicableGrades) return "All Grades";
+    const grades = JSON.parse(applicableGrades) as string[];
+    if (grades.length === 0) return "All Grades";
+    return `Grade ${grades.join(", ")}`;
+  };
+
+  const getSectionsDisplay = (applicableSections: string | null) => {
+    if (!applicableSections) return "All Sections";
+    const sections = JSON.parse(applicableSections) as string[];
+    if (sections.length === 0) return "All Sections";
+    return `Section ${sections.join(", ")}`;
   };
 
   if (isLoading) {
@@ -206,164 +169,45 @@ export default function SubjectsPage() {
               </Button>
             </Link>
             <BookOpen className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">
-                Subject Management
-              </h1>
+            <h1 className="text-2xl font-bold">Subject Management</h1>
           </div>
           <Dialog
             open={openCreate || !!editingSubject}
             onOpenChange={handleDialogChange}
           >
-              <DialogTrigger asChild>
-                <Button className="rounded-xl">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Subject
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                <DialogHeader>
-                  <DialogTitle>
-                    {editingSubject ? "Edit Subject" : "Add New Subject"}
-                  </DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <Label htmlFor="name">Subject Name *</Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      placeholder="e.g., Mathematics"
-                      required
-                      defaultValue={editingSubject?.name}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="code">Subject Code *</Label>
-                    <Input
-                      id="code"
-                      name="code"
-                      placeholder="e.g., MATH-101"
-                      required
-                      defaultValue={editingSubject?.code}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                      id="description"
-                      name="description"
-                      placeholder="Brief description of the subject"
-                      rows={3}
-                      defaultValue={editingSubject?.description || ""}
-                    />
-                  </div>
-
-                  {/* Grade Filter */}
-                  <div className="space-y-2">
-                    <Label>Applicable for Classes</Label>
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Checkbox
-                        id="allGrades"
-                        checked={allGrades}
-                        onCheckedChange={(checked) => {
-                          setAllGrades(checked as boolean);
-                          if (checked) setSelectedGrades([]);
-                        }}
-                      />
-                      <label htmlFor="allGrades" className="text-sm font-medium cursor-pointer">
-                        All Classes
-                      </label>
-                    </div>
-                    {!allGrades && (
-                      <div className="grid grid-cols-6 gap-2 p-3 border rounded-md">
-                        {availableGrades.map((grade) => (
-                          <div key={grade} className="flex items-center space-x-2">
-                            <Checkbox
-                              id={`grade-${grade}`}
-                              checked={selectedGrades.includes(grade)}
-                              onCheckedChange={() => toggleGrade(grade)}
-                            />
-                            <label htmlFor={`grade-${grade}`} className="text-sm cursor-pointer">
-                              Class {grade}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Section Filter */}
-                  <div className="space-y-2">
-                    <Label>Applicable for Sections</Label>
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Checkbox
-                        id="allSections"
-                        checked={allSections}
-                        onCheckedChange={(checked) => {
-                          setAllSections(checked as boolean);
-                          if (checked) setSelectedSections([]);
-                        }}
-                      />
-                      <label htmlFor="allSections" className="text-sm font-medium cursor-pointer">
-                        All Sections
-                      </label>
-                    </div>
-                    {!allSections && (
-                      <div className="grid grid-cols-5 gap-2 p-3 border rounded-md">
-                        {availableSections.map((section) => (
-                          <div key={section} className="flex items-center space-x-2">
-                            <Checkbox
-                              id={`section-${section}`}
-                              checked={selectedSections.includes(section)}
-                              onCheckedChange={() => toggleSection(section)}
-                            />
-                            <label htmlFor={`section-${section}`} className="text-sm cursor-pointer">
-                              Section {section}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {(createMutation.error || updateMutation.error) && (
-                    <Alert variant="destructive">
-                      <AlertDescription>
-                        {createMutation.error?.message || updateMutation.error?.message}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="rounded-xl"
-                      onClick={() => {
-                        setOpenCreate(false);
-                        setEditingSubject(null);
-                        setSelectedGrades([]);
-                        setSelectedSections([]);
-                        setAllGrades(true);
-                        setAllSections(true);
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      className="rounded-xl"
-                      disabled={createMutation.isPending || updateMutation.isPending}
-                    >
-                      {createMutation.isPending || updateMutation.isPending
-                        ? "Saving..."
-                        : editingSubject
-                        ? "Update"
-                        : "Create"}
-                    </Button>
-                  </div>
-                </form>
-              </DialogContent>
-            </Dialog>
+            <DialogTrigger asChild>
+              <Button className="rounded-xl" onClick={() => setOpenCreate(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Subject
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>
+                  {editingSubject ? "Edit Subject" : "Add New Subject"}
+                </DialogTitle>
+              </DialogHeader>
+              <SubjectForm
+                initialData={
+                  editingSubject
+                    ? {
+                        name: editingSubject.name,
+                        code: editingSubject.code,
+                        description: editingSubject.description || undefined,
+                        applicableGrades: editingSubject.applicableGrades
+                          ? JSON.parse(editingSubject.applicableGrades)
+                          : [],
+                        applicableSections: editingSubject.applicableSections
+                          ? JSON.parse(editingSubject.applicableSections)
+                          : [],
+                      }
+                    : undefined
+                }
+                onSubmit={editingSubject ? handleUpdate : handleCreate}
+                isLoading={createMutation.isPending || updateMutation.isPending}
+              />
+            </DialogContent>
+          </Dialog>
         </div>
 
         <Card className="mb-6 rounded-2xl shadow-sm">
@@ -398,7 +242,7 @@ export default function SubjectsPage() {
                         {subject.code}
                       </Badge>
                     </div>
-                    <div className="flex space-x-1">
+                    <div className="flex gap-1">
                       <Button
                         variant="ghost"
                         size="icon"
@@ -409,15 +253,7 @@ export default function SubjectsPage() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => {
-                          if (
-                            confirm(
-                              "Are you sure you want to delete this subject? This will remove all teacher assignments."
-                            )
-                          ) {
-                            deleteMutation.mutate(subject.id);
-                          }
-                        }}
+                        onClick={() => handleDelete(subject.id)}
                         disabled={deleteMutation.isPending}
                       >
                         <Trash2 className="h-4 w-4 text-red-500" />
@@ -425,80 +261,44 @@ export default function SubjectsPage() {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent>
                   {subject.description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 mb-3">
                       {subject.description}
                     </p>
                   )}
-                  
-                  {/* Class Filter Display */}
-                  <div className="pt-2 border-t">
-                    <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-gray-600 dark:text-gray-400 flex items-center">
-                        <GraduationCap className="h-4 w-4 mr-1" />
-                        Classes
-                      </span>
-                      <span className="font-semibold text-xs">
-                        {subject.applicableGrades && JSON.parse(subject.applicableGrades).length > 0
-                          ? `${JSON.parse(subject.applicableGrades).length} classes`
-                          : "All Classes"}
+
+                  <div className="space-y-2 mb-3">
+                    <div className="text-sm">
+                      <span className="font-medium">Grades: </span>
+                      <span className="text-gray-600">
+                        {getGradesDisplay(subject.applicableGrades)}
                       </span>
                     </div>
-                    {subject.applicableGrades && JSON.parse(subject.applicableGrades).length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {JSON.parse(subject.applicableGrades).map((grade: string) => (
-                          <Badge key={grade} variant="outline" className="text-xs">
-                            Class {grade}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Section Filter Display */}
-                  {subject.applicableSections && JSON.parse(subject.applicableSections).length > 0 && (
-                    <div className="pt-2 border-t">
-                      <div className="flex items-center justify-between text-sm mb-1">
-                        <span className="text-gray-600 dark:text-gray-400 flex items-center">
-                          <Filter className="h-4 w-4 mr-1" />
-                          Sections
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {JSON.parse(subject.applicableSections).map((section: string) => (
-                          <Badge key={section} variant="outline" className="text-xs">
-                            Section {section}
-                          </Badge>
-                        ))}
-                      </div>
+                    <div className="text-sm">
+                      <span className="font-medium">Sections: </span>
+                      <span className="text-gray-600">
+                        {getSectionsDisplay(subject.applicableSections)}
+                      </span>
                     </div>
-                  )}
+                  </div>
 
-                  <div className="flex items-center justify-between text-sm pt-2 border-t">
-                    <span className="text-gray-600 dark:text-gray-400 flex items-center">
-                      <Users className="h-4 w-4 mr-1" />
-                      Teachers
-                    </span>
-                    <span className="font-semibold">
-                      {uniqueTeachers(subject).length}
+                  <div className="flex items-center text-sm text-gray-600">
+                    <Users className="h-4 w-4 mr-2" />
+                    <span>
+                      {uniqueTeachers(subject).length === 0
+                        ? "No teachers assigned"
+                        : `${uniqueTeachers(subject).length} teacher(s)`}
                     </span>
                   </div>
+
                   {uniqueTeachers(subject).length > 0 && (
-                    <div className="pt-2 border-t">
-                      <p className="text-xs text-gray-500 mb-2">Assigned to:</p>
-                      <div className="flex flex-wrap gap-1">
-                        {uniqueTeachers(subject).slice(0, 3).map((teacherName, idx) => (
-                          <Badge key={idx} variant="outline" className="text-xs">
-                            {teacherName}
-                          </Badge>
-                        ))}
-                        {uniqueTeachers(subject).length > 3 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{uniqueTeachers(subject).length - 3} more
-                          </Badge>
-                        )}
-                      </div>
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {uniqueTeachers(subject).map((teacherName, index) => (
+                        <Badge key={index} variant="outline" className="text-xs">
+                          {teacherName}
+                        </Badge>
+                      ))}
                     </div>
                   )}
                 </CardContent>
