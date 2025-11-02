@@ -3,6 +3,7 @@
 import { ReactNode } from "react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   GraduationCap,
   LogOut,
@@ -15,6 +16,7 @@ import {
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -30,6 +32,18 @@ export function DashboardLayout({
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
+
+  // Fetch announcements count for notification badge
+  const { data: announcements } = useQuery<{ id: string }[]>({
+    queryKey: ["announcements"],
+    queryFn: async () => {
+      const response = await fetch("/api/announcements");
+      if (!response.ok) return [];
+      return response.json();
+    },
+    enabled: !!session,
+    refetchInterval: 60000, // Refetch every minute
+  });
 
   const handleSignOut = async () => {
     await signOut();
@@ -68,9 +82,21 @@ export function DashboardLayout({
               </Link>
 
               <Link href="/notifications">
-                <Button variant="ghost" size="sm" className="rounded-xl">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-xl relative"
+                >
                   <Bell className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Notifications</span>
+                  {announcements && announcements.length > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                    >
+                      {announcements.length > 9 ? "9+" : announcements.length}
+                    </Badge>
+                  )}
                 </Button>
               </Link>
 
