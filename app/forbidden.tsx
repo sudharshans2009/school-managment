@@ -21,7 +21,7 @@ export default function Forbidden() {
           </div>
           <CardTitle className="text-2xl">Access Forbidden</CardTitle>
           <CardDescription className="text-base">
-            You don't have permission to access this page. Please contact your
+            You don&apos;t have permission to access this page. Please contact your
             administrator if you believe this is an error.
           </CardDescription>
         </CardHeader>
