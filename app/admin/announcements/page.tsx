@@ -392,7 +392,7 @@ export default function AdminAnnouncementsPage() {
                   <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
                     <div className="flex-1 w-full">
                       <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
-                        <CardTitle className="text-lg sm:text-xl break-words">
+                        <CardTitle className="text-lg sm:text-xl wrap-break-word">
                           {announcement.title}
                         </CardTitle>
                         {getPriorityBadge(announcement.priority)}
@@ -446,7 +446,7 @@ export default function AdminAnnouncementsPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap break-words">
+                  <p className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap wrap-break-word">
                     {announcement.content}
                   </p>
                 </CardContent>

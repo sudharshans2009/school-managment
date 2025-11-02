@@ -28,6 +28,18 @@ interface DashboardLayoutProps {
   icon?: LucideIcon;
 }
 
+// Extended user type with role
+interface ExtendedUser {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  email: string;
+  emailVerified: boolean;
+  name: string;
+  image?: string | null;
+  role?: string;
+}
+
 export function DashboardLayout({
   children,
   title = "Dashboard",
@@ -41,8 +53,9 @@ export function DashboardLayout({
 
   // Get role-based dashboard URL
   const getDashboardUrl = () => {
-    if (!session?.user?.role) return "/dashboard";
-    const role = session.user.role.toLowerCase();
+    const userRole = (session?.user as ExtendedUser)?.role;
+    if (!userRole) return "/dashboard";
+    const role = userRole.toLowerCase();
     if (role === "admin") return "/admin";
     if (role === "teacher") return "/teacher";
     if (role === "student") return "/student";
@@ -71,7 +84,7 @@ export function DashboardLayout({
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Navbar */}
-      <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

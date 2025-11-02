@@ -22,11 +22,11 @@ export async function GET(request: NextRequest) {
     const conditions = [];
 
     if (eventType) {
-      conditions.push(eq(events.eventType, eventType as any));
+      conditions.push(eq(events.eventType, eventType as "academic" | "sports" | "cultural" | "meeting" | "holiday" | "other"));
     }
 
     if (status) {
-      conditions.push(eq(events.status, status as any));
+      conditions.push(eq(events.status, status as "upcoming" | "ongoing" | "completed" | "cancelled"));
     }
 
     if (startDate && endDate) {

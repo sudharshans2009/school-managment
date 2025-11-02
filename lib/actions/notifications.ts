@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/database";
-import { notifications, users, students, classrooms } from "@/database/schema";
+import { notifications, users, students } from "@/database/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -283,14 +283,19 @@ export async function getTeacherUserIds() {
 // Helper function to get class teacher user ID
 export async function getClassTeacherUserId(classroomId: string) {
   try {
-    const classroom = await db.query.classrooms.findFirst({
-      where: eq(classrooms.id, classroomId),
+    const { teacherAssignments } = await import("@/database/schema");
+    
+    const assignment = await db.query.teacherAssignments.findFirst({
+      where: and(
+        eq(teacherAssignments.classroomId, classroomId),
+        eq(teacherAssignments.isPrimary, true)
+      ),
       columns: {
-        classTeacherId: true,
+        teacherId: true,
       },
     });
 
-    return classroom?.classTeacherId || null;
+    return assignment?.teacherId || null;
   } catch (error) {
     console.error("Error fetching class teacher:", error);
     return null;
