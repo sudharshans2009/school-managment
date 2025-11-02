@@ -35,14 +35,15 @@ export function DashboardLayout({
 
   // Fetch announcements count for notification badge
   const { data: announcements } = useQuery<{ id: string }[]>({
-    queryKey: ["announcements"],
+    queryKey: ["announcements-count"],
     queryFn: async () => {
       const response = await fetch("/api/announcements");
       if (!response.ok) return [];
       return response.json();
     },
     enabled: !!session,
-    refetchInterval: 60000, // Refetch every minute
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+    staleTime: 4 * 60 * 1000, // Consider data stale after 4 minutes
   });
 
   const handleSignOut = async () => {
