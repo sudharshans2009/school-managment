@@ -237,15 +237,15 @@ export default function TimetablePage() {
   return (
     <DashboardLayout title="Timetable Management" description="Admin Portal">
       <div>
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center space-x-3">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             <Link href="/admin">
               <Button variant="ghost" size="sm">
                 ← Back
               </Button>
             </Link>
-            <Calendar className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">Timetable Management</h1>
+            <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            <h1 className="text-xl sm:text-2xl font-bold">Timetable Management</h1>
           </div>
           <Dialog
             open={openCreate || !!editingEntry}
@@ -255,14 +255,14 @@ export default function TimetablePage() {
             }}
           >
             <DialogTrigger asChild>
-              <Button disabled={!selectedClassroom}>
+              <Button disabled={!selectedClassroom} className="w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Period
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>
+                <DialogTitle className="text-lg sm:text-xl">
                   {editingEntry ? "Edit Period" : "Add New Period"}
                 </DialogTitle>
               </DialogHeader>

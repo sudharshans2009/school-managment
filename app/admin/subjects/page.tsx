@@ -232,22 +232,22 @@ export default function SubjectsPage() {
   return (
     <DashboardLayout title="Subjects Management" description="Admin Portal">
       <div>
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center space-x-3">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             <Link href="/admin">
               <Button variant="ghost" size="sm" className="rounded-xl">
                 ← Back
               </Button>
             </Link>
-            <BookOpen className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">Subject Management</h1>
+            <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            <h1 className="text-xl sm:text-2xl font-bold">Subject Management</h1>
           </div>
           <Dialog
             open={openCreate || !!editingSubject}
             onOpenChange={handleDialogChange}
           >
             <DialogTrigger asChild>
-              <Button className="rounded-xl">
+              <Button className="rounded-xl w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Subject
               </Button>
