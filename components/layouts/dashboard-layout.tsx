@@ -67,15 +67,19 @@ export function DashboardLayout({
                 </Button>
               </Link>
 
-              <Button variant="ghost" size="sm" className="rounded-xl">
-                <Bell className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Notifications</span>
-              </Button>
+              <Link href="/notifications">
+                <Button variant="ghost" size="sm" className="rounded-xl">
+                  <Bell className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Notifications</span>
+                </Button>
+              </Link>
 
-              <Button variant="ghost" size="sm" className="rounded-xl">
-                <User className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Profile</span>
-              </Button>
+              <Link href="/profile">
+                <Button variant="ghost" size="sm" className="rounded-xl">
+                  <User className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Profile</span>
+                </Button>
+              </Link>
 
               {/* Theme Toggle */}
               <Button
