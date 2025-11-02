@@ -12,6 +12,8 @@ import {
   Home,
   Bell,
   User,
+  ArrowLeft,
+  LucideIcon,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -22,16 +24,30 @@ interface DashboardLayoutProps {
   children: ReactNode;
   title?: string;
   description?: string;
+  showBackButton?: boolean;
+  icon?: LucideIcon;
 }
 
 export function DashboardLayout({
   children,
   title = "Dashboard",
   description,
+  showBackButton = false,
+  icon,
 }: DashboardLayoutProps) {
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
+
+  // Get role-based dashboard URL
+  const getDashboardUrl = () => {
+    if (!session?.user?.role) return "/dashboard";
+    const role = session.user.role.toLowerCase();
+    if (role === "admin") return "/admin";
+    if (role === "teacher") return "/teacher";
+    if (role === "student") return "/student";
+    return "/dashboard";
+  };
 
   // Fetch announcements count for notification badge
   const { data: announcements } = useQuery<{ id: string }[]>({
@@ -58,24 +74,40 @@ export function DashboardLayout({
       <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
-            >
-              <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-xl shadow-sm">
-                <GraduationCap className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="text-lg font-semibold">{title}</h1>
-                {description && (
-                  <p className="text-xs text-muted-foreground">{description}</p>
-                )}
-              </div>
-            </Link>
+            <div className="flex items-center gap-3">
+              {showBackButton && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => router.back()}
+                  className="rounded-xl"
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                  <span className="sr-only">Go back</span>
+                </Button>
+              )}
+              <Link
+                href={getDashboardUrl()}
+                className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
+              >
+                <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-xl shadow-sm">
+                  {(() => {
+                    const Icon = icon || GraduationCap;
+                    return <Icon className="w-6 h-6 text-primary-foreground" />;
+                  })()}
+                </div>
+                <div>
+                  <h1 className="text-lg font-semibold">{title}</h1>
+                  {description && (
+                    <p className="text-xs text-muted-foreground">{description}</p>
+                  )}
+                </div>
+              </Link>
+            </div>
 
             <div className="flex items-center gap-2">
               {/* Navigation Links */}
-              <Link href="/">
+              <Link href={getDashboardUrl()}>
                 <Button variant="ghost" size="sm" className="rounded-xl">
                   <Home className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Home</span>

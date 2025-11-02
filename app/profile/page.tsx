@@ -24,6 +24,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 
 interface UserProfile {
   id: string;
@@ -61,21 +62,27 @@ export default function ProfilePage() {
 
   if (sessionPending || isLoading) {
     return (
-      <div className="container max-w-4xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
-        <Skeleton className="h-10 sm:h-12 w-48 sm:w-64" />
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 sm:h-8 w-40 sm:w-48" />
-            <Skeleton className="h-4 w-48 sm:w-64" />
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Skeleton className="h-20 w-20 sm:h-24 sm:w-24 rounded-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-full" />
-          </CardContent>
-        </Card>
-      </div>
+      <DashboardLayout
+        title="Profile"
+        description="View your account information"
+        showBackButton={true}
+        icon={User}
+      >
+        <div className="space-y-4 sm:space-y-6">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 sm:h-8 w-40 sm:w-48" />
+              <Skeleton className="h-4 w-48 sm:w-64" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Skeleton className="h-20 w-20 sm:h-24 sm:w-24 rounded-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+            </CardContent>
+          </Card>
+        </div>
+      </DashboardLayout>
     );
   }
 
@@ -86,13 +93,18 @@ export default function ProfilePage() {
 
   if (error || !profile) {
     return (
-      <div className="container max-w-4xl mx-auto p-4 sm:p-6">
+      <DashboardLayout
+        title="Profile"
+        description="View your account information"
+        showBackButton={true}
+        icon={User}
+      >
         <Alert variant="destructive">
           <AlertDescription>
             Failed to load profile. Please try again later.
           </AlertDescription>
         </Alert>
-      </div>
+      </DashboardLayout>
     );
   }
 
@@ -119,14 +131,12 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="container max-w-4xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Profile</h1>
-          <p className="text-sm sm:text-base text-muted-foreground">View your account information</p>
-        </div>
-      </div>
-
+    <DashboardLayout
+      title="Profile"
+      description="View your account information"
+      showBackButton={true}
+      icon={User}
+    >
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row items-center sm:space-x-4 space-y-3 sm:space-y-0">
@@ -269,6 +279,6 @@ export default function ProfilePage() {
           )}
         </CardContent>
       </Card>
-    </div>
+    </DashboardLayout>
   );
 }
