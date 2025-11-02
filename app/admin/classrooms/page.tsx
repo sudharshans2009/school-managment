@@ -126,24 +126,24 @@ export default function ClassroomsPage() {
   return (
     <DashboardLayout title="Classrooms Management" description="Admin Portal">
       <div>
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center space-x-3">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             <Link href="/admin">
               <Button variant="ghost" size="sm" className="rounded-xl">
                 ← Back
               </Button>
             </Link>
-            <School className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">Classroom Management</h1>
+            <School className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            <h1 className="text-xl sm:text-2xl font-bold">Classroom Management</h1>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
               size="sm"
               onClick={() =>
                 setViewMode(viewMode === "grid" ? "table" : "grid")
               }
-              className="rounded-xl"
+              className="rounded-xl flex-1 sm:flex-none"
             >
               {viewMode === "grid" ? (
                 <>
@@ -159,7 +159,7 @@ export default function ClassroomsPage() {
             </Button>
             <Dialog open={openCreate} onOpenChange={setOpenCreate}>
               <DialogTrigger asChild>
-                <Button className="rounded-xl">
+                <Button className="rounded-xl flex-1 sm:flex-none">
                   <Plus className="h-4 w-4 mr-2" />
                   Create Classroom
                 </Button>

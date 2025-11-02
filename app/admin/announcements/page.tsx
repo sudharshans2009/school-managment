@@ -202,16 +202,16 @@ export default function AdminAnnouncementsPage() {
 
   return (
     <DashboardLayout title="Admin Portal" description="Manage Announcements">
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link href="/admin">
               <Button variant="ghost" size="sm" className="rounded-xl">
                 ← Back
               </Button>
             </Link>
-            <Bell className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">Announcements</h1>
+            <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            <h1 className="text-xl sm:text-2xl font-bold">Announcements</h1>
           </div>
           <Dialog
             open={openCreate || !!editingAnnouncement}
@@ -222,14 +222,14 @@ export default function AdminAnnouncementsPage() {
             }}
           >
             <DialogTrigger asChild>
-              <Button className="rounded-xl">
+              <Button className="rounded-xl w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 New Announcement
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>
+                <DialogTitle className="text-lg sm:text-xl">
                   {editingAnnouncement
                     ? "Edit Announcement"
                     : "Create New Announcement"}
@@ -342,15 +342,15 @@ export default function AdminAnnouncementsPage() {
         {/* Filter */}
         <Card className="rounded-2xl shadow-sm">
           <CardContent className="p-4">
-            <div className="flex items-center gap-4">
-              <Label>Filter by Classroom:</Label>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+              <Label className="text-sm sm:text-base">Filter by Classroom:</Label>
               <Select
                 value={filterClassroom || "all"}
                 onValueChange={(val) =>
                   setFilterClassroom(val === "all" ? "" : val)
                 }
               >
-                <SelectTrigger className="w-64 rounded-xl">
+                <SelectTrigger className="w-full sm:w-64 rounded-xl">
                   <SelectValue placeholder="All Classrooms" />
                 </SelectTrigger>
                 <SelectContent>
@@ -366,7 +366,7 @@ export default function AdminAnnouncementsPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="rounded-xl"
+                  className="rounded-xl w-full sm:w-auto"
                   onClick={() => setFilterClassroom("")}
                 >
                   Clear Filter
@@ -389,34 +389,34 @@ export default function AdminAnnouncementsPage() {
                 className="rounded-2xl shadow-sm hover:shadow-md transition-shadow"
               >
                 <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <CardTitle className="text-xl">
+                  <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
+                    <div className="flex-1 w-full">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                        <CardTitle className="text-lg sm:text-xl break-words">
                           {announcement.title}
                         </CardTitle>
                         {getPriorityBadge(announcement.priority)}
                         {announcement.priority === "urgent" && (
-                          <AlertCircle className="h-5 w-5 text-red-500 animate-pulse" />
+                          <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-500 animate-pulse" />
                         )}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
                         <span>
                           <strong>Target:</strong>{" "}
                           {announcement.classroomName || "All Classrooms"}
                         </span>
-                        <span>•</span>
+                        <span className="hidden sm:inline">•</span>
                         <span>
                           <strong>Posted by:</strong>{" "}
                           {announcement.createdByName}
                         </span>
-                        <span>•</span>
+                        <span className="hidden sm:inline">•</span>
                         <span>
                           {format(new Date(announcement.createdAt), "PPp")}
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                       <Button
                         variant="ghost"
                         size="icon"
@@ -446,7 +446,7 @@ export default function AdminAnnouncementsPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground whitespace-pre-wrap">
+                  <p className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap break-words">
                     {announcement.content}
                   </p>
                 </CardContent>

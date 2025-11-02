@@ -540,7 +540,7 @@ export default function TeacherPage() {
         )}
 
         <Tabs defaultValue="homework" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 rounded-xl">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-6 rounded-xl text-xs sm:text-sm">
             <TabsTrigger value="homework" className="rounded-lg">
               Homework
             </TabsTrigger>

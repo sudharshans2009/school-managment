@@ -200,20 +200,20 @@ export default function AdminAttendancePage() {
 
   return (
     <DashboardLayout title="Admin Portal" description="Attendance Management">
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link href="/admin">
               <Button variant="ghost" size="sm" className="rounded-xl">
                 ← Back
               </Button>
             </Link>
-            <UserCheck className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">Attendance Management</h1>
+            <UserCheck className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            <h1 className="text-xl sm:text-2xl font-bold">Attendance Management</h1>
           </div>
           {selectedClassroom && students && students.length > 0 && (
             <Button
-              className="rounded-xl"
+              className="rounded-xl w-full sm:w-auto"
               onClick={() => setViewMode(viewMode === "view" ? "mark" : "view")}
               disabled={!selectedDate}
             >

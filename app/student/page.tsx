@@ -271,8 +271,8 @@ export default function StudentPage() {
       <div className="space-y-6">
         {/* Student Info Badge */}
         {studentProfile && (
-          <div className="flex justify-between items-center">
-            <Badge variant="outline" className="text-base px-4 py-2 rounded-xl">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <Badge variant="outline" className="text-sm sm:text-base px-3 sm:px-4 py-2 rounded-xl">
               {studentProfile.classroom.name}
             </Badge>
           </div>
@@ -412,8 +412,8 @@ export default function StudentPage() {
           </Card>
         )}
 
-        <Tabs defaultValue="homework" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 rounded-xl">
+        <Tabs defaultValue="homework" className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 rounded-xl text-xs sm:text-sm">
             <TabsTrigger value="homework" className="rounded-lg">
               Homework
             </TabsTrigger>
@@ -529,32 +529,34 @@ export default function StudentPage() {
 
                     return (
                       <div key={day} className="space-y-2">
-                        <h3 className="font-semibold text-lg flex items-center gap-2">
-                          <Calendar className="h-5 w-5" />
+                        <h3 className="font-semibold text-base sm:text-lg flex items-center gap-2">
+                          <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
                           {getDayName(day)}
                         </h3>
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Time</TableHead>
-                              <TableHead>Subject</TableHead>
-                              <TableHead>Teacher</TableHead>
-                              <TableHead>Room</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {dayEntries.map((entry) => (
-                              <TableRow key={entry.id}>
-                                <TableCell className="font-medium">
-                                  {entry.startTime} - {entry.endTime}
-                                </TableCell>
-                                <TableCell>{entry.subject.name}</TableCell>
-                                <TableCell>{entry.teacher.name}</TableCell>
-                                <TableCell>{entry.room || "TBA"}</TableCell>
+                        <div className="overflow-x-auto rounded-lg border">
+                          <Table>
+                            <TableHeader>
+                              <TableRow>
+                                <TableHead className="text-xs sm:text-sm">Time</TableHead>
+                                <TableHead className="text-xs sm:text-sm">Subject</TableHead>
+                                <TableHead className="text-xs sm:text-sm">Teacher</TableHead>
+                                <TableHead className="text-xs sm:text-sm">Room</TableHead>
                               </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
+                            </TableHeader>
+                            <TableBody>
+                              {dayEntries.map((entry) => (
+                                <TableRow key={entry.id}>
+                                  <TableCell className="font-medium text-xs sm:text-sm whitespace-nowrap">
+                                    {entry.startTime} - {entry.endTime}
+                                  </TableCell>
+                                  <TableCell className="text-xs sm:text-sm">{entry.subject.name}</TableCell>
+                                  <TableCell className="text-xs sm:text-sm">{entry.teacher.name}</TableCell>
+                                  <TableCell className="text-xs sm:text-sm">{entry.room || "TBA"}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </div>
                       </div>
                     );
                   })}
