@@ -229,45 +229,47 @@ export default function TeachersPage() {
 
   return (
     <DashboardLayout title="Teachers Management" description="Admin Portal">
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
+      <div className="space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link href="/admin">
               <Button variant="ghost" size="sm" className="rounded-xl">
                 ← Back
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold">Teachers Management</h1>
-              <p className="text-gray-600 mt-1">
+              <h1 className="text-2xl sm:text-3xl font-bold">Teachers Management</h1>
+              <p className="text-sm sm:text-base text-gray-600 mt-1">
                 Manage teachers and their assignments
               </p>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
               size="sm"
               onClick={() =>
                 setViewMode(viewMode === "grid" ? "table" : "grid")
               }
-              className="rounded-xl"
+              className="rounded-xl flex-1 sm:flex-none"
             >
               {viewMode === "grid" ? (
                 <>
                   <TableIcon className="h-4 w-4 mr-2" />
-                  Table View
+                  <span className="hidden sm:inline">Table View</span>
+                  <span className="sm:hidden">Table</span>
                 </>
               ) : (
                 <>
                   <LayoutGrid className="h-4 w-4 mr-2" />
-                  Grid View
+                  <span className="hidden sm:inline">Grid View</span>
+                  <span className="sm:hidden">Grid</span>
                 </>
               )}
             </Button>
             <Dialog open={csvDialogOpen} onOpenChange={setCsvDialogOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" className="rounded-xl">
+                <Button variant="outline" className="rounded-xl flex-1 sm:flex-none">
                   <Upload className="h-4 w-4 mr-2" />
                   Upload CSV
                 </Button>
