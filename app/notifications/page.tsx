@@ -152,6 +152,8 @@ export default function NotificationsPage() {
       <DashboardLayout
         title="Notifications"
         description="View your notifications and updates"
+        showBackButton={true}
+        icon={Bell}
       >
         <div className="space-y-4">
           <Skeleton className="h-8 w-64" />
@@ -173,6 +175,8 @@ export default function NotificationsPage() {
       <DashboardLayout
         title="Notifications"
         description="View your notifications and updates"
+        showBackButton={true}
+        icon={Bell}
       >
         <Alert variant="destructive">
           <AlertDescription>
@@ -239,6 +243,8 @@ export default function NotificationsPage() {
     <DashboardLayout
       title="Notifications"
       description="View your notifications and updates"
+      showBackButton={true}
+      icon={Bell}
     >
       <div className="space-y-4 sm:space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
