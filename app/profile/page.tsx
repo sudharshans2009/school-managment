@@ -61,15 +61,15 @@ export default function ProfilePage() {
 
   if (sessionPending || isLoading) {
     return (
-      <div className="container max-w-4xl mx-auto p-6 space-y-6">
-        <Skeleton className="h-12 w-64" />
+      <div className="container max-w-4xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
+        <Skeleton className="h-10 sm:h-12 w-48 sm:w-64" />
         <Card>
           <CardHeader>
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="h-4 w-64" />
+            <Skeleton className="h-6 sm:h-8 w-40 sm:w-48" />
+            <Skeleton className="h-4 w-48 sm:w-64" />
           </CardHeader>
           <CardContent className="space-y-4">
-            <Skeleton className="h-24 w-24 rounded-full" />
+            <Skeleton className="h-20 w-20 sm:h-24 sm:w-24 rounded-full" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />
@@ -86,7 +86,7 @@ export default function ProfilePage() {
 
   if (error || !profile) {
     return (
-      <div className="container max-w-4xl mx-auto p-6">
+      <div className="container max-w-4xl mx-auto p-4 sm:p-6">
         <Alert variant="destructive">
           <AlertDescription>
             Failed to load profile. Please try again later.
@@ -119,26 +119,26 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="container max-w-4xl mx-auto p-6 space-y-6">
+    <div className="container max-w-4xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Profile</h1>
-          <p className="text-muted-foreground">View your account information</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Profile</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">View your account information</p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-20 w-20">
+          <div className="flex flex-col sm:flex-row items-center sm:space-x-4 space-y-3 sm:space-y-0">
+            <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
               <AvatarImage src={profile.profileImage || undefined} />
-              <AvatarFallback className="text-xl">
+              <AvatarFallback className="text-lg sm:text-xl">
                 {getInitials(profile.name)}
               </AvatarFallback>
             </Avatar>
-            <div>
-              <CardTitle className="text-2xl">{profile.name}</CardTitle>
-              <CardDescription className="flex items-center gap-2 mt-1">
+            <div className="text-center sm:text-left">
+              <CardTitle className="text-xl sm:text-2xl">{profile.name}</CardTitle>
+              <CardDescription className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-1">
                 <Badge variant={getRoleBadgeVariant(profile.role)}>
                   {profile.role.charAt(0).toUpperCase() + profile.role.slice(1)}
                 </Badge>
@@ -164,14 +164,14 @@ export default function ProfilePage() {
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
             <div className="space-y-2">
               <div className="flex items-center text-sm text-muted-foreground">
                 <Mail className="h-4 w-4 mr-2" />
                 Email
               </div>
-              <p className="text-sm font-medium flex items-center gap-2">
-                {profile.email}
+              <p className="text-sm font-medium flex flex-wrap items-center gap-2">
+                <span className="break-all">{profile.email}</span>
                 {profile.emailVerified ? (
                   <Badge
                     variant="outline"
