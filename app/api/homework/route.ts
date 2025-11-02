@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { homework, classrooms, subjects, users } from "@/database/schema";
 import { eq, desc } from "drizzle-orm";
+import {
+  createBulkNotifications,
+  getClassroomStudentUserIds,
+} from "@/lib/actions/notifications";
 
 // GET - Fetch homework
 export async function GET(request: NextRequest) {
@@ -107,6 +111,28 @@ export async function POST(request: NextRequest) {
         status: "assigned",
       })
       .returning();
+
+    // Notify all students in the classroom
+    const studentIds = await getClassroomStudentUserIds(classroomId);
+
+    if (studentIds.length > 0) {
+      // Get subject name for notification
+      const subject = await db.query.subjects.findFirst({
+        where: eq(subjects.id, subjectId),
+      });
+
+      await createBulkNotifications({
+        type: "homework_assigned",
+        title: `New Homework: ${title}`,
+        message: `${subject?.name || "Subject"} homework assigned. Due: ${new Date(dueDate).toLocaleDateString()}`,
+        recipientIds: studentIds,
+        senderId: teacherId,
+        relatedId: newHomework.id,
+        relatedType: "homework",
+        priority: "normal",
+        actionUrl: `/student`,
+      });
+    }
 
     return NextResponse.json(newHomework, { status: 201 });
   } catch (error) {

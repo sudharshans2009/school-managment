@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
-import { events, users } from "@/database/schema";
-import { eq, desc, and, gte, lte, inArray, or } from "drizzle-orm";
+import { events, users, calendarDays } from "@/database/schema";
+import { eq, desc, and, gte, lte } from "drizzle-orm";
 import { auth } from "@/lib/auth";
+import {
+  createBulkNotifications,
+  getAdminUserIds,
+  getTeacherUserIds,
+} from "@/lib/actions/notifications";
 
 // GET - Fetch all events with filters
 export async function GET(request: NextRequest) {
@@ -141,6 +146,73 @@ export async function POST(request: NextRequest) {
         createdBy: session.user.id,
       })
       .returning();
+
+    // Create calendar entries for the event date range
+    const eventStartDate = new Date(startDate);
+    const eventEndDate = new Date(endDate);
+    const currentDate = new Date(eventStartDate);
+
+    while (currentDate <= eventEndDate) {
+      const dateStr = currentDate.toISOString().split("T")[0];
+
+      // Check if calendar day already exists
+      const existingDay = await db.query.calendarDays.findFirst({
+        where: eq(calendarDays.date, dateStr),
+      });
+
+      if (!existingDay) {
+        // Create new calendar day entry
+        await db.insert(calendarDays).values({
+          date: dateStr,
+          dayType: eventType === "holiday" ? "holiday" : "working",
+          dayDuration: "full",
+          holidayFor: eventType === "holiday" ? "all" : null,
+          holidayName: eventType === "holiday" ? title : null,
+          notes: `Event: ${title}`,
+          createdBy: session.user.id,
+        });
+      } else if (eventType === "holiday" && existingDay.dayType !== "holiday") {
+        // Update existing day to holiday if event is a holiday
+        await db
+          .update(calendarDays)
+          .set({
+            dayType: "holiday",
+            holidayFor: "all",
+            holidayName: title,
+            notes: `${existingDay.notes || ""}\nEvent: ${title}`,
+          })
+          .where(eq(calendarDays.id, existingDay.id));
+      } else {
+        // Just add notes to existing day
+        await db
+          .update(calendarDays)
+          .set({
+            notes: `${existingDay.notes || ""}\nEvent: ${title}`,
+          })
+          .where(eq(calendarDays.id, existingDay.id));
+      }
+
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    // Notify all admins and teachers about the new event
+    const adminIds = await getAdminUserIds();
+    const teacherIds = await getTeacherUserIds();
+    const recipientIds = [...new Set([...adminIds, ...teacherIds])];
+
+    if (recipientIds.length > 0) {
+      await createBulkNotifications({
+        type: "event_created",
+        title: `New Event: ${title}`,
+        message: `${eventType.replace(/_/g, " ").toUpperCase()}: ${description.substring(0, 100)}${description.length > 100 ? "..." : ""}`,
+        recipientIds,
+        senderId: session.user.id,
+        relatedId: newEvent[0].id,
+        relatedType: "event",
+        priority: "normal",
+        actionUrl: `/admin/calendar`,
+      });
+    }
 
     return NextResponse.json(newEvent[0], { status: 201 });
   } catch (error) {

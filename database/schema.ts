@@ -97,6 +97,28 @@ export const registrationStatusEnum = pgEnum("registration_status", [
   "absent",
   "cancelled",
 ]);
+export const notificationTypeEnum = pgEnum("notification_type", [
+  "homework_assigned",
+  "homework_graded",
+  "exam_scheduled",
+  "exam_graded",
+  "attendance_marked",
+  "leave_requested",
+  "leave_approved",
+  "leave_rejected",
+  "substitute_assigned",
+  "announcement_posted",
+  "meeting_scheduled",
+  "event_created",
+  "message_received",
+  "system_alert",
+]);
+export const notificationPriorityEnum = pgEnum("notification_priority", [
+  "low",
+  "normal",
+  "high",
+  "urgent",
+]);
 export const meetingStatusEnum = pgEnum("meeting_status", [
   "scheduled",
   "completed",
@@ -431,6 +453,7 @@ export const announcements = pgTable("announcements", {
   title: varchar("title", { length: 255 }).notNull(),
   content: text("content").notNull(),
   classroomId: uuid("classroom_id").references(() => classrooms.id), // null = school-wide
+  eventId: uuid("event_id").references(() => events.id), // Optional: link to event
   createdBy: uuid("created_by")
     .notNull()
     .references(() => users.id),
@@ -827,6 +850,10 @@ export const announcementsRelations = relations(announcements, ({ one }) => ({
     fields: [announcements.classroomId],
     references: [classrooms.id],
   }),
+  event: one(events, {
+    fields: [announcements.eventId],
+    references: [events.id],
+  }),
   creator: one(users, {
     fields: [announcements.createdBy],
     references: [users.id],
@@ -1120,6 +1147,28 @@ export const groupMessageRecipients = pgTable("group_message_recipients", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   isRead: boolean("is_read").default(false),
+  readAt: timestamp("read_at"),
+});
+
+// Notifications Table
+export const notifications = pgTable("notifications", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  type: notificationTypeEnum("type").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  message: text("message").notNull(),
+  recipientId: uuid("recipient_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  senderId: uuid("sender_id").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  relatedId: uuid("related_id"), // Generic reference to homework/exam/announcement/leave/etc
+  relatedType: varchar("related_type", { length: 50 }), // 'homework', 'exam', 'announcement', 'leave', etc
+  priority: notificationPriorityEnum("priority").default("normal"),
+  isRead: boolean("is_read").default(false),
+  actionUrl: varchar("action_url", { length: 500 }),
+  metadata: text("metadata"), // JSON for additional data
+  createdAt: timestamp("created_at").defaultNow(),
   readAt: timestamp("read_at"),
 });
 
@@ -1693,5 +1742,18 @@ export const systemBackupsRelations = relations(systemBackups, ({ one }) => ({
   creator: one(users, {
     fields: [systemBackups.createdBy],
     references: [users.id],
+  }),
+}));
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  recipient: one(users, {
+    fields: [notifications.recipientId],
+    references: [users.id],
+    relationName: "notificationsReceived",
+  }),
+  sender: one(users, {
+    fields: [notifications.senderId],
+    references: [users.id],
+    relationName: "notificationsSent",
   }),
 }));

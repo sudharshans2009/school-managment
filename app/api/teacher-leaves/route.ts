@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { teacherLeaves, users } from "@/database/schema";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
+import {
+  createBulkNotifications,
+  getAdminUserIds,
+} from "@/lib/actions/notifications";
 
 // GET - Fetch teacher leaves
 export async function GET(request: NextRequest) {
@@ -103,6 +107,28 @@ export async function POST(request: NextRequest) {
         status: "pending",
       })
       .returning();
+
+    // Notify all admins about the leave request
+    const adminIds = await getAdminUserIds();
+
+    if (adminIds.length > 0) {
+      // Get teacher name
+      const teacher = await db.query.users.findFirst({
+        where: eq(users.id, teacherId),
+      });
+
+      await createBulkNotifications({
+        type: "leave_requested",
+        title: "Leave Request Pending",
+        message: `${teacher?.name || "A teacher"} requested ${leaveType} leave from ${startDate} to ${endDate}`,
+        recipientIds: adminIds,
+        senderId: teacherId,
+        relatedId: newLeave[0].id,
+        relatedType: "leave",
+        priority: "high",
+        actionUrl: `/admin/leaves`,
+      });
+    }
 
     return NextResponse.json(newLeave[0], { status: 201 });
   } catch (error) {

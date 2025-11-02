@@ -7,6 +7,7 @@ import {
   subjects,
 } from "@/database/schema";
 import { eq, and, desc } from "drizzle-orm";
+import { createNotification } from "@/lib/actions/notifications";
 
 // GET - Fetch substitute assignments
 export async function GET(request: NextRequest) {
@@ -149,6 +150,27 @@ export async function POST(request: NextRequest) {
         assignedBy,
       })
       .returning();
+
+    // Notify the substitute teacher
+    const classroom = await db.query.classrooms.findFirst({
+      where: eq(classrooms.id, classroomId),
+    });
+
+    const subject = await db.query.subjects.findFirst({
+      where: eq(subjects.id, subjectId),
+    });
+
+    await createNotification({
+      type: "substitute_assigned",
+      title: "Substitute Assignment",
+      message: `You have been assigned as a substitute teacher for ${subject?.name || "a class"} in ${classroom?.name || "a classroom"} on ${date} during Period ${periodNumber} (${startTime} - ${endTime})`,
+      recipientId: substituteTeacherId,
+      senderId: assignedBy,
+      relatedId: newAssignment[0].id,
+      relatedType: "substitute",
+      priority: "high",
+      actionUrl: `/teacher`,
+    });
 
     return NextResponse.json(newAssignment[0], { status: 201 });
   } catch (error) {

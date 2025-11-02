@@ -17,6 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
+import { SmartboardNotifications } from "@/components/smartboard-notifications";
 
 // Types
 interface ClassroomInfo {
@@ -553,6 +554,9 @@ export default function SmartboardDisplayPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Real-time Notifications */}
+            {classroomId && <SmartboardNotifications classroomId={classroomId} />}
           </div>
         </div>
       </div>

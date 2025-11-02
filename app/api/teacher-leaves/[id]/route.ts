@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { teacherLeaves, users } from "@/database/schema";
 import { eq } from "drizzle-orm";
+import { createNotification } from "@/lib/actions/notifications";
 
 // GET - Get single leave request
 export async function GET(
@@ -101,6 +102,21 @@ export async function PUT(
         { error: "Leave request not found" },
         { status: 404 },
       );
+    }
+
+    // Notify the teacher about the decision
+    if (status === "approved" || status === "rejected") {
+      await createNotification({
+        type: status === "approved" ? "leave_approved" : "leave_rejected",
+        title: `Leave Request ${status.charAt(0).toUpperCase() + status.slice(1)}`,
+        message: `Your ${updated[0].leaveType} leave request from ${updated[0].startDate} to ${updated[0].endDate} has been ${status}${approvalNotes ? `: ${approvalNotes}` : ""}`,
+        recipientId: updated[0].teacherId,
+        senderId: approvedBy,
+        relatedId: updated[0].id,
+        relatedType: "leave",
+        priority: "high",
+        actionUrl: `/teacher`,
+      });
     }
 
     return NextResponse.json(updated[0]);
