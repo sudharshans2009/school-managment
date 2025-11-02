@@ -126,26 +126,26 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="container max-w-4xl mx-auto p-6 space-y-6">
+    <div className="container max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">Manage your account settings</p>
+        <h1 className="text-2xl sm:text-3xl font-bold">Settings</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Manage your account settings</p>
       </div>
 
       {/* Update Email */}
-      <Card>
+      <Card className="rounded-2xl shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Mail className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Mail className="h-4 w-4 sm:h-5 sm:w-5" />
             Email Address
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Update your email address. You will need to verify the new email.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email">New Email</Label>
+            <Label htmlFor="email" className="text-sm">New Email</Label>
             <Input
               id="email"
               type="email"
@@ -153,11 +153,13 @@ export default function SettingsPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={updateSettingsMutation.isPending}
+              className="rounded-xl"
             />
           </div>
           <Button
             onClick={handleUpdateEmail}
             disabled={updateSettingsMutation.isPending || !email}
+            className="w-full sm:w-auto rounded-xl"
           >
             {updateSettingsMutation.isPending && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -168,20 +170,20 @@ export default function SettingsPage() {
       </Card>
 
       {/* Update Password */}
-      <Card>
+      <Card className="rounded-2xl shadow-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Lock className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+            <Lock className="h-4 w-4 sm:h-5 sm:w-5" />
             Password
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-sm">
             Change your password. Make sure it&apos;s at least 8 characters
             long.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="currentPassword">Current Password</Label>
+            <Label htmlFor="currentPassword" className="text-sm">Current Password</Label>
             <div className="relative">
               <Input
                 id="currentPassword"
@@ -190,6 +192,7 @@ export default function SettingsPage() {
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 disabled={updateSettingsMutation.isPending}
+                className="rounded-xl"
               />
               <Button
                 type="button"
@@ -208,7 +211,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="newPassword">New Password</Label>
+            <Label htmlFor="newPassword" className="text-sm">New Password</Label>
             <div className="relative">
               <Input
                 id="newPassword"
@@ -217,6 +220,7 @@ export default function SettingsPage() {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 disabled={updateSettingsMutation.isPending}
+                className="rounded-xl"
               />
               <Button
                 type="button"
@@ -235,7 +239,7 @@ export default function SettingsPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm New Password</Label>
+            <Label htmlFor="confirmPassword" className="text-sm">Confirm New Password</Label>
             <div className="relative">
               <Input
                 id="confirmPassword"
@@ -244,6 +248,7 @@ export default function SettingsPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={updateSettingsMutation.isPending}
+                className="rounded-xl"
               />
               <Button
                 type="button"
@@ -278,6 +283,7 @@ export default function SettingsPage() {
               !confirmPassword ||
               newPassword !== confirmPassword
             }
+            className="w-full sm:w-auto rounded-xl"
           >
             {updateSettingsMutation.isPending && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -287,8 +293,8 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Alert>
-        <AlertDescription>
+      <Alert className="rounded-2xl">
+        <AlertDescription className="text-sm">
           <strong>Note:</strong> If you change your email, you will need to
           verify it before you can log in again.
         </AlertDescription>

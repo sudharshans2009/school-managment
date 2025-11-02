@@ -273,31 +273,40 @@ export default function TeacherExamsPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 space-y-6">
+      <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         <Button
           variant="outline"
           size="sm"
           onClick={() => router.back()}
-          className="mb-4"
+          className="mb-4 rounded-xl"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
+          <span className="hidden sm:inline">Back</span>
         </Button>
-        <TeacherQuickActions
-          currentPage="exams"
-          unreadMessages={0}
-          isPrimaryTeacher={false}
-        />
+        <div className="block sm:hidden mb-4">
+          <TeacherQuickActions
+            currentPage="exams"
+            unreadMessages={0}
+            isPrimaryTeacher={false}
+          />
+        </div>
+        <div className="hidden sm:block">
+          <TeacherQuickActions
+            currentPage="exams"
+            unreadMessages={0}
+            isPrimaryTeacher={false}
+          />
+        </div>
 
         <div>
-          <h1 className="text-3xl font-bold">Exam Grade Upload</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold">Exam Grade Upload</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
             Upload test grades for your assigned classes
           </p>
         </div>
 
         {/* Exam Selection */}
-        <Card>
+        <Card className="rounded-2xl shadow-sm">
           <CardHeader>
             <CardTitle>Select Exam</CardTitle>
             <CardDescription>Choose an exam to upload grades</CardDescription>
@@ -370,12 +379,12 @@ export default function TeacherExamsPage() {
 
         {/* Students and Grades */}
         {selectedExam && (
-          <Card>
+          <Card className="rounded-2xl shadow-sm">
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                  <CardTitle>Student Grades</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-lg sm:text-xl">Student Grades</CardTitle>
+                  <CardDescription className="text-sm">
                     Enter grades for all students in this exam
                   </CardDescription>
                 </div>
@@ -386,6 +395,8 @@ export default function TeacherExamsPage() {
                     students.length === 0 ||
                     selectedExamData?.isFinalized
                   }
+                  className="w-full sm:w-auto rounded-xl"
+                  size="sm"
                 >
                   <Upload className="h-4 w-4 mr-2" />
                   Upload Grades
