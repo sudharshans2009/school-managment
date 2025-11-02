@@ -4,6 +4,8 @@ This document describes the new features added to the School Management System.
 
 ## Table of Contents
 
+- [Notifications System](#notifications-system)
+- [Mobile-Responsive Profile](#mobile-responsive-profile)
 - [Events & Calendar](#events--calendar)
 - [Parent-Teacher Meetings](#parent-teacher-meetings)
 - [Communication Hub](#communication-hub)
@@ -11,7 +13,132 @@ This document describes the new features added to the School Management System.
 - [Report Cards](#report-cards)
 - [Behavior & Disciplinary Tracking](#behavior--disciplinary-tracking)
 
-## Events & Calendar
+## Notifications System
+
+### Overview
+
+A comprehensive notification system that displays all school announcements with priority levels and real-time badge counter.
+
+### Features
+
+- Centralized notifications page displaying all announcements
+- Priority-based categorization (urgent, high, normal, low)
+- Mobile-responsive card layout
+- Real-time notification badge in navigation bar
+- Automatic refresh every 5 minutes
+- Empty state for no notifications
+- Classroom and creator information display
+- Formatted timestamps
+
+### UI Components
+
+#### Notifications Page (`/notifications`)
+
+- **Location**: `/app/notifications/page.tsx`
+- **Features**:
+  - Priority icons with color coding
+  - Badge display for priority levels
+  - Classroom tags for class-specific announcements
+  - Creator and date information
+  - Responsive layout for mobile and desktop
+  - Empty state with helpful message
+
+#### Notification Badge
+
+- **Location**: Dashboard navigation bar
+- **Features**:
+  - Shows count of unread notifications (up to 9+)
+  - Red badge indicator on bell icon
+  - Refreshes every 5 minutes automatically
+  - Optimized caching strategy
+  - Separate query key to prevent cache conflicts
+
+### API Integration
+
+Connects to existing `/api/announcements` endpoint with support for:
+- Fetching all announcements
+- Filtering by classroom
+- Priority-based sorting
+- Creator information
+
+### Priority Levels
+
+- **Urgent**: Red alert icon, destructive badge
+- **High**: Orange alert icon, default badge
+- **Normal**: Blue info icon, secondary badge
+- **Low**: Gray checkmark icon, outline badge
+
+### Access Control
+
+- **All Authenticated Users**: Can view notifications
+- **Admin/Teacher**: Can create announcements via admin panel
+- **Mobile-Responsive**: Optimized layout for all screen sizes
+
+---
+
+## Mobile-Responsive Profile
+
+### Overview
+
+Enhanced profile page with mobile-first responsive design for better user experience on all devices.
+
+### Enhancements
+
+#### Responsive Layout
+
+- **Mobile (< 640px)**:
+  - Centered avatar and user information
+  - Vertical stack layout
+  - Smaller text sizes
+  - Reduced padding
+  - Single column grid
+
+- **Desktop (≥ 640px)**:
+  - Horizontal layout with avatar on left
+  - Larger text sizes
+  - Increased spacing
+  - Two-column grid for information
+
+#### Improved Components
+
+1. **Avatar Section**
+   - Flexible sizing: 16x16 (mobile) to 20x20 (desktop)
+   - Centered on mobile, left-aligned on desktop
+   - Initials fallback with responsive text
+
+2. **User Information**
+   - Text wrapping for long emails
+   - Flexible badge layout
+   - Responsive spacing
+   - Better readability on small screens
+
+3. **Profile Cards**
+   - Responsive padding
+   - Flexible grid system
+   - Better content flow
+   - Touch-friendly spacing
+
+### Technical Implementation
+
+- **Tailwind Breakpoints**: Uses `sm:` prefix for responsive classes
+- **Flexbox Layout**: Flexible direction changes
+- **Text Truncation**: Prevents overflow on mobile
+- **Spacing System**: Consistent spacing across devices
+
+### Code Example
+
+```tsx
+// Responsive padding
+<div className="container max-w-4xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
+  
+// Responsive text sizes
+<h1 className="text-2xl sm:text-3xl font-bold">Profile</h1>
+
+// Flexible layout
+<div className="flex flex-col sm:flex-row items-center sm:space-x-4">
+```
+
+--- Events & Calendar
 
 ### Overview
 
@@ -578,6 +705,10 @@ POST /api/behavior/notes
 
 | Feature               | Admin | Teacher | Student | Parent  |
 | --------------------- | ----- | ------- | ------- | ------- |
+| Notifications (View)  | ✓     | ✓       | ✓       | ✓       |
+| Notifications (Create)| ✓     | ✓       | ✗       | ✗       |
+| Profile (View)        | ✓     | ✓       | ✓       | ✓       |
+| Profile (Edit)        | ✓     | Own     | Own     | Own     |
 | Events (Create)       | ✓     | ✓       | ✗       | ✗       |
 | Events (Register)     | ✓     | ✓       | ✓       | ✓       |
 | Meetings (Create)     | ✓     | ✓       | ✗       | ✗       |
@@ -630,17 +761,24 @@ All endpoints return standard HTTP status codes:
 
 ## Future Enhancements
 
+### Completed Features ✅
+
+- ✅ Notifications system with priority levels
+- ✅ Real-time notification badge counter
+- ✅ Mobile-responsive profile page
+
 ### Planned Features
 
 - PDF generation for report cards and transcripts
-- Real-time notifications for events and messages
+- Push notifications for real-time alerts
 - Mobile app integration
 - Analytics dashboard for behavior trends
 - Email notifications for circulars
 - SMS integration for urgent notifications
 - Document storage integration
-- Advanced search and filtering
+- Advanced search and filtering in notifications
 - Export functionality for reports
+- Notification preferences and settings
 
 ---
 
