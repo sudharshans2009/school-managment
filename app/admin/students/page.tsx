@@ -641,10 +641,19 @@ export default function StudentsPage() {
                         )}
                       </div>
                       <div className="flex gap-2 mt-4">
+                        <Link href={`/admin/students/${student.id}`}>
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="rounded-xl"
+                          >
+                            View Details
+                          </Button>
+                        </Link>
                         <Button
                           variant="outline"
                           size="sm"
-                          className="flex-1 rounded-xl"
+                          className="rounded-xl"
                           onClick={() => {
                             setEditingStudent(student);
                             setOpen(true);

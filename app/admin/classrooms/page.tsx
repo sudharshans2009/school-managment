@@ -275,6 +275,15 @@ export default function ClassroomsPage() {
                           </CardDescription>
                         </div>
                         <div className="flex space-x-1">
+                          <Link href={`/admin/classrooms/${classroom.id}`}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              title="View details"
+                            >
+                              <Users className="h-4 w-4" />
+                            </Button>
+                          </Link>
                           <Link href={`/admin/classrooms/${classroom.id}/edit`}>
                             <Button
                               variant="ghost"

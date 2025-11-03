@@ -107,7 +107,7 @@ export default function AdminAttendancePage() {
         studentId: string;
         classroomId: string;
         status: string;
-        date: Date;
+        date: string;
       }>;
       markedBy: string;
     }) => {
@@ -141,7 +141,7 @@ export default function AdminAttendancePage() {
         studentId: student.id,
         classroomId: selectedClassroom,
         status: formData.get(`status-${student.id}`) as string,
-        date: new Date(selectedDate),
+        date: selectedDate, // Send as string, will be converted to Date on server
       })) || [];
 
     // Get current user ID (you'll need to get this from session)
