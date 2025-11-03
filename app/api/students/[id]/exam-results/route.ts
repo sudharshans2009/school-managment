@@ -32,11 +32,15 @@ export async function GET(
       id: result.id,
       examName: result.examName || "Unknown Exam",
       subjectName: result.subjectName || "Unknown Subject",
-      marksObtained: parseFloat(result.marksObtained || "0"),
+      marksObtained: typeof result.marksObtained === 'string' 
+        ? parseFloat(result.marksObtained) 
+        : Number(result.marksObtained || 0),
       totalMarks: result.totalMarks || 0,
-      percentage: parseFloat(result.percentage || "0"),
+      percentage: typeof result.percentage === 'string'
+        ? parseFloat(result.percentage)
+        : Number(result.percentage || 0),
       grade: result.grade || "N/A",
-      date: result.examDate?.toISOString() || new Date().toISOString(),
+      date: result.examDate ? result.examDate.toISOString() : "",
     }));
 
     return NextResponse.json(formattedResults);
