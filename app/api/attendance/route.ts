@@ -92,12 +92,12 @@ export async function POST(request: NextRequest) {
         studentId: string;
         classroomId: string;
         status: "present" | "absent" | "late" | "excused";
-        date?: Date;
+        date?: string | Date;
         remarks?: string;
       }) => ({
         studentId: record.studentId,
         classroomId: record.classroomId,
-        date: record.date || new Date(),
+        date: record.date ? new Date(record.date) : new Date(),
         status: record.status,
         remarks: record.remarks,
         markedBy,

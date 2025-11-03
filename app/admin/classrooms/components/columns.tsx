@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Edit, Trash2, Users } from "lucide-react";
+import { ArrowUpDown, Edit, Trash2, Users, Eye } from "lucide-react";
 import Link from "next/link";
 
 export interface Classroom {
@@ -110,6 +110,12 @@ export const createClassroomColumns = ({
       const classroom = row.original;
       return (
         <div className="flex gap-2">
+          <Link href={`/admin/classrooms/${classroom.id}`}>
+            <Button variant="outline" size="sm" className="rounded-xl">
+              <Eye className="h-4 w-4 mr-1" />
+              View
+            </Button>
+          </Link>
           <Link href={`/admin/classrooms/${classroom.id}/edit`}>
             <Button variant="outline" size="sm" className="rounded-xl">
               <Edit className="h-4 w-4 mr-1" />

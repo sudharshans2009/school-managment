@@ -10,7 +10,9 @@ import {
   Mail,
   Phone,
   Calendar,
+  Eye,
 } from "lucide-react";
+import Link from "next/link";
 
 export interface Student {
   id: string;
@@ -144,6 +146,16 @@ export const createStudentColumns = ({
       const student = row.original;
       return (
         <div className="flex gap-2">
+          <Link href={`/admin/students/${student.id}`}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-xl"
+            >
+              <Eye className="h-4 w-4 mr-1" />
+              View
+            </Button>
+          </Link>
           <Button
             variant="outline"
             size="sm"

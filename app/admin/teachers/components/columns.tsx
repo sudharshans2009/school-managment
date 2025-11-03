@@ -3,7 +3,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, Edit2, Trash2, Mail, Phone, MapPin } from "lucide-react";
+import { ArrowUpDown, Edit2, Trash2, Mail, Phone, MapPin, Eye } from "lucide-react";
+import Link from "next/link";
 
 export interface Teacher {
   id: string;
@@ -128,6 +129,16 @@ export const createTeacherColumns = ({
       const teacher = row.original;
       return (
         <div className="flex gap-2">
+          <Link href={`/admin/teachers/${teacher.id}`}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-xl"
+            >
+              <Eye className="h-4 w-4 mr-1" />
+              View
+            </Button>
+          </Link>
           <Button
             variant="outline"
             size="sm"
