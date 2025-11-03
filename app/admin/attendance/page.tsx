@@ -17,7 +17,6 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   UserCheck,
-  Calendar as CalendarIcon,
   CheckCircle,
   XCircle,
   Clock,
