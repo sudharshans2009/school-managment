@@ -22,9 +22,9 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Plus, Trash2, Edit2 } from "lucide-react";
-import Link from "next/link";
+import { Calendar, Plus, Trash2, Edit2, Clock } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { AdminHeader } from "@/components/admin/admin-header";
 
 interface Classroom {
   id: string;
@@ -237,16 +237,11 @@ export default function TimetablePage() {
   return (
     <DashboardLayout title="Timetable Management" description="Admin Portal">
       <div>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div className="flex items-center space-x-2 sm:space-x-3">
-            <Link href="/admin">
-              <Button variant="ghost" size="sm">
-                ← Back
-              </Button>
-            </Link>
-            <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-            <h1 className="text-xl sm:text-2xl font-bold">Timetable Management</h1>
-          </div>
+        <AdminHeader
+          icon={Clock}
+          title="Timetable Management"
+          description="Manage class timetables and periods"
+        >
           <Dialog
             open={openCreate || !!editingEntry}
             onOpenChange={(open) => {
@@ -397,7 +392,7 @@ export default function TimetablePage() {
               </form>
             </DialogContent>
           </Dialog>
-        </div>
+        </AdminHeader>
 
         <Card className="mb-6 rounded-2xl shadow-sm">
           <CardContent className="p-4">

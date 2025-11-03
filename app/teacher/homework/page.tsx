@@ -37,7 +37,6 @@ import {
   UserCheck,
   Edit,
   Trash2,
-  ArrowLeft,
 } from "lucide-react";
 import { Spinner } from "@/components/ui/spinner";
 import { format } from "date-fns";
@@ -45,6 +44,7 @@ import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { TeacherQuickActions } from "@/components/teacher-quick-actions";
+import { TeacherHeader } from "@/components/teacher/teacher-header";
 
 interface Classroom {
   id: string;
@@ -278,26 +278,13 @@ export default function TeacherHomeworkPage() {
   return (
     <DashboardLayout title="Teacher Portal" description="Homework Submissions">
       <div className="space-y-6">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.back()}
-          className="mb-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
+        <TeacherHeader
+          icon={BookOpen}
+          title="Homework Submissions"
+          description="Mark physical submissions and grade homework"
+        />
+        
         <TeacherQuickActions currentPage="homework" />
-
-        <div className="flex items-center gap-3">
-          <BookOpen className="w-6 h-6 text-primary" />
-          <div>
-            <h1 className="text-2xl font-bold">Homework Submissions</h1>
-            <p className="text-sm text-muted-foreground">
-              Mark physical submissions and grade homework
-            </p>
-          </div>
-        </div>
 
         {/* Filters */}
         <Card className="rounded-2xl shadow-sm">

@@ -48,6 +48,8 @@ import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { DataTable } from "@/components/ui/data-table";
 import { createStudentColumns, Student } from "./components/columns";
 import Link from "next/link";
+import { AdminHeader } from "@/components/admin/admin-header";
+import { GraduationCap } from "lucide-react";
 
 interface Classroom {
   id: string;
@@ -270,20 +272,11 @@ export default function StudentsPage() {
   return (
     <DashboardLayout title="Students Management" description="Admin Portal">
       <div className="space-y-4 sm:space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link href="/admin">
-              <Button variant="ghost" size="sm" className="rounded-xl">
-                ← Back
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold">Students Management</h1>
-              <p className="text-sm sm:text-base text-muted-foreground mt-1">
-                Manage students and their enrollment
-              </p>
-            </div>
-          </div>
+        <AdminHeader
+          icon={GraduationCap}
+          title="Students Management"
+          description="Manage students and their enrollment"
+        >
           <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
@@ -538,7 +531,7 @@ export default function StudentsPage() {
               </DialogContent>
             </Dialog>
           </div>
-        </div>
+        </AdminHeader>
 
         {uploadResult && (
           <Alert

@@ -31,9 +31,10 @@ import {
   Award,
   UserCheck,
   Calendar,
-  ArrowLeft,
+  BarChart,
 } from "lucide-react";
 import { useState } from "react";
+import { AdminHeader } from "@/components/admin/admin-header";
 
 interface AnalyticsData {
   attendance: {
@@ -104,22 +105,11 @@ export default function AdminAnalyticsPage() {
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => router.back()}
-              className="mb-4"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
-            </Button>
-            <h1 className="text-3xl font-bold">Analytics Dashboard</h1>
-            <p className="text-muted-foreground mt-1">
-              Comprehensive insights into school performance
-            </p>
-          </div>
+        <AdminHeader
+          icon={BarChart}
+          title="Analytics Dashboard"
+          description="Comprehensive insights into school performance"
+        >
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue />
@@ -131,7 +121,7 @@ export default function AdminAnalyticsPage() {
               <SelectItem value="365">Last year</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </AdminHeader>
 
         {isLoading ? (
           <div className="flex items-center justify-center h-64">

@@ -29,12 +29,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle, XCircle, Loader2, ArrowLeft } from "lucide-react";
+import { CheckCircle, XCircle, Loader2, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { TeacherQuickActions } from "@/components/teacher-quick-actions";
+import { TeacherHeader } from "@/components/teacher/teacher-header";
 
 interface TeacherAssignment {
   id: string;
@@ -189,15 +190,12 @@ export default function TeacherClassesPage() {
       description="Teacher Portal"
     >
       <div className="space-y-6">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.back()}
-          className="mb-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
+        <TeacherHeader
+          icon={Users}
+          title="My Classes & Attendance"
+          description="View your assigned classes and mark student attendance"
+        />
+        
         <TeacherQuickActions currentPage="classes" />
 
         <Tabs defaultValue="classes" className="space-y-6">

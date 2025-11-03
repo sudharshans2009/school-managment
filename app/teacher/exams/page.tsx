@@ -46,9 +46,10 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  ArrowLeft,
+  FileText,
 } from "lucide-react";
 import { toast } from "sonner";
+import { TeacherHeader } from "@/components/teacher/teacher-header";
 import { format } from "date-fns";
 
 interface Exam {
@@ -274,15 +275,12 @@ export default function TeacherExamsPage() {
   return (
     <DashboardLayout>
       <div className="px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.back()}
-          className="mb-4 rounded-xl"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          <span className="hidden sm:inline">Back</span>
-        </Button>
+        <TeacherHeader
+          icon={FileText}
+          title="Exam Grade Upload"
+          description="Upload test grades for your assigned classes"
+        />
+        
         <div className="block sm:hidden mb-4">
           <TeacherQuickActions
             currentPage="exams"
@@ -296,13 +294,6 @@ export default function TeacherExamsPage() {
             unreadMessages={0}
             isPrimaryTeacher={false}
           />
-        </div>
-
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Exam Grade Upload</h1>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1">
-            Upload test grades for your assigned classes
-          </p>
         </div>
 
         {/* Exam Selection */}

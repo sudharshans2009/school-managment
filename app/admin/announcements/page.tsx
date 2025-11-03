@@ -25,9 +25,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Bell, Plus, Edit2, Trash2, Loader2, AlertCircle } from "lucide-react";
-import Link from "next/link";
 import { format } from "date-fns";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { AdminHeader } from "@/components/admin/admin-header";
 
 interface Classroom {
   id: string;
@@ -203,16 +203,11 @@ export default function AdminAnnouncementsPage() {
   return (
     <DashboardLayout title="Admin Portal" description="Manage Announcements">
       <div className="space-y-4 sm:space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link href="/admin">
-              <Button variant="ghost" size="sm" className="rounded-xl">
-                ← Back
-              </Button>
-            </Link>
-            <Bell className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-            <h1 className="text-xl sm:text-2xl font-bold">Announcements</h1>
-          </div>
+        <AdminHeader
+          icon={Bell}
+          title="Announcements"
+          description="Create and manage announcements"
+        >
           <Dialog
             open={openCreate || !!editingAnnouncement}
             onOpenChange={(open) => {
@@ -337,7 +332,7 @@ export default function AdminAnnouncementsPage() {
               </form>
             </DialogContent>
           </Dialog>
-        </div>
+        </AdminHeader>
 
         {/* Filter */}
         <Card className="rounded-2xl shadow-sm">

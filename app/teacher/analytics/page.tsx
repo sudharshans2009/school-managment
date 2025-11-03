@@ -30,9 +30,10 @@ import {
   ClipboardCheck,
   Award,
   UserCheck,
-  ArrowLeft,
+  BarChart,
 } from "lucide-react";
 import { useState } from "react";
+import { TeacherHeader } from "@/components/teacher/teacher-header";
 
 interface TeacherAnalytics {
   classes: {
@@ -99,28 +100,11 @@ export default function TeacherAnalyticsPage() {
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.back()}
-          className="mb-4"
+        <TeacherHeader
+          icon={BarChart}
+          title="My Analytics"
+          description="Track your teaching performance and student progress"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
-        <TeacherQuickActions
-          currentPage="analytics"
-          unreadMessages={0}
-          isPrimaryTeacher={analytics?.classes.isPrimary || false}
-        />
-
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">My Analytics</h1>
-            <p className="text-muted-foreground mt-1">
-              Track your teaching performance and student progress
-            </p>
-          </div>
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger className="w-[180px]">
               <SelectValue />
@@ -131,7 +115,13 @@ export default function TeacherAnalyticsPage() {
               <SelectItem value="90">Last 90 days</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </TeacherHeader>
+        
+        <TeacherQuickActions
+          currentPage="analytics"
+          unreadMessages={0}
+          isPrimaryTeacher={analytics?.classes.isPrimary || false}
+        />
 
         {isLoading ? (
           <div className="flex items-center justify-center h-64">

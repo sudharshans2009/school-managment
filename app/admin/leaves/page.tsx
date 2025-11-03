@@ -28,7 +28,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
-import Link from "next/link";
+import { AdminHeader } from "@/components/admin/admin-header";
 
 interface TeacherLeave {
   id: string;
@@ -213,14 +213,11 @@ export default function LeavesManagementPage() {
       description="Manage teacher leave requests"
     >
       <div className="space-y-6">
-        <div className="flex items-center gap-3 mb-6">
-          <Link href="/admin">
-            <Button variant="ghost" size="sm" className="rounded-xl">
-              ← Back
-            </Button>
-          </Link>
-          <h1 className="text-2xl font-bold">Leave Management</h1>
-        </div>
+        <AdminHeader
+          icon={Calendar}
+          title="Leave Management"
+          description="Review and manage teacher leave requests"
+        />
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -23,8 +23,9 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  ArrowLeft,
+  BarChart,
 } from "lucide-react";
+import { StudentHeader } from "@/components/student/student-header";
 
 interface StudentAnalytics {
   attendance: {
@@ -110,21 +111,11 @@ export default function StudentAnalyticsPage() {
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.back()}
-          className="mb-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold">My Performance</h1>
-          <p className="text-muted-foreground mt-1">
-            Track your academic progress and achievements
-          </p>
-        </div>
+        <StudentHeader
+          icon={BarChart}
+          title="My Performance"
+          description="Track your academic progress and achievements"
+        />
 
         {isLoading ? (
           <div className="flex items-center justify-center h-64">

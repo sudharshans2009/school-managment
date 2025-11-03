@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSession } from "@/lib/auth-client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -23,9 +24,9 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react";
-import Link from "next/link";
 import { format } from "date-fns";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { AdminHeader } from "@/components/admin/admin-header";
 
 interface Classroom {
   id: string;
@@ -52,6 +53,7 @@ interface AttendanceRecord {
 }
 
 export default function AdminAttendancePage() {
+  const { data: session } = useSession();
   const [selectedClassroom, setSelectedClassroom] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>(
     format(new Date(), "yyyy-MM-dd"),
@@ -133,6 +135,12 @@ export default function AdminAttendancePage() {
 
   const handleMarkAttendance = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (!session?.user?.id) {
+      setError("You must be logged in to mark attendance");
+      return;
+    }
+
     const formData = new FormData(e.currentTarget);
 
     const records =
@@ -143,8 +151,8 @@ export default function AdminAttendancePage() {
         date: selectedDate, // Send as string, will be converted to Date on server
       })) || [];
 
-    // Get current user ID (you'll need to get this from session)
-    const markedBy = "current-user-id"; // Replace with actual session user ID
+    // Get current user ID from session
+    const markedBy = session.user.id;
 
     markAttendanceMutation.mutate({ records, markedBy });
   };
@@ -200,16 +208,11 @@ export default function AdminAttendancePage() {
   return (
     <DashboardLayout title="Admin Portal" description="Attendance Management">
       <div className="space-y-4 sm:space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link href="/admin">
-              <Button variant="ghost" size="sm" className="rounded-xl">
-                ← Back
-              </Button>
-            </Link>
-            <UserCheck className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-            <h1 className="text-xl sm:text-2xl font-bold">Attendance Management</h1>
-          </div>
+        <AdminHeader
+          icon={UserCheck}
+          title="Attendance Management"
+          description="View and mark attendance"
+        >
           {selectedClassroom && students && students.length > 0 && (
             <Button
               className="rounded-xl w-full sm:w-auto"
@@ -219,7 +222,8 @@ export default function AdminAttendancePage() {
               {viewMode === "view" ? "Mark Attendance" : "View Records"}
             </Button>
           )}
-        </div>
+        </AdminHeader>
+
         {/* Filters */}
         <Card className="rounded-2xl shadow-sm">
           <CardContent className="p-4">

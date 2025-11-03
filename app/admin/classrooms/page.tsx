@@ -35,6 +35,7 @@ import Link from "next/link";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { DataTable } from "@/components/ui/data-table";
 import { createClassroomColumns, Classroom } from "./components/columns";
+import { AdminHeader } from "@/components/admin/admin-header";
 
 export default function ClassroomsPage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -126,16 +127,11 @@ export default function ClassroomsPage() {
   return (
     <DashboardLayout title="Classrooms Management" description="Admin Portal">
       <div>
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-          <div className="flex items-center space-x-2 sm:space-x-3">
-            <Link href="/admin">
-              <Button variant="ghost" size="sm" className="rounded-xl">
-                ← Back
-              </Button>
-            </Link>
-            <School className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-            <h1 className="text-xl sm:text-2xl font-bold">Classroom Management</h1>
-          </div>
+        <AdminHeader
+          icon={School}
+          title="Classroom Management"
+          description="Manage all classrooms and their details"
+        >
           <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
@@ -227,7 +223,7 @@ export default function ClassroomsPage() {
               </DialogContent>
             </Dialog>
           </div>
-        </div>
+        </AdminHeader>
 
         {viewMode === "table" ? (
           <DataTable

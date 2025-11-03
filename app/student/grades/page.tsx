@@ -36,9 +36,10 @@ import {
   XCircle,
   TrendingUp,
   TrendingDown,
-  ArrowLeft,
+  Award,
 } from "lucide-react";
 import { format } from "date-fns";
+import { StudentHeader } from "@/components/student/student-header";
 
 interface Grade {
   id: string;
@@ -161,21 +162,11 @@ export default function StudentGradesPage() {
   return (
     <DashboardLayout>
       <div className="p-6 space-y-6">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.back()}
-          className="mb-4"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
-        </Button>
-        <div>
-          <h1 className="text-3xl font-bold">My Grades</h1>
-          <p className="text-muted-foreground mt-1">
-            View your test scores and performance
-          </p>
-        </div>
+        <StudentHeader
+          icon={Award}
+          title="My Grades"
+          description="View your test scores and performance"
+        />
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

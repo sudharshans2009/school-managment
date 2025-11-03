@@ -41,6 +41,8 @@ import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { DataTable } from "@/components/ui/data-table";
 import { createTeacherColumns, Teacher } from "./components/columns";
 import Link from "next/link";
+import { AdminHeader } from "@/components/admin/admin-header";
+import { Users } from "lucide-react";
 
 export default function TeachersPage() {
   const [open, setOpen] = useState(false);
@@ -230,20 +232,11 @@ export default function TeachersPage() {
   return (
     <DashboardLayout title="Teachers Management" description="Admin Portal">
       <div className="space-y-4 sm:space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link href="/admin">
-              <Button variant="ghost" size="sm" className="rounded-xl">
-                ← Back
-              </Button>
-            </Link>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold">Teachers Management</h1>
-              <p className="text-sm sm:text-base text-gray-600 mt-1">
-                Manage teachers and their assignments
-              </p>
-            </div>
-          </div>
+        <AdminHeader
+          icon={Users}
+          title="Teachers Management"
+          description="Manage teachers and their assignments"
+        >
           <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
@@ -422,7 +415,7 @@ export default function TeachersPage() {
               </DialogContent>
             </Dialog>
           </div>
-        </div>
+        </AdminHeader>
 
         {uploadResult && (
           <Alert

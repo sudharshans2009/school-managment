@@ -45,7 +45,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
-import Link from "next/link";
+import { AdminHeader } from "@/components/admin/admin-header";
 
 interface CalendarDay {
   id: string;
@@ -96,7 +96,10 @@ export default function AdminCalendarPage() {
     ],
     queryFn: async () => {
       const res = await fetch(
-        `/api/calendar?startDate=${format(monthStart, "yyyy-MM-dd")}&endDate=${format(monthEnd, "yyyy-MM-dd")}`,
+        `/api/calendar?startDate=${format(
+          monthStart,
+          "yyyy-MM-dd"
+        )}&endDate=${format(monthEnd, "yyyy-MM-dd")}`
       );
       if (!res.ok) throw new Error("Failed to fetch calendar");
       return res.json() as Promise<CalendarDay[]>;
@@ -112,7 +115,7 @@ export default function AdminCalendarPage() {
     queryFn: async () => {
       if (!selectedDate) return null;
       const res = await fetch(
-        `/api/calendar?date=${format(selectedDate, "yyyy-MM-dd")}`,
+        `/api/calendar?date=${format(selectedDate, "yyyy-MM-dd")}`
       );
       if (!res.ok) throw new Error("Failed to fetch day config");
       return res.json() as Promise<CalendarDay | null>;
@@ -293,22 +296,11 @@ export default function AdminCalendarPage() {
   return (
     <DashboardLayout title="Admin Portal" description="Calendar Management">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-3">
-              <Link href="/admin">
-                <Button variant="ghost" size="sm" className="rounded-xl">
-                  ← Back
-                </Button>
-              </Link>
-              <Calendar className="w-6 h-6 text-primary" />
-              <h1 className="text-2xl font-bold">Calendar Management</h1>
-            </div>
-            <p className="text-muted-foreground mt-1 ml-14">
-              Manage working days, holidays, and custom timetables
-            </p>
-          </div>
-        </div>
+        <AdminHeader
+          icon={Calendar}
+          title="Calendar Management"
+          description="Manage working days, holidays, and custom timetables"
+        />
 
         {/* Legend */}
         <Card className="rounded-2xl shadow-sm">
@@ -433,7 +425,9 @@ export default function AdminCalendarPage() {
                       >
                         <div className="flex items-center justify-between w-full">
                           <span
-                            className={`text-sm font-medium ${today ? "text-primary" : ""}`}
+                            className={`text-sm font-medium ${
+                              today ? "text-primary" : ""
+                            }`}
                           >
                             {format(date, "d")}
                           </span>
