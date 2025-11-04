@@ -76,7 +76,7 @@ export async function createNotification(input: CreateNotificationInput) {
 }
 
 export async function createBulkNotifications(
-  input: CreateBulkNotificationInput
+  input: CreateBulkNotificationInput,
 ) {
   try {
     const notificationsData = input.recipientIds.map((recipientId) => ({
@@ -107,7 +107,10 @@ export async function createBulkNotifications(
 export async function getNotifications(userId: string, unreadOnly = false) {
   try {
     const conditions = unreadOnly
-      ? and(eq(notifications.recipientId, userId), eq(notifications.isRead, false))
+      ? and(
+          eq(notifications.recipientId, userId),
+          eq(notifications.isRead, false),
+        )
       : eq(notifications.recipientId, userId);
 
     const userNotifications = await db.query.notifications.findMany({
@@ -138,7 +141,7 @@ export async function getUnreadCount(userId: string) {
     const unreadNotifications = await db.query.notifications.findMany({
       where: and(
         eq(notifications.recipientId, userId),
-        eq(notifications.isRead, false)
+        eq(notifications.isRead, false),
       ),
     });
 
@@ -168,8 +171,8 @@ export async function markAsRead(notificationId: string) {
       .where(
         and(
           eq(notifications.id, notificationId),
-          eq(notifications.recipientId, session.user.id)
-        )
+          eq(notifications.recipientId, session.user.id),
+        ),
       )
       .returning();
 
@@ -193,7 +196,10 @@ export async function markAllAsRead(userId: string) {
         readAt: new Date(),
       })
       .where(
-        and(eq(notifications.recipientId, userId), eq(notifications.isRead, false))
+        and(
+          eq(notifications.recipientId, userId),
+          eq(notifications.isRead, false),
+        ),
       );
 
     return { success: true };
@@ -218,8 +224,8 @@ export async function deleteNotification(notificationId: string) {
       .where(
         and(
           eq(notifications.id, notificationId),
-          eq(notifications.recipientId, session.user.id)
-        )
+          eq(notifications.recipientId, session.user.id),
+        ),
       );
 
     return { success: true };
@@ -284,11 +290,11 @@ export async function getTeacherUserIds() {
 export async function getClassTeacherUserId(classroomId: string) {
   try {
     const { teacherAssignments } = await import("@/database/schema");
-    
+
     const assignment = await db.query.teacherAssignments.findFirst({
       where: and(
         eq(teacherAssignments.classroomId, classroomId),
-        eq(teacherAssignments.isPrimary, true)
+        eq(teacherAssignments.isPrimary, true),
       ),
       columns: {
         teacherId: true,

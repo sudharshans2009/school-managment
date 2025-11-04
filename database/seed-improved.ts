@@ -31,11 +31,11 @@ async function seed() {
     } catch {
       console.log("Admin already exists");
     }
-    
+
     const admin = await db.query.users.findFirst({
       where: eq(users.email, "admin@school.com"),
     });
-    
+
     if (admin) {
       await db
         .update(users)
@@ -50,7 +50,11 @@ async function seed() {
       { email: "sharma@school.com", name: "Ms. Sharma", subject: "English" },
       { email: "patel@school.com", name: "Mr. Patel", subject: "Physics" },
       { email: "singh@school.com", name: "Mrs. Singh", subject: "Chemistry" },
-      { email: "verma@school.com", name: "Mr. Verma", subject: "Computer Science" },
+      {
+        email: "verma@school.com",
+        name: "Mr. Verma",
+        subject: "Computer Science",
+      },
       { email: "gupta@school.com", name: "Ms. Gupta", subject: "KTPI" },
       { email: "reddy@school.com", name: "Coach Reddy", subject: "Sports" },
     ];
@@ -68,11 +72,11 @@ async function seed() {
       } catch {
         console.log(`${teacher.name} already exists`);
       }
-      
+
       const teacherUser = await db.query.users.findFirst({
         where: eq(users.email, teacher.email),
       });
-      
+
       if (teacherUser) {
         await db
           .update(users)
@@ -98,11 +102,11 @@ async function seed() {
       } catch {
         console.log(`Student ${i} already exists`);
       }
-      
+
       const student = await db.query.users.findFirst({
         where: eq(users.email, `student${i}@school.com`),
       });
-      
+
       if (student) {
         await db
           .update(users)
@@ -137,12 +141,28 @@ async function seed() {
       { name: "English", code: "ENG11", desc: "English - Class 11" },
       { name: "Physics", code: "PHY11", desc: "Physics - Class 11" },
       { name: "Chemistry", code: "CHEM11", desc: "Chemistry - Class 11" },
-      { name: "Computer Science", code: "CS11", desc: "Computer Science - Class 11" },
-      { name: "KTPI", code: "KTPI11", desc: "Knowledge Traditions & Practices of India" },
-      { name: "Sports Education", code: "SPORT11", desc: "Sports Education - Elective" },
+      {
+        name: "Computer Science",
+        code: "CS11",
+        desc: "Computer Science - Class 11",
+      },
+      {
+        name: "KTPI",
+        code: "KTPI11",
+        desc: "Knowledge Traditions & Practices of India",
+      },
+      {
+        name: "Sports Education",
+        code: "SPORT11",
+        desc: "Sports Education - Elective",
+      },
       { name: "Value Education", code: "VE11", desc: "Value Education" },
       { name: "Library", code: "LIB11", desc: "Library Period" },
-      { name: "Health & Physical Education", code: "HPE11", desc: "Health & Physical Education" },
+      {
+        name: "Health & Physical Education",
+        code: "HPE11",
+        desc: "Health & Physical Education",
+      },
       { name: "Bhajan", code: "BHAJAN11", desc: "Bhajan/Prayer" },
       { name: "Break", code: "BREAK", desc: "Break Time" },
     ];
@@ -155,13 +175,17 @@ async function seed() {
           name: sub.name,
           code: sub.code,
           description: sub.desc,
-          applicableGrades: sub.code === "BREAK" ? null : JSON.stringify(["11"]),
-          applicableSections: sub.code === "BREAK" ? null : JSON.stringify(["B"]),
+          applicableGrades:
+            sub.code === "BREAK" ? null : JSON.stringify(["11"]),
+          applicableSections:
+            sub.code === "BREAK" ? null : JSON.stringify(["B"]),
         })
         .returning();
       createdSubjects[sub.code] = subject;
     }
-    console.log(`✅ Created ${Object.keys(createdSubjects).length} unique subjects`);
+    console.log(
+      `✅ Created ${Object.keys(createdSubjects).length} unique subjects`,
+    );
 
     // Assign Teachers to Subjects
     console.log("\n👨‍🏫 Assigning teachers to subjects...");
@@ -189,7 +213,7 @@ async function seed() {
     console.log("\n📝 Creating student records...");
     for (let i = 0; i < studentUsers.length; i++) {
       const elective = i < 15 ? "KTPI" : "Sports";
-      
+
       await db.insert(students).values({
         userId: studentUsers[i].id,
         classroomId: classroom.id,
@@ -205,7 +229,7 @@ async function seed() {
 
     // Create Timetable (Monday to Saturday)
     console.log("\n📅 Creating timetable...");
-    
+
     const periodTimes = [
       { period: 1, start: "08:45", end: "09:25" },
       { period: 2, start: "09:25", end: "10:05" },
@@ -220,15 +244,60 @@ async function seed() {
 
     // Monday - 9 periods
     const mondaySchedule = [
-      { subject: "ENG11", teacher: teacherUsers[1], type: "regular", room: "201" },
-      { subject: "MATH11", teacher: teacherUsers[0], type: "regular", room: "201" },
-      { subject: "PHY11", teacher: teacherUsers[2], type: "regular", room: "201" },
-      { subject: "CHEM11", teacher: teacherUsers[3], type: "regular", room: "201" },
-      { subject: "CS11", teacher: teacherUsers[4], type: "regular", room: "201" },
-      { subject: "KTPI11", teacher: teacherUsers[5], type: "regular", room: "201" },
-      { subject: "SPORT11", teacher: teacherUsers[6], type: "regular", room: "Sports Ground" },
-      { subject: "HPE11", teacher: teacherUsers[6], type: "extra", room: "Sports Ground" },
-      { subject: "LIB11", teacher: teacherUsers[0], type: "extra", room: "Library" },
+      {
+        subject: "ENG11",
+        teacher: teacherUsers[1],
+        type: "regular",
+        room: "201",
+      },
+      {
+        subject: "MATH11",
+        teacher: teacherUsers[0],
+        type: "regular",
+        room: "201",
+      },
+      {
+        subject: "PHY11",
+        teacher: teacherUsers[2],
+        type: "regular",
+        room: "201",
+      },
+      {
+        subject: "CHEM11",
+        teacher: teacherUsers[3],
+        type: "regular",
+        room: "201",
+      },
+      {
+        subject: "CS11",
+        teacher: teacherUsers[4],
+        type: "regular",
+        room: "201",
+      },
+      {
+        subject: "KTPI11",
+        teacher: teacherUsers[5],
+        type: "regular",
+        room: "201",
+      },
+      {
+        subject: "SPORT11",
+        teacher: teacherUsers[6],
+        type: "regular",
+        room: "Sports Ground",
+      },
+      {
+        subject: "HPE11",
+        teacher: teacherUsers[6],
+        type: "extra",
+        room: "Sports Ground",
+      },
+      {
+        subject: "LIB11",
+        teacher: teacherUsers[0],
+        type: "extra",
+        room: "Library",
+      },
     ];
 
     for (let i = 0; i < mondaySchedule.length; i++) {
@@ -249,15 +318,60 @@ async function seed() {
 
     // Tuesday (with Computer Lab) - 9 periods
     const tuesdaySchedule = [
-      { subject: "MATH11", teacher: teacherUsers[0], type: "regular", room: "201" },
-      { subject: "ENG11", teacher: teacherUsers[1], type: "regular", room: "201" },
-      { subject: "CS11", teacher: teacherUsers[4], type: "lab", room: "Computer Lab" },
-      { subject: "CS11", teacher: teacherUsers[4], type: "lab", room: "Computer Lab" },
-      { subject: "PHY11", teacher: teacherUsers[2], type: "regular", room: "201" },
-      { subject: "CHEM11", teacher: teacherUsers[3], type: "regular", room: "201" },
-      { subject: "SPORT11", teacher: teacherUsers[6], type: "regular", room: "Sports Ground" },
-      { subject: "MATH11", teacher: teacherUsers[0], type: "test", room: "201" },
-      { subject: "BHAJAN11", teacher: teacherUsers[0], type: "extra", room: "Assembly Hall" },
+      {
+        subject: "MATH11",
+        teacher: teacherUsers[0],
+        type: "regular",
+        room: "201",
+      },
+      {
+        subject: "ENG11",
+        teacher: teacherUsers[1],
+        type: "regular",
+        room: "201",
+      },
+      {
+        subject: "CS11",
+        teacher: teacherUsers[4],
+        type: "lab",
+        room: "Computer Lab",
+      },
+      {
+        subject: "CS11",
+        teacher: teacherUsers[4],
+        type: "lab",
+        room: "Computer Lab",
+      },
+      {
+        subject: "PHY11",
+        teacher: teacherUsers[2],
+        type: "regular",
+        room: "201",
+      },
+      {
+        subject: "CHEM11",
+        teacher: teacherUsers[3],
+        type: "regular",
+        room: "201",
+      },
+      {
+        subject: "SPORT11",
+        teacher: teacherUsers[6],
+        type: "regular",
+        room: "Sports Ground",
+      },
+      {
+        subject: "MATH11",
+        teacher: teacherUsers[0],
+        type: "test",
+        room: "201",
+      },
+      {
+        subject: "BHAJAN11",
+        teacher: teacherUsers[0],
+        type: "extra",
+        room: "Assembly Hall",
+      },
     ];
 
     for (let i = 0; i < tuesdaySchedule.length; i++) {
@@ -289,15 +403,34 @@ async function seed() {
 
       for (let i = 0; i < periodsForDay; i++) {
         const time = periodTimes[i];
-        
+
         // Rotate subjects for variety
-        const subjectCodes = ["MATH11", "ENG11", "PHY11", "CHEM11", "CS11", "KTPI11", "SPORT11", "VE11", "HPE11"];
+        const subjectCodes = [
+          "MATH11",
+          "ENG11",
+          "PHY11",
+          "CHEM11",
+          "CS11",
+          "KTPI11",
+          "SPORT11",
+          "VE11",
+          "HPE11",
+        ];
         const subjectCode = subjectCodes[i % subjectCodes.length];
         const subject = createdSubjects[subjectCode];
-        const teacherIndex = Math.min(subjectCodes.indexOf(subjectCode), teacherUsers.length - 1);
+        const teacherIndex = Math.min(
+          subjectCodes.indexOf(subjectCode),
+          teacherUsers.length - 1,
+        );
         const teacher = teacherUsers[teacherIndex];
-        const room = subjectCode.includes("SPORT") || subjectCode.includes("HPE") ? "Sports Ground" : "201";
-        const type = subjectCode.includes("VE") || subjectCode.includes("HPE") ? "extra" : "regular";
+        const room =
+          subjectCode.includes("SPORT") || subjectCode.includes("HPE")
+            ? "Sports Ground"
+            : "201";
+        const type =
+          subjectCode.includes("VE") || subjectCode.includes("HPE")
+            ? "extra"
+            : "regular";
 
         await db.insert(timetable).values({
           classroomId: classroom.id,
@@ -325,7 +458,8 @@ async function seed() {
         classroomId: classroom.id,
         subjectId: createdSubjects["MATH11"].id,
         title: "Calculus Practice Problems",
-        description: "Complete Exercise 3.2 - Limits and Derivatives from textbook",
+        description:
+          "Complete Exercise 3.2 - Limits and Derivatives from textbook",
         dueDate: tomorrow,
         totalMarks: 25,
       },
@@ -334,7 +468,8 @@ async function seed() {
         classroomId: classroom.id,
         subjectId: createdSubjects["PHY11"].id,
         title: "Newton's Laws Lab Report",
-        description: "Write detailed lab report with observations and conclusions",
+        description:
+          "Write detailed lab report with observations and conclusions",
         dueDate: tomorrow,
         totalMarks: 30,
       },
@@ -353,7 +488,8 @@ async function seed() {
       },
       {
         title: "🔬 Science Exhibition",
-        content: "Start working on your science projects. Submission deadline: November 10th",
+        content:
+          "Start working on your science projects. Submission deadline: November 10th",
         classroomId: classroom.id,
         createdBy: teacherUsers[2].id,
         priority: "normal",
@@ -366,7 +502,8 @@ async function seed() {
       classroomId: classroom.id,
       teacherId: teacherUsers[0].id,
       messageType: "quote",
-      content: "Education is the most powerful weapon you can use to change the world. - Nelson Mandela",
+      content:
+        "Education is the most powerful weapon you can use to change the world. - Nelson Mandela",
       date: new Date(),
     });
     console.log("✅ Created classroom message");

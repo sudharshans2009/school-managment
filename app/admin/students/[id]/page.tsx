@@ -83,7 +83,7 @@ export default function StudentDetailPage() {
     queryKey: ["student-attendance", studentId],
     queryFn: async () => {
       const response = await fetch(
-        `/api/students/${studentId}/attendance-stats`
+        `/api/students/${studentId}/attendance-stats`,
       );
       if (!response.ok) throw new Error("Failed to fetch attendance");
       return response.json();

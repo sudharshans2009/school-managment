@@ -135,7 +135,6 @@ export default function ClassroomsPage() {
           <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
-              size="sm"
               onClick={() =>
                 setViewMode(viewMode === "grid" ? "table" : "grid")
               }
@@ -234,20 +233,17 @@ export default function ClassroomsPage() {
           />
         ) : (
           <>
-            <Card className="mb-6 rounded-2xl shadow-sm">
-              <CardContent className="p-4">
-                <div className="flex items-center space-x-2">
-                  <Search className="h-5 w-5 text-gray-400" />
-                  <Input
-                    placeholder="Search classrooms by name, grade, or section..."
-                    className="flex-1 rounded-xl"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
+            <div className="mb-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search classrooms by name, grade, or section..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 rounded-xl"
+                />
+              </div>
+            </div>
             {filteredClassrooms && filteredClassrooms.length === 0 ? (
               <Card className="rounded-2xl shadow-sm">
                 <CardContent className="p-8 text-center text-gray-500">

@@ -4,30 +4,32 @@
 
 ### Period Timings (Updated)
 
-| Period | Start Time | End Time | Duration |
-|--------|------------|----------|----------|
-| **1** | 08:45 | 09:25 | 40 min |
-| **2** | 09:25 | 10:05 | 40 min |
-| **Break** | 10:05 | 10:15 | **10 min** |
-| **3** | 10:15 | 10:55 | 40 min |
-| **4** | 10:55 | 11:35 | 40 min |
-| **5** | 11:35 | 12:15 | 40 min |
-| **Lunch** | 12:15 | 12:55 | **40 min** |
-| **6** | 12:55 | 13:35 | 40 min |
-| **7** | 13:35 | 14:15 | 40 min |
-| **Break** | 14:15 | 14:25 | **10 min** |
-| **8** | 14:25 | 15:05 | 40 min |
-| **9** | 15:05 | 15:45 | 40 min |
+| Period    | Start Time | End Time | Duration   |
+| --------- | ---------- | -------- | ---------- |
+| **1**     | 08:45      | 09:25    | 40 min     |
+| **2**     | 09:25      | 10:05    | 40 min     |
+| **Break** | 10:05      | 10:15    | **10 min** |
+| **3**     | 10:15      | 10:55    | 40 min     |
+| **4**     | 10:55      | 11:35    | 40 min     |
+| **5**     | 11:35      | 12:15    | 40 min     |
+| **Lunch** | 12:15      | 12:55    | **40 min** |
+| **6**     | 12:55      | 13:35    | 40 min     |
+| **7**     | 13:35      | 14:15    | 40 min     |
+| **Break** | 14:15      | 14:25    | **10 min** |
+| **8**     | 14:25      | 15:05    | 40 min     |
+| **9**     | 15:05      | 15:45    | 40 min     |
 
 ### Key Changes from Previous System
 
 #### Old System (11 periods)
+
 - Started: 08:00
 - Ended: 16:45
 - Period duration: 50 minutes
 - Total teaching time: 550 minutes (9h 10m)
 
 #### New System (9 periods)
+
 - **Starts: 08:45** ⬆️ 45 min later
 - **Ends: 15:45** ⬆️ 1 hour earlier
 - **Period duration: 40 minutes** ⬇️ 10 min shorter
@@ -48,6 +50,7 @@
 ### Weekly Structure
 
 #### Monday to Saturday
+
 - All days: 9 full teaching periods
 - Consistent timing across the week
 - No more half-day Saturday
@@ -55,6 +58,7 @@
 ### Subject Distribution (per week)
 
 Based on the seed data:
+
 - **Mathematics**: ~9 periods
 - **English**: ~6 periods
 - **Physics**: ~6 periods
@@ -66,11 +70,11 @@ Based on the seed data:
 
 ### Lab Sessions
 
-| Day | Lab Subject | Periods | Time |
-|-----|-------------|---------|------|
-| Tuesday | Computer Science | 3 & 4 | 10:15-11:35 |
-| Wednesday | Physics | TBD | 40+40 min |
-| Thursday | Chemistry | TBD | 40+40 min |
+| Day       | Lab Subject      | Periods | Time        |
+| --------- | ---------------- | ------- | ----------- |
+| Tuesday   | Computer Science | 3 & 4   | 10:15-11:35 |
+| Wednesday | Physics          | TBD     | 40+40 min   |
+| Thursday  | Chemistry        | TBD     | 40+40 min   |
 
 ### Database Status
 

@@ -23,12 +23,15 @@ export default function NotFound() {
           </div>
           <CardTitle className="text-2xl">Page Not Found</CardTitle>
           <CardDescription className="text-base">
-            The page you&apos;re looking for doesn&apos;t exist or has been moved.
+            The page you&apos;re looking for doesn&apos;t exist or has been
+            moved.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center">
-            <p className="text-7xl sm:text-8xl font-bold text-primary/20">404</p>
+            <p className="text-7xl sm:text-8xl font-bold text-primary/20">
+              404
+            </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
             <Button asChild className="w-full sm:flex-1">

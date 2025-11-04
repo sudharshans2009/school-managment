@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id: studentId } = await params;
@@ -19,10 +19,16 @@ export async function GET(
       .where(eq(attendance.studentId, studentId));
 
     const totalDays = attendanceRecords.length;
-    const present = attendanceRecords.filter((r) => r.status === "present").length;
-    const absent = attendanceRecords.filter((r) => r.status === "absent").length;
+    const present = attendanceRecords.filter(
+      (r) => r.status === "present",
+    ).length;
+    const absent = attendanceRecords.filter(
+      (r) => r.status === "absent",
+    ).length;
     const late = attendanceRecords.filter((r) => r.status === "late").length;
-    const excused = attendanceRecords.filter((r) => r.status === "excused").length;
+    const excused = attendanceRecords.filter(
+      (r) => r.status === "excused",
+    ).length;
 
     const attendanceRate = totalDays > 0 ? (present / totalDays) * 100 : 0;
 
@@ -38,7 +44,7 @@ export async function GET(
     console.error("Error fetching attendance stats:", error);
     return NextResponse.json(
       { error: "Failed to fetch attendance stats" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

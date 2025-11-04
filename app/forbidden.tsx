@@ -21,13 +21,15 @@ export default function Forbidden() {
           </div>
           <CardTitle className="text-2xl">Access Forbidden</CardTitle>
           <CardDescription className="text-base">
-            You don&apos;t have permission to access this page. Please contact your
-            administrator if you believe this is an error.
+            You don&apos;t have permission to access this page. Please contact
+            your administrator if you believe this is an error.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center">
-            <p className="text-7xl sm:text-8xl font-bold text-destructive/20">403</p>
+            <p className="text-7xl sm:text-8xl font-bold text-destructive/20">
+              403
+            </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
             <Button asChild className="w-full sm:flex-1">

@@ -20,6 +20,7 @@ A comprehensive, production-ready school management system built with Next.js 15
 ### 👨‍💼 Admin Dashboard
 
 **System Management:**
+
 - 📊 Real-time analytics and system metrics
 - 👥 User management (students, teachers, staff)
 - 🏫 Classroom management with unique access codes
@@ -27,6 +28,7 @@ A comprehensive, production-ready school management system built with Next.js 15
 - 🔧 System settings and configuration
 
 **Academic Operations:**
+
 - 📅 Calendar management (working days, holidays, custom schedules)
 - ⏰ Timetable creation and management (9-period structure)
 - 📝 Exam scheduling and grade finalization
@@ -34,12 +36,14 @@ A comprehensive, production-ready school management system built with Next.js 15
 - 📋 Work done tracking and verification
 
 **Communication:**
+
 - 📢 School-wide announcements
 - 📧 Group messaging system
 - 📄 Circular management
 - 🎉 Event creation and management
 
 **Advanced Features:**
+
 - 📁 Bulk student/teacher import via CSV
 - 🔄 Leave management and substitute assignments
 - 🎓 Admission application processing
@@ -49,6 +53,7 @@ A comprehensive, production-ready school management system built with Next.js 15
 ### 👩‍🏫 Teacher Portal
 
 **Classroom Management:**
+
 - 📚 View assigned classes and subjects
 - 👥 Student roster with detailed profiles
 - 📊 Class performance analytics
@@ -56,6 +61,7 @@ A comprehensive, production-ready school management system built with Next.js 15
 - ⏰ Access to class timetables
 
 **Academic Tools:**
+
 - 📝 Create and assign homework with deadlines
 - ✅ Grade submissions and provide feedback
 - 📋 Create and manage exams
@@ -63,12 +69,14 @@ A comprehensive, production-ready school management system built with Next.js 15
 - 📈 Student performance tracking
 
 **Communication:**
+
 - 💬 Direct messaging with students
 - 📢 Classroom announcements
 - 🌅 Daily motivational quotes for classroom dashboards
 - 📝 Work done reports
 
 **Leave & Substitution:**
+
 - 🏥 Apply for leave (sick, casual, earned, duty, emergency)
 - 👀 View leave status and history
 - 🔄 Check substitute assignments
@@ -76,6 +84,7 @@ A comprehensive, production-ready school management system built with Next.js 15
 ### 🧑‍🎓 Student Portal
 
 **Academic Access:**
+
 - 📚 View assigned homework and projects
 - ✍️ Submit assignments online
 - 📊 Check grades and exam results
@@ -83,12 +92,14 @@ A comprehensive, production-ready school management system built with Next.js 15
 - 📈 Personal performance analytics
 
 **Communication:**
+
 - 💬 Message teachers
 - 📢 View class and school announcements
 - 🎉 Event information and registration
 - 📄 Access circulars
 
 **Records:**
+
 - ✅ Attendance records and statistics
 - 🎓 Academic history
 - 📊 Report cards
@@ -97,6 +108,7 @@ A comprehensive, production-ready school management system built with Next.js 15
 ### 📺 Smart Classroom Dashboard
 
 **Real-Time Display:**
+
 - ⏰ **9-Period Timetable** with fixed break times:
   - Period I: 08:45-09:25
   - Period II: 09:25-10:05
@@ -112,6 +124,7 @@ A comprehensive, production-ready school management system built with Next.js 15
   - Period IX: 15:05-15:45
 
 **Live Information:**
+
 - 📊 Today's attendance summary with statistics
 - 📝 Pending homework and assignments
 - 📢 School and class announcements
@@ -120,6 +133,7 @@ A comprehensive, production-ready school management system built with Next.js 15
 - ✅ Current period highlighting
 
 **Security:**
+
 - 🔐 Classroom-specific access codes
 - 🔑 Secure key verification
 - 🚪 Auto-logout on session end
@@ -127,12 +141,14 @@ A comprehensive, production-ready school management system built with Next.js 15
 ### 📧 Email & Verification System
 
 **Automated Emails:**
+
 - ✉️ **Email Verification** - Beautiful HTML emails with verification links
 - 🔐 **Password Reset** - Secure password recovery flow
 - 📧 **Welcome Emails** - Onboarding for new users
 - 🎓 **Admin-Created Accounts** - Auto-verified emails for bulk uploads
 
 **Email Templates:**
+
 - 🎨 Professional HTML templates with gradients
 - 📱 Mobile-responsive design
 - 🔗 One-click verification buttons
@@ -141,18 +157,21 @@ A comprehensive, production-ready school management system built with Next.js 15
 ### � User Management
 
 **Profile System:**
+
 - 🖼️ Profile pages with avatars
 - ✅ Email verification status badges
 - 📊 Account activity tracking
 - 🎭 Role-based information display
 
 **Settings:**
+
 - 📧 Email change with re-verification
 - 🔐 Password update with current password validation
 - 👁️ Password visibility toggles
 - ✨ Real-time validation feedback
 
 **Authorization:**
+
 - 🔒 View-only profiles for students and teachers
 - ✏️ Admin-only profile editing
 - 🛡️ Role-based page redirects
@@ -161,24 +180,28 @@ A comprehensive, production-ready school management system built with Next.js 15
 ### 🔒 Security & Compliance
 
 **Authentication:**
+
 - 🔐 Better Auth integration
 - 📧 Email verification required
 - 🔑 Secure session management
 - 🚪 Auto-logout on inactivity
 
 **Authorization:**
+
 - 👮 Role-Based Access Control (RBAC)
 - 🎭 4 user roles: Admin, Teacher, Student, Parent
 - 🛡️ Granular permission system
 - 🚦 Route-level access control
 
 **GDPR Compliance:**
+
 - 📦 **Right to Data Portability** - Export all user data
 - 🗑️ **Right to be Forgotten** - Data deletion requests
 - ✅ **Consent Management** - Track and manage user consents
 - 📝 **Audit Logging** - Complete action history
 
 **Data Protection:**
+
 - 🔐 Data encryption utilities
 - 🔒 Password hashing with bcrypt
 - 📊 Audit trail for all actions
@@ -187,6 +210,7 @@ A comprehensive, production-ready school management system built with Next.js 15
 ### 📊 Analytics & Reporting
 
 **Admin Analytics:**
+
 - 📈 System-wide statistics
 - 👥 User activity metrics
 - 📊 Attendance trends
@@ -194,12 +218,14 @@ A comprehensive, production-ready school management system built with Next.js 15
 - 🎓 Academic performance overview
 
 **Teacher Analytics:**
+
 - 📚 Class performance metrics
 - 📝 Homework completion rates
 - ✅ Attendance patterns
 - 🎯 Student progress tracking
 
 **Student Analytics:**
+
 - 📊 Personal grade reports
 - 📈 Performance trends
 - ✅ Attendance records
@@ -208,7 +234,8 @@ A comprehensive, production-ready school management system built with Next.js 15
 ### 🎯 Automatic Grade System
 
 **7-Level Grading Scale:**
-- **A*** (90-100%): Outstanding
+
+- **A\*** (90-100%): Outstanding
 - **A** (80-89%): Excellent
 - **B** (70-79%): Very Good
 - **C** (60-69%): Good
@@ -217,6 +244,7 @@ A comprehensive, production-ready school management system built with Next.js 15
 - **F** (0-39%): Fail
 
 **Features:**
+
 - ✅ Automatic grade calculation from percentage
 - � Color-coded grade display
 - 📈 Grade legends on student and teacher views
@@ -225,25 +253,30 @@ A comprehensive, production-ready school management system built with Next.js 15
 ## �🛠️ Tech Stack
 
 ### Core Framework
+
 - **Next.js 15/16** - React framework with App Router
 - **TypeScript** - Type-safe development
 - **React 18** - UI library with Server Components
 
 ### Database & ORM
+
 - **PostgreSQL** - Neon serverless database
 - **Drizzle ORM** - Type-safe database toolkit
 - **Drizzle Kit** - Database migrations
 
 ### Authentication & Authorization
+
 - **Better Auth** - Modern authentication solution
 - **Email Verification** - Required for all signups
 - **Role-Based Access Control** - Admin, Teacher, Student, Parent
 
 ### Email Service
+
 - **Resend** - Transactional email service
 - **React Email** - Beautiful HTML email templates
 
 ### UI & Styling
+
 - **Tailwind CSS** - Utility-first CSS framework
 - **Shadcn/UI** - Headless component library
 - **Radix UI** - Accessible component primitives
@@ -251,16 +284,19 @@ A comprehensive, production-ready school management system built with Next.js 15
 - **Recharts** - Chart library for analytics
 
 ### State Management & Data Fetching
+
 - **TanStack Query v5** - Data synchronization
 - **React Hook Form** - Form state management
 - **Zod** - Schema validation
 
 ### Utilities
+
 - **date-fns** - Date manipulation
 - **Sonner** - Toast notifications
 - **clsx** - Conditional class names
 
 ### Development Tools
+
 - **Bun** - Fast JavaScript runtime & package manager
 - **ESLint** - Code linting
 - **Prettier** - Code formatting
@@ -268,6 +304,7 @@ A comprehensive, production-ready school management system built with Next.js 15
 ## 📦 Installation
 
 ### Prerequisites
+
 - **Bun** (v1.0 or higher)
 - **PostgreSQL** database (Neon recommended)
 - **Resend Account** for email service
@@ -275,18 +312,20 @@ A comprehensive, production-ready school management system built with Next.js 15
 ### Setup Steps
 
 1. **Clone the repository:**
+
 ```bash
 git clone https://github.com/yourusername/school-management.git
 cd school-management
 ```
 
 2. **Install dependencies:**
+
 ```bash
 bun install
 ```
 
 3. **Configure environment variables:**
-Create a `.env.local` file in the root directory:
+   Create a `.env.local` file in the root directory:
 
 ```env
 # Database
@@ -305,6 +344,7 @@ NEXT_PUBLIC_APP_URL="https://yourdomain.com"
 ```
 
 4. **Setup database:**
+
 ```bash
 # Generate migrations
 bun run db:generate
@@ -317,11 +357,13 @@ bun run db:seed
 ```
 
 5. **Verify setup:**
+
 ```bash
 bun run db:verify
 ```
 
 6. **Run development server:**
+
 ```bash
 bun run dev
 ```
@@ -352,6 +394,7 @@ RESEND_FROM_EMAIL="noreply@yourdomain.com"
 ### Email Templates
 
 All emails use beautiful HTML templates with:
+
 - Professional gradient designs
 - Mobile-responsive layout
 - One-click action buttons
@@ -468,6 +511,7 @@ school-management/
 The database uses **Drizzle ORM** with PostgreSQL and includes:
 
 **Core Entities:**
+
 - 👤 **Users** - All system users with role-based access
 - 👨‍🎓 **Students** - Student profiles with parent links
 - 👨‍🏫 **Teachers** - Teacher profiles with qualifications
@@ -475,6 +519,7 @@ The database uses **Drizzle ORM** with PostgreSQL and includes:
 - 📚 **Subjects** - Subject definitions
 
 **Academic Management:**
+
 - 📅 **Timetable** - Class schedules (9-period structure)
 - 📝 **Homework** - Assignments and submissions
 - 📊 **Exams** - Tests and assessments
@@ -482,11 +527,13 @@ The database uses **Drizzle ORM** with PostgreSQL and includes:
 - 📄 **Report Cards** - Generated academic reports
 
 **Attendance & Leave:**
+
 - ✅ **Attendance** - Daily attendance records
 - 🏥 **Teacher Leaves** - Leave applications and approvals
 - 🔄 **Substitute Assignments** - Substitute teacher tracking
 
 **Communication:**
+
 - 📢 **Announcements** - System-wide notices
 - 💬 **Messages** - Direct messaging
 - 👥 **Group Messages** - Bulk messaging
@@ -494,11 +541,13 @@ The database uses **Drizzle ORM** with PostgreSQL and includes:
 - 💬 **Classroom Messages** - Class-specific messages (quotes)
 
 **Events & Meetings:**
+
 - 🎉 **Events** - School events and activities
 - 👪 **Meetings** - Parent-teacher meetings
 - 📅 **Calendar** - Custom schedules and holidays
 
 **Administrative:**
+
 - 🎓 **Admissions** - Application processing
 - 🚪 **Entrance Tests** - Admission tests
 - 📊 **Work Done** - Daily activity reports
@@ -509,6 +558,7 @@ The database uses **Drizzle ORM** with PostgreSQL and includes:
 ### Database Scripts
 
 **Essential Commands:**
+
 ```bash
 # Generate new migrations
 bun run db:generate
@@ -534,6 +584,7 @@ bun tsx database/purge.ts
 
 **Timetable Update:**
 The `update-timetable.ts` script populates the timetable with the 9-period structure:
+
 ```bash
 bun tsx database/update-timetable.ts
 ```
@@ -592,6 +643,7 @@ school-management/
 ## 🔐 Security Features
 
 ### Authentication
+
 - ✅ Email verification required for all signups
 - 🔐 Secure password hashing with bcrypt
 - 🔑 JWT-based session management
@@ -599,6 +651,7 @@ school-management/
 - 🎭 Role-based authentication
 
 ### Authorization
+
 - 👮 **Role-Based Access Control (RBAC)**
   - Admin: Full system access
   - Teacher: Class and student management
@@ -609,6 +662,7 @@ school-management/
 - ✋ Permission-based API access
 
 ### Data Protection
+
 - 🔒 **GDPR Compliance**
   - Data portability (export all user data)
   - Right to be forgotten (complete data deletion)
@@ -618,6 +672,7 @@ school-management/
 - 💾 Secure backup procedures
 
 ### Email Security
+
 - ✉️ Auto-verification for admin-created accounts
 - 🔐 Re-verification on email change
 - ⏰ Expiring verification tokens (24 hours)
@@ -626,6 +681,7 @@ school-management/
 ## 📋 Available Scripts
 
 ### Development
+
 ```bash
 bun run dev          # Start development server
 bun run build        # Build for production
@@ -634,6 +690,7 @@ bun run lint         # Run ESLint
 ```
 
 ### Database
+
 ```bash
 bun run db:generate  # Generate migrations from schema
 bun run db:migrate   # Apply migrations to database
@@ -643,6 +700,7 @@ bun run db:studio    # Open Drizzle Studio (database GUI)
 ```
 
 ### Utilities
+
 ```bash
 # Add subjects to database
 bun tsx database/add-subjects.ts
@@ -655,6 +713,7 @@ bun tsx database/purge.ts
 ```
 
 ### Code Formatting
+
 ```bash
 # Format JavaScript/TypeScript files
 bunx prettier --write "**/*.{js,jsx,ts,tsx}"
@@ -668,6 +727,7 @@ bunx prettier --write "app/**/*.{js,jsx,ts,tsx}"
 The system includes **146+ API endpoints** across the following categories:
 
 ### Admin APIs
+
 - User management (CRUD operations)
 - Classroom creation and configuration
 - Subject and curriculum management
@@ -675,6 +735,7 @@ The system includes **146+ API endpoints** across the following categories:
 - Bulk upload (CSV import)
 
 ### Teacher APIs
+
 - Classroom management
 - Homework creation and grading
 - Attendance marking
@@ -682,12 +743,14 @@ The system includes **146+ API endpoints** across the following categories:
 - Grade submission
 
 ### Student APIs
+
 - Homework submission
 - Grade viewing
 - Attendance records
 - Personal analytics
 
 ### Communication APIs
+
 - Announcements
 - Direct messaging
 - Group messages
@@ -695,6 +758,7 @@ The system includes **146+ API endpoints** across the following categories:
 - Circulars
 
 ### Utility APIs
+
 - Profile management (view-only for students/teachers)
 - Settings (email and password updates)
 - Calendar management
@@ -735,6 +799,7 @@ bun run start
 ```
 
 ### Recommended Platforms
+
 - **Vercel** - Zero-config deployment for Next.js
 - **Railway** - Easy database and app hosting
 - **Neon** - Serverless PostgreSQL database
@@ -756,6 +821,7 @@ Detailed documentation is available in the `/docs` folder:
 ## 🎓 User Roles & Permissions
 
 ### Admin
+
 - ✅ Full system access
 - 👥 Create and manage all users
 - 🏫 Configure classrooms and subjects
@@ -764,6 +830,7 @@ Detailed documentation is available in the `/docs` folder:
 - ✏️ Edit any user profile
 
 ### Teacher
+
 - 📚 Manage assigned classrooms
 - 👨‍🎓 View student information
 - 📝 Create homework and exams
@@ -774,6 +841,7 @@ Detailed documentation is available in the `/docs` folder:
 - 👀 View-only own profile
 
 ### Student
+
 - 📖 View homework and submit assignments
 - 📊 Check grades and attendance
 - 💬 Message teachers
@@ -782,6 +850,7 @@ Detailed documentation is available in the `/docs` folder:
 - 👀 View-only own profile
 
 ### Parent
+
 - 👨‍👩‍👧 View children's information
 - 📊 Check academic progress
 - ✅ Monitor attendance
@@ -792,7 +861,7 @@ Detailed documentation is available in the `/docs` folder:
 
 ### ✅ Completed Features
 
-- **Automatic Grade System** (A* to F)
+- **Automatic Grade System** (A\* to F)
   - 7-level grading scale
   - Automatic calculation from percentage
   - Color-coded displays
@@ -831,12 +900,14 @@ Detailed documentation is available in the `/docs` folder:
 ## 🗺️ Roadmap
 
 ### In Progress
+
 - 📱 Mobile application (React Native)
 - 🔔 Push notifications
 - 📊 Advanced analytics and insights
 - 🎨 Theme customization
 
 ### Planned
+
 - 🌐 Multi-language support
 - 📹 Video conferencing integration
 - 📚 Digital library management

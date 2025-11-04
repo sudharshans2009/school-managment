@@ -27,7 +27,9 @@ export default function Unauthorized() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center">
-            <p className="text-7xl sm:text-8xl font-bold text-amber-500/20">401</p>
+            <p className="text-7xl sm:text-8xl font-bold text-amber-500/20">
+              401
+            </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
             <Button asChild className="w-full sm:flex-1">

@@ -280,7 +280,7 @@ export default function TeacherExamsPage() {
           title="Exam Grade Upload"
           description="Upload test grades for your assigned classes"
         />
-        
+
         <div className="block sm:hidden mb-4">
           <TeacherQuickActions
             currentPage="exams"
@@ -374,7 +374,9 @@ export default function TeacherExamsPage() {
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
-                  <CardTitle className="text-lg sm:text-xl">Student Grades</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl">
+                    Student Grades
+                  </CardTitle>
                   <CardDescription className="text-sm">
                     Enter grades for all students in this exam
                   </CardDescription>

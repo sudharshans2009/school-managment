@@ -272,7 +272,10 @@ export default function StudentPage() {
         {/* Student Info Badge */}
         {studentProfile && (
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <Badge variant="outline" className="text-sm sm:text-base px-3 sm:px-4 py-2 rounded-xl">
+            <Badge
+              variant="outline"
+              className="text-sm sm:text-base px-3 sm:px-4 py-2 rounded-xl"
+            >
               {studentProfile.classroom.name}
             </Badge>
           </div>
@@ -537,10 +540,18 @@ export default function StudentPage() {
                           <Table>
                             <TableHeader>
                               <TableRow>
-                                <TableHead className="text-xs sm:text-sm">Time</TableHead>
-                                <TableHead className="text-xs sm:text-sm">Subject</TableHead>
-                                <TableHead className="text-xs sm:text-sm">Teacher</TableHead>
-                                <TableHead className="text-xs sm:text-sm">Room</TableHead>
+                                <TableHead className="text-xs sm:text-sm">
+                                  Time
+                                </TableHead>
+                                <TableHead className="text-xs sm:text-sm">
+                                  Subject
+                                </TableHead>
+                                <TableHead className="text-xs sm:text-sm">
+                                  Teacher
+                                </TableHead>
+                                <TableHead className="text-xs sm:text-sm">
+                                  Room
+                                </TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -549,9 +560,15 @@ export default function StudentPage() {
                                   <TableCell className="font-medium text-xs sm:text-sm whitespace-nowrap">
                                     {entry.startTime} - {entry.endTime}
                                   </TableCell>
-                                  <TableCell className="text-xs sm:text-sm">{entry.subject.name}</TableCell>
-                                  <TableCell className="text-xs sm:text-sm">{entry.teacher.name}</TableCell>
-                                  <TableCell className="text-xs sm:text-sm">{entry.room || "TBA"}</TableCell>
+                                  <TableCell className="text-xs sm:text-sm">
+                                    {entry.subject.name}
+                                  </TableCell>
+                                  <TableCell className="text-xs sm:text-sm">
+                                    {entry.teacher.name}
+                                  </TableCell>
+                                  <TableCell className="text-xs sm:text-sm">
+                                    {entry.room || "TBA"}
+                                  </TableCell>
                                 </TableRow>
                               ))}
                             </TableBody>

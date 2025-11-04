@@ -19,6 +19,7 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
+import { ExtendedUser } from "@/types/better-auth";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -26,18 +27,6 @@ interface DashboardLayoutProps {
   description?: string;
   showBackButton?: boolean;
   icon?: LucideIcon;
-}
-
-// Extended user type with role
-interface ExtendedUser {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  email: string;
-  emailVerified: boolean;
-  name: string;
-  image?: string | null;
-  role?: string;
 }
 
 export function DashboardLayout({
@@ -63,16 +52,16 @@ export function DashboardLayout({
   };
 
   // Fetch announcements count for notification badge
-  const { data: announcements } = useQuery<{ id: string }[]>({
-    queryKey: ["announcements-count"],
+  const { data: unreadCount } = useQuery<{ count: number }>({
+    queryKey: ["notifications-unread-count"],
     queryFn: async () => {
-      const response = await fetch("/api/announcements");
-      if (!response.ok) return [];
+      const response = await fetch("/api/notifications?countOnly=true");
+      if (!response.ok) return { count: 0 };
       return response.json();
     },
     enabled: !!session,
-    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
-    staleTime: 4 * 60 * 1000, // Consider data stale after 4 minutes
+    refetchInterval: 30 * 1000, // Refetch every 30 seconds for real-time updates
+    staleTime: 20 * 1000, // Consider data stale after 20 seconds
   });
 
   const handleSignOut = async () => {
@@ -112,7 +101,9 @@ export function DashboardLayout({
                 <div>
                   <h1 className="text-lg font-semibold">{title}</h1>
                   {description && (
-                    <p className="text-xs text-muted-foreground">{description}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {description}
+                    </p>
                   )}
                 </div>
               </Link>
@@ -135,12 +126,12 @@ export function DashboardLayout({
                 >
                   <Bell className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Notifications</span>
-                  {announcements && announcements.length > 0 && (
+                  {unreadCount && unreadCount.count > 0 && (
                     <Badge
                       variant="destructive"
                       className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
                     >
-                      {announcements.length > 9 ? "9+" : announcements.length}
+                      {unreadCount.count > 9 ? "9+" : unreadCount.count}
                     </Badge>
                   )}
                 </Button>

@@ -280,7 +280,6 @@ export default function StudentsPage() {
           <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
-              size="sm"
               onClick={() =>
                 setViewMode(viewMode === "grid" ? "table" : "grid")
               }
@@ -302,7 +301,10 @@ export default function StudentsPage() {
             </Button>
             <Dialog open={csvDialogOpen} onOpenChange={setCsvDialogOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" className="rounded-xl flex-1 sm:flex-none">
+                <Button
+                  variant="outline"
+                  className="rounded-xl flex-1 sm:flex-none"
+                >
                   <Upload className="h-4 w-4 mr-2" />
                   <span className="hidden sm:inline">Upload CSV</span>
                   <span className="sm:hidden">CSV</span>
@@ -582,7 +584,6 @@ export default function StudentsPage() {
                 />
               </div>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredStudents?.map((student) => (
                 <Card key={student.id}>

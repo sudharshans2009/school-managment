@@ -5,7 +5,7 @@ import { eq, desc } from "drizzle-orm";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id: studentId } = await params;
@@ -32,13 +32,15 @@ export async function GET(
       id: result.id,
       examName: result.examName || "Unknown Exam",
       subjectName: result.subjectName || "Unknown Subject",
-      marksObtained: typeof result.marksObtained === 'string' 
-        ? parseFloat(result.marksObtained) 
-        : Number(result.marksObtained || 0),
+      marksObtained:
+        typeof result.marksObtained === "string"
+          ? parseFloat(result.marksObtained)
+          : Number(result.marksObtained || 0),
       totalMarks: result.totalMarks || 0,
-      percentage: typeof result.percentage === 'string'
-        ? parseFloat(result.percentage)
-        : Number(result.percentage || 0),
+      percentage:
+        typeof result.percentage === "string"
+          ? parseFloat(result.percentage)
+          : Number(result.percentage || 0),
       grade: result.grade || "N/A",
       date: result.examDate ? result.examDate.toISOString() : "",
     }));
@@ -48,7 +50,7 @@ export async function GET(
     console.error("Error fetching exam results:", error);
     return NextResponse.json(
       { error: "Failed to fetch exam results" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id: teacherId } = await params;
@@ -20,19 +20,19 @@ export async function GET(
       .where(eq(teacherLeaves.teacherId, teacherId));
 
     const totalLeaves = leaveRecords.filter(
-      (r) => r.status === "approved"
+      (r) => r.status === "approved",
     ).length;
     const sickLeaves = leaveRecords.filter(
-      (r) => r.leaveType === "sick" && r.status === "approved"
+      (r) => r.leaveType === "sick" && r.status === "approved",
     ).length;
     const casualLeaves = leaveRecords.filter(
-      (r) => r.leaveType === "casual" && r.status === "approved"
+      (r) => r.leaveType === "casual" && r.status === "approved",
     ).length;
     const earnedLeaves = leaveRecords.filter(
-      (r) => r.leaveType === "earned" && r.status === "approved"
+      (r) => r.leaveType === "earned" && r.status === "approved",
     ).length;
     const pendingLeaves = leaveRecords.filter(
-      (r) => r.status === "pending"
+      (r) => r.status === "pending",
     ).length;
 
     return NextResponse.json({
@@ -46,7 +46,7 @@ export async function GET(
     console.error("Error fetching leave stats:", error);
     return NextResponse.json(
       { error: "Failed to fetch leave stats" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

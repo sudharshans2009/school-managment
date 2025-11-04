@@ -75,15 +75,15 @@ export function HomeLayout({ children }: HomeLayoutProps) {
               ) : (
                 <div className="flex items-center space-x-2">
                   <Link href="/auth/signin">
-                    <Button variant="ghost" size="sm" className="rounded-xl">
+                    <Button size="sm" className="rounded-xl">
                       Sign In
                     </Button>
                   </Link>
-                  <Link href="/auth/signup">
+                  {/* <Link href="/auth/signup">
                     <Button size="sm" className="rounded-xl">
                       Sign Up
                     </Button>
-                  </Link>
+                  </Link> */}
                 </div>
               )}
             </div>

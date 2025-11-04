@@ -240,7 +240,6 @@ export default function TeachersPage() {
           <div className="flex gap-2 w-full sm:w-auto">
             <Button
               variant="outline"
-              size="sm"
               onClick={() =>
                 setViewMode(viewMode === "grid" ? "table" : "grid")
               }
@@ -262,7 +261,10 @@ export default function TeachersPage() {
             </Button>
             <Dialog open={csvDialogOpen} onOpenChange={setCsvDialogOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" className="rounded-xl flex-1 sm:flex-none">
+                <Button
+                  variant="outline"
+                  className="rounded-xl flex-1 sm:flex-none"
+                >
                   <Upload className="h-4 w-4 mr-2" />
                   Upload CSV
                 </Button>

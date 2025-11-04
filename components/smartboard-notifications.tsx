@@ -58,9 +58,7 @@ export function SmartboardNotifications({
   const { data, isLoading } = useQuery<SmartboardNotification>({
     queryKey: ["smartboard-notifications", classroomId],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/smartboard/${classroomId}/notifications`
-      );
+      const res = await fetch(`/api/smartboard/${classroomId}/notifications`);
       if (!res.ok) throw new Error("Failed to fetch notifications");
       return res.json();
     },
@@ -166,18 +164,15 @@ export function SmartboardNotifications({
                           <Calendar className="h-3 w-3" />
                           {announcement.event.title} -{" "}
                           {new Date(
-                            announcement.event.startDate
+                            announcement.event.startDate,
                           ).toLocaleDateString()}
                         </div>
                       )}
                       <p className="text-xs text-muted-foreground">
                         By {announcement.createdBy} •{" "}
-                        {formatDistanceToNow(
-                          new Date(announcement.createdAt),
-                          {
-                            addSuffix: true,
-                          }
-                        )}
+                        {formatDistanceToNow(new Date(announcement.createdAt), {
+                          addSuffix: true,
+                        })}
                       </p>
                     </div>
                   ))}
@@ -238,7 +233,9 @@ export function SmartboardNotifications({
                       key={message.id}
                       className="p-3 rounded-lg border bg-card space-y-1"
                     >
-                      <p className="text-sm italic">&ldquo;{message.content}&rdquo;</p>
+                      <p className="text-sm italic">
+                        &ldquo;{message.content}&rdquo;
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         - {message.teacher} •{" "}
                         {formatDistanceToNow(new Date(message.createdAt), {

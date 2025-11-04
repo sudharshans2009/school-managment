@@ -531,7 +531,7 @@ export default function AdminExamsPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="filterClassroom">Filter by Classroom</Label>
                 <Select
                   value={filterClassroom}
@@ -551,7 +551,7 @@ export default function AdminExamsPage() {
                 </Select>
               </div>
 
-              <div>
+              <div className="flex flex-col gap-2">
                 <Label htmlFor="filterSubject">Filter by Subject</Label>
                 <Select value={filterSubject} onValueChange={setFilterSubject}>
                   <SelectTrigger>

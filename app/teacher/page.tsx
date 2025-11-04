@@ -572,7 +572,7 @@ export default function TeacherPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                  <div className="flex flex-col gap-2">
                     <Label>Class</Label>
                     <Select
                       value={homeworkForm.classroomId}
@@ -583,7 +583,7 @@ export default function TeacherPage() {
                         }))
                       }
                     >
-                      <SelectTrigger className="rounded-xl">
+                      <SelectTrigger className="rounded-xl w-full">
                         <SelectValue placeholder="Select class" />
                       </SelectTrigger>
                       <SelectContent>
@@ -598,7 +598,7 @@ export default function TeacherPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
+                  <div className="flex flex-col gap-2">
                     <Label>Subject</Label>
                     <Select
                       value={homeworkForm.subjectId}
@@ -609,7 +609,7 @@ export default function TeacherPage() {
                         }))
                       }
                     >
-                      <SelectTrigger className="rounded-xl">
+                      <SelectTrigger className="rounded-xl w-full">
                         <SelectValue placeholder="Select subject" />
                       </SelectTrigger>
                       <SelectContent>
@@ -629,8 +629,7 @@ export default function TeacherPage() {
                     </Select>
                   </div>
                 </div>
-
-                <div>
+                <div className="flex flex-col gap-2">
                   <Label>Title</Label>
                   <Input
                     className="rounded-xl"
@@ -644,8 +643,7 @@ export default function TeacherPage() {
                     }
                   />
                 </div>
-
-                <div>
+                <div className="flex flex-col gap-2">
                   <Label>Description</Label>
                   <Textarea
                     className="rounded-xl"
@@ -660,8 +658,7 @@ export default function TeacherPage() {
                     rows={4}
                   />
                 </div>
-
-                <div>
+                <div className="flex flex-col gap-2">
                   <Label>Due Date</Label>
                   <Input
                     className="rounded-xl"
@@ -675,7 +672,6 @@ export default function TeacherPage() {
                     }
                   />
                 </div>
-
                 <Button
                   className="rounded-xl"
                   onClick={handleCreateHomework}
@@ -807,7 +803,7 @@ export default function TeacherPage() {
                         </div>
                       )}
 
-                    <div>
+                    <div className="flex flex-col gap-2">
                       <Label>Select Your Class</Label>
                       <Select
                         value={quoteForm.classroomId}
@@ -834,7 +830,7 @@ export default function TeacherPage() {
                       </Select>
                     </div>
 
-                    <div>
+                    <div className="flex flex-col gap-2">
                       <Label>Message Type</Label>
                       <Select
                         value={quoteForm.messageType}
@@ -858,7 +854,7 @@ export default function TeacherPage() {
                       </Select>
                     </div>
 
-                    <div>
+                    <div className="flex flex-col gap-2">
                       <Label>Message</Label>
                       <Textarea
                         className="rounded-xl"

@@ -166,7 +166,7 @@ export default function WorkDoneManagementPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div>
+              <div className="flex flex-col gap-2">
                 <Label>Start Date</Label>
                 <Input
                   type="date"
@@ -180,7 +180,7 @@ export default function WorkDoneManagementPage() {
                   }
                 />
               </div>
-              <div>
+              <div className="flex flex-col gap-2">
                 <Label>End Date</Label>
                 <Input
                   type="date"
@@ -191,7 +191,7 @@ export default function WorkDoneManagementPage() {
                   }
                 />
               </div>
-              <div>
+              <div className="flex flex-col gap-2">
                 <Label>Classroom</Label>
                 <Select
                   value={filters.classroomId}
@@ -199,7 +199,7 @@ export default function WorkDoneManagementPage() {
                     setFilters((prev) => ({ ...prev, classroomId: value }))
                   }
                 >
-                  <SelectTrigger className="rounded-xl">
+                  <SelectTrigger className="rounded-xl w-full">
                     <SelectValue placeholder="All classrooms" />
                   </SelectTrigger>
                   <SelectContent>
@@ -212,7 +212,7 @@ export default function WorkDoneManagementPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
+              <div className="flex flex-col gap-2">
                 <Label>Subject</Label>
                 <Select
                   value={filters.subjectId}
@@ -220,7 +220,7 @@ export default function WorkDoneManagementPage() {
                     setFilters((prev) => ({ ...prev, subjectId: value }))
                   }
                 >
-                  <SelectTrigger className="rounded-xl">
+                  <SelectTrigger className="rounded-xl w-full">
                     <SelectValue placeholder="All subjects" />
                   </SelectTrigger>
                   <SelectContent>
@@ -233,7 +233,7 @@ export default function WorkDoneManagementPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
+              <div className="flex flex-col gap-2">
                 <Label>Substitute Only</Label>
                 <Select
                   value={filters.isSubstitute}
@@ -241,7 +241,7 @@ export default function WorkDoneManagementPage() {
                     setFilters((prev) => ({ ...prev, isSubstitute: value }))
                   }
                 >
-                  <SelectTrigger className="rounded-xl">
+                  <SelectTrigger className="rounded-xl w-full">
                     <SelectValue placeholder="All records" />
                   </SelectTrigger>
                   <SelectContent>

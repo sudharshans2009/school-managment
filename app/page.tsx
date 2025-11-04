@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   GraduationCap,
@@ -100,14 +99,14 @@ export default function Home() {
           </div>
 
           {/* Divider */}
-          <div className="flex items-center gap-4 w-full max-w-4xl pt-8">
+          {/* <div className="flex items-center gap-4 w-full max-w-4xl pt-8">
             <div className="flex-1 h-px bg-border"></div>
             <span className="text-sm text-muted-foreground">Or</span>
             <div className="flex-1 h-px bg-border"></div>
-          </div>
+          </div> */}
 
           {/* General Auth Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4">
+          {/* <div className="flex flex-col sm:flex-row gap-4">
             <Link href="/auth/signin">
               <Button
                 size="lg"
@@ -127,7 +126,7 @@ export default function Home() {
                 Create Account
               </Button>
             </Link>
-          </div>
+          </div> */}
 
           {/* Features Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-16 max-w-4xl w-full">

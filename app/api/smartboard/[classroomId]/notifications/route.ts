@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
-import {
-  announcements,
-  homework,
-  classroomMessages,
-} from "@/database/schema";
+import { announcements, homework, classroomMessages } from "@/database/schema";
 import { eq, desc, and, gte } from "drizzle-orm";
 
 // GET - Fetch smartboard notifications for a specific classroom
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ classroomId: string }> }
+  { params }: { params: Promise<{ classroomId: string }> },
 ) {
   try {
     const { classroomId } = await params;
@@ -23,7 +19,7 @@ export async function GET(
     const classAnnouncements = await db.query.announcements.findMany({
       where: and(
         eq(announcements.isActive, true),
-        gte(announcements.createdAt, oneDayAgo)
+        gte(announcements.createdAt, oneDayAgo),
       ),
       orderBy: [desc(announcements.createdAt)],
       limit: 5,
@@ -44,14 +40,14 @@ export async function GET(
 
     // Filter for this classroom or school-wide
     const relevantAnnouncements = classAnnouncements.filter(
-      (ann) => ann.classroomId === classroomId || ann.classroomId === null
+      (ann) => ann.classroomId === classroomId || ann.classroomId === null,
     );
 
     // Fetch recent homework for this classroom
     const recentHomework = await db.query.homework.findMany({
       where: and(
         eq(homework.classroomId, classroomId),
-        gte(homework.createdAt, oneDayAgo)
+        gte(homework.createdAt, oneDayAgo),
       ),
       orderBy: [desc(homework.createdAt)],
       limit: 5,
@@ -74,7 +70,7 @@ export async function GET(
       where: and(
         eq(classroomMessages.classroomId, classroomId),
         eq(classroomMessages.isActive, true),
-        gte(classroomMessages.createdAt, oneDayAgo)
+        gte(classroomMessages.createdAt, oneDayAgo),
       ),
       orderBy: [desc(classroomMessages.createdAt)],
       limit: 3,
@@ -129,7 +125,7 @@ export async function GET(
     console.error("Error fetching smartboard notifications:", error);
     return NextResponse.json(
       { error: "Failed to fetch notifications" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

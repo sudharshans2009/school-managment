@@ -25,7 +25,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -237,22 +236,15 @@ export default function SubstitutesManagementPage() {
         />
 
         {/* Date Selector */}
-        <Card className="rounded-2xl shadow-sm">
-          <CardHeader>
-            <CardTitle>Select Date</CardTitle>
-            <CardDescription>
-              Choose a date to view and manage substitutes
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Input
-              type="date"
-              className="rounded-xl max-w-xs"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-            />
-          </CardContent>
-        </Card>
+        <div className="flex flex-col gap-2">
+          <Label>Select Date</Label>
+          <Input
+            type="date"
+            className="rounded-xl max-w-xs"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+          />
+        </div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

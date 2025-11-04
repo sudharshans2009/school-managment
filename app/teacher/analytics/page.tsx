@@ -21,7 +21,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Loader2,
   TrendingUp,
@@ -99,7 +98,7 @@ export default function TeacherAnalyticsPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 space-y-6">
+      <div className="space-y-6">
         <TeacherHeader
           icon={BarChart}
           title="My Analytics"
@@ -116,7 +115,7 @@ export default function TeacherAnalyticsPage() {
             </SelectContent>
           </Select>
         </TeacherHeader>
-        
+
         <TeacherQuickActions
           currentPage="analytics"
           unreadMessages={0}

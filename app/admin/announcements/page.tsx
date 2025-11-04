@@ -335,41 +335,36 @@ export default function AdminAnnouncementsPage() {
         </AdminHeader>
 
         {/* Filter */}
-        <Card className="rounded-2xl shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-              <Label className="text-sm sm:text-base">Filter by Classroom:</Label>
-              <Select
-                value={filterClassroom || "all"}
-                onValueChange={(val) =>
-                  setFilterClassroom(val === "all" ? "" : val)
-                }
-              >
-                <SelectTrigger className="w-full sm:w-64 rounded-xl">
-                  <SelectValue placeholder="All Classrooms" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Classrooms</SelectItem>
-                  {classrooms?.map((classroom) => (
-                    <SelectItem key={classroom.id} value={classroom.id}>
-                      {classroom.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {filterClassroom && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="rounded-xl w-full sm:w-auto"
-                  onClick={() => setFilterClassroom("")}
-                >
-                  Clear Filter
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+          <Select
+            value={filterClassroom || "all"}
+            onValueChange={(val) =>
+              setFilterClassroom(val === "all" ? "" : val)
+            }
+          >
+            <SelectTrigger className="w-full sm:w-64 rounded-xl">
+              <SelectValue placeholder="All Classrooms" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Classrooms</SelectItem>
+              {classrooms?.map((classroom) => (
+                <SelectItem key={classroom.id} value={classroom.id}>
+                  {classroom.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {filterClassroom && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-xl w-full sm:w-auto"
+              onClick={() => setFilterClassroom("")}
+            >
+              Clear Filter
+            </Button>
+          )}
+        </div>
 
         {/* Announcements List */}
         {isLoading ? (

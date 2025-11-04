@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching notifications:", error);
     return NextResponse.json(
       { error: "Failed to fetch notifications" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -72,7 +72,7 @@ export async function PATCH(request: NextRequest) {
     if (!notificationId) {
       return NextResponse.json(
         { error: "Notification ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -87,7 +87,7 @@ export async function PATCH(request: NextRequest) {
     console.error("Error marking notification as read:", error);
     return NextResponse.json(
       { error: "Failed to mark notification as read" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -109,7 +109,7 @@ export async function DELETE(request: NextRequest) {
     if (!notificationId) {
       return NextResponse.json(
         { error: "Notification ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -124,7 +124,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error deleting notification:", error);
     return NextResponse.json(
       { error: "Failed to delete notification" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

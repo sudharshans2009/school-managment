@@ -56,6 +56,7 @@ A comprehensive notification system that displays all school announcements with 
 ### API Integration
 
 Connects to existing `/api/announcements` endpoint with support for:
+
 - Fetching all announcements
 - Filtering by classroom
 - Priority-based sorting
@@ -130,7 +131,7 @@ Enhanced profile page with mobile-first responsive design for better user experi
 ```tsx
 // Responsive padding
 <div className="container max-w-4xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
-  
+
 // Responsive text sizes
 <h1 className="text-2xl sm:text-3xl font-bold">Profile</h1>
 
@@ -703,23 +704,23 @@ POST /api/behavior/notes
 
 ## Role-Based Access Summary
 
-| Feature               | Admin | Teacher | Student | Parent  |
-| --------------------- | ----- | ------- | ------- | ------- |
-| Notifications (View)  | ✓     | ✓       | ✓       | ✓       |
-| Notifications (Create)| ✓     | ✓       | ✗       | ✗       |
-| Profile (View)        | ✓     | ✓       | ✓       | ✓       |
-| Profile (Edit)        | ✓     | Own     | Own     | Own     |
-| Events (Create)       | ✓     | ✓       | ✗       | ✗       |
-| Events (Register)     | ✓     | ✓       | ✓       | ✓       |
-| Meetings (Create)     | ✓     | ✓       | ✗       | ✗       |
-| Meetings (Book)       | ✓     | ✗       | ✗       | ✓       |
-| Circulars (Create)    | ✓     | ✗       | ✗       | ✗       |
-| Group Messages (Send) | ✓     | ✓       | ✗       | ✗       |
-| Admissions (Manage)   | ✓     | ✗       | ✗       | ✗       |
-| Report Cards (Create) | ✓     | ✓       | ✗       | ✗       |
-| Report Cards (View)   | ✓     | ✓       | Own     | Child's |
-| Behavior (Report)     | ✓     | ✓       | ✗       | ✗       |
-| Behavior (View)       | ✓     | ✓       | Own     | Child's |
+| Feature                | Admin | Teacher | Student | Parent  |
+| ---------------------- | ----- | ------- | ------- | ------- |
+| Notifications (View)   | ✓     | ✓       | ✓       | ✓       |
+| Notifications (Create) | ✓     | ✓       | ✗       | ✗       |
+| Profile (View)         | ✓     | ✓       | ✓       | ✓       |
+| Profile (Edit)         | ✓     | Own     | Own     | Own     |
+| Events (Create)        | ✓     | ✓       | ✗       | ✗       |
+| Events (Register)      | ✓     | ✓       | ✓       | ✓       |
+| Meetings (Create)      | ✓     | ✓       | ✗       | ✗       |
+| Meetings (Book)        | ✓     | ✗       | ✗       | ✓       |
+| Circulars (Create)     | ✓     | ✗       | ✗       | ✗       |
+| Group Messages (Send)  | ✓     | ✓       | ✗       | ✗       |
+| Admissions (Manage)    | ✓     | ✗       | ✗       | ✗       |
+| Report Cards (Create)  | ✓     | ✓       | ✗       | ✗       |
+| Report Cards (View)    | ✓     | ✓       | Own     | Child's |
+| Behavior (Report)      | ✓     | ✓       | ✗       | ✗       |
+| Behavior (View)        | ✓     | ✓       | Own     | Child's |
 
 ---
 

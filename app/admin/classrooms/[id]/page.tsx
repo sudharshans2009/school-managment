@@ -223,15 +223,15 @@ export default function ClassroomDetailPage() {
           <TabsContent value="students" className="space-y-4">
             <Card className="rounded-2xl">
               <CardHeader>
-                <CardTitle>Student List ({classroom.students.length})</CardTitle>
+                <CardTitle>
+                  Student List ({classroom.students.length})
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 {classroom.students.length > 0 ? (
                   <div className="space-y-2">
                     {classroom.students
-                      .sort((a, b) =>
-                        a.rollNumber.localeCompare(b.rollNumber)
-                      )
+                      .sort((a, b) => a.rollNumber.localeCompare(b.rollNumber))
                       .map((student) => (
                         <div
                           key={student.id}
@@ -242,9 +242,7 @@ export default function ClassroomDetailPage() {
                               <User className="h-5 w-5 text-primary" />
                             </div>
                             <div>
-                              <p className="font-medium">
-                                {student.user.name}
-                              </p>
+                              <p className="font-medium">{student.user.name}</p>
                               <p className="text-sm text-muted-foreground">
                                 {student.user.email}
                               </p>

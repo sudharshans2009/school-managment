@@ -556,7 +556,9 @@ export default function SmartboardDisplayPage() {
             </Card>
 
             {/* Real-time Notifications */}
-            {classroomId && <SmartboardNotifications classroomId={classroomId} />}
+            {classroomId && (
+              <SmartboardNotifications classroomId={classroomId} />
+            )}
           </div>
         </div>
       </div>

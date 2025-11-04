@@ -195,7 +195,7 @@ export default function TeacherClassesPage() {
           title="My Classes & Attendance"
           description="View your assigned classes and mark student attendance"
         />
-        
+
         <TeacherQuickActions currentPage="classes" />
 
         <Tabs defaultValue="classes" className="space-y-6">
@@ -270,13 +270,13 @@ export default function TeacherClassesPage() {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                  <div className="flex flex-col gap-2">
                     <Label>Select Class</Label>
                     <Select
                       value={selectedClass}
                       onValueChange={setSelectedClass}
                     >
-                      <SelectTrigger className="rounded-xl">
+                      <SelectTrigger className="rounded-xl w-full">
                         <SelectValue placeholder="Choose a class" />
                       </SelectTrigger>
                       <SelectContent>
@@ -292,7 +292,7 @@ export default function TeacherClassesPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div>
+                  <div className="flex flex-col gap-2">
                     <Label>Date</Label>
                     <Input
                       className="rounded-xl"

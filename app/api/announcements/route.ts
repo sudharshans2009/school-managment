@@ -106,7 +106,8 @@ export async function POST(request: NextRequest) {
         title: classroomId
           ? `Class Announcement: ${title}`
           : `School Announcement: ${title}`,
-        message: content.substring(0, 150) + (content.length > 150 ? "..." : ""),
+        message:
+          content.substring(0, 150) + (content.length > 150 ? "..." : ""),
         recipientIds,
         senderId: createdBy,
         relatedId: newAnnouncement[0].id,

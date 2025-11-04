@@ -41,7 +41,6 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { format } from "date-fns";
 import { useSession } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { TeacherQuickActions } from "@/components/teacher-quick-actions";
 import { TeacherHeader } from "@/components/teacher/teacher-header";
@@ -88,7 +87,6 @@ interface Submission {
 
 export default function TeacherHomeworkPage() {
   const { data: session } = useSession();
-  const router = useRouter();
   const [selectedClassroom, setSelectedClassroom] = useState<string>("");
   const [selectedHomework, setSelectedHomework] = useState<string>("");
   const [openMarkDialog, setOpenMarkDialog] = useState(false);
@@ -283,20 +281,20 @@ export default function TeacherHomeworkPage() {
           title="Homework Submissions"
           description="Mark physical submissions and grade homework"
         />
-        
+
         <TeacherQuickActions currentPage="homework" />
 
         {/* Filters */}
         <Card className="rounded-2xl shadow-sm">
           <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
+              <div className="flex flex-col gap-2">
                 <Label>Select Classroom</Label>
                 <Select
                   value={selectedClassroom}
                   onValueChange={setSelectedClassroom}
                 >
-                  <SelectTrigger className="rounded-xl">
+                  <SelectTrigger className="rounded-xl w-full">
                     <SelectValue placeholder="Choose a classroom" />
                   </SelectTrigger>
                   <SelectContent>
@@ -311,13 +309,13 @@ export default function TeacherHomeworkPage() {
 
               {selectedClassroom && (
                 <>
-                  <div>
+                  <div className="flex flex-col gap-2">
                     <Label>Select Homework</Label>
                     <Select
                       value={selectedHomework}
                       onValueChange={setSelectedHomework}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="rounded-xl w-full">
                         <SelectValue placeholder="Choose homework" />
                       </SelectTrigger>
                       <SelectContent>
@@ -330,7 +328,7 @@ export default function TeacherHomeworkPage() {
                     </Select>
                   </div>
 
-                  <div>
+                  <div className="flex flex-col gap-2">
                     <Label>View Mode</Label>
                     <Select
                       value={viewMode}
@@ -338,7 +336,7 @@ export default function TeacherHomeworkPage() {
                         setViewMode(v as "homework" | "students")
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="rounded-xl w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>

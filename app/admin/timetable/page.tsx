@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Plus, Trash2, Edit2, Clock } from "lucide-react";
+import { Plus, Trash2, Edit2, Clock } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdminHeader } from "@/components/admin/admin-header";
 
@@ -62,31 +62,31 @@ const DAYS = [
   { value: 6, label: "Saturday" },
 ];
 
-const PERIODS = [
-  { period: 1, startTime: "08:00", endTime: "08:50", label: "Period 1" },
-  { period: 2, startTime: "08:50", endTime: "09:40", label: "Period 2" },
-  { period: 3, startTime: "09:40", endTime: "10:30", label: "Period 3" },
-  {
-    period: "BREAK1",
-    startTime: "10:30",
-    endTime: "11:00",
-    label: "BREAK",
-    isBreak: true,
-  },
-  { period: 5, startTime: "11:00", endTime: "11:50", label: "Period 5" },
-  { period: 6, startTime: "11:50", endTime: "12:40", label: "Period 6" },
-  { period: 7, startTime: "12:40", endTime: "13:30", label: "Period 7" },
-  {
-    period: "LUNCH",
-    startTime: "13:30",
-    endTime: "14:15",
-    label: "LUNCH",
-    isBreak: true,
-  },
-  { period: 9, startTime: "14:15", endTime: "15:05", label: "Period 9" },
-  { period: 10, startTime: "15:05", endTime: "15:55", label: "Period 10" },
-  { period: 11, startTime: "15:55", endTime: "16:45", label: "Period 11" },
-];
+// const PERIODS = [
+//   { period: 1, startTime: "08:00", endTime: "08:50", label: "Period 1" },
+//   { period: 2, startTime: "08:50", endTime: "09:40", label: "Period 2" },
+//   { period: 3, startTime: "09:40", endTime: "10:30", label: "Period 3" },
+//   {
+//     period: "BREAK1",
+//     startTime: "10:30",
+//     endTime: "11:00",
+//     label: "BREAK",
+//     isBreak: true,
+//   },
+//   { period: 5, startTime: "11:00", endTime: "11:50", label: "Period 5" },
+//   { period: 6, startTime: "11:50", endTime: "12:40", label: "Period 6" },
+//   { period: 7, startTime: "12:40", endTime: "13:30", label: "Period 7" },
+//   {
+//     period: "LUNCH",
+//     startTime: "13:30",
+//     endTime: "14:15",
+//     label: "LUNCH",
+//     isBreak: true,
+//   },
+//   { period: 9, startTime: "14:15", endTime: "15:05", label: "Period 9" },
+//   { period: 10, startTime: "15:05", endTime: "15:55", label: "Period 10" },
+//   { period: 11, startTime: "15:55", endTime: "16:45", label: "Period 11" },
+// ];
 
 export default function TimetablePage() {
   const [selectedClassroom, setSelectedClassroom] = useState<string>("");
@@ -250,7 +250,10 @@ export default function TimetablePage() {
             }}
           >
             <DialogTrigger asChild>
-              <Button disabled={!selectedClassroom} className="w-full sm:w-auto">
+              <Button
+                disabled={!selectedClassroom}
+                className="w-full sm:w-auto"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Period
               </Button>

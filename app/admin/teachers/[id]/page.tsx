@@ -206,8 +206,8 @@ export default function TeacherDetailPage() {
                               )}
                             </div>
                             <p className="text-sm text-muted-foreground">
-                              Grade {assignment.classroom.grade} -{" "}
-                              Section {assignment.classroom.section}
+                              Grade {assignment.classroom.grade} - Section{" "}
+                              {assignment.classroom.section}
                             </p>
                           </div>
                         </div>

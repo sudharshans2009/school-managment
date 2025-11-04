@@ -31,6 +31,8 @@ import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useState } from "react";
+import { PageHeader } from "@/components/layouts/header";
+import { ExtendedUser } from "@/types/better-auth";
 
 interface Notification {
   id: string;
@@ -61,6 +63,16 @@ export default function NotificationsPage() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("all");
 
+  const getDashboardUrl = () => {
+    const userRole = (session?.user as ExtendedUser)?.role;
+    if (!userRole) return "/dashboard";
+    const role = userRole.toLowerCase();
+    if (role === "admin") return "/admin";
+    if (role === "teacher") return "/teacher";
+    if (role === "student") return "/student";
+    return "/dashboard";
+  };
+
   const {
     data: notifications,
     isLoading,
@@ -70,7 +82,7 @@ export default function NotificationsPage() {
     queryFn: async () => {
       const unreadOnly = activeTab === "unread";
       const response = await fetch(
-        `/api/notifications?unreadOnly=${unreadOnly}`
+        `/api/notifications?unreadOnly=${unreadOnly}`,
       );
       if (!response.ok) {
         throw new Error("Failed to fetch notifications");
@@ -119,12 +131,9 @@ export default function NotificationsPage() {
 
   const deleteNotificationMutation = useMutation({
     mutationFn: async (notificationId: string) => {
-      const response = await fetch(
-        `/api/notifications?id=${notificationId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch(`/api/notifications?id=${notificationId}`, {
+        method: "DELETE",
+      });
       if (!response.ok) throw new Error("Failed to delete notification");
       return response.json();
     },
@@ -213,7 +222,7 @@ export default function NotificationsPage() {
   };
 
   const getPriorityBadgeVariant = (
-    priority: string
+    priority: string,
   ): "default" | "secondary" | "destructive" | "outline" => {
     switch (priority) {
       case "urgent":
@@ -229,8 +238,7 @@ export default function NotificationsPage() {
     }
   };
 
-  const unreadCount =
-    notifications?.filter((n) => !n.isRead).length || 0;
+  const unreadCount = notifications?.filter((n) => !n.isRead).length || 0;
 
   const filteredNotifications =
     activeTab === "read"
@@ -243,20 +251,17 @@ export default function NotificationsPage() {
     <DashboardLayout
       title="Notifications"
       description="View your notifications and updates"
-      showBackButton={true}
       icon={Bell}
     >
       <div className="space-y-4 sm:space-y-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
-              <Bell className="h-6 w-6 sm:h-8 sm:w-8" />
-              Notifications
-            </h1>
-            <p className="text-sm sm:text-base text-muted-foreground mt-1">
-              Stay updated with the latest notifications
-            </p>
-          </div>
+          <PageHeader
+            icon={BookOpen}
+            title="Notifications"
+            description="Stay updated with the latest notifications"
+            backHref={getDashboardUrl()}
+          />
+
           {unreadCount > 0 && (
             <Button
               variant="outline"
@@ -279,9 +284,7 @@ export default function NotificationsPage() {
               Unread {unreadCount > 0 && `(${unreadCount})`}
             </TabsTrigger>
             <TabsTrigger value="read">
-              Read{" "}
-              {notifications &&
-                `(${notifications.length - unreadCount})`}
+              Read {notifications && `(${notifications.length - unreadCount})`}
             </TabsTrigger>
           </TabsList>
 
@@ -322,10 +325,7 @@ export default function NotificationsPage() {
                             <CardTitle className="text-lg sm:text-xl wrap-break-word flex items-start gap-2">
                               {notification.title}
                               {!notification.isRead && (
-                                <Badge
-                                  variant="default"
-                                  className="text-xs"
-                                >
+                                <Badge variant="default" className="text-xs">
                                   NEW
                                 </Badge>
                               )}
@@ -340,7 +340,7 @@ export default function NotificationsPage() {
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
                                 {new Date(
-                                  notification.createdAt
+                                  notification.createdAt,
                                 ).toLocaleDateString("en-US", {
                                   month: "short",
                                   day: "numeric",
@@ -355,7 +355,7 @@ export default function NotificationsPage() {
                         <div className="flex flex-wrap gap-2">
                           <Badge
                             variant={getPriorityBadgeVariant(
-                              notification.priority
+                              notification.priority,
                             )}
                           >
                             {notification.priority.toUpperCase()}
@@ -387,9 +387,7 @@ export default function NotificationsPage() {
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            deleteNotificationMutation.mutate(
-                              notification.id
-                            );
+                            deleteNotificationMutation.mutate(notification.id);
                           }}
                           disabled={deleteNotificationMutation.isPending}
                         >

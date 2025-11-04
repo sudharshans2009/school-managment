@@ -153,7 +153,9 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm">New Email</Label>
+              <Label htmlFor="email" className="text-sm">
+                New Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -191,7 +193,9 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="currentPassword" className="text-sm">Current Password</Label>
+              <Label htmlFor="currentPassword" className="text-sm">
+                Current Password
+              </Label>
               <div className="relative">
                 <Input
                   id="currentPassword"
@@ -219,7 +223,9 @@ export default function SettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="newPassword" className="text-sm">New Password</Label>
+              <Label htmlFor="newPassword" className="text-sm">
+                New Password
+              </Label>
               <div className="relative">
                 <Input
                   id="newPassword"
@@ -247,7 +253,9 @@ export default function SettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-sm">Confirm New Password</Label>
+              <Label htmlFor="confirmPassword" className="text-sm">
+                Confirm New Password
+              </Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"

@@ -147,11 +147,7 @@ export const createStudentColumns = ({
       return (
         <div className="flex gap-2">
           <Link href={`/admin/students/${student.id}`}>
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-xl"
-            >
+            <Button variant="outline" size="sm" className="rounded-xl">
               <Eye className="h-4 w-4 mr-1" />
               View
             </Button>

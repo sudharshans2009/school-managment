@@ -135,7 +135,7 @@ export default function AdminAttendancePage() {
 
   const handleMarkAttendance = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (!session?.user?.id) {
       setError("You must be logged in to mark attendance");
       return;
@@ -225,52 +225,46 @@ export default function AdminAttendancePage() {
         </AdminHeader>
 
         {/* Filters */}
-        <Card className="rounded-2xl shadow-sm">
-          <CardContent className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <Label>Select Classroom</Label>
-                <Select
-                  value={selectedClassroom}
-                  onValueChange={setSelectedClassroom}
-                >
-                  <SelectTrigger className="rounded-xl">
-                    <SelectValue placeholder="Choose a classroom" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {classrooms?.map((classroom) => (
-                      <SelectItem key={classroom.id} value={classroom.id}>
-                        {classroom.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Select Date</Label>
-                <Input
-                  type="date"
-                  className="rounded-xl"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                />
-              </div>
-              <div>
-                <Label>Mode</Label>
-                <div className="pt-2">
-                  <Badge
-                    variant={viewMode === "view" ? "default" : "secondary"}
-                    className="rounded-lg"
-                  >
-                    {viewMode === "view"
-                      ? "Viewing Records"
-                      : "Marking Attendance"}
-                  </Badge>
-                </div>
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-2">
+            <Label>Select Classroom</Label>
+            <Select
+              value={selectedClassroom}
+              onValueChange={setSelectedClassroom}
+            >
+              <SelectTrigger className="rounded-xl w-full">
+                <SelectValue placeholder="Choose a classroom" />
+              </SelectTrigger>
+              <SelectContent>
+                {classrooms?.map((classroom) => (
+                  <SelectItem key={classroom.id} value={classroom.id}>
+                    {classroom.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label>Select Date</Label>
+            <Input
+              type="date"
+              className="rounded-xl"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+            />
+          </div>
+          <div className="ml-auto">
+            <Label>Mode</Label>
+            <div className="pt-2">
+              <Badge
+                variant={viewMode === "view" ? "default" : "secondary"}
+                className="rounded-lg p-2"
+              >
+                {viewMode === "view" ? "Viewing Records" : "Marking Attendance"}
+              </Badge>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {error && (
           <Alert variant="destructive" className="rounded-xl">

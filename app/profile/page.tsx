@@ -22,9 +22,12 @@ import {
   Shield,
   CheckCircle,
   XCircle,
+  User2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { PageHeader } from "@/components/layouts/header";
+import { ExtendedUser } from "@/types/better-auth";
 
 interface UserProfile {
   id: string;
@@ -43,6 +46,16 @@ interface UserProfile {
 export default function ProfilePage() {
   const { data: session, isPending: sessionPending } = useSession();
   const router = useRouter();
+
+  const getDashboardUrl = () => {
+    const userRole = (session?.user as ExtendedUser)?.role;
+    if (!userRole) return "/dashboard";
+    const role = userRole.toLowerCase();
+    if (role === "admin") return "/admin";
+    if (role === "teacher") return "/teacher";
+    if (role === "student") return "/student";
+    return "/dashboard";
+  };
 
   const {
     data: profile,
@@ -65,7 +78,6 @@ export default function ProfilePage() {
       <DashboardLayout
         title="Profile"
         description="View your account information"
-        showBackButton={true}
         icon={User}
       >
         <div className="space-y-4 sm:space-y-6">
@@ -134,9 +146,14 @@ export default function ProfilePage() {
     <DashboardLayout
       title="Profile"
       description="View your account information"
-      showBackButton={true}
       icon={User}
     >
+      <PageHeader
+        icon={User2}
+        title="Profile"
+        description="View your account information"
+        backHref={getDashboardUrl()}
+      />
       <Card>
         <CardHeader>
           <div className="flex flex-col sm:flex-row items-center sm:space-x-4 space-y-3 sm:space-y-0">
@@ -147,7 +164,9 @@ export default function ProfilePage() {
               </AvatarFallback>
             </Avatar>
             <div className="text-center sm:text-left">
-              <CardTitle className="text-xl sm:text-2xl">{profile.name}</CardTitle>
+              <CardTitle className="text-xl sm:text-2xl">
+                {profile.name}
+              </CardTitle>
               <CardDescription className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-1">
                 <Badge variant={getRoleBadgeVariant(profile.role)}>
                   {profile.role.charAt(0).toUpperCase() + profile.role.slice(1)}

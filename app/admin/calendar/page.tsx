@@ -98,8 +98,8 @@ export default function AdminCalendarPage() {
       const res = await fetch(
         `/api/calendar?startDate=${format(
           monthStart,
-          "yyyy-MM-dd"
-        )}&endDate=${format(monthEnd, "yyyy-MM-dd")}`
+          "yyyy-MM-dd",
+        )}&endDate=${format(monthEnd, "yyyy-MM-dd")}`,
       );
       if (!res.ok) throw new Error("Failed to fetch calendar");
       return res.json() as Promise<CalendarDay[]>;
@@ -115,7 +115,7 @@ export default function AdminCalendarPage() {
     queryFn: async () => {
       if (!selectedDate) return null;
       const res = await fetch(
-        `/api/calendar?date=${format(selectedDate, "yyyy-MM-dd")}`
+        `/api/calendar?date=${format(selectedDate, "yyyy-MM-dd")}`,
       );
       if (!res.ok) throw new Error("Failed to fetch day config");
       return res.json() as Promise<CalendarDay | null>;

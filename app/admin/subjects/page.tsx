@@ -413,21 +413,17 @@ export default function SubjectsPage() {
             </DialogContent>
           </Dialog>
         </AdminHeader>
-
-        <Card className="mb-6 rounded-2xl shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2">
-              <Search className="h-5 w-5 text-gray-400" />
-              <Input
-                placeholder="Search subjects by name or code..."
-                className="flex-1"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
+        <div className="mb-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search subjects by name or code..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 rounded-xl"
+            />
+          </div>
+        </div>
         {filteredSubjects && filteredSubjects.length === 0 ? (
           <Card className="rounded-2xl shadow-sm">
             <CardContent className="p-8 text-center text-gray-500">
@@ -493,7 +489,9 @@ export default function SubjectsPage() {
                       <span className="font-semibold text-xs">
                         {subject.applicableGrades &&
                         JSON.parse(subject.applicableGrades).length > 0
-                          ? `${JSON.parse(subject.applicableGrades).length} classes`
+                          ? `${
+                              JSON.parse(subject.applicableGrades).length
+                            } classes`
                           : "All Classes"}
                       </span>
                     </div>
