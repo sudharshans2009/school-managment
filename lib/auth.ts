@@ -30,7 +30,7 @@ export const auth = betterAuth({
 
       try {
         await resend.emails.send({
-          from: "School Management System <onboarding@resend.dev>",
+          from: "School Management System <onboarding@sudharshans2009.live>",
           to: user.email,
           subject: "Verify your email address",
           html: `
