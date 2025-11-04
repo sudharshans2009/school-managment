@@ -381,7 +381,7 @@ The system automatically identifies periods needing substitutes:
 1. **Update Database Schema**
 
    ```bash
-   npm run db:push
+   bun run db:push
    ```
 
    This applies the new tables and enums to the database.
@@ -389,7 +389,7 @@ The system automatically identifies periods needing substitutes:
 2. **Seed Sample Data (Optional)**
 
    ```bash
-   npm run db:seed
+   bun run db:seed
    ```
 
    Add sample leave requests, substitutes, and work done records.

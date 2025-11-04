@@ -366,13 +366,13 @@ Letter Grade:
 1. **Generate Migration**:
 
    ```bash
-   npm run db:generate
+   bun run db:generate
    ```
 
 2. **Push to Database**:
 
    ```bash
-   npm run db:push
+   bun run db:push
    ```
 
 3. **Verify Tables**:

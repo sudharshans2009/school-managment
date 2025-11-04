@@ -4,6 +4,7 @@ import { QueryProvider } from "./query-provider";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { type ReactNode } from "react";
+import { TauriProvider } from "./tauri-provider";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -13,10 +14,12 @@ export function Providers({ children }: { children: ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <QueryProvider>
-        {children}
-        <Toaster richColors position="top-right" />
-      </QueryProvider>
+      <TauriProvider>
+        <QueryProvider>
+          {children}
+          <Toaster richColors position="top-right" />
+        </QueryProvider>
+      </TauriProvider>
     </ThemeProvider>
   );
 }

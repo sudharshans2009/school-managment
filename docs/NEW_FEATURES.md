@@ -789,10 +789,10 @@ To apply the new schema changes:
 
 ```bash
 # Generate migration
-npm run db:generate
+bun run db:generate
 
 # Apply migration
-npm run db:push
+bun run db:push
 ```
 
 ---

@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { tauri } from "@daveyplate/better-auth-tauri/plugin";
 import { db } from "../database";
 import * as schema from "../database/schema";
 import { Resend } from "resend";
@@ -76,6 +77,14 @@ export const auth = betterAuth({
       }
     },
   },
+  plugins: [
+    tauri({
+      scheme: "school-management",
+      callbackURL: "/",
+      successText: "Authentication successful! You can close this window.",
+      debugLogs: false,
+    }),
+  ],
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day (session will be updated if it's older than this)

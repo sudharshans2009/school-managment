@@ -108,7 +108,6 @@ export default function SettingsPage() {
       <DashboardLayout
         title="Settings"
         description="Manage your account settings"
-        showBackButton={true}
         icon={Settings}
       >
         <div className="space-y-6">
@@ -136,7 +135,6 @@ export default function SettingsPage() {
     <DashboardLayout
       title="Settings"
       description="Manage your account settings"
-      showBackButton={true}
       icon={Settings}
     >
       <div className="space-y-4 sm:space-y-6">

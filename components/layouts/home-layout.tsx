@@ -3,9 +3,11 @@
 import { ReactNode } from "react";
 import { useSession } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { GraduationCap, Moon, Sun } from "lucide-react";
+import { X, GraduationCap, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import Image from "next/image";
+import { useTauri } from "@/components/providers/tauri-provider";
 
 interface HomeLayoutProps {
   children: ReactNode;
@@ -14,6 +16,7 @@ interface HomeLayoutProps {
 export function HomeLayout({ children }: HomeLayoutProps) {
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
+  const { isTauri } = useTauri();
 
   // Determine dashboard route based on user role
   const getDashboardRoute = () => {
@@ -47,11 +50,36 @@ export function HomeLayout({ children }: HomeLayoutProps) {
               className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
             >
               <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-xl shadow-sm">
-                <GraduationCap className="w-6 h-6 text-primary-foreground" />
+                <GraduationCap className="w-6 h-6 text-primary-foreground" />;
               </div>
-              <span className="text-lg font-semibold">
-                Amrita School Management
-              </span>
+              <div className="flex items-center gap-2">
+                <div>
+                  <h1 className="text-lg font-semibold">
+                    Amrita School Management
+                  </h1>
+                  <p className="text-xs text-muted-foreground">
+                    Modern School Management System
+                  </p>
+                </div>
+                {isTauri && (
+                  <>
+                    <X />
+                    <div className="flex items-center ml-2">
+                      <Image
+                        src={
+                          theme === "dark"
+                            ? "/tauri-dark.svg"
+                            : "/tauri-light.svg"
+                        }
+                        alt="Tauri Desktop App"
+                        width={80}
+                        height={25}
+                        priority
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
             </Link>
 
             <div className="flex items-center space-x-3">

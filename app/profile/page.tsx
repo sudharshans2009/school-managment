@@ -108,7 +108,6 @@ export default function ProfilePage() {
       <DashboardLayout
         title="Profile"
         description="View your account information"
-        showBackButton={true}
         icon={User}
       >
         <Alert variant="destructive">

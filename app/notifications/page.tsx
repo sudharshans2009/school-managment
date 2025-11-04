@@ -161,7 +161,6 @@ export default function NotificationsPage() {
       <DashboardLayout
         title="Notifications"
         description="View your notifications and updates"
-        showBackButton={true}
         icon={Bell}
       >
         <div className="space-y-4">
@@ -184,7 +183,6 @@ export default function NotificationsPage() {
       <DashboardLayout
         title="Notifications"
         description="View your notifications and updates"
-        showBackButton={true}
         icon={Bell}
       >
         <Alert variant="destructive">

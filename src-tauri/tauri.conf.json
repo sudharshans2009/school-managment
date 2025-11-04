@@ -1,0 +1,55 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "School Management System",
+  "version": "1.0.0",
+  "identifier": "com.amrita.schoolmanagement",
+  "build": {
+    "frontendDist": "../out",
+    "devUrl": "http://localhost:3000",
+    "beforeDevCommand": "bun run dev",
+    "beforeBuildCommand": "cross-env TAURI_BUILD=true bun run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Amrita School Management System",
+        "width": 960,
+        "height": 540,
+        "minWidth": 1024,
+        "minHeight": 768,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true,
+        "decorations": true,
+        "transparent": false
+      }
+    ],
+    "withGlobalTauri": true,
+    "security": {
+      "csp": null
+    }
+  },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": ["school-management"]
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": [],
+    "copyright": "© 2025 Amrita School Management System",
+    "category": "Education",
+    "shortDescription": "Complete school management system",
+    "longDescription": "A comprehensive school management system for managing students, teachers, attendance, grades, and more."
+  }
+}

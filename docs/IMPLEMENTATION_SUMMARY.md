@@ -336,16 +336,16 @@ This pull request successfully implements comprehensive new features for the sch
 
 ```bash
 # Generate migration files
-npm run db:generate
+bun run db:generate
 
 # Review generated migrations
 # Check: drizzle/migrations/
 
 # Apply migrations to database
-npm run db:push
+bun run db:push
 
 # Verify schema
-npm run db:studio
+bun run db:studio
 ```
 
 ### Verification Steps

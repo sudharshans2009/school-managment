@@ -14,12 +14,15 @@ import {
   User,
   ArrowLeft,
   LucideIcon,
+  X,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { ExtendedUser } from "@/types/better-auth";
+import { useTauri } from "@/components/providers/tauri-provider";
+import Image from "next/image";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -39,6 +42,7 @@ export function DashboardLayout({
   const { data: session } = useSession();
   const { theme, setTheme } = useTheme();
   const router = useRouter();
+  const { isTauri } = useTauri();
 
   // Get role-based dashboard URL
   const getDashboardUrl = () => {
@@ -98,12 +102,32 @@ export function DashboardLayout({
                     return <Icon className="w-6 h-6 text-primary-foreground" />;
                   })()}
                 </div>
-                <div>
-                  <h1 className="text-lg font-semibold">{title}</h1>
-                  {description && (
-                    <p className="text-xs text-muted-foreground">
-                      {description}
-                    </p>
+                <div className="flex items-center gap-2">
+                  <div>
+                    <h1 className="text-lg font-semibold">{title}</h1>
+                    {description && (
+                      <p className="text-xs text-muted-foreground">
+                        {description}
+                      </p>
+                    )}
+                  </div>
+                  {isTauri && (
+                    <>
+                      <X />
+                      <div className="flex items-center ml-2">
+                        <Image
+                          src={
+                            theme === "dark"
+                              ? "/tauri-dark.svg"
+                              : "/tauri-light.svg"
+                          }
+                          alt="Tauri Desktop App"
+                          width={80}
+                          height={25}
+                          priority
+                        />
+                      </div>
+                    </>
                   )}
                 </div>
               </Link>
