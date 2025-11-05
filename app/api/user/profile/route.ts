@@ -3,7 +3,6 @@ import { auth } from "@/lib/auth";
 import { db } from "@/database";
 import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
-import { forbidden, notFound, unauthorized } from "next/navigation";
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,7 +11,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!session) {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const user = await db.query.users.findFirst({
@@ -20,7 +19,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!user) {
-      notFound();
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // Remove sensitive data
@@ -44,7 +43,7 @@ export async function PATCH(request: NextRequest) {
     });
 
     if (!session) {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -55,7 +54,10 @@ export async function PATCH(request: NextRequest) {
     const targetUserId = userId || session.user.id;
 
     if (!isAdmin && targetUserId !== session.user.id) {
-      forbidden();
+      return NextResponse.json(
+        { error: "Forbidden: You can only update your own profile" },
+        { status: 403 },
+      );
     }
 
     // Non-admins can only update limited fields
@@ -73,7 +75,10 @@ export async function PATCH(request: NextRequest) {
       }
     } else {
       // Regular users can't update via this endpoint (they're view-only)
-      forbidden();
+      return NextResponse.json(
+        { error: "Forbidden: Regular users cannot update profile data" },
+        { status: 403 },
+      );
     }
 
     await db
@@ -86,7 +91,7 @@ export async function PATCH(request: NextRequest) {
     });
 
     if (!updatedUser) {
-      notFound();
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

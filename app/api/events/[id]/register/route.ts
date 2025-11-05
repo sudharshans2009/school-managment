@@ -3,7 +3,6 @@ import { db } from "@/database";
 import { events, eventRegistrations } from "@/database/schema";
 import { eq, and, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { notFound, unauthorized } from "next/navigation";
 
 // POST - Register for an event
 export async function POST(
@@ -14,7 +13,7 @@ export async function POST(
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user) {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id: eventId } = await params;
@@ -27,7 +26,7 @@ export async function POST(
     });
 
     if (!event) {
-      notFound();
+      return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
     if (!event.allowRegistration) {
@@ -113,7 +112,7 @@ export async function DELETE(
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user) {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id: eventId } = await params;
@@ -126,7 +125,10 @@ export async function DELETE(
     });
 
     if (!registration) {
-      notFound();
+      return NextResponse.json(
+        { error: "Registration not found" },
+        { status: 404 },
+      );
     }
 
     await db

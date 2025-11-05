@@ -9,7 +9,6 @@ import {
 } from "@/database/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { forbidden, notFound, unauthorized } from "next/navigation";
 
 // GET - Fetch homework submissions for a teacher
 export async function GET(req: NextRequest) {
@@ -20,7 +19,7 @@ export async function GET(req: NextRequest) {
       !session?.user ||
       (session.user.role !== "teacher" && session.user.role !== "admin")
     ) {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const searchParams = req.nextUrl.searchParams;
@@ -128,7 +127,7 @@ export async function POST(req: NextRequest) {
     const session = await auth.api.getSession({ headers: req.headers });
 
     if (!session?.user || session.user.role !== "teacher") {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
@@ -149,11 +148,17 @@ export async function POST(req: NextRequest) {
       .limit(1);
 
     if (homeworkRecord.length === 0) {
-      notFound();
+      return NextResponse.json(
+        { error: "Homework not found" },
+        { status: 404 },
+      );
     }
 
     if (homeworkRecord[0].teacherId !== session.user.id) {
-      forbidden();
+      return NextResponse.json(
+        { error: "You don't have permission to mark this homework" },
+        { status: 403 },
+      );
     }
 
     // Check if submission already exists

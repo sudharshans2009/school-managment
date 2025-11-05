@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { messages } from "@/database/schema";
 import { eq } from "drizzle-orm";
-import { notFound } from "next/navigation";
 
 // PATCH - Mark message as read
 export async function PATCH(
@@ -22,7 +21,7 @@ export async function PATCH(
       .returning();
 
     if (!updatedMessage) {
-      notFound();
+      return NextResponse.json({ error: "Message not found" }, { status: 404 });
     }
 
     return NextResponse.json(updatedMessage);

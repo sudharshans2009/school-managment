@@ -352,7 +352,6 @@ school-management://callback?token=xyz
 ## Summary
 
 **Key Points:**
-
 1. ✅ All authentication flows go through production API
 2. ✅ Deep links handle OAuth callbacks seamlessly
 3. ✅ Platform-specific cookie handling ensures compatibility
@@ -360,7 +359,6 @@ school-management://callback?token=xyz
 5. ✅ Secure token storage using HTTP-only cookies
 
 **Architecture Benefits:**
-
 - Unified backend for web and desktop
 - Secure authentication with system browser
 - Proper session management

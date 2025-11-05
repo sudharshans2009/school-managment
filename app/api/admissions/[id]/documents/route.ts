@@ -3,7 +3,6 @@ import { db } from "@/database";
 import { admissionDocuments } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { unauthorized } from "next/navigation";
 
 // GET documents for an admission application
 export async function GET(
@@ -14,7 +13,7 @@ export async function GET(
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user || session.user.role !== "admin") {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id: applicationId } = await params;
@@ -73,14 +72,18 @@ export async function POST(
 }
 
 // PUT - Verify/Reject a document (admin only)
-export async function PUT(request: NextRequest) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user || session.user.role !== "admin") {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id: applicationId } = await params;
     const body = await request.json();
     const { documentId, status, rejectionReason } = body;
 

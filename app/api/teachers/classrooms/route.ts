@@ -3,7 +3,6 @@ import { db } from "@/database";
 import { classrooms, teacherAssignments } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { unauthorized } from "next/navigation";
 
 // GET - Fetch classrooms for a teacher
 export async function GET(req: NextRequest) {
@@ -11,7 +10,7 @@ export async function GET(req: NextRequest) {
     const session = await auth.api.getSession({ headers: req.headers });
 
     if (!session?.user || session.user.role !== "teacher") {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const teacherClassrooms = await db

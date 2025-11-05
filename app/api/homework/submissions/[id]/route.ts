@@ -3,7 +3,6 @@ import { db } from "@/database";
 import { homeworkSubmissions, homework } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { forbidden, notFound, unauthorized } from "next/navigation";
 
 // PUT - Grade/update homework submission
 export async function PUT(
@@ -14,7 +13,7 @@ export async function PUT(
     const session = await auth.api.getSession({ headers: req.headers });
 
     if (!session?.user || session.user.role !== "teacher") {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id: submissionId } = await params;
@@ -34,12 +33,18 @@ export async function PUT(
       .limit(1);
 
     if (submission.length === 0) {
-      notFound();
+      return NextResponse.json(
+        { error: "Submission not found" },
+        { status: 404 },
+      );
     }
 
     // Verify teacher has permission
     if (submission[0].teacherId !== session.user.id) {
-      forbidden();
+      return NextResponse.json(
+        { error: "You don't have permission to grade this homework" },
+        { status: 403 },
+      );
     }
 
     // Update submission
@@ -74,7 +79,7 @@ export async function DELETE(
     const session = await auth.api.getSession({ headers: req.headers });
 
     if (!session?.user || session.user.role !== "teacher") {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id: submissionId } = await params;
@@ -92,12 +97,18 @@ export async function DELETE(
       .limit(1);
 
     if (submission.length === 0) {
-      notFound();
+      return NextResponse.json(
+        { error: "Submission not found" },
+        { status: 404 },
+      );
     }
 
     // Verify teacher has permission
     if (submission[0].teacherId !== session.user.id) {
-      forbidden();
+      return NextResponse.json(
+        { error: "You don't have permission to delete this submission" },
+        { status: 403 },
+      );
     }
 
     await db

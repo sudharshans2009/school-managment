@@ -22,11 +22,6 @@ const nextConfig: NextConfig = {
 
   // Disable trailing slashes for cleaner URLs
   trailingSlash: process.env.TAURI_BUILD === "true",
-
-  // Enable experimental auth interrupts for unauthorized() and forbidden()
-  experimental: {
-    authInterrupts: true,
-  },
 };
 
 export default nextConfig;

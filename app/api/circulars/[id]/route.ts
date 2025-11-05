@@ -3,7 +3,6 @@ import { db } from "@/database";
 import { circulars, circularAcknowledgments } from "@/database/schema";
 import { eq, and } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { notFound, unauthorized } from "next/navigation";
 
 // GET single circular
 export async function GET(
@@ -26,7 +25,10 @@ export async function GET(
     });
 
     if (!circular) {
-      notFound();
+      return NextResponse.json(
+        { error: "Circular not found" },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json(circular);
@@ -48,7 +50,7 @@ export async function PUT(
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user || session.user.role !== "admin") {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -69,7 +71,10 @@ export async function PUT(
     });
 
     if (!existingCircular) {
-      notFound();
+      return NextResponse.json(
+        { error: "Circular not found" },
+        { status: 404 },
+      );
     }
 
     const updateData: Record<string, unknown> = {
@@ -119,7 +124,7 @@ export async function POST(
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user) {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id: circularId } = await params;
@@ -131,7 +136,10 @@ export async function POST(
     });
 
     if (!circular) {
-      notFound();
+      return NextResponse.json(
+        { error: "Circular not found" },
+        { status: 404 },
+      );
     }
 
     if (!circular.requiresAcknowledgment) {

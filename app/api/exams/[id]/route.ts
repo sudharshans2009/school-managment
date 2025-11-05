@@ -4,7 +4,6 @@ import { exams, subjects, classrooms, studentGrades } from "@/database/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, count } from "drizzle-orm";
-import { notFound, unauthorized } from "next/navigation";
 
 // GET /api/exams/[id] - Get a single exam with details
 export async function GET(
@@ -17,7 +16,7 @@ export async function GET(
     });
 
     if (!session?.user) {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -56,7 +55,7 @@ export async function GET(
       .where(eq(exams.id, id));
 
     if (!exam) {
-      notFound();
+      return NextResponse.json({ error: "Exam not found" }, { status: 404 });
     }
 
     // Get grade statistics
@@ -88,7 +87,7 @@ export async function PUT(
     });
 
     if (!session?.user || session.user.role !== "admin") {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -130,7 +129,7 @@ export async function PUT(
       .returning();
 
     if (!updatedExam) {
-      notFound();
+      return NextResponse.json({ error: "Exam not found" }, { status: 404 });
     }
 
     return NextResponse.json(updatedExam);
@@ -154,7 +153,7 @@ export async function DELETE(
     });
 
     if (!session?.user || session.user.role !== "admin") {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;

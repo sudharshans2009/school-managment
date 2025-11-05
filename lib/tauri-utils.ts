@@ -78,7 +78,7 @@ export const saveFile = async (filename: string, content: string) => {
 };
 
 export const openFile = async (
-  filters?: Array<{ name: string; extensions: string[] }>,
+  filters?: Array<{ name: string; extensions: string[] }>
 ): Promise<string | null> => {
   // Use browser file input for all cases
   return new Promise((resolve) => {
@@ -121,7 +121,7 @@ export const getApiBaseURL = (): string => {
  */
 export const apiRequest = async (
   endpoint: string,
-  options?: RequestInit,
+  options?: RequestInit
 ): Promise<Response> => {
   const baseURL = getApiBaseURL();
   const url = `${baseURL}${endpoint}`;

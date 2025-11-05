@@ -11,7 +11,6 @@ import {
 } from "@/database/schema";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
 import { TIMETABLE_STRUCTURE } from "@/lib/timetable-structure";
-import { notFound } from "next/navigation";
 
 export async function GET(
   request: NextRequest,
@@ -34,7 +33,10 @@ export async function GET(
     });
 
     if (!classroom) {
-      notFound();
+      return NextResponse.json(
+        { error: "Classroom not found" },
+        { status: 404 },
+      );
     }
 
     // Get today's date

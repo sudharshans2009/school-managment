@@ -4,7 +4,6 @@ import { db } from "@/database";
 import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
-import { notFound, unauthorized } from "next/navigation";
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -13,7 +12,7 @@ export async function PATCH(request: NextRequest) {
     });
 
     if (!session) {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -25,7 +24,7 @@ export async function PATCH(request: NextRequest) {
     });
 
     if (!user) {
-      notFound();
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const updates: Record<string, unknown> = {

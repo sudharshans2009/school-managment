@@ -4,7 +4,6 @@ import { exams } from "@/database/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
-import { notFound, unauthorized } from "next/navigation";
 
 // PUT /api/exams/[id]/finalize - Toggle finalization status (Admin only)
 export async function PUT(
@@ -17,7 +16,7 @@ export async function PUT(
     });
 
     if (!session?.user || session.user.role !== "admin") {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -43,7 +42,7 @@ export async function PUT(
       .returning();
 
     if (!updatedExam) {
-      notFound();
+      return NextResponse.json({ error: "Exam not found" }, { status: 404 });
     }
 
     return NextResponse.json(updatedExam);

@@ -3,7 +3,6 @@ import { db } from "@/database";
 import { admissionApplications } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { notFound, unauthorized } from "next/navigation";
 
 // GET single admission application
 export async function GET(
@@ -14,7 +13,7 @@ export async function GET(
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user || session.user.role !== "admin") {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -29,7 +28,10 @@ export async function GET(
     });
 
     if (!application) {
-      notFound();
+      return NextResponse.json(
+        { error: "Application not found" },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json(application);
@@ -51,7 +53,7 @@ export async function PUT(
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user || session.user.role !== "admin") {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -71,7 +73,10 @@ export async function PUT(
     });
 
     if (!existingApplication) {
-      notFound();
+      return NextResponse.json(
+        { error: "Application not found" },
+        { status: 404 },
+      );
     }
 
     const updateData: Record<string, unknown> = {

@@ -3,7 +3,6 @@ import { db } from "@/database";
 import { meetingSlots, meetingBookings } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { notFound, unauthorized } from "next/navigation";
 
 // POST - Book a meeting slot (parents only)
 export async function POST(
@@ -14,7 +13,10 @@ export async function POST(
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user || session.user.role !== "parent") {
-      unauthorized();
+      return NextResponse.json(
+        { error: "Unauthorized. Only parents can book meetings." },
+        { status: 401 },
+      );
     }
 
     const { id: slotId } = await params;
@@ -33,7 +35,10 @@ export async function POST(
     });
 
     if (!slot) {
-      notFound();
+      return NextResponse.json(
+        { error: "Meeting slot not found" },
+        { status: 404 },
+      );
     }
 
     if (!slot.isActive) {

@@ -3,7 +3,6 @@ import { db } from "@/database";
 import { events } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { notFound, unauthorized } from "next/navigation";
 
 // GET single event
 export async function GET(
@@ -27,7 +26,7 @@ export async function GET(
     });
 
     if (!event) {
-      notFound();
+      return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
     return NextResponse.json(event);
@@ -49,7 +48,7 @@ export async function PUT(
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user || !["admin", "teacher"].includes(session.user.role)) {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -75,7 +74,7 @@ export async function PUT(
     });
 
     if (!existingEvent) {
-      notFound();
+      return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
     const updateData: Record<string, unknown> = {
@@ -130,7 +129,7 @@ export async function DELETE(
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user || session.user.role !== "admin") {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -140,7 +139,7 @@ export async function DELETE(
     });
 
     if (!existingEvent) {
-      notFound();
+      return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
     await db.delete(events).where(eq(events.id, id));

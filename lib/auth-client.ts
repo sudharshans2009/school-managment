@@ -11,18 +11,17 @@ const isTauri = () => {
 // Only use production API in actual Tauri production builds, not dev mode
 const shouldUseProductionAPI = () => {
   if (!isTauri()) return false;
-
+  
   // In Tauri dev mode, window loads from localhost, so we should use local API
   // In Tauri production, window loads from tauri:// protocol
   if (typeof window !== "undefined") {
-    const isLocalhost =
-      window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1";
-
+    const isLocalhost = window.location.hostname === "localhost" || 
+                       window.location.hostname === "127.0.0.1";
+    
     // Only use production API if we're in Tauri AND not on localhost
     return !isLocalhost;
   }
-
+  
   return false;
 };
 
@@ -30,12 +29,10 @@ const shouldUseProductionAPI = () => {
 const getAuthBaseURL = () => {
   // Only use production URL in actual Tauri production builds
   if (shouldUseProductionAPI()) {
-    console.log(
-      "🦀 Auth client using production API: https://sms.sudharshans.me",
-    );
+    console.log("🦀 Auth client using production API: https://sms.sudharshans.me");
     return "https://sms.sudharshans.me";
   }
-
+  
   // In browser or Tauri dev mode, use relative URLs
   console.log("🌐 Auth client using relative URLs (local API)");
   return ""; // Empty string = relative URLs
@@ -71,9 +68,9 @@ const getOrCreateAuthClient = () => {
   if (!_authClient) {
     const baseURL = getAuthBaseURL();
     const credentials = isTauri() ? "include" : "same-origin";
-
+    
     console.log("Creating auth client with:", { baseURL, credentials });
-
+    
     _authClient = createAuthClient({
       baseURL,
       credentials,
@@ -88,7 +85,7 @@ export const authClient = new Proxy({} as ReturnType<typeof createAuthClient>, {
     const client = getOrCreateAuthClient();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (client as any)[prop];
-  },
+  }
 });
 
 // Export auth methods
@@ -98,7 +95,7 @@ export const signIn = new Proxy({} as any, {
     const client = getOrCreateAuthClient();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (client.signIn as any)[prop];
-  },
+  }
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -107,7 +104,7 @@ export const signUp = new Proxy({} as any, {
     const client = getOrCreateAuthClient();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (client.signUp as any)[prop];
-  },
+  }
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -115,11 +112,11 @@ export const signOut = new Proxy({} as any, {
   get() {
     const client = getOrCreateAuthClient();
     const method = client.signOut;
-    if (typeof method === "function") {
+    if (typeof method === 'function') {
       return method.bind(client);
     }
     return method;
-  },
+  }
 });
 
 export const useSession = () => {
@@ -129,7 +126,7 @@ export const useSession = () => {
 // For advanced usage
 export const getAuthClient = async () => {
   const customFetch = await getCustomFetch();
-
+  
   if (customFetch) {
     // Recreate with custom fetch for macOS
     _authClient = createAuthClient({
@@ -140,7 +137,7 @@ export const getAuthClient = async () => {
       },
     });
   }
-
+  
   return getOrCreateAuthClient();
 };
 

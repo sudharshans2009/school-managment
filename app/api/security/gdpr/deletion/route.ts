@@ -9,7 +9,6 @@ import { dataDeletionRequests } from "@/database/schema";
 import { eq, desc } from "drizzle-orm";
 import { requireAuth, requireAdmin } from "@/lib/auth-middleware";
 import { auditResourceAccess } from "@/lib/audit";
-import { notFound } from "next/navigation";
 
 // GET - List deletion requests
 export async function GET(request: NextRequest) {
@@ -133,7 +132,10 @@ export async function PUT(request: NextRequest) {
       .returning();
 
     if (!updatedRequest) {
-      notFound();
+      return NextResponse.json(
+        { error: "Deletion request not found" },
+        { status: 404 },
+      );
     }
 
     // Audit the status update

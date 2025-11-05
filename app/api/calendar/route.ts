@@ -3,7 +3,6 @@ import { db } from "@/database";
 import { calendarDays } from "@/database/schema";
 import { eq, gte, lte, and } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { unauthorized } from "next/navigation";
 
 // GET /api/calendar - Fetch calendar days with optional date range
 export async function GET(req: NextRequest) {
@@ -52,7 +51,7 @@ export async function POST(req: NextRequest) {
     const session = await auth.api.getSession({ headers: req.headers });
 
     if (!session?.user || session.user.role !== "admin") {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
@@ -129,7 +128,7 @@ export async function DELETE(req: NextRequest) {
     const session = await auth.api.getSession({ headers: req.headers });
 
     if (!session?.user || session.user.role !== "admin") {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const searchParams = req.nextUrl.searchParams;

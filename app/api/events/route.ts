@@ -8,7 +8,6 @@ import {
   getAdminUserIds,
   getTeacherUserIds,
 } from "@/lib/actions/notifications";
-import { unauthorized } from "next/navigation";
 
 // GET - Fetch all events with filters
 export async function GET(request: NextRequest) {
@@ -112,7 +111,7 @@ export async function POST(request: NextRequest) {
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user || !["admin", "teacher"].includes(session.user.role)) {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await request.json();

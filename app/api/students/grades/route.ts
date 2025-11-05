@@ -4,7 +4,6 @@ import { studentGrades, exams, subjects, students } from "@/database/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, and, desc } from "drizzle-orm";
-import { notFound, unauthorized } from "next/navigation";
 
 // GET /api/students/grades - Get student's grades (finalized exams only)
 export async function GET(request: NextRequest) {
@@ -14,7 +13,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!session?.user) {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get student record
@@ -24,7 +23,10 @@ export async function GET(request: NextRequest) {
       .where(eq(students.userId, session.user.id));
 
     if (!studentRecord) {
-      notFound();
+      return NextResponse.json(
+        { error: "Student record not found" },
+        { status: 404 },
+      );
     }
 
     const { searchParams } = new URL(request.url);

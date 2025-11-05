@@ -15,16 +15,15 @@ import { tauri } from "@daveyplate/better-auth-tauri/plugin";
 
 plugins: [
   tauri({
-    scheme: "school-management", // Deep link scheme
-    callbackURL: "/", // Post-auth redirect
+    scheme: "school-management",      // Deep link scheme
+    callbackURL: "/",                  // Post-auth redirect
     successText: "Authentication successful! You can close this window.",
-    debugLogs: false, // Set to true for debugging
+    debugLogs: false,                  // Set to true for debugging
   }),
-];
+]
 ```
 
 **Features:**
-
 - Registers Tauri-specific auth endpoints
 - Handles deep link callbacks
 - Provides success page for OAuth flows
@@ -44,7 +43,6 @@ plugins: [
 ```
 
 **What it does:**
-
 - Registers `school-management://` with the operating system
 - App becomes handler for this URL scheme
 - OAuth providers can redirect back to the app
@@ -85,7 +83,7 @@ fetchOptions: {
   customFetchImpl: (...params) =>
     isTauri() && platform() === "macos" && window.location.protocol === "tauri:"
       ? tauriFetch(...params)
-      : fetch(...params);
+      : fetch(...params)
 }
 ```
 
@@ -102,7 +100,6 @@ tauri::Builder::default()
 ```
 
 **Dependencies** (`src-tauri/Cargo.toml`):
-
 ```toml
 tauri-plugin-deep-link = "2.0.0-rc"
 tauri-plugin-http = "2.0.0-rc"
@@ -117,12 +114,12 @@ tauri-plugin-opener = "2.0.0-rc"
 Utility for initiating social sign-in flows:
 
 ```typescript
-import { handleSocialSignIn } from "@/lib/tauri-social-auth";
+import { handleSocialSignIn } from '@/lib/tauri-social-auth';
 
 // Example usage
-await handleSocialSignIn("google");
-await handleSocialSignIn("github");
-await handleSocialSignIn("microsoft");
+await handleSocialSignIn('google');
+await handleSocialSignIn('github');
+await handleSocialSignIn('microsoft');
 ```
 
 ## Authentication Flows
@@ -138,18 +135,17 @@ await handleSocialSignIn("microsoft");
 7. User redirected to dashboard
 
 **Code Example:**
-
 ```typescript
-import { signIn } from "@/lib/auth-client";
+import { signIn } from '@/lib/auth-client';
 
 const { data, error } = await signIn.email({
-  email: "user@example.com",
-  password: "password123",
+  email: 'user@example.com',
+  password: 'password123',
 });
 
 if (data) {
   // Success - redirect to dashboard
-  window.location.href = "/dashboard";
+  window.location.href = '/dashboard';
 }
 ```
 
@@ -177,7 +173,6 @@ if (data) {
 11. User redirected to dashboard
 
 **Code Example:**
-
 ```typescript
 import { handleSocialSignIn } from '@/lib/tauri-social-auth';
 
@@ -190,23 +185,21 @@ import { handleSocialSignIn } from '@/lib/tauri-social-auth';
 ### Session Persistence
 
 **How it works:**
-
 - Sessions stored as HTTP-only cookies
 - Tauri manages cookie storage securely
 - Sessions persist across app restarts
 - 7-day expiration (configurable in `lib/auth.ts`)
 
 **Checking session:**
-
 ```typescript
 import { useSession } from '@/lib/auth-client';
 
 function MyComponent() {
   const { data: session, isPending } = useSession();
-
+  
   if (isPending) return <div>Loading...</div>;
   if (!session?.user) return <div>Not logged in</div>;
-
+  
   return <div>Welcome {session.user.name}!</div>;
 }
 ```
@@ -214,19 +207,16 @@ function MyComponent() {
 ## Platform-Specific Behavior
 
 ### Windows
-
 - Standard cookie handling works out of the box
 - No special configuration needed
 - Deep links registered during installation
 
 ### macOS
-
 - Requires Tauri HTTP plugin for cookie support
 - Automatic platform detection in `auth-client.ts`
 - Deep links registered as URL handler in app bundle
 
 ### Linux
-
 - Standard cookie handling
 - Deep links registered via .desktop file
 - May require manual protocol handler registration on some distros
@@ -234,7 +224,6 @@ function MyComponent() {
 ## Installed Dependencies
 
 ### NPM Packages
-
 ```json
 {
   "@daveyplate/better-auth-tauri": "^0.1.6",
@@ -246,7 +235,6 @@ function MyComponent() {
 ```
 
 ### Rust Crates
-
 ```toml
 tauri-plugin-deep-link = "2.0.0-rc"
 tauri-plugin-http = "2.0.0-rc"
@@ -263,7 +251,6 @@ bun run tauri:dev
 ```
 
 **Test checklist:**
-
 1. ✅ Email/password sign-in works
 2. ✅ Session persists on page reload
 3. ✅ Sign-out clears session
@@ -272,7 +259,6 @@ bun run tauri:dev
 6. ✅ OAuth flow opens system browser (if configured)
 
 **Logs to look for:**
-
 ```
 🦀 Running in Tauri environment
 📡 API Base: https://sms.sudharshans.me
@@ -295,7 +281,6 @@ bun run tauri:build
 ### Issue: Deep links not working
 
 **Solution:**
-
 1. Restart the app after first installation
 2. Check if scheme is registered: `school-management://test` should open the app
 3. On Linux, verify `.desktop` file is installed
@@ -304,7 +289,6 @@ bun run tauri:build
 ### Issue: Sessions not persisting on macOS
 
 **Solution:**
-
 1. Verify Tauri HTTP plugin is initialized in `lib.rs`
 2. Check `auth-client.ts` has macOS cookie handling
 3. Ensure `window.location.protocol === "tauri:"` check is working
@@ -313,7 +297,6 @@ bun run tauri:build
 ### Issue: OAuth redirects to wrong URL
 
 **Solution:**
-
 1. Check `callbackURL` in server plugin config (`lib/auth.ts`)
 2. Verify deep link scheme matches in all configs
 3. Ensure production API is accessible
@@ -322,7 +305,6 @@ bun run tauri:build
 ### Issue: "Failed to setup Better Auth Tauri" error
 
 **Solution:**
-
 1. Verify all dependencies are installed: `bun install`
 2. Check that `@daveyplate/better-auth-tauri` is in package.json
 3. Ensure Tauri plugins are loaded before setup

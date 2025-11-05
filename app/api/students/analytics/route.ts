@@ -12,7 +12,6 @@ import {
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
-import { notFound, unauthorized } from "next/navigation";
 
 export async function GET() {
   try {
@@ -21,7 +20,7 @@ export async function GET() {
     });
 
     if (!session?.user) {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get student record
@@ -31,7 +30,10 @@ export async function GET() {
       .where(eq(students.userId, session.user.id));
 
     if (!studentRecord) {
-      notFound();
+      return NextResponse.json(
+        { error: "Student record not found" },
+        { status: 404 },
+      );
     }
 
     // Attendance Analytics

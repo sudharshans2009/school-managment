@@ -10,7 +10,6 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, and } from "drizzle-orm";
 import { calculateLetterGrade } from "@/lib/helpers";
-import { forbidden, notFound, unauthorized } from "next/navigation";
 
 // GET /api/exams/[id]/grades - Get all grades for an exam
 export async function GET(
@@ -23,7 +22,7 @@ export async function GET(
     });
 
     if (!session?.user) {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -33,7 +32,10 @@ export async function GET(
       const [exam] = await db.select().from(exams).where(eq(exams.id, id));
 
       if (!exam || !exam.isFinalized) {
-        notFound();
+        return NextResponse.json(
+          { error: "Exam not found or not finalized" },
+          { status: 404 },
+        );
       }
 
       const [studentRecord] = await db
@@ -42,7 +44,10 @@ export async function GET(
         .where(eq(students.userId, session.user.id));
 
       if (!studentRecord) {
-        notFound();
+        return NextResponse.json(
+          { error: "Student record not found" },
+          { status: 404 },
+        );
       }
 
       const grade = await db
@@ -110,7 +115,7 @@ export async function POST(
       !session?.user ||
       (session.user.role !== "teacher" && session.user.role !== "admin")
     ) {
-      unauthorized();
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { id } = await params;
@@ -128,7 +133,7 @@ export async function POST(
     const [exam] = await db.select().from(exams).where(eq(exams.id, id));
 
     if (!exam) {
-      notFound();
+      return NextResponse.json({ error: "Exam not found" }, { status: 404 });
     }
 
     if (exam.isFinalized) {
@@ -152,7 +157,10 @@ export async function POST(
         );
 
       if (assignment.length === 0) {
-        forbidden();
+        return NextResponse.json(
+          { error: "You are not assigned to this class/subject" },
+          { status: 403 },
+        );
       }
     }
 
