@@ -2,10 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import {
   groupMessages,
-  groupMessageRecipients,
   users,
 } from "@/database/schema";
-import { eq, desc, or, and } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 
 // GET - Fetch group messages
@@ -16,9 +15,6 @@ export async function GET(request: NextRequest) {
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    const searchParams = request.nextUrl.searchParams;
-    const targetGroup = searchParams.get("targetGroup");
 
     const messages = await db
       .select({

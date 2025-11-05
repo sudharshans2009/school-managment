@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
-import { behaviorIncidents, students, users } from "@/database/schema";
+import { behaviorIncidents, users } from "@/database/schema";
 import { eq, desc, and } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (severity) {
-      conditions.push(eq(behaviorIncidents.severity, severity as any));
+      conditions.push(eq(behaviorIncidents.severity, severity as never));
     }
 
     const incidents = await db

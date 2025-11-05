@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { entranceTests } from "@/database/schema";
-import { eq, desc, gte, and } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 
 // GET - Fetch entrance tests

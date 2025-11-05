@@ -169,7 +169,7 @@ export async function requireResourceAccess(
       user.id,
       user.email,
       user.role,
-      resource as any,
+      resource as never,
       `${resource}:${action}`,
       request,
     );

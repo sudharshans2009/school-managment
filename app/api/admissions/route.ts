@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const conditions = [];
 
     if (status) {
-      conditions.push(eq(admissionApplications.status, status as any));
+      conditions.push(eq(admissionApplications.status, status as never));
     }
 
     if (grade) {

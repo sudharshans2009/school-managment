@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
-import { reportCards, students, classrooms } from "@/database/schema";
+import { reportCards } from "@/database/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 

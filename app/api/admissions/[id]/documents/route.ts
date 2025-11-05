@@ -74,7 +74,6 @@ export async function POST(
 // PUT - Verify/Reject a document (admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -83,7 +82,6 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id: applicationId } = await params;
     const body = await request.json();
     const { documentId, status, rejectionReason } = body;
 

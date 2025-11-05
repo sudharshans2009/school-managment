@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     const conditions = [];
 
     if (circularType) {
-      conditions.push(eq(circulars.circularType, circularType as any));
+      conditions.push(eq(circulars.circularType, circularType as never));
     }
 
     if (isPublished !== null) {
