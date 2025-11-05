@@ -3,6 +3,7 @@ import { db } from "@/database";
 import { teacherLeaves, users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { createNotification } from "@/lib/actions/notifications";
+import { notFound } from "next/navigation";
 
 // GET - Get single leave request
 export async function GET(
@@ -35,10 +36,7 @@ export async function GET(
       .limit(1);
 
     if (!leave || leave.length === 0) {
-      return NextResponse.json(
-        { error: "Leave request not found" },
-        { status: 404 },
-      );
+      notFound();
     }
 
     return NextResponse.json(leave[0]);
@@ -98,10 +96,7 @@ export async function PUT(
       .returning();
 
     if (!updated || updated.length === 0) {
-      return NextResponse.json(
-        { error: "Leave request not found" },
-        { status: 404 },
-      );
+      notFound();
     }
 
     // Notify the teacher about the decision
@@ -145,10 +140,7 @@ export async function DELETE(
       .limit(1);
 
     if (!leave || leave.length === 0) {
-      return NextResponse.json(
-        { error: "Leave request not found" },
-        { status: 404 },
-      );
+      notFound();
     }
 
     if (leave[0].status !== "pending") {

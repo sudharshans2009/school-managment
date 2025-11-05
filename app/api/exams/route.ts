@@ -4,6 +4,7 @@ import { exams, subjects, classrooms } from "@/database/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, and, desc, SQL } from "drizzle-orm";
+import { unauthorized } from "next/navigation";
 
 // GET /api/exams - Get all exams (with optional filtering)
 export async function GET(request: NextRequest) {
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     const { searchParams } = new URL(request.url);
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!session?.user || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     const body = await request.json();

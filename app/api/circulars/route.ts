@@ -3,6 +3,7 @@ import { db } from "@/database";
 import { circulars, users } from "@/database/schema";
 import { eq, desc } from "drizzle-orm";
 import { auth } from "@/lib/auth";
+import { unauthorized } from "next/navigation";
 
 // GET - Fetch circulars
 export async function GET(request: NextRequest) {
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
     const conditions = [];
 
     if (circularType) {
-      conditions.push(eq(circulars.circularType, circularType as any));
+      conditions.push(eq(circulars.circularType, circularType as never));
     }
 
     if (isPublished !== null) {
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     const body = await request.json();

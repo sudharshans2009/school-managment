@@ -3,6 +3,7 @@ import { db } from "@/database";
 import { users, students, classrooms } from "@/database/schema";
 import { eq, and } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import { notFound } from "next/navigation";
 
 // GET single student
 export async function GET(
@@ -22,7 +23,7 @@ export async function GET(
     });
 
     if (!student) {
-      return NextResponse.json({ error: "Student not found" }, { status: 404 });
+      notFound();
     }
 
     return NextResponse.json(student);
@@ -64,7 +65,7 @@ export async function PUT(
     });
 
     if (!existingStudent) {
-      return NextResponse.json({ error: "Student not found" }, { status: 404 });
+      notFound();
     }
 
     const oldClassroomId = existingStudent.classroomId;
@@ -177,7 +178,7 @@ export async function DELETE(
     });
 
     if (!existingStudent) {
-      return NextResponse.json({ error: "Student not found" }, { status: 404 });
+      notFound();
     }
 
     const classroomId = existingStudent.classroomId;

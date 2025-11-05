@@ -7,6 +7,7 @@ import {
   markAllAsRead,
   deleteNotification,
 } from "@/lib/actions/notifications";
+import { unauthorized } from "next/navigation";
 
 // GET - Fetch notifications for current user
 export async function GET(request: NextRequest) {
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     const searchParams = request.nextUrl.searchParams;
@@ -55,7 +56,7 @@ export async function PATCH(request: NextRequest) {
     });
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     const body = await request.json();
@@ -100,7 +101,7 @@ export async function DELETE(request: NextRequest) {
     });
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     const searchParams = request.nextUrl.searchParams;

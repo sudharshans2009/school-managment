@@ -9,6 +9,7 @@ import {
 } from "@/database/schema";
 import { count, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth";
+import { unauthorized } from "next/navigation";
 
 export async function GET(req: NextRequest) {
   try {
@@ -18,7 +19,7 @@ export async function GET(req: NextRequest) {
       !session?.user ||
       (session.user as { role?: string }).role !== "admin"
     ) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     const today = new Date();

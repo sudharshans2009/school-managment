@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { unauthorized, forbidden } from "next/navigation";
 import { db } from "@/database";
 
 export async function GET(request: NextRequest) {
@@ -9,15 +10,12 @@ export async function GET(request: NextRequest) {
     });
 
     if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     // Only admins can view all users
     if (session.user.role !== "admin") {
-      return NextResponse.json(
-        { error: "Forbidden: Admin access required" },
-        { status: 403 },
-      );
+      forbidden();
     }
 
     const allUsers = await db.query.users.findMany({

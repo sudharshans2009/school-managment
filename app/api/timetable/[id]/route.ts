@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { timetable } from "@/database/schema";
 import { eq } from "drizzle-orm";
+import { notFound } from "next/navigation";
 
 // DELETE /api/timetable/[id] - Delete timetable entry
 export async function DELETE(
@@ -17,10 +18,7 @@ export async function DELETE(
       .returning();
 
     if (!deleted) {
-      return NextResponse.json(
-        { error: "Timetable entry not found" },
-        { status: 404 },
-      );
+      notFound();
     }
 
     return NextResponse.json({
@@ -59,10 +57,7 @@ export async function PUT(
       .returning();
 
     if (!updated) {
-      return NextResponse.json(
-        { error: "Timetable entry not found" },
-        { status: 404 },
-      );
+      notFound();
     }
 
     return NextResponse.json(updated);

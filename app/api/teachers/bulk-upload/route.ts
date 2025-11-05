@@ -3,6 +3,7 @@ import { db } from "@/database";
 import { users } from "@/database/schema";
 import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
+import { unauthorized } from "next/navigation";
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,7 +13,7 @@ export async function POST(req: NextRequest) {
       !session?.user ||
       (session.user as { role?: string }).role !== "admin"
     ) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     const body = await req.json();

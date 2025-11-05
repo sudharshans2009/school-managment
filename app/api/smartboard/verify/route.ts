@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { classrooms } from "@/database/schema";
 import { eq, and } from "drizzle-orm";
+import { unauthorized } from "next/navigation";
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,10 +32,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!classroom) {
-      return NextResponse.json(
-        { error: "Invalid Classroom ID or Key" },
-        { status: 401 },
-      );
+      unauthorized();
     }
 
     // Return classroom basic info

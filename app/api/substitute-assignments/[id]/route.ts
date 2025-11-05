@@ -7,6 +7,7 @@ import {
   subjects,
 } from "@/database/schema";
 import { eq } from "drizzle-orm";
+import { notFound } from "next/navigation";
 
 // GET - Get single substitute assignment
 export async function GET(
@@ -50,10 +51,7 @@ export async function GET(
       .limit(1);
 
     if (!assignment || assignment.length === 0) {
-      return NextResponse.json(
-        { error: "Substitute assignment not found" },
-        { status: 404 },
-      );
+      notFound();
     }
 
     return NextResponse.json(assignment[0]);
@@ -114,10 +112,7 @@ export async function PUT(
       .returning();
 
     if (!updated || updated.length === 0) {
-      return NextResponse.json(
-        { error: "Substitute assignment not found" },
-        { status: 404 },
-      );
+      notFound();
     }
 
     return NextResponse.json(updated[0]);

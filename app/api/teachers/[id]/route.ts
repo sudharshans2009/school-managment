@@ -3,6 +3,7 @@ import { db } from "@/database";
 import { users } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+import { notFound } from "next/navigation";
 
 // GET single teacher
 export async function GET(
@@ -25,7 +26,7 @@ export async function GET(
     });
 
     if (!teacher || teacher.role !== "teacher") {
-      return NextResponse.json({ error: "Teacher not found" }, { status: 404 });
+      notFound();
     }
 
     return NextResponse.json(teacher);
@@ -54,7 +55,7 @@ export async function PUT(
     });
 
     if (!existingTeacher || existingTeacher.role !== "teacher") {
-      return NextResponse.json({ error: "Teacher not found" }, { status: 404 });
+      notFound();
     }
 
     // Check if email is being changed and if it's already taken
@@ -112,7 +113,7 @@ export async function DELETE(
     });
 
     if (!existingTeacher || existingTeacher.role !== "teacher") {
-      return NextResponse.json({ error: "Teacher not found" }, { status: 404 });
+      notFound();
     }
 
     // Delete teacher (cascade will handle assignments)

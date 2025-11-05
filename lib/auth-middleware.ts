@@ -13,6 +13,7 @@ import {
   ResourceAction,
 } from "@/lib/permissions";
 import { auditAccessDenied } from "@/lib/audit";
+import { forbidden, unauthorized } from "next/navigation";
 
 /**
  * Extended user type with role
@@ -61,10 +62,7 @@ export async function requireAuth(
   const user = await getAuthUser(request);
 
   if (!user) {
-    return NextResponse.json(
-      { error: "Unauthorized - Authentication required" },
-      { status: 401 },
-    );
+    unauthorized();
   }
 
   return { user };
@@ -96,14 +94,7 @@ export async function requireRole(
       request,
     );
 
-    return NextResponse.json(
-      {
-        error: "Forbidden - Insufficient permissions",
-        required: allowedRoles,
-        current: user.role,
-      },
-      { status: 403 },
-    );
+    forbidden();
   }
 
   return { user };
@@ -135,13 +126,7 @@ export async function requirePermission(
       request,
     );
 
-    return NextResponse.json(
-      {
-        error: "Forbidden - Insufficient permissions",
-        required: permission,
-      },
-      { status: 403 },
-    );
+    forbidden();
   }
 
   return { user };
@@ -169,18 +154,12 @@ export async function requireResourceAccess(
       user.id,
       user.email,
       user.role,
-      resource as any,
+      resource as never,
       `${resource}:${action}`,
       request,
     );
 
-    return NextResponse.json(
-      {
-        error: "Forbidden - Insufficient permissions",
-        required: `${resource}:${action}`,
-      },
-      { status: 403 },
-    );
+    forbidden();
   }
 
   return { user };

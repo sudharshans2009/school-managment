@@ -3,6 +3,7 @@ import { db } from "@/database";
 import { users, classrooms, attendance } from "@/database/schema";
 import { eq, count, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth";
+import { unauthorized } from "next/navigation";
 
 export async function GET(req: NextRequest) {
   try {
@@ -12,7 +13,7 @@ export async function GET(req: NextRequest) {
       !session?.user ||
       (session.user as { role?: string }).role !== "admin"
     ) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     // Get total students

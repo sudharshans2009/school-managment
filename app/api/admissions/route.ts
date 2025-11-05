@@ -3,6 +3,7 @@ import { db } from "@/database";
 import { admissionApplications } from "@/database/schema";
 import { eq, desc, and, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth";
+import { unauthorized } from "next/navigation";
 
 // GET - Fetch admission applications
 export async function GET(request: NextRequest) {
@@ -10,7 +11,7 @@ export async function GET(request: NextRequest) {
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     const searchParams = request.nextUrl.searchParams;
@@ -20,7 +21,7 @@ export async function GET(request: NextRequest) {
     const conditions = [];
 
     if (status) {
-      conditions.push(eq(admissionApplications.status, status as any));
+      conditions.push(eq(admissionApplications.status, status as never));
     }
 
     if (grade) {

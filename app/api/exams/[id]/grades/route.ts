@@ -10,6 +10,7 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, and } from "drizzle-orm";
 import { calculateLetterGrade } from "@/lib/helpers";
+import { forbidden, notFound, unauthorized } from "next/navigation";
 
 // GET /api/exams/[id]/grades - Get all grades for an exam
 export async function GET(
@@ -22,7 +23,7 @@ export async function GET(
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     const { id } = await params;
@@ -32,10 +33,7 @@ export async function GET(
       const [exam] = await db.select().from(exams).where(eq(exams.id, id));
 
       if (!exam || !exam.isFinalized) {
-        return NextResponse.json(
-          { error: "Exam not found or not finalized" },
-          { status: 404 },
-        );
+        notFound();
       }
 
       const [studentRecord] = await db
@@ -44,10 +42,7 @@ export async function GET(
         .where(eq(students.userId, session.user.id));
 
       if (!studentRecord) {
-        return NextResponse.json(
-          { error: "Student record not found" },
-          { status: 404 },
-        );
+        notFound();
       }
 
       const grade = await db
@@ -115,7 +110,7 @@ export async function POST(
       !session?.user ||
       (session.user.role !== "teacher" && session.user.role !== "admin")
     ) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     const { id } = await params;
@@ -133,7 +128,7 @@ export async function POST(
     const [exam] = await db.select().from(exams).where(eq(exams.id, id));
 
     if (!exam) {
-      return NextResponse.json({ error: "Exam not found" }, { status: 404 });
+      notFound();
     }
 
     if (exam.isFinalized) {
@@ -157,10 +152,7 @@ export async function POST(
         );
 
       if (assignment.length === 0) {
-        return NextResponse.json(
-          { error: "You are not assigned to this class/subject" },
-          { status: 403 },
-        );
+        forbidden();
       }
     }
 

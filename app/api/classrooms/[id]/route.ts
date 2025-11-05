@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { classrooms, teacherAssignments, students } from "@/database/schema";
 import { eq } from "drizzle-orm";
+import { notFound } from "next/navigation";
 
 // GET /api/classrooms/[id] - Get classroom details
 export async function GET(
@@ -29,10 +30,7 @@ export async function GET(
     });
 
     if (!classroom) {
-      return NextResponse.json(
-        { error: "Classroom not found" },
-        { status: 404 },
-      );
+      notFound();
     }
 
     return NextResponse.json(classroom);
@@ -70,10 +68,7 @@ export async function PUT(
       .returning();
 
     if (!updatedClassroom) {
-      return NextResponse.json(
-        { error: "Classroom not found" },
-        { status: 404 },
-      );
+      notFound();
     }
 
     return NextResponse.json(updatedClassroom);
@@ -106,10 +101,7 @@ export async function DELETE(
       .returning();
 
     if (!deletedClassroom) {
-      return NextResponse.json(
-        { error: "Classroom not found" },
-        { status: 404 },
-      );
+      notFound();
     }
 
     return NextResponse.json({ message: "Classroom deleted successfully" });

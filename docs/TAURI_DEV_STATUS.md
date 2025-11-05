@@ -3,6 +3,7 @@
 ## What Was Fixed
 
 ### 1. Fixed `lib/tauri-utils.ts` ✅
+
 - Removed deprecated Tauri 1.x API imports
 - Updated to use Tauri 2.0 APIs:
   - `@tauri-apps/api/core` for invoke
@@ -12,9 +13,11 @@
 - All TypeScript errors resolved
 
 ### 2. Started Tauri Development Mode ✅
+
 Running: `bun run tauri:dev`
 
 **Status:**
+
 - ✅ Next.js dev server started on http://localhost:3000
 - ✅ Tauri is downloading and compiling Rust dependencies (first-time setup)
 - ⏳ Compiling ~572 Rust packages
@@ -23,6 +26,7 @@ Running: `bun run tauri:dev`
 ## Current Progress
 
 The terminal shows:
+
 ```
 ✓ Next.js Ready in 1956ms
 ⏳ Downloading and compiling Rust crates...
@@ -50,16 +54,19 @@ The terminal shows:
 Once the app opens, verify:
 
 ### Environment Detection
+
 - [ ] Check browser console for "🦀 Running in Tauri environment"
 - [ ] Verify "📡 API Base: https://sms.sudharshans.me"
 - [ ] Confirm "✅ Better Auth Tauri setup complete"
 
 ### Authentication Flow
+
 - [ ] Try to sign in with email/password
 - [ ] Check that API requests go to production server
 - [ ] Verify session persistence on page reload
 
 ### Tauri Features
+
 - [ ] Window opens and is resizable
 - [ ] Minimum size enforced (1024x768)
 - [ ] Default size is 1280x800
@@ -73,6 +80,7 @@ The terminal is running in background (ID: 740e2c94-f7fe-439e-bab4-22b4f0603777)
 Press `Ctrl+C` in the terminal or close the desktop app window
 
 **To restart after stopping:**
+
 ```bash
 bun run tauri:dev
 ```
@@ -107,16 +115,19 @@ bun run tauri:dev
 ## Troubleshooting
 
 ### If compilation fails:
+
 1. Check Rust is installed: `rustc --version`
 2. Update Rust: `rustup update`
 3. Clear build cache: Remove `src-tauri/target` folder
 
 ### If app doesn't open:
+
 1. Check terminal for error messages
 2. Verify no firewall blocking
 3. Try restarting: `Ctrl+C` then `bun run tauri:dev`
 
 ### If authentication fails:
+
 1. Check production API is accessible
 2. Verify deep link scheme registered
 3. Check browser console for errors

@@ -7,6 +7,7 @@ import {
   teacherAssignments,
 } from "@/database/schema";
 import { eq } from "drizzle-orm";
+import { notFound } from "next/navigation";
 
 // GET single subject
 export async function GET(
@@ -29,7 +30,7 @@ export async function GET(
     });
 
     if (!subject) {
-      return NextResponse.json({ error: "Subject not found" }, { status: 404 });
+      notFound();
     }
 
     return NextResponse.json(subject);
@@ -59,7 +60,7 @@ export async function PUT(
     });
 
     if (!existingSubject) {
-      return NextResponse.json({ error: "Subject not found" }, { status: 404 });
+      notFound();
     }
 
     // Check if code is being changed and if it's already taken
@@ -121,7 +122,7 @@ export async function DELETE(
     });
 
     if (!existingSubject) {
-      return NextResponse.json({ error: "Subject not found" }, { status: 404 });
+      notFound();
     }
 
     // Delete related timetable entries first

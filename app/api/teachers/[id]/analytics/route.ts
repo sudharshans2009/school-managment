@@ -15,6 +15,7 @@ import {
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, and, gte } from "drizzle-orm";
+import { unauthorized } from "next/navigation";
 
 export async function GET(
   request: NextRequest,
@@ -26,7 +27,7 @@ export async function GET(
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     const { id: teacherId } = await params;

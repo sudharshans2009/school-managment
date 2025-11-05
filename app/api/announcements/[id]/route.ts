@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { announcements } from "@/database/schema";
 import { eq } from "drizzle-orm";
+import { notFound } from "next/navigation";
 
 // PUT - Update an announcement
 export async function PUT(
@@ -32,10 +33,7 @@ export async function PUT(
       .returning();
 
     if (updated.length === 0) {
-      return NextResponse.json(
-        { error: "Announcement not found" },
-        { status: 404 },
-      );
+      notFound();
     }
 
     return NextResponse.json(updated[0]);
@@ -62,10 +60,7 @@ export async function DELETE(
       .returning();
 
     if (deleted.length === 0) {
-      return NextResponse.json(
-        { error: "Announcement not found" },
-        { status: 404 },
-      );
+      notFound();
     }
 
     return NextResponse.json({ message: "Announcement deleted successfully" });

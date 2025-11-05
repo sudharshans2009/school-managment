@@ -4,6 +4,7 @@ import { workDone, users, classrooms, subjects } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { forbidden, notFound, unauthorized } from "next/navigation";
 
 // GET - Get single work done record
 export async function GET(
@@ -16,18 +17,12 @@ export async function GET(
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     // Only admin and teacher can access work done records
     if (session.user.role !== "admin" && session.user.role !== "teacher") {
-      return NextResponse.json(
-        {
-          error:
-            "Forbidden: Only admin and teachers can view work done records",
-        },
-        { status: 403 },
-      );
+      forbidden();
     }
 
     const { id } = await params;
@@ -63,10 +58,7 @@ export async function GET(
       .limit(1);
 
     if (!record || record.length === 0) {
-      return NextResponse.json(
-        { error: "Work done record not found" },
-        { status: 404 },
-      );
+      notFound();
     }
 
     return NextResponse.json(record[0]);
@@ -90,18 +82,12 @@ export async function PUT(
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     // Only admin and teacher can update work done records
     if (session.user.role !== "admin" && session.user.role !== "teacher") {
-      return NextResponse.json(
-        {
-          error:
-            "Forbidden: Only admin and teachers can update work done records",
-        },
-        { status: 403 },
-      );
+      forbidden();
     }
 
     const { id } = await params;
@@ -133,10 +119,7 @@ export async function PUT(
       .returning();
 
     if (!updated || updated.length === 0) {
-      return NextResponse.json(
-        { error: "Work done record not found" },
-        { status: 404 },
-      );
+      notFound();
     }
 
     return NextResponse.json(updated[0]);
@@ -160,18 +143,12 @@ export async function DELETE(
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     // Only admin and teacher can delete work done records
     if (session.user.role !== "admin" && session.user.role !== "teacher") {
-      return NextResponse.json(
-        {
-          error:
-            "Forbidden: Only admin and teachers can delete work done records",
-        },
-        { status: 403 },
-      );
+      forbidden();
     }
 
     const { id } = await params;

@@ -4,6 +4,7 @@ import { workDone, users, classrooms, subjects } from "@/database/schema";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { forbidden, unauthorized } from "next/navigation";
 
 // GET - Fetch work done records
 export async function GET(request: NextRequest) {
@@ -13,18 +14,12 @@ export async function GET(request: NextRequest) {
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     // Only admin and teacher can access work done records
     if (session.user.role !== "admin" && session.user.role !== "teacher") {
-      return NextResponse.json(
-        {
-          error:
-            "Forbidden: Only admin and teachers can view work done records",
-        },
-        { status: 403 },
-      );
+      forbidden();
     }
 
     const searchParams = request.nextUrl.searchParams;
@@ -116,18 +111,12 @@ export async function POST(request: NextRequest) {
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     // Only admin and teacher can create work done records
     if (session.user.role !== "admin" && session.user.role !== "teacher") {
-      return NextResponse.json(
-        {
-          error:
-            "Forbidden: Only admin and teachers can create work done records",
-        },
-        { status: 403 },
-      );
+      forbidden();
     }
 
     const body = await request.json();

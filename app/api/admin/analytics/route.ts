@@ -15,6 +15,7 @@ import {
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq, gte } from "drizzle-orm";
+import { unauthorized } from "next/navigation";
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     const { searchParams } = new URL(request.url);

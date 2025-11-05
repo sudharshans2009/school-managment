@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
-import { reportCards, students, classrooms } from "@/database/schema";
+import { reportCards } from "@/database/schema";
 import { eq, and, desc } from "drizzle-orm";
 import { auth } from "@/lib/auth";
+import { unauthorized } from "next/navigation";
 
 // GET - Fetch report cards
 export async function GET(request: NextRequest) {
@@ -10,7 +11,7 @@ export async function GET(request: NextRequest) {
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     const searchParams = request.nextUrl.searchParams;
@@ -78,7 +79,7 @@ export async function POST(request: NextRequest) {
     const session = await auth.api.getSession({ headers: request.headers });
 
     if (!session?.user || !["admin", "teacher"].includes(session.user.role)) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      unauthorized();
     }
 
     const body = await request.json();
