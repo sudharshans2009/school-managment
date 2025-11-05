@@ -40,7 +40,7 @@ export default function Error({
         <CardContent className="space-y-4">
           {error.message && (
             <div className="rounded-lg bg-muted p-4">
-              <p className="text-sm text-muted-foreground font-mono break-words">
+              <p className="text-sm text-muted-foreground font-mono wrap-break-word">
                 {error.message}
               </p>
             </div>
