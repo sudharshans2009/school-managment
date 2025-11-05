@@ -132,7 +132,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-16 max-w-4xl w-full">
             <Card className="rounded-2xl shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+                <div className="w-12 h-12 mx-auto bg-primary/10 rounded-xl flex items-center justify-center mb-4">
                   <LayoutDashboard className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">Smart Dashboards</h3>
@@ -145,7 +145,7 @@ export default function Home() {
 
             <Card className="rounded-2xl shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+                <div className="w-12 h-12 mx-auto bg-primary/10 rounded-xl flex items-center justify-center mb-4">
                   <BookOpen className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">
@@ -160,7 +160,7 @@ export default function Home() {
 
             <Card className="rounded-2xl shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+                <div className="w-12 h-12 mx-auto bg-primary/10 rounded-xl flex items-center justify-center mb-4">
                   <Users className="w-6 h-6 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2">
