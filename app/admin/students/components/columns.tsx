@@ -11,6 +11,8 @@ import {
   Phone,
   Calendar,
   Eye,
+  HeartPulse,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -18,6 +20,7 @@ export interface Student {
   id: string;
   rollNumber: string;
   admissionNumber: string;
+  house: "Amritamayi" | "Anandamayi" | "Chinmayi" | "Jothyrmayi" | null;
   user: {
     name: string;
     email: string;
@@ -35,11 +38,15 @@ export interface Student {
 interface StudentColumnsProps {
   onEdit: (student: Student) => void;
   onDelete: (student: Student) => void;
+  onMedical: (student: Student) => void;
+  onDisciplinary: (student: Student) => void;
 }
 
 export const createStudentColumns = ({
   onEdit,
   onDelete,
+  onMedical,
+  onDisciplinary,
 }: StudentColumnsProps): ColumnDef<Student>[] => [
   {
     accessorKey: "user.name",
@@ -82,6 +89,27 @@ export const createStudentColumns = ({
     cell: ({ row }) => {
       return (
         <span className="font-mono">{row.getValue("admissionNumber")}</span>
+      );
+    },
+  },
+  {
+    accessorKey: "house",
+    header: "House",
+    cell: ({ row }) => {
+      const house = row.getValue("house") as string | null;
+      if (!house) return <span className="text-gray-400">-</span>;
+      
+      const houseColors: Record<string, string> = {
+        Amritamayi: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 border-red-300",
+        Anandamayi: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 border-blue-300",
+        Chinmayi: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 border-green-300",
+        Jothyrmayi: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 border-yellow-300",
+      };
+      
+      return (
+        <Badge className={houseColors[house]}>
+          {house}
+        </Badge>
       );
     },
   },
@@ -145,7 +173,7 @@ export const createStudentColumns = ({
     cell: ({ row }) => {
       const student = row.original;
       return (
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Link href={`/admin/students/${student.id}`}>
             <Button variant="outline" size="sm" className="rounded-xl">
               <Eye className="h-4 w-4 mr-1" />
@@ -160,6 +188,26 @@ export const createStudentColumns = ({
           >
             <Edit2 className="h-4 w-4 mr-1" />
             Edit
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onMedical(student)}
+            className="rounded-xl text-blue-600 hover:text-blue-700 border-blue-300 hover:bg-blue-50"
+            title="Medical Records"
+          >
+            <HeartPulse className="h-4 w-4 mr-1" />
+            Medical
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onDisciplinary(student)}
+            className="rounded-xl text-orange-600 hover:text-orange-700 border-orange-300 hover:bg-orange-50"
+            title="Disciplinary Actions"
+          >
+            <AlertTriangle className="h-4 w-4 mr-1" />
+            Disciplinary
           </Button>
           <Button
             variant="destructive"

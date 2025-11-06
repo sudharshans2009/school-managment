@@ -24,6 +24,7 @@ import {
   BookMarked,
   Award,
   BarChart3,
+  History,
 } from "lucide-react";
 import Link from "next/link";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
@@ -211,6 +212,12 @@ export default function AdminDashboard() {
       href: "/admin/work-done",
       icon: ClipboardCheck,
       description: "View all work done records",
+    },
+    {
+      title: "Audit History",
+      href: "/admin/audit-logs",
+      icon: History,
+      description: "View system audit logs and security events",
     },
   ];
 

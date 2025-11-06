@@ -32,6 +32,9 @@ import {
   Upload,
   LayoutGrid,
   Table as TableIcon,
+  HeartPulse,
+  AlertTriangle,
+  GraduationCap,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
@@ -49,7 +52,6 @@ import { DataTable } from "@/components/ui/data-table";
 import { createStudentColumns, Student } from "./components/columns";
 import Link from "next/link";
 import { AdminHeader } from "@/components/admin/admin-header";
-import { GraduationCap } from "lucide-react";
 
 interface Classroom {
   id: string;
@@ -64,6 +66,9 @@ export default function StudentsPage() {
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [deletingStudent, setDeletingStudent] = useState<Student | null>(null);
+  const [medicalDialogOpen, setMedicalDialogOpen] = useState(false);
+  const [disciplinaryDialogOpen, setDisciplinaryDialogOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [uploadResult, setUploadResult] = useState<{
     success: number;
@@ -103,6 +108,7 @@ export default function StudentsPage() {
       admissionNumber: string;
       dateOfBirth: string;
       bloodGroup: string;
+      house: string;
     }) => {
       const response = await fetch("/api/students", {
         method: "POST",
@@ -135,6 +141,7 @@ export default function StudentsPage() {
       admissionNumber?: string;
       dateOfBirth?: string;
       bloodGroup?: string;
+      house?: string;
     }) => {
       const { id, ...body } = data;
       const response = await fetch(`/api/students/${id}`, {
@@ -198,6 +205,68 @@ export default function StudentsPage() {
     },
   });
 
+  const createMedicalIncidentMutation = useMutation({
+    mutationFn: async (data: {
+      studentId: string;
+      incidentDate: string;
+      incidentType: string;
+      description: string;
+      treatment?: string;
+      severity: string;
+      followUpRequired: boolean;
+      followUpNotes?: string;
+      parentNotified: boolean;
+    }) => {
+      const response = await fetch("/api/students/medical-incidents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to create medical incident");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      setMedicalDialogOpen(false);
+      setSelectedStudent(null);
+    },
+  });
+
+  const createDisciplinaryActionMutation = useMutation({
+    mutationFn: async (data: {
+      studentId: string;
+      incidentDate: string;
+      actionType: string;
+      severity: string;
+      description: string;
+      actionTaken: string;
+      witnessesOrInvolved?: string;
+      parentNotified: boolean;
+      parentMeetingRequired: boolean;
+      parentMeetingDate?: string;
+      resolutionNotes?: string;
+    }) => {
+      const response = await fetch("/api/students/disciplinary-actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(
+          error.error || "Failed to create disciplinary action"
+        );
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      setDisciplinaryDialogOpen(false);
+      setSelectedStudent(null);
+    },
+  });
+
   const handleCSVUpload = async () => {
     if (!csvFile) return;
 
@@ -232,6 +301,7 @@ export default function StudentsPage() {
       admissionNumber: formData.get("admissionNumber") as string,
       dateOfBirth: formData.get("dateOfBirth") as string,
       bloodGroup: formData.get("bloodGroup") as string,
+      house: formData.get("house") as string,
     };
 
     if (editingStudent) {
@@ -248,7 +318,7 @@ export default function StudentsPage() {
     (student) =>
       student.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       student.rollNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.admissionNumber.toLowerCase().includes(searchQuery.toLowerCase()),
+      student.admissionNumber.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const columns = createStudentColumns({
@@ -258,6 +328,14 @@ export default function StudentsPage() {
     },
     onDelete: (student) => {
       setDeletingStudent(student);
+    },
+    onMedical: (student) => {
+      setSelectedStudent(student);
+      setMedicalDialogOpen(true);
+    },
+    onDisciplinary: (student) => {
+      setSelectedStudent(student);
+      setDisciplinaryDialogOpen(true);
     },
   });
 
@@ -447,7 +525,7 @@ export default function StudentsPage() {
                         name="bloodGroup"
                         defaultValue={editingStudent?.bloodGroup || undefined}
                       >
-                        <SelectTrigger id="bloodGroup">
+                        <SelectTrigger id="bloodGroup" className="w-full">
                           <SelectValue placeholder="Select blood group" />
                         </SelectTrigger>
                         <SelectContent>
@@ -462,23 +540,49 @@ export default function StudentsPage() {
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="classroomId">Assign to Classroom</Label>
-                    <Select name="classroomId">
-                      <SelectTrigger id="classroomId">
-                        <SelectValue placeholder="Select classroom" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {classrooms?.map((classroom) => (
-                          <SelectItem key={classroom.id} value={classroom.id}>
-                            {classroom.name}
+                    <div>
+                      <Label htmlFor="house">House</Label>
+                      <Select
+                        name="house"
+                        defaultValue={editingStudent?.house || undefined}
+                      >
+                        <SelectTrigger id="house" className="w-full">
+                          <SelectValue placeholder="Select house" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Amritamayi">
+                            Amritamayi
                           </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                          <SelectItem value="Anandamayi">
+                            Anandamayi
+                          </SelectItem>
+                          <SelectItem value="Chinmayi">
+                            Chinmayi
+                          </SelectItem>
+                          <SelectItem value="Jothyrmayi">
+                            Jothyrmayi
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
+
                   <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="classroomId">Assign to Classroom</Label>
+                      <Select name="classroomId">
+                        <SelectTrigger id="classroomId" className="w-full">
+                          <SelectValue placeholder="Select classroom" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {classrooms?.map((classroom) => (
+                            <SelectItem key={classroom.id} value={classroom.id}>
+                              {classroom.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div>
                       <Label htmlFor="phone">Phone</Label>
                       <Input
@@ -488,10 +592,10 @@ export default function StudentsPage() {
                         defaultValue={editingStudent?.user.phone || ""}
                       />
                     </div>
-                    <div>
-                      <Label htmlFor="address">Address</Label>
-                      <Input id="address" name="address" />
-                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="address">Address</Label>
+                    <Input id="address" name="address" />
                   </div>
                   {(createMutation.error || updateMutation.error) && (
                     <Alert variant="destructive">
@@ -525,8 +629,8 @@ export default function StudentsPage() {
                           ? "Updating..."
                           : "Update Student"
                         : createMutation.isPending
-                          ? "Creating..."
-                          : "Create Student"}
+                        ? "Creating..."
+                        : "Create Student"}
                     </Button>
                   </div>
                 </form>
@@ -634,7 +738,7 @@ export default function StudentsPage() {
                           </div>
                         )}
                       </div>
-                      <div className="flex gap-2 mt-4">
+                      <div className="flex flex-wrap gap-2 mt-4">
                         <Link href={`/admin/students/${student.id}`}>
                           <Button
                             variant="default"
@@ -655,6 +759,30 @@ export default function StudentsPage() {
                         >
                           <Edit2 className="h-4 w-4 mr-1" />
                           Edit
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedStudent(student);
+                            setMedicalDialogOpen(true);
+                          }}
+                          className="rounded-xl text-blue-600 hover:text-blue-700 border-blue-300 hover:bg-blue-50"
+                          title="Medical Records"
+                        >
+                          <HeartPulse className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedStudent(student);
+                            setDisciplinaryDialogOpen(true);
+                          }}
+                          className="rounded-xl text-orange-600 hover:text-orange-700 border-orange-300 hover:bg-orange-50"
+                          title="Disciplinary Actions"
+                        >
+                          <AlertTriangle className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="destructive"
@@ -709,6 +837,329 @@ export default function StudentsPage() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* Medical Incident Dialog */}
+        <Dialog
+          open={medicalDialogOpen}
+          onOpenChange={(isOpen) => {
+            setMedicalDialogOpen(isOpen);
+            if (!isOpen) setSelectedStudent(null);
+          }}
+        >
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <HeartPulse className="h-5 w-5 text-blue-600" />
+                Add Medical Incident - {selectedStudent?.user.name}
+              </DialogTitle>
+            </DialogHeader>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                createMedicalIncidentMutation.mutate({
+                  studentId: selectedStudent!.id,
+                  incidentDate: formData.get("incidentDate") as string,
+                  incidentType: formData.get("incidentType") as string,
+                  description: formData.get("description") as string,
+                  treatment: formData.get("treatment") as string,
+                  severity: formData.get("severity") as string,
+                  followUpRequired: formData.get("followUpRequired") === "on",
+                  followUpNotes: formData.get("followUpNotes") as string,
+                  parentNotified: formData.get("parentNotified") === "on",
+                });
+              }}
+              className="space-y-4"
+            >
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="incidentDate">Incident Date *</Label>
+                  <Input
+                    id="incidentDate"
+                    name="incidentDate"
+                    type="datetime-local"
+                    required
+                    className="rounded-xl"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="incidentType">Incident Type *</Label>
+                  <Select name="incidentType">
+                    <SelectTrigger id="incidentType">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Injury">Injury</SelectItem>
+                      <SelectItem value="Illness">Illness</SelectItem>
+                      <SelectItem value="Allergy Reaction">
+                        Allergy Reaction
+                      </SelectItem>
+                      <SelectItem value="Emergency">Emergency</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="severity">Severity *</Label>
+                <Select name="severity">
+                  <SelectTrigger id="severity">
+                    <SelectValue placeholder="Select severity" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Minor">Minor</SelectItem>
+                    <SelectItem value="Moderate">Moderate</SelectItem>
+                    <SelectItem value="Severe">Severe</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="description">Description *</Label>
+                <Input
+                  id="description"
+                  name="description"
+                  required
+                  placeholder="Describe what happened"
+                  className="rounded-xl"
+                />
+              </div>
+              <div>
+                <Label htmlFor="treatment">Treatment Provided</Label>
+                <Input
+                  id="treatment"
+                  name="treatment"
+                  placeholder="Treatment given"
+                  className="rounded-xl"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="followUpRequired"
+                  name="followUpRequired"
+                  className="rounded"
+                />
+                <Label htmlFor="followUpRequired">Follow-up Required</Label>
+              </div>
+              <div>
+                <Label htmlFor="followUpNotes">Follow-up Notes</Label>
+                <Input
+                  id="followUpNotes"
+                  name="followUpNotes"
+                  placeholder="Any follow-up instructions"
+                  className="rounded-xl"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="parentNotified"
+                  name="parentNotified"
+                  className="rounded"
+                />
+                <Label htmlFor="parentNotified">Parent Notified</Label>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setMedicalDialogOpen(false);
+                    setSelectedStudent(null);
+                  }}
+                  className="rounded-xl"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="rounded-xl"
+                  disabled={createMedicalIncidentMutation.isPending}
+                >
+                  {createMedicalIncidentMutation.isPending
+                    ? "Adding..."
+                    : "Add Record"}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Disciplinary Action Dialog */}
+        <Dialog
+          open={disciplinaryDialogOpen}
+          onOpenChange={(isOpen) => {
+            setDisciplinaryDialogOpen(isOpen);
+            if (!isOpen) setSelectedStudent(null);
+          }}
+        >
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-orange-600" />
+                Add Disciplinary Action - {selectedStudent?.user.name}
+              </DialogTitle>
+            </DialogHeader>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                createDisciplinaryActionMutation.mutate({
+                  studentId: selectedStudent!.id,
+                  incidentDate: formData.get("incidentDate") as string,
+                  actionType: formData.get("actionType") as string,
+                  severity: formData.get("severity") as string,
+                  description: formData.get("description") as string,
+                  actionTaken: formData.get("actionTaken") as string,
+                  witnessesOrInvolved: formData.get(
+                    "witnessesOrInvolved",
+                  ) as string,
+                  parentNotified: formData.get("parentNotified") === "on",
+                  parentMeetingRequired:
+                    formData.get("parentMeetingRequired") === "on",
+                  parentMeetingDate: formData.get("parentMeetingDate") as string,
+                  resolutionNotes: formData.get("resolutionNotes") as string,
+                });
+              }}
+              className="space-y-4"
+            >
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="disc-incidentDate">Incident Date *</Label>
+                  <Input
+                    id="disc-incidentDate"
+                    name="incidentDate"
+                    type="datetime-local"
+                    required
+                    className="rounded-xl"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="actionType">Action Type *</Label>
+                  <Select name="actionType">
+                    <SelectTrigger id="actionType">
+                      <SelectValue placeholder="Select action" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Warning">Warning</SelectItem>
+                      <SelectItem value="Detention">Detention</SelectItem>
+                      <SelectItem value="Suspension">Suspension</SelectItem>
+                      <SelectItem value="Counseling">Counseling</SelectItem>
+                      <SelectItem value="Probation">Probation</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="disc-severity">Severity *</Label>
+                <Select name="severity">
+                  <SelectTrigger id="disc-severity">
+                    <SelectValue placeholder="Select severity" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Minor">Minor</SelectItem>
+                    <SelectItem value="Moderate">Moderate</SelectItem>
+                    <SelectItem value="Severe">Severe</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="disc-description">
+                  What Happened (Description) *
+                </Label>
+                <Input
+                  id="disc-description"
+                  name="description"
+                  required
+                  placeholder="Describe the incident"
+                  className="rounded-xl"
+                />
+              </div>
+              <div>
+                <Label htmlFor="actionTaken">Action Taken *</Label>
+                <Input
+                  id="actionTaken"
+                  name="actionTaken"
+                  required
+                  placeholder="What action was taken"
+                  className="rounded-xl"
+                />
+              </div>
+              <div>
+                <Label htmlFor="witnessesOrInvolved">
+                  Witnesses or Others Involved
+                </Label>
+                <Input
+                  id="witnessesOrInvolved"
+                  name="witnessesOrInvolved"
+                  placeholder="Names of witnesses or other students involved"
+                  className="rounded-xl"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="disc-parentNotified"
+                  name="parentNotified"
+                  className="rounded"
+                />
+                <Label htmlFor="disc-parentNotified">Parent Notified</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="parentMeetingRequired"
+                  name="parentMeetingRequired"
+                  className="rounded"
+                />
+                <Label htmlFor="parentMeetingRequired">
+                  Parent Meeting Required
+                </Label>
+              </div>
+              <div>
+                <Label htmlFor="parentMeetingDate">Parent Meeting Date</Label>
+                <Input
+                  id="parentMeetingDate"
+                  name="parentMeetingDate"
+                  type="datetime-local"
+                  className="rounded-xl"
+                />
+              </div>
+              <div>
+                <Label htmlFor="resolutionNotes">Resolution Notes</Label>
+                <Input
+                  id="resolutionNotes"
+                  name="resolutionNotes"
+                  placeholder="Notes about resolution or next steps"
+                  className="rounded-xl"
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setDisciplinaryDialogOpen(false);
+                    setSelectedStudent(null);
+                  }}
+                  className="rounded-xl"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="rounded-xl"
+                  disabled={createDisciplinaryActionMutation.isPending}
+                >
+                  {createDisciplinaryActionMutation.isPending
+                    ? "Adding..."
+                    : "Add Action"}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );

@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
       admissionNumber,
       dateOfBirth,
       bloodGroup,
+      house,
       admissionDate,
     } = body;
 
@@ -96,6 +97,7 @@ export async function POST(request: NextRequest) {
         admissionNumber,
         dateOfBirth: new Date(dateOfBirth),
         bloodGroup,
+        house: house || null,
         admissionDate: admissionDate ? new Date(admissionDate) : new Date(),
       })
       .returning();

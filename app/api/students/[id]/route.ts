@@ -53,6 +53,7 @@ export async function PUT(
       classroomId,
       dateOfBirth,
       bloodGroup,
+      house,
       emergencyContact,
       medicalInfo,
     } = body;
@@ -109,6 +110,7 @@ export async function PUT(
     if (classroomId !== undefined) studentUpdateData.classroomId = classroomId;
     if (dateOfBirth) studentUpdateData.dateOfBirth = new Date(dateOfBirth);
     if (bloodGroup) studentUpdateData.bloodGroup = bloodGroup;
+    if (house !== undefined) studentUpdateData.house = house;
     if (emergencyContact) studentUpdateData.emergencyContact = emergencyContact;
     if (medicalInfo !== undefined) studentUpdateData.medicalInfo = medicalInfo;
 

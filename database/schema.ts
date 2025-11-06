@@ -49,6 +49,12 @@ export const sessionTypeEnum = pgEnum("session_type", [
   "test",
   "extra",
 ]);
+export const houseEnum = pgEnum("house", [
+  "Amritamayi",
+  "Anandamayi",
+  "Chinmayi",
+  "Jothyrmayi",
+]);
 export const dayTypeEnum = pgEnum("day_type", ["working", "holiday"]);
 export const dayDurationEnum = pgEnum("day_duration", ["full", "half"]);
 export const holidayForEnum = pgEnum("holiday_for", [
@@ -345,6 +351,7 @@ export const students = pgTable("students", {
     .notNull()
     .unique(),
   dateOfBirth: timestamp("date_of_birth").notNull(),
+  house: houseEnum("house"),
   parentId: uuid("parent_id").references(() => users.id),
   emergencyContact: varchar("emergency_contact", { length: 20 }),
   bloodGroup: varchar("blood_group", { length: 5 }),
@@ -352,6 +359,25 @@ export const students = pgTable("students", {
   elective: varchar("elective", { length: 100 }), // For students to choose electives like KTPI or Sports
   admissionDate: timestamp("admission_date").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Medical Incidents Table
+export const medicalIncidents = pgTable("medical_incidents", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  studentId: uuid("student_id")
+    .notNull()
+    .references(() => students.id, { onDelete: "cascade" }),
+  incidentDate: timestamp("incident_date").notNull(),
+  incidentType: varchar("incident_type", { length: 100 }).notNull(), // e.g., "Injury", "Illness", "Allergy Reaction", "Emergency"
+  description: text("description").notNull(),
+  treatment: text("treatment"), // Treatment provided
+  severity: varchar("severity", { length: 20 }), // "Minor", "Moderate", "Severe"
+  reportedBy: uuid("reported_by").references(() => users.id), // Staff member who reported
+  followUpRequired: boolean("follow_up_required").default(false),
+  followUpNotes: text("follow_up_notes"),
+  parentNotified: boolean("parent_notified").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Homework/Assignments Table
@@ -773,6 +799,7 @@ export const studentsRelations = relations(students, ({ one, many }) => ({
   reportCards: many(reportCards),
   behaviorIncidents: many(behaviorIncidents),
   disciplinaryActions: many(disciplinaryActions),
+  medicalIncidents: many(medicalIncidents),
   behaviorPoints: many(behaviorPoints),
   behaviorNotes: many(behaviorNotes),
 }));
@@ -1548,6 +1575,20 @@ export const disciplinaryActionsRelations = relations(
     }),
     assigner: one(users, {
       fields: [disciplinaryActions.assignedBy],
+      references: [users.id],
+    }),
+  }),
+);
+
+export const medicalIncidentsRelations = relations(
+  medicalIncidents,
+  ({ one }) => ({
+    student: one(students, {
+      fields: [medicalIncidents.studentId],
+      references: [students.id],
+    }),
+    reporter: one(users, {
+      fields: [medicalIncidents.reportedBy],
       references: [users.id],
     }),
   }),

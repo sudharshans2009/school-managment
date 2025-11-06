@@ -32,6 +32,8 @@ export type AuditResource =
   | "admission"
   | "report_card"
   | "behavior"
+  | "medical_incident"
+  | "disciplinary_action"
   | "backup"
   | "system_settings"
   | "audit_log";
