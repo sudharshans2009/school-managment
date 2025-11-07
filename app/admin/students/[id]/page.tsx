@@ -39,7 +39,17 @@ import {
   HeartPulse,
   AlertTriangle,
   Plus,
+  Download,
+  FileText,
+  Printer,
 } from "lucide-react";
+import {
+  exportMedicalIncidentsToCSV,
+  exportDisciplinaryActionsToCSV,
+  exportStudentReport,
+  printMedicalIncidentsReport,
+  printDisciplinaryActionsReport,
+} from "@/lib/export-utils";
 
 interface StudentDetail {
   id: string;
@@ -69,6 +79,7 @@ interface StudentDetail {
 
 interface MedicalIncident {
   id: string;
+  studentId: string;
   incidentDate: string;
   incidentType: string;
   description: string;
@@ -77,29 +88,36 @@ interface MedicalIncident {
   followUpRequired: boolean;
   followUpNotes: string | null;
   parentNotified: boolean;
+  reportedBy: string;
   reporter: {
+    id: string;
     name: string;
     email: string;
   } | null;
   createdAt: string;
+  updatedAt: string;
 }
 
 interface DisciplinaryAction {
   id: string;
+  studentId: string;
   incidentDate: string;
   incidentType: string;
   severity: string;
   description: string;
   actionTaken: string | null;
-  witnessNames: string | null;
-  parentNotified: boolean;
-  followUpRequired: boolean;
-  followUpNotes: string | null;
+  witnesses: string | null;
+  resolution: string | null;
+  parentMeetingRequired: boolean;
+  parentMeetingDate: string | null;
+  reportedBy: string;
   reporter: {
+    id: string;
     name: string;
     email: string;
-  };
+  } | null;
   createdAt: string;
+  updatedAt: string;
 }
 
 interface AttendanceStats {
@@ -128,6 +146,8 @@ export default function StudentDetailPage() {
   const queryClient = useQueryClient();
   const [medicalDialogOpen, setMedicalDialogOpen] = useState(false);
   const [disciplinaryDialogOpen, setDisciplinaryDialogOpen] = useState(false);
+  const [medicalFilter, setMedicalFilter] = useState<string>("all");
+  const [disciplinaryFilter, setDisciplinaryFilter] = useState<string>("all");
 
   const { data: student, isLoading } = useQuery<StudentDetail>({
     queryKey: ["student", studentId],
@@ -266,19 +286,42 @@ export default function StudentDetailPage() {
   return (
     <DashboardLayout title="Student Details" description="Admin Portal">
       <div className="space-y-6">
-        <div className="flex items-center gap-3">
-          <Link href="/admin/students">
-            <Button variant="ghost" size="sm" className="rounded-xl">
-              ← Back
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold">{student.user.name}</h1>
-            <p className="text-muted-foreground">
-              Roll No: {student.rollNumber} | Admission No:{" "}
-              {student.admissionNumber}
-            </p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link href="/admin/students">
+              <Button variant="ghost" size="sm" className="rounded-xl">
+                ← Back
+              </Button>
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold">{student.user.name}</h1>
+              <p className="text-muted-foreground">
+                Roll No: {student.rollNumber} | Admission No:{" "}
+                {student.admissionNumber}
+              </p>
+            </div>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-xl"
+            onClick={() => {
+              if (medicalIncidents && disciplinaryActions) {
+                exportStudentReport(
+                  student.user.name,
+                  medicalIncidents as unknown as Parameters<typeof exportStudentReport>[1],
+                  disciplinaryActions as unknown as Parameters<typeof exportStudentReport>[2]
+                );
+              }
+            }}
+            disabled={
+              (!medicalIncidents || medicalIncidents.length === 0) &&
+              (!disciplinaryActions || disciplinaryActions.length === 0)
+            }
+          >
+            <FileText className="h-4 w-4 mr-2" />
+            Export Full Report
+          </Button>
         </div>
 
         <Tabs defaultValue="basic" className="space-y-4">
@@ -484,19 +527,107 @@ export default function StudentDetailPage() {
           </TabsContent>
 
           <TabsContent value="medical-incidents" className="space-y-4">
+            {/* Medical Incidents Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Card className="rounded-2xl">
+                <CardContent className="pt-6">
+                  <div className="text-2xl font-bold">
+                    {medicalIncidents?.length || 0}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Total Incidents
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="rounded-2xl">
+                <CardContent className="pt-6">
+                  <div className="text-2xl font-bold text-red-600">
+                    {
+                      medicalIncidents?.filter(
+                        (i: MedicalIncident) => i.severity === "critical"
+                      ).length || 0
+                    }
+                  </div>
+                  <p className="text-xs text-muted-foreground">Critical</p>
+                </CardContent>
+              </Card>
+              <Card className="rounded-2xl">
+                <CardContent className="pt-6">
+                  <div className="text-2xl font-bold text-orange-600">
+                    {
+                      medicalIncidents?.filter(
+                        (i: MedicalIncident) => i.followUpRequired
+                      ).length || 0
+                    }
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Requires Follow-up
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="rounded-2xl">
+                <CardContent className="pt-6">
+                  <div className="text-2xl font-bold text-green-600">
+                    {
+                      medicalIncidents?.filter(
+                        (i: MedicalIncident) => i.parentNotified
+                      ).length || 0
+                    }
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Parents Notified
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
             <Card className="rounded-2xl">
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <CardTitle>Medical Incidents</CardTitle>
-                <Dialog
-                  open={medicalDialogOpen}
-                  onOpenChange={setMedicalDialogOpen}
-                >
-                  <DialogTrigger asChild>
-                    <Button size="sm" className="rounded-xl">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Incident
-                    </Button>
-                  </DialogTrigger>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-xl"
+                    onClick={() => medicalIncidents && printMedicalIncidentsReport(medicalIncidents as unknown as Parameters<typeof printMedicalIncidentsReport>[0], student?.user?.name || "Student")}
+                    disabled={!medicalIncidents || medicalIncidents.length === 0}
+                  >
+                    <Printer className="h-4 w-4 mr-2" />
+                    Print
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-xl"
+                    onClick={() => medicalIncidents && exportMedicalIncidentsToCSV(medicalIncidents as unknown as Parameters<typeof exportMedicalIncidentsToCSV>[0], student?.user?.name || "Student")}
+                    disabled={!medicalIncidents || medicalIncidents.length === 0}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Export CSV
+                  </Button>
+                  <Select value={medicalFilter} onValueChange={setMedicalFilter}>
+                    <SelectTrigger className="w-[180px] rounded-xl">
+                      <SelectValue placeholder="Filter by severity" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Incidents</SelectItem>
+                      <SelectItem value="critical">Critical</SelectItem>
+                      <SelectItem value="major">Major</SelectItem>
+                      <SelectItem value="moderate">Moderate</SelectItem>
+                      <SelectItem value="minor">Minor</SelectItem>
+                      <SelectItem value="followup">Needs Follow-up</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Dialog
+                    open={medicalDialogOpen}
+                    onOpenChange={setMedicalDialogOpen}
+                  >
+                    <DialogTrigger asChild>
+                      <Button size="sm" className="rounded-xl">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Incident
+                      </Button>
+                    </DialogTrigger>
                   <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
                     <DialogHeader>
                       <DialogTitle className="flex items-center gap-2">
@@ -636,11 +767,18 @@ export default function StudentDetailPage() {
                     </form>
                   </DialogContent>
                 </Dialog>
+                </div>
               </CardHeader>
               <CardContent>
                 {medicalIncidents && medicalIncidents.length > 0 ? (
                   <div className="space-y-3">
-                    {medicalIncidents.map((incident) => (
+                    {medicalIncidents
+                      .filter((incident: MedicalIncident) => {
+                        if (medicalFilter === "all") return true;
+                        if (medicalFilter === "followup") return incident.followUpRequired;
+                        return incident.severity === medicalFilter;
+                      })
+                      .map((incident: MedicalIncident) => (
                       <div
                         key={incident.id}
                         className="p-4 border rounded-xl space-y-2"
@@ -712,19 +850,107 @@ export default function StudentDetailPage() {
           </TabsContent>
 
           <TabsContent value="disciplinary" className="space-y-4">
+            {/* Disciplinary Actions Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Card className="rounded-2xl">
+                <CardContent className="pt-6">
+                  <div className="text-2xl font-bold">
+                    {disciplinaryActions?.length || 0}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Total Actions
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="rounded-2xl">
+                <CardContent className="pt-6">
+                  <div className="text-2xl font-bold text-red-600">
+                    {
+                      disciplinaryActions?.filter(
+                        (a: DisciplinaryAction) => a.severity === "Severe"
+                      ).length || 0
+                    }
+                  </div>
+                  <p className="text-xs text-muted-foreground">Severe</p>
+                </CardContent>
+              </Card>
+              <Card className="rounded-2xl">
+                <CardContent className="pt-6">
+                  <div className="text-2xl font-bold text-orange-600">
+                    {
+                      disciplinaryActions?.filter(
+                        (a: DisciplinaryAction) => a.parentMeetingRequired
+                      ).length || 0
+                    }
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Parent Meetings Required
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="rounded-2xl">
+                <CardContent className="pt-6">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {
+                      disciplinaryActions?.filter(
+                        (a: DisciplinaryAction) => a.severity === "Minor"
+                      ).length || 0
+                    }
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Minor Incidents
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
             <Card className="rounded-2xl">
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0">
                 <CardTitle>Disciplinary Actions</CardTitle>
-                <Dialog
-                  open={disciplinaryDialogOpen}
-                  onOpenChange={setDisciplinaryDialogOpen}
-                >
-                  <DialogTrigger asChild>
-                    <Button size="sm" className="rounded-xl">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Action
-                    </Button>
-                  </DialogTrigger>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-xl"
+                    onClick={() => disciplinaryActions && printDisciplinaryActionsReport(disciplinaryActions as unknown as Parameters<typeof printDisciplinaryActionsReport>[0], student?.user?.name || "Student")}
+                    disabled={!disciplinaryActions || disciplinaryActions.length === 0}
+                  >
+                    <Printer className="h-4 w-4 mr-2" />
+                    Print
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-xl"
+                    onClick={() => disciplinaryActions && exportDisciplinaryActionsToCSV(disciplinaryActions as unknown as Parameters<typeof exportDisciplinaryActionsToCSV>[0], student?.user?.name || "Student")}
+                    disabled={!disciplinaryActions || disciplinaryActions.length === 0}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Export CSV
+                  </Button>
+                  <Select value={disciplinaryFilter} onValueChange={setDisciplinaryFilter}>
+                    <SelectTrigger className="w-[180px] rounded-xl">
+                      <SelectValue placeholder="Filter by severity" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Actions</SelectItem>
+                      <SelectItem value="Severe">Severe</SelectItem>
+                      <SelectItem value="Major">Major</SelectItem>
+                      <SelectItem value="Moderate">Moderate</SelectItem>
+                      <SelectItem value="Minor">Minor</SelectItem>
+                      <SelectItem value="meeting">Requires Meeting</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Dialog
+                    open={disciplinaryDialogOpen}
+                    onOpenChange={setDisciplinaryDialogOpen}
+                  >
+                    <DialogTrigger asChild>
+                      <Button size="sm" className="rounded-xl">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Action
+                      </Button>
+                    </DialogTrigger>
                   <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
                     <DialogHeader>
                       <DialogTitle className="flex items-center gap-2">
@@ -910,11 +1136,18 @@ export default function StudentDetailPage() {
                     </form>
                   </DialogContent>
                 </Dialog>
+                </div>
               </CardHeader>
               <CardContent>
                 {disciplinaryActions && disciplinaryActions.length > 0 ? (
                   <div className="space-y-3">
-                    {disciplinaryActions.map((action) => (
+                    {disciplinaryActions
+                      .filter((action: DisciplinaryAction) => {
+                        if (disciplinaryFilter === "all") return true;
+                        if (disciplinaryFilter === "meeting") return action.parentMeetingRequired;
+                        return action.severity === disciplinaryFilter;
+                      })
+                      .map((action: DisciplinaryAction) => (
                       <div
                         key={action.id}
                         className="p-4 border rounded-xl space-y-2"
@@ -940,8 +1173,10 @@ export default function StudentDetailPage() {
                               {new Date(action.incidentDate).toLocaleString()}
                             </p>
                           </div>
-                          {action.parentNotified && (
-                            <Badge variant="outline">Parent Notified</Badge>
+                          {action.parentMeetingRequired && (
+                            <Badge variant="outline" className="bg-yellow-50">
+                              Parent Meeting Required
+                            </Badge>
                           )}
                         </div>
                         <div>
@@ -956,27 +1191,27 @@ export default function StudentDetailPage() {
                             <p className="text-sm">{action.actionTaken}</p>
                           </div>
                         )}
-                        {action.witnessNames && (
+                        {action.witnesses && (
                           <div>
-                            <p className="font-medium">Witnesses/Involved:</p>
-                            <p className="text-sm">{action.witnessNames}</p>
+                            <p className="font-medium">Witnesses:</p>
+                            <p className="text-sm">{action.witnesses}</p>
                           </div>
                         )}
-                        {action.followUpRequired && (
-                          <div className="bg-orange-50 dark:bg-orange-900/20 p-2 rounded">
-                            <p className="text-sm font-medium text-orange-800 dark:text-orange-300">
-                              Follow-up Required
+                        {action.resolution && (
+                          <div>
+                            <p className="font-medium">Resolution:</p>
+                            <p className="text-sm">{action.resolution}</p>
+                          </div>
+                        )}
+                        {action.parentMeetingRequired && action.parentMeetingDate && (
+                          <div className="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded">
+                            <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
+                              Parent Meeting: {new Date(action.parentMeetingDate).toLocaleDateString()}
                             </p>
-                            {action.followUpNotes && (
-                              <p className="text-sm text-orange-700 dark:text-orange-400">
-                                {action.followUpNotes}
-                              </p>
-                            )}
                           </div>
                         )}
                         <p className="text-xs text-muted-foreground">
-                          Reported by: {action.reporter.name} (
-                          {action.reporter.email})
+                          Reported by: {action.reporter?.name || "Unknown"} ({action.reporter?.email || "N/A"})
                         </p>
                       </div>
                     ))}
