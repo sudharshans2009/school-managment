@@ -27,3 +27,7 @@ tauri-plugin-deep-link = "2.0.0-rc"
 tauri-plugin-http = "2.0.0-rc"
 tauri-plugin-os = "2.0.0-rc"
 tauri-plugin-opener = "2.0.0-rc"
+rusqlite = { version = "0.32", features = ["bundled"] }
+dirs = "5.0"
+chrono = "0.4"
+once_cell = "1.19"
