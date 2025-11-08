@@ -8,6 +8,9 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import Image from "next/image";
 import { useTauri } from "@/components/providers/tauri-provider";
+import { AppDownloadBanner } from "@/components/app-download-banner";
+import { AppQuickActions } from "@/components/app-quick-actions";
+import { OfflineIndicator } from "@/components/offline-indicator";
 
 interface HomeLayoutProps {
   children: ReactNode;
@@ -40,8 +43,11 @@ export function HomeLayout({ children }: HomeLayoutProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* App Download Banner */}
+      <AppDownloadBanner />
+      
       {/* Navbar */}
-      <nav className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+      <nav className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo + Website Name */}
@@ -50,7 +56,7 @@ export function HomeLayout({ children }: HomeLayoutProps) {
               className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
             >
               <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-xl shadow-sm">
-                <GraduationCap className="w-6 h-6 text-primary-foreground" />;
+                <GraduationCap className="w-6 h-6 text-primary-foreground" />
               </div>
               <div className="flex items-center gap-2">
                 <div>
@@ -83,6 +89,9 @@ export function HomeLayout({ children }: HomeLayoutProps) {
             </Link>
 
             <div className="flex items-center space-x-3">
+              {/* Quick Actions for Tauri */}
+              <AppQuickActions />
+              
               {/* Theme Toggle */}
               <Button
                 variant="ghost"
@@ -121,6 +130,9 @@ export function HomeLayout({ children }: HomeLayoutProps) {
 
       {/* Main Content */}
       <main>{children}</main>
+      
+      {/* Offline Indicator */}
+      <OfflineIndicator />
     </div>
   );
 }

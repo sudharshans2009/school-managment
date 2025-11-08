@@ -175,9 +175,17 @@ export default function Home() {
           </div>
 
           {/* Footer */}
-          <div className="pt-16 text-sm text-muted-foreground">
+          <div className="pt-16 space-y-4 text-sm text-muted-foreground">
             <p>
               Built with Next.js, Drizzle ORM, Better Auth, and TanStack Query
+            </p>
+            <p>
+              <Link
+                href="/downloads"
+                className="text-primary hover:underline font-medium"
+              >
+                Download Native Apps for Windows & Android
+              </Link>
             </p>
           </div>
         </div>

@@ -109,13 +109,10 @@ export const signUp = new Proxy({} as any, {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const signOut = new Proxy({} as any, {
-  get() {
+  get(_target, prop) {
     const client = getOrCreateAuthClient();
-    const method = client.signOut;
-    if (typeof method === 'function') {
-      return method.bind(client);
-    }
-    return method;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (client.signOut as any)[prop];
   }
 });
 
