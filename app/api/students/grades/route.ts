@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { studentGrades, exams, subjects, students } from "@/database/schema";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 import { headers } from "next/headers";
 import { eq, and, desc } from "drizzle-orm";
 

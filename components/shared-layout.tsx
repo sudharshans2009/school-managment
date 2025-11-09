@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { useSession, signOut } from "@/lib/auth-client";
+import { useSession, signOut } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, LogOut, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";

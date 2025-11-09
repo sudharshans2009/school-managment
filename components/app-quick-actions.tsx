@@ -75,7 +75,18 @@ export function AppQuickActions() {
   const toggleFullscreen = async () => {
     try {
       // @ts-expect-error - Tauri API
-      const { appWindow } = await import("@tauri-apps/plugin-window");
+      if (!window.__TAURI__) return;
+      
+      // Dynamic import with fallback
+      let windowModule;
+      try {
+        windowModule = await import("@tauri-apps/plugin-window");
+      } catch {
+        console.warn("Tauri window plugin not available");
+        return;
+      }
+      
+      const appWindow = windowModule.getCurrent();
       const fullscreen = await appWindow.isFullscreen();
       await appWindow.setFullscreen(!fullscreen);
       setIsFullscreen(!fullscreen);
@@ -87,7 +98,17 @@ export function AppQuickActions() {
   const minimizeWindow = async () => {
     try {
       // @ts-expect-error - Tauri API
-      const { appWindow } = await import("@tauri-apps/plugin-window");
+      if (!window.__TAURI__) return;
+      
+      let windowModule;
+      try {
+        windowModule = await import("@tauri-apps/plugin-window");
+      } catch {
+        console.warn("Tauri window plugin not available");
+        return;
+      }
+      
+      const appWindow = windowModule.getCurrent();
       await appWindow.minimize();
     } catch (error) {
       console.error("Failed to minimize window:", error);
@@ -97,7 +118,17 @@ export function AppQuickActions() {
   const closeWindow = async () => {
     try {
       // @ts-expect-error - Tauri API
-      const { appWindow } = await import("@tauri-apps/plugin-window");
+      if (!window.__TAURI__) return;
+      
+      let windowModule;
+      try {
+        windowModule = await import("@tauri-apps/plugin-window");
+      } catch {
+        console.warn("Tauri window plugin not available");
+        return;
+      }
+      
+      const appWindow = windowModule.getCurrent();
       await appWindow.close();
     } catch (error) {
       console.error("Failed to close window:", error);
@@ -106,9 +137,24 @@ export function AppQuickActions() {
 
   const checkForUpdates = async () => {
     try {
-      console.log("Checking for updates...");
       // @ts-expect-error - Tauri API
-      const { check } = await import("@tauri-apps/plugin-updater");
+      if (!window.__TAURI__) return;
+      
+      console.log("Checking for updates...");
+      
+      let updaterModule, processModule;
+      try {
+        // @ts-expect-error - Optional Tauri plugins
+        updaterModule = await import("@tauri-apps/plugin-updater");
+        // @ts-expect-error - Optional Tauri plugins
+        processModule = await import("@tauri-apps/plugin-process");
+      } catch {
+        console.warn("Tauri updater/process plugins not available");
+        alert("Update feature is not available in this build.");
+        return;
+      }
+      
+      const { check } = updaterModule;
       const update = await check();
       
       if (update?.available) {
@@ -117,8 +163,7 @@ export function AppQuickActions() {
         );
         if (shouldUpdate) {
           await update.downloadAndInstall();
-          // @ts-expect-error - Tauri API
-          const { relaunch } = await import("@tauri-apps/plugin-process");
+          const { relaunch } = processModule;
           await relaunch();
         }
       } else {

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { teacherLeaves, users } from "@/database/schema";
 import { eq } from "drizzle-orm";
-import { createNotification } from "@/lib/actions/notifications";
+import { createNotification } from "@/actions/notifications";
 
 // GET - Get single leave request
 export async function GET(

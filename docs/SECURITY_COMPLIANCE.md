@@ -72,7 +72,7 @@ The permission system is implemented in `/lib/permissions.ts` and provides:
 - `canAccessResource(role, resource, action)` - Check resource-level access
 - `DEFAULT_ROLE_PERMISSIONS` - Default permissions for each role
 
-Authorization middleware in `/lib/auth-middleware.ts` provides:
+Authorization middleware in `/lib/auth/middleware.ts` provides:
 
 - `requireAuth(request)` - Require authentication
 - `requireRole(request, roles)` - Require specific role
@@ -82,7 +82,7 @@ Authorization middleware in `/lib/auth-middleware.ts` provides:
 ### Usage Example
 
 ```typescript
-import { requireAdmin, requirePermission } from "@/lib/auth-middleware";
+import { requireAdmin, requirePermission } from "@/lib/auth/middleware";
 
 export async function POST(request: NextRequest) {
   // Require admin role

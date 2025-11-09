@@ -1,5 +1,5 @@
 import { createAuthClient } from "better-auth/react";
-import type { Session } from "./auth";
+import type { Session } from "./main";
 
 // Check if running in Tauri - only works client-side
 const isTauri = () => {

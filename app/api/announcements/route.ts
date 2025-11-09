@@ -8,7 +8,7 @@ import {
   getTeacherUserIds,
   getClassroomStudentUserIds,
   getClassTeacherUserId,
-} from "@/lib/actions/notifications";
+} from "@/actions/notifications";
 
 // GET - Fetch all announcements
 export async function GET(request: NextRequest) {

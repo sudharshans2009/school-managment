@@ -5,7 +5,7 @@ import { eq, desc } from "drizzle-orm";
 import {
   createBulkNotifications,
   getClassroomStudentUserIds,
-} from "@/lib/actions/notifications";
+} from "@/actions/notifications";
 
 // GET - Fetch homework
 export async function GET(request: NextRequest) {

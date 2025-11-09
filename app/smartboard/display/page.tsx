@@ -18,71 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import { SmartboardNotifications } from "@/components/smartboard-notifications";
-
-// Types
-interface ClassroomInfo {
-  id: string;
-  name: string;
-  grade: string;
-  section: string;
-  classTeacher: string;
-  totalStrength: number;
-}
-
-interface ScheduleItem {
-  period: number;
-  time: string;
-  subject: string;
-  teacher: string;
-  room: string;
-  type: string;
-}
-
-interface AttendanceData {
-  present: number;
-  absent: number;
-  late: number;
-  total: number;
-  percentage: number;
-  absentStudents: string[];
-  lateStudents: string[];
-}
-
-interface Homework {
-  id: string;
-  subject: string;
-  title: string;
-  dueDate: string;
-  dueTime: string;
-  assignedBy: string;
-  priority: string;
-  totalMarks: number;
-}
-
-interface Announcement {
-  id: string;
-  title: string;
-  message: string;
-  date: string;
-  priority: string;
-  postedBy: string;
-  icon: string;
-}
-
-interface Quote {
-  content: string;
-  author: string;
-  date: string;
-}
-
-interface SmartboardData {
-  classroom: ClassroomInfo;
-  schedule: ScheduleItem[];
-  attendance: AttendanceData;
-  homework: Homework[];
-  announcements: Announcement[];
-  quote: Quote | null;
-}
+import { getSmartboardData, type SmartboardData } from "@/actions/smartboard";
 
 export default function SmartboardDisplayPage() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -108,16 +44,12 @@ export default function SmartboardDisplayPage() {
     }
   }, [router]);
 
-  // Fetch smartboard data
-  const { data, isLoading, error } = useQuery<SmartboardData>({
+  // Fetch smartboard data using Server Action
+  const { data, isLoading, error } = useQuery<SmartboardData | null>({
     queryKey: ["smartboard", classroomId],
     queryFn: async () => {
       if (!classroomId) throw new Error("No classroom ID");
-      const response = await fetch(`/api/smartboard/${classroomId}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch smartboard data");
-      }
-      return response.json();
+      return await getSmartboardData(classroomId);
     },
     refetchInterval: 30000, // Refetch every 30 seconds
     enabled: !!classroomId, // Only run query if classroomId exists

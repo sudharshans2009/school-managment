@@ -1,6 +1,6 @@
 "use client";
 
-import { isTauriApp } from "./tauri-utils";
+import { isTauriApp } from "./utils";
 
 /**
  * Get the base URL for authentication

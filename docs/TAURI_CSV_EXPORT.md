@@ -56,7 +56,7 @@ This system provides a robust CSV export functionality for the Tauri desktop app
 
 ### TypeScript (Frontend)
 
-5. **`lib/tauri-csv-export.ts`** (240 lines)
+5. **`lib/tauri/csv-export.ts`** (240 lines)
    - TypeScript bindings for Rust commands
    - Helper functions
    - CSV conversion utilities
@@ -74,7 +74,7 @@ Export CSV files to a configured location with automatic directory creation.
 
 **TypeScript Usage:**
 ```typescript
-import { exportCSVToDirectory, arrayToCSV } from "@/lib/tauri-csv-export";
+import { exportCSVToDirectory, arrayToCSV } from "@/lib/tauri/csv-export";
 
 // Convert data to CSV
 const students = [
@@ -108,7 +108,7 @@ Export multiple CSV files in a single operation.
 
 **TypeScript Usage:**
 ```typescript
-import { exportCSVBatch, arrayToCSV } from "@/lib/tauri-csv-export";
+import { exportCSVBatch, arrayToCSV } from "@/lib/tauri/csv-export";
 
 const exports: [string, string][] = [
   ["students.csv", arrayToCSV(students)],
@@ -148,7 +148,7 @@ CREATE TABLE export_settings (
 
 **TypeScript Usage:**
 ```typescript
-import { getExportSettings, updateExportSettings } from "@/lib/tauri-csv-export";
+import { getExportSettings, updateExportSettings } from "@/lib/tauri/csv-export";
 
 // Get current settings
 const settings = await getExportSettings();
@@ -173,7 +173,7 @@ Native folder picker dialog for selecting export directory.
 
 **TypeScript Usage:**
 ```typescript
-import { selectExportDirectory } from "@/lib/tauri-csv-export";
+import { selectExportDirectory } from "@/lib/tauri/csv-export";
 
 const newDir = await selectExportDirectory();
 if (newDir) {
@@ -187,7 +187,7 @@ Open the export directory in the system file explorer.
 
 **TypeScript Usage:**
 ```typescript
-import { openExportDirectory } from "@/lib/tauri-csv-export";
+import { openExportDirectory } from "@/lib/tauri/csv-export";
 
 await openExportDirectory();
 // Opens:
@@ -256,7 +256,7 @@ export function downloadCSV(filename: string, content: string) {
 ### After (Tauri-aware):
 ```typescript
 // lib/export-utils.ts
-import { exportCSVToDirectory, isExportAvailable } from "@/lib/tauri-csv-export";
+import { exportCSVToDirectory, isExportAvailable } from "@/lib/tauri/csv-export";
 
 export async function downloadCSV(filename: string, content: string) {
   // Use Tauri export if available
@@ -305,7 +305,7 @@ bun run tauri:dev
 
 ```typescript
 // In your component or console
-import { exportCSVToDirectory, arrayToCSV } from "@/lib/tauri-csv-export";
+import { exportCSVToDirectory, arrayToCSV } from "@/lib/tauri/csv-export";
 
 // Test data
 const testData = [

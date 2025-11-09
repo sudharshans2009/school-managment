@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { isTauriApp } from "@/lib/tauri-utils";
-import { authClient } from "@/lib/auth-client";
+import { isTauriApp } from "@/lib/tauri/utils";
+import { authClient } from "@/lib/auth/client";
 
 interface TauriContextType {
   isTauri: boolean;

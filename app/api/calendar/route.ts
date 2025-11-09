@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { calendarDays } from "@/database/schema";
 import { eq, gte, lte, and } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 
 // GET /api/calendar - Fetch calendar days with optional date range
 export async function GET(req: NextRequest) {

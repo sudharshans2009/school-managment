@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { meetingSlots, meetingBookings } from "@/database/schema";
 import { eq } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 
 // POST - Book a meeting slot (parents only)
 export async function POST(

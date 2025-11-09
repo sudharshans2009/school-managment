@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { auditLogs } from "@/database/schema";
 import { desc, and, gte, lte, eq, ilike, or } from "drizzle-orm";
-import { requireAdmin } from "@/lib/auth-middleware";
+import { requireAdmin } from "@/lib/auth/middleware";
 import { auditResourceAccess } from "@/lib/audit";
 
 export async function GET(request: NextRequest) {

@@ -196,7 +196,7 @@ import {
   openFile,
   showNotification,
   getApiBaseURL 
-} from '@/lib/tauri-utils';
+} from '@/lib/tauri/utils';
 
 // Check if running in Tauri
 if (isTauriApp()) {
@@ -275,7 +275,7 @@ Better Auth is configured with the Tauri plugin for seamless desktop authenticat
 ### Using Social Authentication
 
 ```typescript
-import { handleSocialSignIn } from '@/lib/tauri-social-auth';
+import { handleSocialSignIn } from '@/lib/tauri/social-auth';
 
 // Initiate Google sign-in
 await handleSocialSignIn('google');

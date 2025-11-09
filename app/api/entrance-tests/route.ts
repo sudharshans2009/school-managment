@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { entranceTests } from "@/database/schema";
 import { eq, desc, and } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 
 // GET - Fetch entrance tests
 export async function GET(request: NextRequest) {

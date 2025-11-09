@@ -6,7 +6,7 @@
  */
 
 import { authClient } from "@/lib/auth/client";
-import { isTauriApp } from "@/lib/tauri-utils";
+import { isTauriApp } from "@/lib/tauri/utils";
 
 /**
  * Initiate social sign-in flow

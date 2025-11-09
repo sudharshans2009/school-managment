@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { dataExportRequests, users, students } from "@/database/schema";
 import { eq, desc } from "drizzle-orm";
-import { requireAuth } from "@/lib/auth-middleware";
+import { requireAuth } from "@/lib/auth/middleware";
 import { auditDataExport } from "@/lib/audit";
 
 // GET - List user's export requests

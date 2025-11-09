@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { classrooms, teacherAssignments } from "@/database/schema";
 import { eq } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 
 // GET - Fetch classrooms for a teacher
 export async function GET(req: NextRequest) {

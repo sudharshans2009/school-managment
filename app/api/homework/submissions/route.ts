@@ -8,7 +8,7 @@ import {
   users,
 } from "@/database/schema";
 import { eq, and, desc } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 
 // GET - Fetch homework submissions for a teacher
 export async function GET(req: NextRequest) {

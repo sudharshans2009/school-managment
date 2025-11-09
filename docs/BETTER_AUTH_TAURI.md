@@ -71,7 +71,7 @@ setupBetterAuthTauri({
 
 ### 4. Cookie Handling (macOS)
 
-**File**: `lib/auth-client.ts`
+**File**: `lib/auth/client.ts`
 
 macOS requires special cookie handling using the Tauri HTTP plugin:
 
@@ -109,12 +109,12 @@ tauri-plugin-opener = "2.0.0-rc"
 
 ### 6. Social Authentication Helper
 
-**File**: `lib/tauri-social-auth.ts`
+**File**: `lib/tauri/social-auth.ts`
 
 Utility for initiating social sign-in flows:
 
 ```typescript
-import { handleSocialSignIn } from '@/lib/tauri-social-auth';
+import { handleSocialSignIn } from '@/lib/tauri/social-auth';
 
 // Example usage
 await handleSocialSignIn('google');
@@ -136,7 +136,7 @@ await handleSocialSignIn('microsoft');
 
 **Code Example:**
 ```typescript
-import { signIn } from '@/lib/auth-client';
+import { signIn } from '@/lib/auth/client';
 
 const { data, error } = await signIn.email({
   email: 'user@example.com',
@@ -174,7 +174,7 @@ if (data) {
 
 **Code Example:**
 ```typescript
-import { handleSocialSignIn } from '@/lib/tauri-social-auth';
+import { handleSocialSignIn } from '@/lib/tauri/social-auth';
 
 // In your sign-in component
 <Button onClick={() => handleSocialSignIn('google')}>
@@ -192,7 +192,7 @@ import { handleSocialSignIn } from '@/lib/tauri-social-auth';
 
 **Checking session:**
 ```typescript
-import { useSession } from '@/lib/auth-client';
+import { useSession } from '@/lib/auth/client';
 
 function MyComponent() {
   const { data: session, isPending } = useSession();

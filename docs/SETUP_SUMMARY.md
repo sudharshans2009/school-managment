@@ -211,7 +211,7 @@ Already installed and ready to use:
 
 ```typescript
 'use client';
-import { useSession } from '@/lib/auth-client';
+import { useSession } from '@/lib/auth/client';
 
 export function Dashboard() {
   const { data: session, isPending } = useSession();

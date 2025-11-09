@@ -1,8 +1,8 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { tauri } from "@daveyplate/better-auth-tauri/plugin";
-import { db } from "../database";
-import * as schema from "../database/schema";
+import { db } from "@/database";
+import * as schema from "@/database/schema";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_TOKEN);

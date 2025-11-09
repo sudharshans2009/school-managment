@@ -25,13 +25,13 @@ Successfully integrated the Better Auth Tauri plugin into the School Management 
 - Redirects user after authentication
 
 ### 4. macOS Cookie Support ✅
-- **File**: `lib/auth-client.ts`
+- **File**: `lib/auth/client.ts`
 - Added Tauri HTTP plugin fetch for macOS
 - Proper cookie handling on all platforms
 - Asynchronous auth client getter for advanced use
 
 ### 5. Social Authentication Helper ✅
-- **File**: `lib/tauri-social-auth.ts`
+- **File**: `lib/tauri/social-auth.ts`
 - `handleSocialSignIn(provider)` function
 - Supported providers: Google, GitHub, Microsoft
 - Easy integration in sign-in components
@@ -124,7 +124,7 @@ Successfully integrated the Better Auth Tauri plugin into the School Management 
 
 ### Modified Files
 1. `lib/auth.ts` - Added Tauri plugin
-2. `lib/auth-client.ts` - Added macOS cookie handling
+2. `lib/auth/client.ts` - Added macOS cookie handling
 3. `components/providers/tauri-provider.tsx` - Added Better Auth setup
 4. `src-tauri/tauri.conf.json` - Added deep-link configuration
 5. `src-tauri/src/lib.rs` - Initialized Tauri plugins
@@ -132,7 +132,7 @@ Successfully integrated the Better Auth Tauri plugin into the School Management 
 7. `docs/TAURI_SETUP.md` - Updated authentication section
 
 ### New Files
-1. `lib/tauri-social-auth.ts` - Social authentication helper
+1. `lib/tauri/social-auth.ts` - Social authentication helper
 2. `docs/BETTER_AUTH_TAURI.md` - Integration documentation
 3. `docs/AUTHENTICATION_TESTING.md` - Test checklist
 

@@ -5,7 +5,7 @@ import {
   users,
 } from "@/database/schema";
 import { eq, desc } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 
 // GET - Fetch group messages
 export async function GET(request: NextRequest) {

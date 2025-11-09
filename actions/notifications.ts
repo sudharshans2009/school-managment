@@ -3,7 +3,7 @@
 import { db } from "@/database";
 import { notifications, users, students } from "@/database/schema";
 import { eq, and, desc } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 import { headers } from "next/headers";
 
 export type NotificationType =

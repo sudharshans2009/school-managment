@@ -14,7 +14,7 @@ import {
   attendance,
 } from "@/database/schema";
 import { desc, eq } from "drizzle-orm";
-import { requireAdmin } from "@/lib/auth-middleware";
+import { requireAdmin } from "@/lib/auth/middleware";
 import { auditBackup } from "@/lib/audit";
 
 // GET - List backups

@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { dataDeletionRequests } from "@/database/schema";
 import { eq, desc } from "drizzle-orm";
-import { requireAuth, requireAdmin } from "@/lib/auth-middleware";
+import { requireAuth, requireAdmin } from "@/lib/auth/middleware";
 import { auditResourceAccess } from "@/lib/audit";
 
 // GET - List deletion requests

@@ -15,7 +15,7 @@ import {
   openExportDirectory,
   isExportAvailable,
   type ExportSettings,
-} from "@/lib/tauri-csv-export";
+} from "@/lib/tauri/csv-export";
 
 export function ExportSettingsCard() {
   const [settings, setSettings] = useState<ExportSettings>({

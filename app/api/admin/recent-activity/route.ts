@@ -8,7 +8,7 @@ import {
   students,
 } from "@/database/schema";
 import { desc, sql } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 
 export async function GET(req: NextRequest) {
   try {

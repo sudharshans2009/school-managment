@@ -5,7 +5,7 @@ import { eq, and, gte, lte, desc } from "drizzle-orm";
 import {
   createBulkNotifications,
   getAdminUserIds,
-} from "@/lib/actions/notifications";
+} from "@/actions/notifications";
 
 // GET - Fetch teacher leaves
 export async function GET(request: NextRequest) {

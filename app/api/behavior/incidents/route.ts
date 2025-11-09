@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { behaviorIncidents, users } from "@/database/schema";
 import { eq, desc, and } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 
 // GET - Fetch behavior incidents
 export async function GET(request: NextRequest) {

@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { userConsents } from "@/database/schema";
 import { eq, desc } from "drizzle-orm";
-import { requireAuth } from "@/lib/auth-middleware";
+import { requireAuth } from "@/lib/auth/middleware";
 import { auditResourceAccess } from "@/lib/audit";
 
 const CURRENT_POLICY_VERSION = "1.0.0";

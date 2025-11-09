@@ -7,7 +7,7 @@ import {
   subjects,
 } from "@/database/schema";
 import { eq, and, desc } from "drizzle-orm";
-import { createNotification } from "@/lib/actions/notifications";
+import { createNotification } from "@/actions/notifications";
 
 // GET - Fetch substitute assignments
 export async function GET(request: NextRequest) {

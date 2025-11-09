@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { events, users, calendarDays } from "@/database/schema";
 import { eq, desc, and, gte, lte } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 import {
   createBulkNotifications,
   getAdminUserIds,
   getTeacherUserIds,
-} from "@/lib/actions/notifications";
+} from "@/actions/notifications";
 
 // GET - Fetch all events with filters
 export async function GET(request: NextRequest) {

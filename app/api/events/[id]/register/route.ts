@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { events, eventRegistrations } from "@/database/schema";
 import { eq, and, sql } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 
 // POST - Register for an event
 export async function POST(

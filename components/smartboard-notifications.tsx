@@ -13,40 +13,10 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-
-interface SmartboardNotification {
-  announcements: Array<{
-    id: string;
-    type: "announcement";
-    title: string;
-    content: string;
-    priority: string;
-    createdBy: string;
-    createdAt: string;
-    scope: "class" | "school";
-    event: {
-      title: string;
-      startDate: string;
-    } | null;
-  }>;
-  homework: Array<{
-    id: string;
-    type: "homework";
-    title: string;
-    subject: string;
-    teacher: string;
-    dueDate: string;
-    createdAt: string;
-  }>;
-  messages: Array<{
-    id: string;
-    type: string;
-    content: string;
-    teacher: string;
-    createdAt: string;
-  }>;
-  lastUpdated: string;
-}
+import {
+  getSmartboardNotifications,
+  type SmartboardNotificationsData,
+} from "@/actions/smartboard";
 
 interface SmartboardNotificationsProps {
   classroomId: string;
@@ -55,12 +25,10 @@ interface SmartboardNotificationsProps {
 export function SmartboardNotifications({
   classroomId,
 }: SmartboardNotificationsProps) {
-  const { data, isLoading } = useQuery<SmartboardNotification>({
+  const { data, isLoading } = useQuery<SmartboardNotificationsData>({
     queryKey: ["smartboard-notifications", classroomId],
     queryFn: async () => {
-      const res = await fetch(`/api/smartboard/${classroomId}/notifications`);
-      if (!res.ok) throw new Error("Failed to fetch notifications");
-      return res.json();
+      return await getSmartboardNotifications(classroomId);
     },
     refetchInterval: 60000, // Refetch every minute
   });

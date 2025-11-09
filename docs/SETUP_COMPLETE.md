@@ -36,7 +36,7 @@
 ### Authentication Setup
 
 - ✅ `lib/auth.ts` - Better Auth server configuration
-- ✅ `lib/auth-client.ts` - Client-side auth hooks
+- ✅ `lib/auth/client.ts` - Client-side auth hooks
 - ✅ `app/api/auth/[...all]/route.ts` - Auth API endpoint
 
 ### React Query Setup
@@ -218,7 +218,7 @@ export function useClassrooms() {
 ```typescript
 'use client';
 
-import { useSession, signOut } from '@/lib/auth-client';
+import { useSession, signOut } from '@/lib/auth/client';
 
 export function UserMenu() {
   const { data: session } = useSession();

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { meetingSlots, users } from "@/database/schema";
 import { eq, and, gte } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 
 // GET - Fetch meeting slots with filters
 export async function GET(request: NextRequest) {

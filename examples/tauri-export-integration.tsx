@@ -14,7 +14,7 @@ import {
   arrayToCSV, 
   isExportAvailable,
   getExportDirectory,
-} from "@/lib/tauri-csv-export";
+} from "@/lib/tauri/csv-export";
 
 // Example: Update existing medical incidents export
 export async function exportMedicalIncidentsToCSV(incidents: unknown[]) {

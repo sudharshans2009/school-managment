@@ -12,7 +12,7 @@ import {
   messages,
   classroomMessages,
 } from "./schema";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 import { eq } from "drizzle-orm";
 
 async function clearData() {

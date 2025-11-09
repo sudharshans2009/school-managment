@@ -6,7 +6,7 @@ import {
   teacherAssignments,
   students,
 } from "@/database/schema";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 import { headers } from "next/headers";
 import { eq, and } from "drizzle-orm";
 import { calculateLetterGrade } from "@/lib/helpers";

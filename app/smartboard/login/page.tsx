@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Monitor, Key, Hash } from "lucide-react";
+import { verifySmartboardCredentials } from "@/actions/smartboard";
 
 export default function SmartboardLoginPage() {
   const [classroomId, setClassroomId] = useState("");
@@ -28,16 +29,14 @@ export default function SmartboardLoginPage() {
     setLoading(true);
 
     try {
-      // Verify classroom credentials
-      const response = await fetch("/api/smartboard/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ classroomId, classroomKey }),
-      });
+      // Verify classroom credentials using Server Action
+      const result = await verifySmartboardCredentials(
+        classroomId,
+        classroomKey,
+      );
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Invalid credentials");
+      if (!result.success) {
+        throw new Error(result.error || "Invalid credentials");
       }
 
       // Store credentials in sessionStorage

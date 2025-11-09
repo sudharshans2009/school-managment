@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { behaviorIncidents } from "@/database/schema";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 import { auditResourceAccess } from "@/lib/audit";
 
 export async function POST(request: NextRequest) {

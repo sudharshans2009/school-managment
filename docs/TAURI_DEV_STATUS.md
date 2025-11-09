@@ -2,7 +2,7 @@
 
 ## What Was Fixed
 
-### 1. Fixed `lib/tauri-utils.ts` ✅
+### 1. Fixed `lib/tauri/utils.ts` ✅
 - Removed deprecated Tauri 1.x API imports
 - Updated to use Tauri 2.0 APIs:
   - `@tauri-apps/api/core` for invoke
@@ -84,7 +84,7 @@ bun run tauri:dev
 
 ## Files Modified
 
-1. `lib/tauri-utils.ts` - Fixed deprecated API imports
+1. `lib/tauri/utils.ts` - Fixed deprecated API imports
 2. Terminal running `tauri:dev` in background
 
 ## Next Steps After App Opens

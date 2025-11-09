@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 import {
   getNotifications,
   getUnreadCount,
   markAsRead,
   markAllAsRead,
   deleteNotification,
-} from "@/lib/actions/notifications";
+} from "@/actions/notifications";
 
 // GET - Fetch notifications for current user
 export async function GET(request: NextRequest) {

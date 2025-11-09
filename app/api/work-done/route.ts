@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
 import { workDone, users, classrooms, subjects } from "@/database/schema";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/main";
 import { headers } from "next/headers";
 
 // GET - Fetch work done records
