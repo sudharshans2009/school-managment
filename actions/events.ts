@@ -212,7 +212,21 @@ export async function updateEvent(
       return { success: false, error: "Event ID is required" };
     }
 
-    const updateData: any = {};
+    const updateData: Partial<{
+      title: string;
+      description: string;
+      eventType: "academic" | "sports" | "cultural" | "meeting" | "holiday" | "other";
+      status: "upcoming" | "ongoing" | "completed" | "cancelled";
+      startDate: Date;
+      endDate: Date;
+      location: string | null;
+      organizer: string | null;
+      targetAudience: string | null;
+      maxParticipants: number | null;
+      registrationDeadline: Date | null;
+      allowRegistration: boolean;
+      attachments: string | null;
+    }> = {};
 
     if (eventData.title) updateData.title = eventData.title;
     if (eventData.description) updateData.description = eventData.description;
@@ -289,12 +303,13 @@ export async function getEvents(filters?: {
     }
 
     if (filters?.startDate && filters?.endDate) {
-      conditions.push(
-        and(
-          gte(events.startDate, new Date(filters.startDate)),
-          lte(events.endDate, new Date(filters.endDate))
-        ) as any
+      const dateCondition = and(
+        gte(events.startDate, new Date(filters.startDate)),
+        lte(events.endDate, new Date(filters.endDate))
       );
+      if (dateCondition) {
+        conditions.push(dateCondition);
+      }
     }
 
     const allEvents = await db

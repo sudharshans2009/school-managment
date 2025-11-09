@@ -5,9 +5,8 @@ import {
   attendance,
   students,
   users,
-  classrooms,
 } from "@/database/schema";
-import { eq, and, gte, lte, desc, sql, count } from "drizzle-orm";
+import { eq, and, gte, lte, desc } from "drizzle-orm";
 
 // ============================================
 // ATTENDANCE MANAGEMENT
@@ -61,7 +60,7 @@ export async function markAttendance(
     remarks?: string;
   }>,
   markedBy: string
-): Promise<{ success: boolean; data?: any; error?: string }> {
+): Promise<{ success: boolean; data?: { count: number }; error?: string }> {
   try {
     if (!records || records.length === 0) {
       return { success: false, error: "No attendance records provided" };
@@ -78,7 +77,6 @@ export async function markAttendance(
     const dateEnd = new Date(sampleDate);
     dateEnd.setHours(23, 59, 59, 999);
 
-    const studentIds = records.map(r => r.studentId);
     const classroomId = records[0].classroomId;
 
     // Check for existing records

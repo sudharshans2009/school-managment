@@ -8,7 +8,7 @@ import {
   users,
   classrooms,
 } from "@/database/schema";
-import { eq, and, gte, lte, desc, sql, inArray } from "drizzle-orm";
+import { eq, and, gte, lte, desc, inArray } from "drizzle-orm";
 
 // ============================================
 // FEE MANAGEMENT
@@ -123,7 +123,16 @@ export async function updateFeeStructure(
       return { success: false, error: "Fee structure ID is required" };
     }
 
-    const updateData: any = {};
+    const updateData: Partial<{
+      classroomId: string | null;
+      grade: string | null;
+      feeType: string;
+      amount: string;
+      frequency: string;
+      dueDay: number;
+      academicYear: string;
+      isActive: boolean;
+    }> = {};
     
     if (feeData.classroomId !== undefined) updateData.classroomId = feeData.classroomId;
     if (feeData.grade !== undefined) updateData.grade = feeData.grade;
@@ -297,7 +306,16 @@ export async function updatePayment(
       return { success: false, error: "Payment ID is required" };
     }
 
-    const updateData: any = {};
+    const updateData: Partial<{
+      amount: string;
+      paymentDate: Date;
+      dueDate: Date;
+      status: "pending" | "paid" | "overdue" | "partial";
+      paymentMethod: string | null;
+      transactionId: string | null;
+      receiptNumber: string | null;
+      remarks: string | null;
+    }> = {};
 
     if (paymentData.amount) updateData.amount = paymentData.amount.toString();
     if (paymentData.paymentDate) updateData.paymentDate = new Date(paymentData.paymentDate);
@@ -394,7 +412,6 @@ export async function getFeesByClassroom(
   classroomId: string,
   filters?: {
     status?: "pending" | "paid" | "overdue" | "partial";
-    academicYear?: string;
   }
 ): Promise<{ success: boolean; data?: FeePayment[]; error?: string }> {
   try {
@@ -455,11 +472,9 @@ export async function getFeesByClassroom(
 /**
  * Get student fee status with summary
  * @param studentId - Student ID
- * @param academicYear - Academic year (optional)
  */
 export async function getStudentFeeStatus(
-  studentId: string,
-  academicYear?: string
+  studentId: string
 ): Promise<{ success: boolean; data?: StudentFeeStatus; error?: string }> {
   try {
     if (!studentId) {
