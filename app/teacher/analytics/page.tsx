@@ -12,7 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -22,47 +21,32 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
   Loader2,
-  TrendingUp,
   Users,
   BookOpen,
-  ClipboardCheck,
   Award,
   UserCheck,
   BarChart,
+  Calendar,
+  Clock,
 } from "lucide-react";
 import { useState } from "react";
 import { TeacherHeader } from "@/components/teacher/teacher-header";
-
-interface TeacherAnalytics {
-  classes: {
-    total: number;
-    students: number;
-    subjects: number;
-    isPrimary: boolean;
-  };
-  attendance: {
-    totalMarked: number;
-    averageRate: number;
-    byClass: { className: string; rate: number }[];
-  };
-  homework: {
-    totalAssigned: number;
-    totalSubmissions: number;
-    graded: number;
-    pending: number;
-    completionRate: number;
-  };
-  exams: {
-    canUpload: number;
-    gradesUploaded: number;
-    studentsGraded: number;
-  };
-  workDone: {
-    totalRecords: number;
-    bySubject: { subject: string; count: number }[];
-  };
-}
+import {
+  getTeacherAnalytics,
+  type TeacherAnalytics,
+  getTeacherTimetable,
+  type TeacherTimetableEntry,
+} from "@/actions/teacher";
 
 export default function TeacherAnalyticsPage() {
   const { data: session, isPending: sessionPending } = useSession();
@@ -72,14 +56,46 @@ export default function TeacherAnalyticsPage() {
   const { data: analytics, isLoading } = useQuery<TeacherAnalytics>({
     queryKey: ["teacher-analytics", session?.user?.id, timeRange],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/teachers/${session?.user?.id}/analytics?days=${timeRange}`,
-      );
-      if (!response.ok) throw new Error("Failed to fetch analytics");
-      return response.json();
+      if (!session?.user?.id) {
+        return {
+          totalClasses: 0,
+          totalStudents: 0,
+          homeworkAssigned: 0,
+          examsScheduled: 0,
+          leavesTaken: 0,
+          substituteDuties: 0,
+          attendanceRate: 0,
+          recentActivity: [],
+        };
+      }
+      return await getTeacherAnalytics(session.user.id);
     },
     enabled: !!session?.user?.id,
   });
+
+  const { data: timetable, isLoading: timetableLoading } = useQuery<
+    TeacherTimetableEntry[]
+  >({
+    queryKey: ["teacher-timetable", session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return [];
+      return await getTeacherTimetable(session.user.id);
+    },
+    enabled: !!session?.user?.id,
+  });
+
+  const getDayName = (day: number) => {
+    const days = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    return days[day];
+  };
 
   if (sessionPending) {
     return (
@@ -119,7 +135,7 @@ export default function TeacherAnalyticsPage() {
         <TeacherQuickActions
           currentPage="analytics"
           unreadMessages={0}
-          isPrimaryTeacher={analytics?.classes.isPrimary || false}
+          isPrimaryTeacher={false}
         />
 
         {isLoading ? (
@@ -127,9 +143,15 @@ export default function TeacherAnalyticsPage() {
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : (
-          <>
-            {/* Overview Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Tabs defaultValue="analytics" className="space-y-6">
+            <TabsList className="grid w-full max-w-md grid-cols-2">
+              <TabsTrigger value="analytics">Analytics</TabsTrigger>
+              <TabsTrigger value="timetable">Timetable</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="analytics" className="space-y-6">
+              {/* Overview Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
@@ -141,10 +163,10 @@ export default function TeacherAnalyticsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {analytics?.classes.total}
+                    {analytics?.totalClasses || 0}
                   </div>
                   <div className="flex items-center text-xs text-muted-foreground mt-1">
-                    <span>{analytics?.classes.students} students</span>
+                    <span>{analytics?.totalStudents || 0} students</span>
                   </div>
                 </CardContent>
               </Card>
@@ -160,12 +182,10 @@ export default function TeacherAnalyticsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {analytics?.attendance.totalMarked}
+                    {analytics?.attendanceRate.toFixed(1) || 0}%
                   </div>
                   <div className="flex items-center text-xs text-muted-foreground mt-1">
-                    <span>
-                      {analytics?.attendance.averageRate.toFixed(1)}% avg rate
-                    </span>
+                    <span>Average rate</span>
                   </div>
                 </CardContent>
               </Card>
@@ -181,10 +201,10 @@ export default function TeacherAnalyticsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {analytics?.homework.totalAssigned}
+                    {analytics?.homeworkAssigned || 0}
                   </div>
                   <div className="flex items-center text-xs text-muted-foreground mt-1">
-                    <span>{analytics?.homework.pending} pending grading</span>
+                    <span>Total assigned</span>
                   </div>
                 </CardContent>
               </Card>
@@ -198,257 +218,183 @@ export default function TeacherAnalyticsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {analytics?.exams.studentsGraded}
+                    {analytics?.examsScheduled || 0}
                   </div>
                   <div className="flex items-center text-xs text-muted-foreground mt-1">
-                    <span>students graded</span>
+                    <span>Scheduled</span>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Detailed Analytics */}
-            <Tabs defaultValue="attendance" className="space-y-4">
-              <TabsList>
-                <TabsTrigger value="attendance">Attendance</TabsTrigger>
-                <TabsTrigger value="homework">Homework</TabsTrigger>
-                <TabsTrigger value="exams">Exams</TabsTrigger>
-                <TabsTrigger value="workdone">Work Done</TabsTrigger>
-              </TabsList>
-
-              {/* Attendance Tab */}
-              <TabsContent value="attendance" className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Attendance Overview</CardTitle>
-                      <CardDescription>
-                        Your attendance marking statistics
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center justify-between p-4 rounded-lg bg-secondary">
-                        <div>
-                          <p className="text-sm text-muted-foreground">
-                            Total Marked
+            {/* Recent Activity */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Activity</CardTitle>
+                <CardDescription>
+                  Your latest teaching activities
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {analytics?.recentActivity && analytics.recentActivity.length > 0 ? (
+                    analytics.recentActivity.map((activity, index) => (
+                      <div
+                        key={index}
+                        className="flex items-start gap-4 p-3 rounded-lg bg-secondary/50"
+                      >
+                        <div className="shrink-0">
+                          {activity.type === "homework" ? (
+                            <BookOpen className="h-5 w-5 text-blue-500" />
+                          ) : (
+                            <Award className="h-5 w-5 text-purple-500" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium">
+                            {activity.description}
                           </p>
-                          <p className="text-2xl font-bold">
-                            {analytics?.attendance.totalMarked}
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {new Date(activity.date).toLocaleDateString()}
                           </p>
                         </div>
-                        <UserCheck className="h-8 w-8 text-primary" />
-                      </div>
-                      <div className="flex items-center justify-between p-4 rounded-lg bg-secondary">
-                        <div>
-                          <p className="text-sm text-muted-foreground">
-                            Average Rate
-                          </p>
-                          <p className="text-2xl font-bold">
-                            {analytics?.attendance.averageRate.toFixed(1)}%
-                          </p>
-                        </div>
-                        <TrendingUp className="h-8 w-8 text-green-600" />
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Attendance by Class</CardTitle>
-                      <CardDescription>
-                        Rates for each of your classes
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {analytics?.attendance.byClass.map((item) => (
-                        <div key={item.className} className="space-y-2">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="font-medium">
-                              {item.className}
-                            </span>
-                            <span className="text-muted-foreground">
-                              {item.rate.toFixed(1)}%
-                            </span>
-                          </div>
-                          <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-primary transition-all"
-                              style={{ width: `${item.rate}%` }}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-
-              {/* Homework Tab */}
-              <TabsContent value="homework" className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Assigned</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-4xl font-bold">
-                        {analytics?.homework.totalAssigned}
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Total homework assigned
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Submissions</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-4xl font-bold">
-                        {analytics?.homework.totalSubmissions}
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        {analytics?.homework.completionRate.toFixed(1)}%
-                        completion
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Grading Status</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">
-                          Graded
-                        </span>
-                        <Badge variant="default">
-                          {analytics?.homework.graded}
+                        <Badge variant="outline" className="shrink-0">
+                          {activity.type}
                         </Badge>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">
-                          Pending
-                        </span>
-                        <Badge variant="secondary">
-                          {analytics?.homework.pending}
-                        </Badge>
-                      </div>
-                    </CardContent>
-                  </Card>
+                    ))
+                  ) : (
+                    <p className="text-center py-8 text-muted-foreground">
+                      No recent activity
+                    </p>
+                  )}
                 </div>
-              </TabsContent>
+              </CardContent>
+            </Card>
 
-              {/* Exams Tab */}
-              <TabsContent value="exams" className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Available for Grading</CardTitle>
-                      <CardDescription>
-                        Exams you can upload grades for
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-4xl font-bold">
-                        {analytics?.exams.canUpload}
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Non-finalized exams in your classes
-                      </p>
-                    </CardContent>
-                  </Card>
+            {/* Additional Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Leaves</CardTitle>
+                  <CardDescription>Approved leave requests</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">
+                    {analytics?.leavesTaken || 0}
+                  </div>
+                </CardContent>
+              </Card>
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Grades Uploaded</CardTitle>
-                      <CardDescription>
-                        Total exam entries uploaded
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-4xl font-bold">
-                        {analytics?.exams.gradesUploaded}
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Individual student grades
-                      </p>
-                    </CardContent>
-                  </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Substitute Duties</CardTitle>
+                  <CardDescription>Classes covered for others</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">
+                    {analytics?.substituteDuties || 0}
+                  </div>
+                </CardContent>
+              </Card>
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Students Graded</CardTitle>
-                      <CardDescription>
-                        Unique students with grades
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-4xl font-bold">
-                        {analytics?.exams.studentsGraded}
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Across all your exams
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Attendance Rate</CardTitle>
+                  <CardDescription>Overall performance</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold">
+                    {analytics?.attendanceRate.toFixed(1) || 0}%
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
-              {/* Work Done Tab */}
-              <TabsContent value="workdone" className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Work Done Records</CardTitle>
-                      <CardDescription>
-                        Your teaching activity log
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center justify-between p-4 rounded-lg bg-secondary">
-                        <div>
-                          <p className="text-sm text-muted-foreground">
-                            Total Records
-                          </p>
-                          <p className="text-3xl font-bold">
-                            {analytics?.workDone.totalRecords}
-                          </p>
+          {/* Timetable Tab */}
+          <TabsContent value="timetable">
+            <Card className="rounded-2xl shadow-sm">
+              <CardHeader>
+                <CardTitle>Weekly Timetable</CardTitle>
+                <CardDescription>
+                  Your teaching schedule across all classes
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {timetableLoading ? (
+                  <div className="flex items-center justify-center h-64">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {[1, 2, 3, 4, 5].map((day) => {
+                      const dayEntries =
+                        timetable?.filter((entry) => entry.dayOfWeek === day) ||
+                        [];
+                      if (dayEntries.length === 0) return null;
+
+                      return (
+                        <div key={day} className="space-y-2">
+                          <h3 className="font-semibold text-base sm:text-lg flex items-center gap-2">
+                            <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
+                            {getDayName(day)}
+                          </h3>
+                          <div className="overflow-x-auto rounded-lg border">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead className="text-xs sm:text-sm">
+                                    Time
+                                  </TableHead>
+                                  <TableHead className="text-xs sm:text-sm">
+                                    Subject
+                                  </TableHead>
+                                  <TableHead className="text-xs sm:text-sm">
+                                    Class
+                                  </TableHead>
+                                  <TableHead className="text-xs sm:text-sm">
+                                    Room
+                                  </TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {dayEntries.map((entry) => (
+                                  <TableRow key={entry.id}>
+                                    <TableCell className="font-medium text-xs sm:text-sm whitespace-nowrap">
+                                      {entry.startTime} - {entry.endTime}
+                                    </TableCell>
+                                    <TableCell className="text-xs sm:text-sm">
+                                      {entry.subjectName}
+                                    </TableCell>
+                                    <TableCell className="text-xs sm:text-sm">
+                                      {entry.classroomName}
+                                    </TableCell>
+                                    <TableCell className="text-xs sm:text-sm">
+                                      {entry.room || "TBA"}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
                         </div>
-                        <ClipboardCheck className="h-10 w-10 text-primary" />
+                      );
+                    })}
+                    {(!timetable || timetable.length === 0) && (
+                      <div className="text-center py-12">
+                        <Clock className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                        <p className="text-muted-foreground">
+                          Timetable not available yet
+                        </p>
                       </div>
-                      <p className="text-sm text-muted-foreground mt-4">
-                        This includes topics covered, homework assigned, and
-                        class notes
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Records by Subject</CardTitle>
-                      <CardDescription>
-                        Distribution across your subjects
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {analytics?.workDone.bySubject.map((item) => (
-                        <div
-                          key={item.subject}
-                          className="flex items-center justify-between p-3 rounded-lg bg-secondary"
-                        >
-                          <span className="font-medium">{item.subject}</span>
-                          <Badge variant="default">{item.count} records</Badge>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
         )}
       </div>
     </DashboardLayout>

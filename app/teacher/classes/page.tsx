@@ -36,32 +36,16 @@ import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { TeacherQuickActions } from "@/components/teacher-quick-actions";
 import { TeacherHeader } from "@/components/teacher/teacher-header";
-
-interface TeacherAssignment {
-  id: string;
-  classroomId: string;
-  isPrimary: boolean;
-  classroom: {
-    id: string;
-    name: string;
-    grade: string;
-    section: string;
-    currentStrength: number;
-  };
-  subject: {
-    id: string;
-    name: string;
-    code: string;
-  };
-}
+import {
+  getTeacherAssignments,
+  getClassroomStudents,
+  type TeacherAssignment,
+} from "@/actions/teacher";
 
 interface Student {
   id: string;
-  userId: string;
   rollNumber: string;
-  admissionNumber: string;
   user: {
-    id: string;
     name: string;
     email: string;
   };
@@ -90,9 +74,8 @@ export default function TeacherClassesPage() {
   const { data: assignments } = useQuery<TeacherAssignment[]>({
     queryKey: ["teacher-assignments", session?.user?.id],
     queryFn: async () => {
-      const res = await fetch(`/api/teachers/${session?.user?.id}/assignments`);
-      if (!res.ok) throw new Error("Failed to fetch assignments");
-      return res.json();
+      if (!session?.user?.id) return [];
+      return await getTeacherAssignments(session.user.id);
     },
     enabled: !!session?.user?.id,
   });
@@ -101,9 +84,8 @@ export default function TeacherClassesPage() {
   const { data: students } = useQuery<Student[]>({
     queryKey: ["students", selectedClass],
     queryFn: async () => {
-      const res = await fetch(`/api/students?classroomId=${selectedClass}`);
-      if (!res.ok) throw new Error("Failed to fetch students");
-      return res.json();
+      if (!selectedClass) return [];
+      return await getClassroomStudents(selectedClass);
     },
     enabled: !!selectedClass,
   });

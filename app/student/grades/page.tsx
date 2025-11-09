@@ -39,37 +39,10 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { StudentHeader } from "@/components/student/student-header";
-
-interface Grade {
-  id: string;
-  marksObtained: string;
-  grade: string;
-  percentage: string;
-  remarks?: string;
-  isAbsent: boolean;
-  uploadedAt: string;
-  exam: {
-    id: string;
-    name: string;
-    examType: string;
-    examDate: string;
-    totalMarks: number;
-    passingMarks?: number;
-    academicYear: string;
-    term?: string;
-  };
-  subject: {
-    id: string;
-    name: string;
-    code: string;
-  };
-}
-
-interface Subject {
-  id: string;
-  name: string;
-  code: string;
-}
+import {
+  getStudentGrades,
+  type StudentGrade,
+} from "@/actions/student";
 
 export default function StudentGradesPage() {
   const { data: session, isPending: sessionPending } = useSession();
@@ -79,18 +52,14 @@ export default function StudentGradesPage() {
   const [filterExamType, setFilterExamType] = useState<string>("all");
 
   // Fetch student grades (finalized only)
-  const { data: grades, isLoading: gradesLoading } = useQuery<Grade[]>({
-    queryKey: ["student-grades", filterSubject, filterExamType],
+  const { data: grades, isLoading: gradesLoading } = useQuery<StudentGrade[]>({
+    queryKey: ["student-grades", session?.user?.id, filterSubject, filterExamType],
     queryFn: async () => {
-      const params = new URLSearchParams();
-      if (filterSubject && filterSubject !== "all")
-        params.append("subjectId", filterSubject);
-      if (filterExamType && filterExamType !== "all")
-        params.append("examType", filterExamType);
-
-      const response = await fetch(`/api/students/grades?${params.toString()}`);
-      if (!response.ok) throw new Error("Failed to fetch grades");
-      return response.json();
+      if (!session?.user?.id) return [];
+      return await getStudentGrades(session.user.id, {
+        subjectId: filterSubject !== "all" ? filterSubject : undefined,
+        examType: filterExamType !== "all" ? filterExamType : undefined,
+      });
     },
     enabled: !!session?.user,
   });
@@ -102,7 +71,7 @@ export default function StudentGradesPage() {
         acc.push(grade.subject);
       }
       return acc;
-    }, [] as Subject[]) || [];
+    }, [] as Array<{ id: string; name: string; code: string }>) || [];
 
   // Calculate statistics
   const stats = {

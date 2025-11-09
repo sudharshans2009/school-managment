@@ -26,6 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   UserPlus,
@@ -40,41 +41,16 @@ import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { UserCheck } from "lucide-react";
-
-interface UnassignedPeriod {
-  id: string;
-  classroomId: string;
-  classroomName: string;
-  classroomGrade: string;
-  classroomSection: string;
-  subjectId: string;
-  subjectName: string;
-  teacherId: string;
-  teacherName: string;
-  dayOfWeek: number;
-  periodNumber: number;
-  startTime: string;
-  endTime: string;
-  date: string;
-}
-
-interface SubstituteAssignment {
-  id: string;
-  originalTeacherId: string;
-  originalTeacherName: string;
-  substituteTeacherId: string;
-  classroomId: string;
-  classroomName: string;
-  classroomGrade: string;
-  classroomSection: string;
-  subjectId: string;
-  subjectName: string;
-  date: string;
-  periodNumber: number;
-  startTime: string;
-  endTime: string;
-  reason?: string;
-}
+import {
+  getAllTeachers,
+  getUnassignedPeriods,
+  getSubstituteAssignmentsByDate,
+  createSubstituteAssignment,
+  deleteSubstituteAssignment,
+  checkTeacherConflict,
+  type UnassignedPeriod,
+  type AdminSubstituteAssignment,
+} from "@/actions/admin";
 
 interface Teacher {
   id: string;
@@ -105,32 +81,43 @@ export default function SubstitutesManagementPage() {
     }
   }, [session, isPending, router]);
 
+  // Check for teacher conflicts when a teacher is selected
+  const { data: teacherConflict } = useQuery({
+    queryKey: [
+      "teacher-conflict",
+      selectedTeacher,
+      selectedDate,
+      assignDialog.period?.periodNumber,
+    ],
+    queryFn: async () => {
+      if (!selectedTeacher || !assignDialog.period) return null;
+      return await checkTeacherConflict(
+        selectedTeacher,
+        selectedDate,
+        assignDialog.period.periodNumber,
+      );
+    },
+    enabled: !!selectedTeacher && !!assignDialog.period,
+  });
+
   // Fetch unassigned periods
   const { data: unassignedPeriods, isLoading: loadingUnassigned } = useQuery<
     UnassignedPeriod[]
   >({
     queryKey: ["unassigned-periods", selectedDate],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/substitute-assignments/unassigned?date=${selectedDate}`,
-      );
-      if (!res.ok) throw new Error("Failed to fetch unassigned periods");
-      return res.json();
+      return await getUnassignedPeriods(selectedDate);
     },
     enabled: !!session?.user?.id,
   });
 
   // Fetch all substitute assignments
   const { data: assignments, isLoading: loadingAssignments } = useQuery<
-    SubstituteAssignment[]
+    AdminSubstituteAssignment[]
   >({
     queryKey: ["substitute-assignments", selectedDate],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/substitute-assignments?date=${selectedDate}`,
-      );
-      if (!res.ok) throw new Error("Failed to fetch assignments");
-      return res.json();
+      return await getSubstituteAssignmentsByDate(selectedDate);
     },
     enabled: !!session?.user?.id,
   });
@@ -139,9 +126,8 @@ export default function SubstitutesManagementPage() {
   const { data: teachers } = useQuery<Teacher[]>({
     queryKey: ["teachers"],
     queryFn: async () => {
-      const res = await fetch("/api/teachers");
-      if (!res.ok) throw new Error("Failed to fetch teachers");
-      return res.json();
+      const data = await getAllTeachers();
+      return data.map((t) => ({ id: t.id, name: t.name, email: t.email }));
     },
     enabled: !!session?.user?.id,
   });
@@ -159,42 +145,44 @@ export default function SubstitutesManagementPage() {
       endTime: string;
       assignedBy: string;
     }) => {
-      const res = await fetch("/api/substitute-assignments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to assign substitute");
-      return res.json();
+      const result = await createSubstituteAssignment(data);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to assign substitute");
+      }
+      return result;
     },
-    onSuccess: () => {
-      toast.success("Substitute assigned successfully");
+    onSuccess: (result) => {
+      if (result.warning) {
+        toast.warning(result.warning);
+      } else {
+        toast.success("Substitute assigned successfully");
+      }
       setAssignDialog({ open: false, period: null });
       setSelectedTeacher("");
       queryClient.invalidateQueries({ queryKey: ["unassigned-periods"] });
       queryClient.invalidateQueries({ queryKey: ["substitute-assignments"] });
     },
-    onError: () => {
-      toast.error("Failed to assign substitute");
+    onError: (error: Error) => {
+      toast.error(error.message);
     },
   });
 
   // Delete assignment mutation
   const deleteMutation = useMutation({
     mutationFn: async (assignmentId: string) => {
-      const res = await fetch(`/api/substitute-assignments/${assignmentId}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Failed to delete assignment");
-      return res.json();
+      const result = await deleteSubstituteAssignment(assignmentId);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to delete assignment");
+      }
+      return result;
     },
     onSuccess: () => {
       toast.success("Assignment deleted successfully");
       queryClient.invalidateQueries({ queryKey: ["unassigned-periods"] });
       queryClient.invalidateQueries({ queryKey: ["substitute-assignments"] });
     },
-    onError: () => {
-      toast.error("Failed to delete assignment");
+    onError: (error: Error) => {
+      toast.error(error.message);
     },
   });
 
@@ -446,6 +434,26 @@ export default function SubstitutesManagementPage() {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Conflict Warning */}
+              {teacherConflict?.hasConflict && (
+                <Alert className="border-yellow-500 bg-yellow-50 dark:bg-yellow-950">
+                  <AlertCircle className="h-4 w-4 text-yellow-600" />
+                  <AlertDescription className="text-yellow-800 dark:text-yellow-200">
+                    <strong>Warning:</strong> This teacher already has a{" "}
+                    {teacherConflict.conflictType === "regular"
+                      ? "regular"
+                      : "substitute"}{" "}
+                    class at this time:{" "}
+                    <span className="font-semibold">
+                      {teacherConflict.conflictDetails?.subjectName} in{" "}
+                      {teacherConflict.conflictDetails?.classroomName}
+                    </span>
+                    . Assigning them here will create a scheduling conflict.
+                  </AlertDescription>
+                </Alert>
+              )}
+
               <div className="flex gap-2">
                 <Button
                   className="flex-1 rounded-xl"

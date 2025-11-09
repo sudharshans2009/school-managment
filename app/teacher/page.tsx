@@ -48,97 +48,26 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { TeacherQuickActions } from "@/components/teacher-quick-actions";
-
-interface TeacherAssignment {
-  id: string;
-  classroomId: string;
-  isPrimary: boolean;
-  classroom: {
-    id: string;
-    name: string;
-    grade: string;
-    section: string;
-    currentStrength: number;
-  };
-  subject: {
-    id: string;
-    name: string;
-    code: string;
-  };
-}
-
-interface Message {
-  id: string;
-  subject: string;
-  message: string;
-  messageType: string;
-  status: string;
-  createdAt: string;
-  senderName: string;
-  senderEmail: string;
-}
-
-interface TeacherLeave {
-  id: string;
-  teacherId: string;
-  leaveType: string;
-  startDate: string;
-  endDate: string;
-  reason: string;
-  status: string;
-  approvedBy?: string;
-  approvalNotes?: string;
-  approvedAt?: string;
-  createdAt: string;
-}
-
-interface SubstituteAssignment {
-  id: string;
-  originalTeacherId: string;
-  originalTeacherName: string;
-  classroomId: string;
-  classroomName: string;
-  classroomGrade: string;
-  classroomSection: string;
-  subjectId: string;
-  subjectName: string;
-  date: string;
-  periodNumber: number;
-  startTime: string;
-  endTime: string;
-  reason?: string;
-}
-
-interface WorkDone {
-  id: string;
-  classroomId: string;
-  classroomName: string;
-  subjectId: string;
-  subjectName: string;
-  teacherId: string;
-  teacherName?: string;
-  date: string;
-  periodNumber: number;
-  topicsCovered: string;
-  homeworkAssigned?: string;
-  remarks?: string;
-  isSubstitute: boolean;
-  createdAt: string;
-}
-
-interface ClassroomMessage {
-  id: string;
-  classroomId: string;
-  teacherId: string;
-  content: string;
-  messageType: string;
-  date: string;
-  createdAt: string;
-  classroom?: {
-    id: string;
-    name: string;
-  };
-}
+import {
+  getTeacherAssignments,
+  getTeacherMessages,
+  getTeacherLeaves,
+  getSubstituteAssignments,
+  getWorkDoneByTeacher,
+  getWorkDoneByClassroom,
+  getClassroomMessages,
+  createHomework,
+  createClassroomMessage,
+  createTeacherLeave,
+  cancelTeacherLeave,
+  createWorkDone,
+  type TeacherAssignment,
+  type Message,
+  type TeacherLeave,
+  type SubstituteAssignment,
+  type WorkDone,
+  type ClassroomMessage,
+} from "@/actions/teacher";
 
 export default function TeacherPage() {
   const { session, isPending } = useRoleRedirect(["teacher"]);
@@ -159,7 +88,12 @@ export default function TeacherPage() {
     messageType: "quote",
   });
 
-  const [leaveForm, setLeaveForm] = useState({
+  const [leaveForm, setLeaveForm] = useState<{
+    leaveType: "casual" | "sick" | "earned" | "duty" | "emergency";
+    startDate: string;
+    endDate: string;
+    reason: string;
+  }>({
     leaveType: "casual",
     startDate: "",
     endDate: "",
@@ -189,9 +123,8 @@ export default function TeacherPage() {
   const { data: assignments } = useQuery<TeacherAssignment[]>({
     queryKey: ["teacher-assignments", session?.user?.id],
     queryFn: async () => {
-      const res = await fetch(`/api/teachers/${session?.user?.id}/assignments`);
-      if (!res.ok) throw new Error("Failed to fetch assignments");
-      return res.json();
+      if (!session?.user?.id) return [];
+      return await getTeacherAssignments(session.user.id);
     },
     enabled: !!session?.user?.id,
   });
@@ -203,11 +136,8 @@ export default function TeacherPage() {
   const { data: messages } = useQuery<Message[]>({
     queryKey: ["messages", session?.user?.id],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/messages?userId=${session?.user?.id}&type=received`,
-      );
-      if (!res.ok) throw new Error("Failed to fetch messages");
-      return res.json();
+      if (!session?.user?.id) return [];
+      return await getTeacherMessages(session.user.id);
     },
     enabled: !!session?.user?.id,
   });
@@ -216,11 +146,8 @@ export default function TeacherPage() {
   const { data: leaves } = useQuery<TeacherLeave[]>({
     queryKey: ["teacher-leaves", session?.user?.id],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/teacher-leaves?teacherId=${session?.user?.id}`,
-      );
-      if (!res.ok) throw new Error("Failed to fetch leaves");
-      return res.json();
+      if (!session?.user?.id) return [];
+      return await getTeacherLeaves(session.user.id);
     },
     enabled: !!session?.user?.id,
   });
@@ -229,11 +156,8 @@ export default function TeacherPage() {
   const { data: substituteAssignments } = useQuery<SubstituteAssignment[]>({
     queryKey: ["substitute-assignments", session?.user?.id],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/substitute-assignments?substituteTeacherId=${session?.user?.id}`,
-      );
-      if (!res.ok) throw new Error("Failed to fetch substitute assignments");
-      return res.json();
+      if (!session?.user?.id) return [];
+      return await getSubstituteAssignments(session.user.id);
     },
     enabled: !!session?.user?.id,
   });
@@ -242,9 +166,8 @@ export default function TeacherPage() {
   const { data: workDoneRecords } = useQuery<WorkDone[]>({
     queryKey: ["work-done", session?.user?.id],
     queryFn: async () => {
-      const res = await fetch(`/api/work-done?teacherId=${session?.user?.id}`);
-      if (!res.ok) throw new Error("Failed to fetch work done records");
-      return res.json();
+      if (!session?.user?.id) return [];
+      return await getWorkDoneByTeacher(session.user.id);
     },
     enabled: !!session?.user?.id,
   });
@@ -255,11 +178,7 @@ export default function TeacherPage() {
     queryFn: async () => {
       // Fetch work done for all primary classes
       const promises = primaryClasses.map(async (assignment) => {
-        const res = await fetch(
-          `/api/work-done?classroomId=${assignment.classroomId}`,
-        );
-        if (!res.ok) return [];
-        return res.json();
+        return await getWorkDoneByClassroom(assignment.classroomId);
       });
       const results = await Promise.all(promises);
       return results.flat();
@@ -274,11 +193,7 @@ export default function TeacherPage() {
       if (primaryClasses.length === 0) return [];
       // Fetch messages for all primary classes
       const promises = primaryClasses.map(async (assignment) => {
-        const res = await fetch(
-          `/api/classroom-messages?classroomId=${assignment.classroomId}`,
-        );
-        if (!res.ok) return [];
-        return res.json();
+        return await getClassroomMessages(assignment.classroomId);
       });
       const results = await Promise.all(promises);
       return results.flat();
@@ -289,13 +204,9 @@ export default function TeacherPage() {
   // Create homework mutation
   const homeworkMutation = useMutation({
     mutationFn: async (data: typeof homeworkForm & { teacherId: string }) => {
-      const res = await fetch("/api/homework", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to create homework");
-      return res.json();
+      const result = await createHomework(data);
+      if (!result.success) throw new Error(result.error);
+      return result;
     },
     onSuccess: () => {
       toast.success("Homework assigned successfully");
@@ -316,13 +227,9 @@ export default function TeacherPage() {
   // Create classroom message mutation
   const quoteMutation = useMutation({
     mutationFn: async (data: typeof quoteForm & { teacherId: string }) => {
-      const res = await fetch("/api/classroom-messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to create message");
-      return res.json();
+      const result = await createClassroomMessage(data);
+      if (!result.success) throw new Error(result.error);
+      return result;
     },
     onSuccess: () => {
       toast.success("Message posted successfully");
@@ -341,13 +248,9 @@ export default function TeacherPage() {
   // Create leave request mutation
   const leaveMutation = useMutation({
     mutationFn: async (data: typeof leaveForm & { teacherId: string }) => {
-      const res = await fetch("/api/teacher-leaves", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to create leave request");
-      return res.json();
+      const result = await createTeacherLeave(data);
+      if (!result.success) throw new Error(result.error);
+      return result;
     },
     onSuccess: () => {
       toast.success("Leave request submitted successfully");
@@ -368,13 +271,9 @@ export default function TeacherPage() {
   // Create work done record mutation
   const workDoneMutation = useMutation({
     mutationFn: async (data: typeof workDoneForm & { teacherId: string }) => {
-      const res = await fetch("/api/work-done", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to create work done record");
-      return res.json();
+      const result = await createWorkDone(data);
+      if (!result.success) throw new Error(result.error);
+      return result;
     },
     onSuccess: () => {
       toast.success("Work done recorded successfully");
@@ -398,13 +297,9 @@ export default function TeacherPage() {
   // Cancel leave request mutation
   const cancelLeaveMutation = useMutation({
     mutationFn: async (leaveId: string) => {
-      const res = await fetch(`/api/teacher-leaves/${leaveId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "cancelled" }),
-      });
-      if (!res.ok) throw new Error("Failed to cancel leave");
-      return res.json();
+      const result = await cancelTeacherLeave(leaveId);
+      if (!result.success) throw new Error(result.error);
+      return result;
     },
     onSuccess: () => {
       toast.success("Leave request cancelled");
@@ -929,7 +824,12 @@ export default function TeacherPage() {
                           onValueChange={(value) =>
                             setLeaveForm((prev) => ({
                               ...prev,
-                              leaveType: value,
+                              leaveType: value as
+                                | "casual"
+                                | "sick"
+                                | "earned"
+                                | "duty"
+                                | "emergency",
                             }))
                           }
                         >

@@ -43,6 +43,14 @@ import { createTeacherColumns, Teacher } from "./components/columns";
 import Link from "next/link";
 import { AdminHeader } from "@/components/admin/admin-header";
 import { Users } from "lucide-react";
+import { toast } from "sonner";
+import {
+  getAllTeachers,
+  createTeacher,
+  updateTeacher,
+  deleteTeacher,
+  bulkUploadTeachers,
+} from "@/actions/admin";
 
 export default function TeachersPage() {
   const [open, setOpen] = useState(false);
@@ -62,9 +70,26 @@ export default function TeachersPage() {
   const { data: teachers, isLoading } = useQuery<Teacher[]>({
     queryKey: ["teachers"],
     queryFn: async () => {
-      const response = await fetch("/api/teachers");
-      if (!response.ok) throw new Error("Failed to fetch teachers");
-      return response.json();
+      const data = await getAllTeachers();
+      // Transform to match local Teacher interface
+      return data.map((t) => ({
+        id: t.id,
+        name: t.name,
+        email: t.email,
+        phone: t.phone,
+        address: t.address,
+        isActive: t.isActive ?? true,
+        teacherAssignments: t.teacherAssignments?.map((a) => ({
+          classroom: {
+            name: a.classroom.name,
+            grade: a.classroom.grade,
+            section: a.classroom.section,
+          },
+          subject: {
+            name: a.subject.name,
+          },
+        })) || [],
+      }));
     },
   });
 
@@ -76,20 +101,19 @@ export default function TeachersPage() {
       address: string;
       password: string;
     }) => {
-      const response = await fetch("/api/teachers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to create teacher");
+      const result = await createTeacher(data);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to create teacher");
       }
-      return response.json();
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["teachers"] });
+      toast.success("Teacher created successfully");
       setOpen(false);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
     },
   });
 
@@ -102,52 +126,53 @@ export default function TeachersPage() {
       address?: string;
       password?: string;
     }) => {
-      const { id, ...body } = data;
-      const response = await fetch(`/api/teachers/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to update teacher");
+      const { id, ...updateData } = data;
+      const result = await updateTeacher(id, updateData);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to update teacher");
       }
-      return response.json();
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["teachers"] });
       queryClient.invalidateQueries({ queryKey: ["classrooms"] });
+      toast.success("Teacher updated successfully");
       setEditingTeacher(null);
       setOpen(false);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/teachers/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to delete teacher");
-      return response.json();
+      const result = await deleteTeacher(id);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to delete teacher");
+      }
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["teachers"] });
       queryClient.invalidateQueries({ queryKey: ["classrooms"] });
+      toast.success("Teacher deleted successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
     },
   });
 
   const bulkUploadMutation = useMutation({
-    mutationFn: async (teachers: Array<Record<string, string>>) => {
-      const response = await fetch("/api/teachers/bulk-upload", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ teachers }),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to upload teachers");
-      }
-      return response.json();
+    mutationFn: async (teachers: Array<{
+      name: string;
+      email: string;
+      password: string;
+      phone?: string;
+      address?: string;
+    }>) => {
+      const result = await bulkUploadTeachers(teachers);
+      return result;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["teachers"] });
@@ -158,9 +183,16 @@ export default function TeachersPage() {
         failed: data.failed,
         errors: data.errors || [],
       });
+      if (data.success > 0) {
+        toast.success(`${data.success} teachers uploaded successfully`);
+      }
+      if (data.failed > 0) {
+        toast.error(`${data.failed} teachers failed to upload`);
+      }
     },
     onError: (error: Error) => {
       setUploadResult({ success: 0, failed: 0, errors: [error.message] });
+      toast.error(error.message);
     },
   });
 
@@ -177,7 +209,13 @@ export default function TeachersPage() {
       headers.forEach((header, index) => {
         teacher[header] = values[index];
       });
-      return teacher;
+      return {
+        name: teacher.name,
+        email: teacher.email,
+        password: teacher.password,
+        phone: teacher.phone,
+        address: teacher.address,
+      };
     });
 
     bulkUploadMutation.mutate(teachers);

@@ -173,7 +173,7 @@ export function AppDownloadBanner() {
   }
 
   return (
-    <div className="sticky top-0 z-50 w-full border-b bg-linear-to-r from-primary/5 via-background to-primary/5 backdrop-blur-md supports-backdrop-filter:bg-background/80">
+    <div className="sticky top-0 z-30 w-full border-b bg-linear-to-r from-primary/5 via-background to-primary/5 backdrop-blur-md supports-backdrop-filter:bg-background/80">
       <div className="container mx-auto px-4">
         <div className="flex min-h-16 items-center justify-between gap-4 py-2">
           {/* Left side - Icon and Message */}

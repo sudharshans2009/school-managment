@@ -46,60 +46,19 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
-
-interface Student {
-  id: string;
-  userId: string;
-  classroomId: string;
-  rollNumber: string;
-  admissionNumber: string;
-  classroom: {
-    id: string;
-    name: string;
-    grade: string;
-    section: string;
-  };
-}
-
-interface Homework {
-  id: string;
-  title: string;
-  description: string;
-  dueDate: string;
-  className: string;
-  subjectName: string;
-  status: string;
-  assignedDate: string;
-}
-
-interface TimetableEntry {
-  id: string;
-  dayOfWeek: number;
-  startTime: string;
-  endTime: string;
-  room: string | null;
-  subject: {
-    name: string;
-    code: string;
-  };
-  teacher: {
-    name: string;
-  };
-}
-
-interface ClassroomMessage {
-  id: string;
-  content: string;
-  messageType: string;
-  date: string;
-  teacherName: string;
-}
-
-interface Teacher {
-  id: string;
-  name: string;
-  email: string;
-}
+import {
+  getStudentProfile,
+  getStudentHomework,
+  getStudentTimetable,
+  getClassroomMessages,
+  getClassroomTeachers,
+  sendMessage,
+  type StudentProfile,
+  type StudentHomework,
+  type StudentTimetableEntry,
+  type ClassroomMessage,
+  type ClassroomTeacher,
+} from "@/actions/student";
 
 export default function StudentPage() {
   const { session, isPending } = useRoleRedirect(["student"]);
@@ -114,39 +73,33 @@ export default function StudentPage() {
   });
 
   // Fetch student profile
-  const { data: studentProfile } = useQuery<Student>({
+  const { data: studentProfile } = useQuery<StudentProfile>({
     queryKey: ["student-profile", session?.user?.id],
     queryFn: async () => {
-      const res = await fetch(`/api/students?userId=${session?.user?.id}`);
-      if (!res.ok) throw new Error("Failed to fetch student profile");
-      const data = await res.json();
-      return data[0]; // Assuming single student per user
+      if (!session?.user?.id) throw new Error("No user ID");
+      const profile = await getStudentProfile(session.user.id);
+      if (!profile) throw new Error("Student profile not found");
+      return profile;
     },
     enabled: !!session?.user?.id,
   });
 
   // Fetch homework for student's classroom
-  const { data: homework } = useQuery<Homework[]>({
-    queryKey: ["homework", studentProfile?.classroomId],
+  const { data: homework } = useQuery<StudentHomework[]>({
+    queryKey: ["homework", studentProfile?.classroomId, session?.user?.id],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/homework?classroomId=${studentProfile?.classroomId}`,
-      );
-      if (!res.ok) throw new Error("Failed to fetch homework");
-      return res.json();
+      if (!studentProfile?.classroomId || !session?.user?.id) return [];
+      return await getStudentHomework(studentProfile.classroomId, session.user.id);
     },
-    enabled: !!studentProfile?.classroomId,
+    enabled: !!studentProfile?.classroomId && !!session?.user?.id,
   });
 
   // Fetch timetable
-  const { data: timetable } = useQuery<TimetableEntry[]>({
+  const { data: timetable } = useQuery<StudentTimetableEntry[]>({
     queryKey: ["timetable", studentProfile?.classroomId],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/timetable?classroomId=${studentProfile?.classroomId}`,
-      );
-      if (!res.ok) throw new Error("Failed to fetch timetable");
-      return res.json();
+      if (!studentProfile?.classroomId) return [];
+      return await getStudentTimetable(studentProfile.classroomId);
     },
     enabled: !!studentProfile?.classroomId,
   });
@@ -155,24 +108,18 @@ export default function StudentPage() {
   const { data: classroomMessages } = useQuery<ClassroomMessage[]>({
     queryKey: ["classroom-messages", studentProfile?.classroomId],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/classroom-messages?classroomId=${studentProfile?.classroomId}`,
-      );
-      if (!res.ok) throw new Error("Failed to fetch classroom messages");
-      return res.json();
+      if (!studentProfile?.classroomId) return [];
+      return await getClassroomMessages(studentProfile.classroomId);
     },
     enabled: !!studentProfile?.classroomId,
   });
 
   // Fetch teachers for the student's classroom
-  const { data: teachers } = useQuery<Teacher[]>({
+  const { data: teachers } = useQuery<ClassroomTeacher[]>({
     queryKey: ["teachers", studentProfile?.classroomId],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/classrooms/${studentProfile?.classroomId}/teachers`,
-      );
-      if (!res.ok) throw new Error("Failed to fetch teachers");
-      return res.json();
+      if (!studentProfile?.classroomId) return [];
+      return await getClassroomTeachers(studentProfile.classroomId);
     },
     enabled: !!studentProfile?.classroomId,
   });
@@ -180,13 +127,11 @@ export default function StudentPage() {
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (data: typeof messageForm & { senderId: string }) => {
-      const res = await fetch("/api/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to send message");
-      return res.json();
+      const result = await sendMessage(data);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to send message");
+      }
+      return result;
     },
     onSuccess: () => {
       toast.success("Message sent successfully");
@@ -198,8 +143,8 @@ export default function StudentPage() {
       });
       queryClient.invalidateQueries({ queryKey: ["messages"] });
     },
-    onError: () => {
-      toast.error("Failed to send message");
+    onError: (error: Error) => {
+      toast.error(error.message);
     },
   });
 
@@ -232,11 +177,11 @@ export default function StudentPage() {
     return days[dayNum];
   };
 
-  const getHomeworkStatus = (homework: Homework) => {
+  const getHomeworkStatus = (homework: StudentHomework) => {
     const dueDate = new Date(homework.dueDate);
     const today = new Date();
 
-    if (homework.status === "submitted") {
+    if (homework.submission?.status === "submitted" || homework.submission?.status === "graded") {
       return { variant: "default" as const, text: "Submitted" };
     } else if (dueDate < today) {
       return { variant: "destructive" as const, text: "Overdue" };
@@ -258,7 +203,7 @@ export default function StudentPage() {
   const todayTimetable =
     timetable?.filter((entry) => entry.dayOfWeek === new Date().getDay()) || [];
   const pendingHomework =
-    homework?.filter((hw) => hw.status === "assigned").length || 0;
+    homework?.filter((hw) => !hw.submission || hw.submission.status === "pending").length || 0;
   const todayQuote = classroomMessages?.find(
     (msg) => msg.messageType === "quote",
   );
@@ -404,10 +349,10 @@ export default function StudentPage() {
                 <School className="h-6 w-6 text-primary mt-1" />
                 <div className="flex-1">
                   <p className="text-lg font-medium italic">
-                    &quot;{todayQuote.content}&quot;
+                    &quot;{todayQuote.message}&quot;
                   </p>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    - {todayQuote.teacherName}
+                  <p className="text-sm mt-2 text-right text-muted-foreground">
+                    - {todayQuote.postedByName}
                   </p>
                 </div>
               </div>
@@ -460,7 +405,7 @@ export default function StudentPage() {
                                   {status.text}
                                 </Badge>
                                 <span className="text-sm font-medium text-muted-foreground">
-                                  {hw.subjectName}
+                                  {hw.subject.name}
                                 </span>
                               </div>
                               <h4 className="font-semibold text-lg">
@@ -487,13 +432,13 @@ export default function StudentPage() {
                             <Button
                               size="sm"
                               variant={
-                                hw.status === "submitted"
+                                hw.submission?.status === "submitted" || hw.submission?.status === "graded"
                                   ? "outline"
                                   : "default"
                               }
                               className="rounded-xl"
                             >
-                              {hw.status === "submitted" ? "View" : "Submit"}
+                              {hw.submission?.status === "submitted" || hw.submission?.status === "graded" ? "View" : "Submit"}
                             </Button>
                           </div>
                         </CardContent>
@@ -659,12 +604,12 @@ export default function StudentPage() {
                               {msg.messageType}
                             </Badge>
                             <span className="text-xs text-muted-foreground">
-                              {new Date(msg.date).toLocaleDateString()}
+                              {new Date(msg.createdAt).toLocaleDateString()}
                             </span>
                           </div>
-                          <p className="text-sm">{msg.content}</p>
+                          <p className="text-sm">{msg.message}</p>
                           <p className="text-xs text-muted-foreground mt-1">
-                            - {msg.teacherName}
+                            - {msg.postedByName}
                           </p>
                         </div>
                       ))}

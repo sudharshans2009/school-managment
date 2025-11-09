@@ -18,58 +18,28 @@ import {
   BookOpen,
   Users,
 } from "lucide-react";
-
-interface TeacherDetail {
-  id: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  address: string | null;
-  isActive: boolean;
-  teacherAssignments: Array<{
-    id: string;
-    isPrimary: boolean;
-    classroom: {
-      id: string;
-      name: string;
-      grade: string;
-      section: string;
-    };
-    subject: {
-      id: string;
-      name: string;
-      code: string;
-    };
-  }>;
-}
-
-interface LeaveStats {
-  totalLeaves: number;
-  sickLeaves: number;
-  casualLeaves: number;
-  earnedLeaves: number;
-  pendingLeaves: number;
-}
+import {
+  getTeacherById,
+  getTeacherLeaveStats,
+  type Teacher,
+  type TeacherLeaveStats,
+} from "@/actions/admin";
 
 export default function TeacherDetailPage() {
   const params = useParams();
   const teacherId = params.id as string;
 
-  const { data: teacher, isLoading } = useQuery<TeacherDetail>({
+  const { data: teacher, isLoading } = useQuery<Teacher>({
     queryKey: ["teacher", teacherId],
     queryFn: async () => {
-      const response = await fetch(`/api/teachers/${teacherId}`);
-      if (!response.ok) throw new Error("Failed to fetch teacher");
-      return response.json();
+      return await getTeacherById(teacherId);
     },
   });
 
-  const { data: leaveStats } = useQuery<LeaveStats>({
+  const { data: leaveStats } = useQuery<TeacherLeaveStats>({
     queryKey: ["teacher-leaves", teacherId],
     queryFn: async () => {
-      const response = await fetch(`/api/teachers/${teacherId}/leave-stats`);
-      if (!response.ok) throw new Error("Failed to fetch leave stats");
-      return response.json();
+      return await getTeacherLeaveStats(teacherId);
     },
   });
 
@@ -89,7 +59,7 @@ export default function TeacherDetailPage() {
     );
   }
 
-  const primaryClassroom = teacher.teacherAssignments.find((a) => a.isPrimary);
+  const primaryClassroom = teacher.teacherAssignments?.find((a) => a.isPrimary);
 
   return (
     <DashboardLayout title="Teacher Details" description="Admin Portal">
@@ -181,8 +151,8 @@ export default function TeacherDetailPage() {
                 <CardTitle>Classroom Assignments</CardTitle>
               </CardHeader>
               <CardContent>
-                {teacher.teacherAssignments.length > 0 ? (
-                  <div className="space-y-3">
+                {teacher.teacherAssignments && teacher.teacherAssignments.length > 0 ? (
+                  <div className="space-y-2">
                     {teacher.teacherAssignments.map((assignment) => (
                       <div
                         key={assignment.id}

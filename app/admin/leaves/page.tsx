@@ -27,23 +27,11 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdminHeader } from "@/components/admin/admin-header";
-
-interface TeacherLeave {
-  id: string;
-  teacherId: string;
-  teacherName: string;
-  teacherEmail: string;
-  leaveType: string;
-  startDate: string;
-  endDate: string;
-  reason: string;
-  status: string;
-  approvedBy?: string;
-  approvalNotes?: string;
-  approvedAt?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import {
+  getAllTeacherLeaves,
+  updateTeacherLeaveStatus,
+  type AdminTeacherLeave,
+} from "@/actions/admin";
 
 export default function LeavesManagementPage() {
   const { data: session, isPending } = useSession();
@@ -53,7 +41,7 @@ export default function LeavesManagementPage() {
   const [selectedTab, setSelectedTab] = useState("pending");
   const [approvalDialog, setApprovalDialog] = useState<{
     open: boolean;
-    leave: TeacherLeave | null;
+    leave: AdminTeacherLeave | null;
     action: "approve" | "reject" | null;
   }>({
     open: false,
@@ -69,12 +57,10 @@ export default function LeavesManagementPage() {
   }, [session, isPending, router]);
 
   // Fetch all leaves
-  const { data: allLeaves, isLoading } = useQuery<TeacherLeave[]>({
+  const { data: allLeaves, isLoading } = useQuery<AdminTeacherLeave[]>({
     queryKey: ["teacher-leaves"],
     queryFn: async () => {
-      const res = await fetch("/api/teacher-leaves");
-      if (!res.ok) throw new Error("Failed to fetch leaves");
-      return res.json();
+      return await getAllTeacherLeaves();
     },
     enabled: !!session?.user?.id,
   });
@@ -87,20 +73,21 @@ export default function LeavesManagementPage() {
       notes,
     }: {
       leaveId: string;
-      status: string;
+      status: "approved" | "rejected";
       notes: string;
     }) => {
-      const res = await fetch(`/api/teacher-leaves/${leaveId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          status,
-          approvedBy: session?.user?.id,
-          approvalNotes: notes,
-        }),
+      if (!session?.user?.id) {
+        throw new Error("User not authenticated");
+      }
+      const result = await updateTeacherLeaveStatus(leaveId, {
+        status,
+        approvedBy: session.user.id,
+        approvalNotes: notes,
       });
-      if (!res.ok) throw new Error("Failed to update leave");
-      return res.json();
+      if (!result.success) {
+        throw new Error(result.error || "Failed to update leave");
+      }
+      return result;
     },
     onSuccess: (_, variables) => {
       toast.success(
@@ -110,8 +97,8 @@ export default function LeavesManagementPage() {
       setApprovalNotes("");
       queryClient.invalidateQueries({ queryKey: ["teacher-leaves"] });
     },
-    onError: () => {
-      toast.error("Failed to update leave");
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to update leave");
     },
   });
 
@@ -140,7 +127,7 @@ export default function LeavesManagementPage() {
     });
   };
 
-  const LeaveCard = ({ leave }: { leave: TeacherLeave }) => (
+  const LeaveCard = ({ leave }: { leave: AdminTeacherLeave }) => (
     <Card key={leave.id} className="rounded-xl">
       <CardContent className="p-4">
         <div className="flex items-start justify-between">

@@ -33,6 +33,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { getAllTeachers } from "@/actions/admin";
 
 interface Classroom {
   id: string;
@@ -156,9 +157,8 @@ export default function EditClassroomPage({
   const { data: teachers } = useQuery<Teacher[]>({
     queryKey: ["teachers"],
     queryFn: async () => {
-      const response = await fetch("/api/teachers");
-      if (!response.ok) throw new Error("Failed to fetch teachers");
-      return response.json();
+      const data = await getAllTeachers();
+      return data.map((t) => ({ id: t.id, name: t.name }));
     },
   });
 

@@ -44,23 +44,19 @@ import { useSession } from "@/lib/auth/client";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { TeacherQuickActions } from "@/components/teacher-quick-actions";
 import { TeacherHeader } from "@/components/teacher/teacher-header";
-
-interface Classroom {
-  id: string;
-  name: string;
-  grade: string;
-  section: string;
-}
-
-interface Homework {
-  id: string;
-  title: string;
-  description: string;
-  dueDate: string;
-  totalMarks: number;
-  subjectName: string;
-  assignedDate: string;
-}
+import { toast } from "sonner";
+import {
+  getTeacherAssignments,
+  getTeacherHomework,
+  getHomeworkSubmissions,
+  gradeHomeworkSubmission,
+  createHomeworkSubmission,
+  deleteHomeworkSubmission,
+  getClassroomStudents,
+  type TeacherAssignment,
+  type HomeworkItem,
+  type HomeworkSubmission,
+} from "@/actions/teacher";
 
 interface Student {
   id: string;
@@ -68,21 +64,6 @@ interface Student {
     name: string;
   };
   rollNumber: string;
-}
-
-interface Submission {
-  id: string;
-  homeworkId: string;
-  studentId: string;
-  studentName: string;
-  studentRollNumber: string;
-  homeworkTitle: string;
-  subjectName: string;
-  submittedAt: string;
-  marksObtained: number | null;
-  totalMarks: number;
-  feedback: string | null;
-  status: "submitted" | "graded";
 }
 
 export default function TeacherHomeworkPage() {
@@ -93,30 +74,31 @@ export default function TeacherHomeworkPage() {
   const [openGradeDialog, setOpenGradeDialog] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [selectedSubmission, setSelectedSubmission] =
-    useState<Submission | null>(null);
+    useState<HomeworkSubmission | null>(null);
   const [viewMode, setViewMode] = useState<"homework" | "students">("homework");
 
   const queryClient = useQueryClient();
 
   // Fetch classrooms for this teacher
-  const { data: classrooms } = useQuery<Classroom[]>({
-    queryKey: ["teacher-classrooms"],
+  const { data: classrooms } = useQuery<TeacherAssignment[]>({
+    queryKey: ["teacher-classrooms", session?.user?.id],
     queryFn: async () => {
-      const response = await fetch("/api/teachers/classrooms");
-      if (!response.ok) throw new Error("Failed to fetch classrooms");
-      return response.json();
+      if (!session?.user?.id) return [];
+      return await getTeacherAssignments(session.user.id);
     },
+    enabled: !!session?.user?.id,
   });
 
   // Fetch homework for selected classroom
-  const { data: homework } = useQuery<Homework[]>({
-    queryKey: ["teacher-homework", selectedClassroom],
+  const { data: homework } = useQuery<HomeworkItem[]>({
+    queryKey: ["teacher-homework", selectedClassroom, session?.user?.id],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/homework?classroomId=${selectedClassroom}&teacherId=${session?.user?.id}`,
-      );
-      if (!response.ok) throw new Error("Failed to fetch homework");
-      return response.json();
+      if (!session?.user?.id) return [];
+      const allHomework = await getTeacherHomework(session.user.id);
+      // Filter by selected classroom
+      return selectedClassroom
+        ? allHomework.filter((hw) => hw.classroom.id === selectedClassroom)
+        : allHomework;
     },
     enabled: !!selectedClassroom && !!session?.user?.id,
   });
@@ -125,26 +107,20 @@ export default function TeacherHomeworkPage() {
   const { data: students } = useQuery<Student[]>({
     queryKey: ["classroom-students", selectedClassroom],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/students?classroomId=${selectedClassroom}`,
-      );
-      if (!response.ok) throw new Error("Failed to fetch students");
-      return response.json();
+      if (!selectedClassroom) return [];
+      return await getClassroomStudents(selectedClassroom);
     },
     enabled: !!selectedClassroom && viewMode === "students",
   });
 
   // Fetch submissions for selected homework
   const { data: submissions, isLoading: submissionsLoading } = useQuery<
-    Submission[]
+    HomeworkSubmission[]
   >({
     queryKey: ["homework-submissions", selectedHomework],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/homework/submissions?homeworkId=${selectedHomework}`,
-      );
-      if (!response.ok) throw new Error("Failed to fetch submissions");
-      return response.json();
+      if (!selectedHomework) return [];
+      return await getHomeworkSubmissions(selectedHomework);
     },
     enabled: !!selectedHomework,
   });
@@ -152,21 +128,18 @@ export default function TeacherHomeworkPage() {
   // Mark as submitted mutation
   const markSubmittedMutation = useMutation({
     mutationFn: async (data: { homeworkId: string; studentId: string }) => {
-      const response = await fetch("/api/homework/submissions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to mark submission");
-      }
-      return response.json();
+      const result = await createHomeworkSubmission(data);
+      if (!result.success) throw new Error(result.error);
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["homework-submissions"] });
       setOpenMarkDialog(false);
       setSelectedStudent(null);
+      toast.success("Submission marked successfully");
+    },
+    onError: () => {
+      toast.error("Failed to mark submission");
     },
   });
 
@@ -177,36 +150,38 @@ export default function TeacherHomeworkPage() {
       marksObtained: number;
       feedback: string;
     }) => {
-      const response = await fetch(`/api/homework/submissions/${data.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          marksObtained: data.marksObtained,
-          feedback: data.feedback,
-          status: "graded",
-        }),
+      const result = await gradeHomeworkSubmission({
+        submissionId: data.id,
+        marksObtained: data.marksObtained,
+        feedback: data.feedback,
       });
-      if (!response.ok) throw new Error("Failed to grade submission");
-      return response.json();
+      if (!result.success) throw new Error(result.error);
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["homework-submissions"] });
       setOpenGradeDialog(false);
       setSelectedSubmission(null);
+      toast.success("Graded successfully");
+    },
+    onError: () => {
+      toast.error("Failed to grade submission");
     },
   });
 
   // Delete submission mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/homework/submissions/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to delete submission");
-      return response.json();
+      const result = await deleteHomeworkSubmission(id);
+      if (!result.success) throw new Error(result.error);
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["homework-submissions"] });
+      toast.success("Submission deleted");
+    },
+    onError: () => {
+      toast.error("Failed to delete submission");
     },
   });
 
@@ -215,7 +190,7 @@ export default function TeacherHomeworkPage() {
     setOpenMarkDialog(true);
   };
 
-  const handleGrade = (submission: Submission) => {
+  const handleGrade = (submission: HomeworkSubmission) => {
     setSelectedSubmission(submission);
     setOpenGradeDialog(true);
   };
@@ -299,8 +274,8 @@ export default function TeacherHomeworkPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {classrooms?.map((classroom) => (
-                      <SelectItem key={classroom.id} value={classroom.id}>
-                        {classroom.name}
+                      <SelectItem key={classroom.id} value={classroom.classroom.id}>
+                        {classroom.classroom.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -321,7 +296,7 @@ export default function TeacherHomeworkPage() {
                       <SelectContent>
                         {homework?.map((hw) => (
                           <SelectItem key={hw.id} value={hw.id}>
-                            {hw.title} ({hw.subjectName})
+                            {hw.title} ({hw.subject.name})
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -380,46 +355,58 @@ export default function TeacherHomeworkPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {submissions.map((submission) => (
-                      <TableRow key={submission.id}>
-                        <TableCell>{submission.studentRollNumber}</TableCell>
-                        <TableCell className="font-medium">
-                          {submission.studentName}
-                        </TableCell>
-                        <TableCell>
-                          {format(
-                            new Date(submission.submittedAt),
-                            "MMM dd, yyyy HH:mm",
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {submission.marksObtained !== null
-                            ? `${submission.marksObtained}/${submission.totalMarks}`
-                            : "Not graded"}
-                        </TableCell>
-                        <TableCell>
-                          {getStatusBadge(submission.status)}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleGrade(submission)}
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleDelete(submission.id)}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {submissions.map((submission) => {
+                      const hwItem = homework?.find(
+                        (h) => h.id === submission.homeworkId,
+                      );
+                      const status =
+                        submission.marksObtained !== undefined &&
+                        submission.marksObtained !== null
+                          ? "graded"
+                          : "submitted";
+
+                      return (
+                        <TableRow key={submission.id}>
+                          <TableCell>
+                            {submission.student.rollNumber}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {submission.student.user.name}
+                          </TableCell>
+                          <TableCell>
+                            {format(
+                              new Date(submission.submittedAt),
+                              "MMM dd, yyyy HH:mm",
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {submission.marksObtained !== undefined &&
+                            submission.marksObtained !== null
+                              ? `${submission.marksObtained}/${hwItem?.totalMarks || "N/A"}`
+                              : "Not graded"}
+                          </TableCell>
+                          <TableCell>{getStatusBadge(status)}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleGrade(submission)}
+                              >
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleDelete(submission.id)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
               ) : (
@@ -513,18 +500,27 @@ export default function TeacherHomeworkPage() {
             <form onSubmit={handleSubmitGrade} className="space-y-4">
               <div>
                 <Label>Student</Label>
-                <Input value={selectedSubmission?.studentName || ""} disabled />
+                <Input
+                  value={selectedSubmission?.student.user.name || ""}
+                  disabled
+                />
               </div>
               <div>
                 <Label htmlFor="marks">
-                  Marks Obtained (out of {selectedSubmission?.totalMarks})
+                  Marks Obtained (out of{" "}
+                  {homework?.find((h) => h.id === selectedSubmission?.homeworkId)
+                    ?.totalMarks || "N/A"}
+                  )
                 </Label>
                 <Input
                   id="marks"
                   name="marks"
                   type="number"
                   min="0"
-                  max={selectedSubmission?.totalMarks}
+                  max={
+                    homework?.find((h) => h.id === selectedSubmission?.homeworkId)
+                      ?.totalMarks
+                  }
                   defaultValue={selectedSubmission?.marksObtained || ""}
                   required
                 />

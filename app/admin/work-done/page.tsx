@@ -25,25 +25,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdminHeader } from "@/components/admin/admin-header";
-
-interface WorkDone {
-  id: string;
-  classroomId: string;
-  classroomName: string;
-  classroomGrade: string;
-  classroomSection: string;
-  subjectId: string;
-  subjectName: string;
-  teacherId: string;
-  teacherName: string;
-  date: string;
-  periodNumber: number;
-  topicsCovered: string;
-  homeworkAssigned?: string;
-  remarks?: string;
-  isSubstitute: boolean;
-  createdAt: string;
-}
+import { getWorkDoneRecords, type WorkDoneRecord } from "@/actions/admin";
 
 interface Classroom {
   id: string;
@@ -73,28 +55,22 @@ export default function WorkDoneManagementPage() {
     }
   }, [session, isPending, router]);
 
-  // Build query string
-  const buildQueryString = () => {
-    const params = new URLSearchParams();
-    if (filters.startDate) params.append("startDate", filters.startDate);
-    if (filters.endDate) params.append("endDate", filters.endDate);
-    if (filters.classroomId && filters.classroomId !== "all")
-      params.append("classroomId", filters.classroomId);
-    if (filters.subjectId && filters.subjectId !== "all")
-      params.append("subjectId", filters.subjectId);
-    if (filters.isSubstitute && filters.isSubstitute !== "all")
-      params.append("isSubstitute", filters.isSubstitute);
-    return params.toString();
-  };
-
   // Fetch work done records
-  const { data: workDoneRecords, isLoading } = useQuery<WorkDone[]>({
+  const { data: workDoneRecords, isLoading } = useQuery<WorkDoneRecord[]>({
     queryKey: ["work-done", filters],
     queryFn: async () => {
-      const queryString = buildQueryString();
-      const res = await fetch(`/api/work-done?${queryString}`);
-      if (!res.ok) throw new Error("Failed to fetch work done records");
-      return res.json();
+      const filterParams: Parameters<typeof getWorkDoneRecords>[0] = {};
+      
+      if (filters.startDate) filterParams.startDate = filters.startDate;
+      if (filters.endDate) filterParams.endDate = filters.endDate;
+      if (filters.classroomId && filters.classroomId !== "all")
+        filterParams.classroomId = filters.classroomId;
+      if (filters.subjectId && filters.subjectId !== "all")
+        filterParams.subjectId = filters.subjectId;
+      if (filters.isSubstitute !== "all")
+        filterParams.isSubstitute = filters.isSubstitute === "true";
+
+      return await getWorkDoneRecords(filterParams);
     },
     enabled: !!session?.user?.id,
   });

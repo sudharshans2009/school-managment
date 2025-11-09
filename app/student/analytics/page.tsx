@@ -24,45 +24,10 @@ import { Badge } from "@/components/ui/badge";import {
   BarChart,
 } from "lucide-react";
 import { StudentHeader } from "@/components/student/student-header";
-
-interface StudentAnalytics {
-  attendance: {
-    totalDays: number;
-    present: number;
-    absent: number;
-    late: number;
-    rate: number;
-    recentTrend: { date: string; status: string }[];
-  };
-  grades: {
-    totalExams: number;
-    averagePercentage: number;
-    averageGrade: string;
-    passed: number;
-    failed: number;
-    bySubject: { subject: string; average: number; grade: string }[];
-    recentGrades: {
-      exam: string;
-      marks: number;
-      total: number;
-      grade: string;
-      date: string;
-    }[];
-  };
-  homework: {
-    totalAssigned: number;
-    submitted: number;
-    graded: number;
-    pending: number;
-    averageScore: number;
-    onTimeRate: number;
-  };
-  overall: {
-    rank: number;
-    totalStudents: number;
-    performanceLevel: string;
-  };
-}
+import {
+  getStudentAnalytics,
+  type StudentAnalytics,
+} from "@/actions/student";
 
 export default function StudentAnalyticsPage() {
   const { data: session, isPending: sessionPending } = useSession();
@@ -71,11 +36,10 @@ export default function StudentAnalyticsPage() {
   const { data: analytics, isLoading } = useQuery<StudentAnalytics>({
     queryKey: ["student-analytics", session?.user?.id],
     queryFn: async () => {
-      const response = await fetch("/api/students/analytics");
-      if (!response.ok) throw new Error("Failed to fetch analytics");
-      return response.json();
+      if (!session?.user?.id) throw new Error("No user ID");
+      return await getStudentAnalytics(session.user.id);
     },
-    enabled: !!session?.user,
+    enabled: !!session?.user?.id,
   });
 
   if (sessionPending) {

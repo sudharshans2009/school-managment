@@ -25,6 +25,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Edit2, Clock } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdminHeader } from "@/components/admin/admin-header";
+import { getAllTeachers } from "@/actions/admin";
 
 interface Classroom {
   id: string;
@@ -107,9 +108,8 @@ export default function TimetablePage() {
   const { data: teachers } = useQuery<Teacher[]>({
     queryKey: ["teachers"],
     queryFn: async () => {
-      const response = await fetch("/api/teachers");
-      if (!response.ok) throw new Error("Failed to fetch teachers");
-      return response.json();
+      const data = await getAllTeachers();
+      return data.map((t) => ({ id: t.id, name: t.name }));
     },
   });
 
