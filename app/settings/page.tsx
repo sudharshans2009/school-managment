@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { Lock, Mail, Loader2, Eye, EyeOff, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { updateUserSettings } from "@/actions/user";
 
 export default function SettingsPage() {
   const { data: session, isPending: sessionPending } = useSession();
@@ -39,35 +40,26 @@ export default function SettingsPage() {
       currentPassword?: string;
       newPassword?: string;
     }) => {
-      const response = await fetch("/api/user/settings", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to update settings");
-      }
-
-      return response.json();
+      return await updateUserSettings(data);
     },
-    onSuccess: (data) => {
-      toast.success(data.message);
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success("Settings updated successfully");
 
-      // Clear password fields
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
+        // Clear password fields
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
 
-      // Invalidate profile query to refetch
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+        // Invalidate profile query to refetch
+        queryClient.invalidateQueries({ queryKey: ["profile"] });
 
-      // If email changed, show verification message
-      if (data.emailChanged) {
-        toast.info("Please check your new email for a verification link.");
+        // If email changed, show verification message
+        if (result.emailChanged) {
+          toast.info("Please check your new email for a verification link.");
+        }
+      } else {
+        toast.error(result.error || "Failed to update settings");
       }
     },
     onError: (error: Error) => {

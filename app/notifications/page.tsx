@@ -33,6 +33,12 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { PageHeader } from "@/components/layouts/header";
 import { ExtendedUser } from "@/types/better-auth";
+import {
+  getNotifications,
+  markAsRead,
+  markAllAsRead,
+  deleteNotification,
+} from "@/actions/notifications";
 
 interface Notification {
   id: string;
@@ -43,12 +49,12 @@ interface Notification {
   senderId: string | null;
   relatedId: string | null;
   relatedType: string | null;
-  priority: "low" | "normal" | "high" | "urgent";
-  isRead: boolean;
+  priority: "low" | "normal" | "high" | "urgent" | null;
+  isRead: boolean | null;
   actionUrl: string | null;
   metadata: string | null;
-  createdAt: string;
-  readAt: string | null;
+  createdAt: Date | null;
+  readAt: Date | null;
   sender: {
     id: string;
     name: string;
@@ -74,34 +80,27 @@ export default function NotificationsPage() {
   };
 
   const {
-    data: notifications,
+    data: notificationsResult,
     isLoading,
     error,
-  } = useQuery<Notification[]>({
-    queryKey: ["notifications", activeTab],
+  } = useQuery({
+    queryKey: ["notifications", session?.user?.id, activeTab],
     queryFn: async () => {
+      if (!session?.user?.id) return { success: false, data: [] };
       const unreadOnly = activeTab === "unread";
-      const response = await fetch(
-        `/api/notifications?unreadOnly=${unreadOnly}`,
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch notifications");
-      }
-      return response.json();
+      return await getNotifications(session.user.id, unreadOnly);
     },
-    enabled: !!session,
+    enabled: !!session?.user?.id,
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 
+  const notifications = notificationsResult?.success
+    ? notificationsResult.data
+    : [];
+
   const markAsReadMutation = useMutation({
     mutationFn: async (notificationId: string) => {
-      const response = await fetch("/api/notifications", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notificationId }),
-      });
-      if (!response.ok) throw new Error("Failed to mark as read");
-      return response.json();
+      return await markAsRead(notificationId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
@@ -111,13 +110,8 @@ export default function NotificationsPage() {
 
   const markAllAsReadMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch("/api/notifications", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ markAll: true }),
-      });
-      if (!response.ok) throw new Error("Failed to mark all as read");
-      return response.json();
+      if (!session?.user?.id) throw new Error("No user ID");
+      return await markAllAsRead(session.user.id);
     },
     onSuccess: () => {
       toast.success("All notifications marked as read");
@@ -131,11 +125,7 @@ export default function NotificationsPage() {
 
   const deleteNotificationMutation = useMutation({
     mutationFn: async (notificationId: string) => {
-      const response = await fetch(`/api/notifications?id=${notificationId}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to delete notification");
-      return response.json();
+      return await deleteNotification(notificationId);
     },
     onSuccess: () => {
       toast.success("Notification deleted");
@@ -337,15 +327,17 @@ export default function NotificationsPage() {
                               )}
                               <span className="flex items-center gap-1">
                                 <Calendar className="h-3 w-3" />
-                                {new Date(
-                                  notification.createdAt,
-                                ).toLocaleDateString("en-US", {
-                                  month: "short",
-                                  day: "numeric",
-                                  year: "numeric",
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })}
+                                {notification.createdAt
+                                  ? new Date(
+                                      notification.createdAt,
+                                    ).toLocaleDateString("en-US", {
+                                      month: "short",
+                                      day: "numeric",
+                                      year: "numeric",
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })
+                                  : "N/A"}
                               </span>
                             </CardDescription>
                           </div>
@@ -353,10 +345,10 @@ export default function NotificationsPage() {
                         <div className="flex flex-wrap gap-2">
                           <Badge
                             variant={getPriorityBadgeVariant(
-                              notification.priority,
+                              notification.priority || "normal",
                             )}
                           >
-                            {notification.priority.toUpperCase()}
+                            {(notification.priority || "normal").toUpperCase()}
                           </Badge>
                         </div>
                       </div>
