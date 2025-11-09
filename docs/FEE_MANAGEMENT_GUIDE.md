@@ -291,8 +291,7 @@ Get comprehensive fee status for a student including all dues and payments.
 **Signature:**
 ```typescript
 getStudentFeeStatus(
-  studentId: string,
-  academicYear?: string
+  studentId: string
 ): Promise<{ success: boolean; data?: StudentFeeStatus; error?: string }>
 ```
 
@@ -314,7 +313,7 @@ interface StudentFeeStatus {
 ```typescript
 import { getStudentFeeStatus } from "@/actions/fees";
 
-const result = await getStudentFeeStatus("student-uuid", "2024-2025");
+const result = await getStudentFeeStatus("student-uuid");
 
 if (result.success && result.data) {
   const status = result.data;
