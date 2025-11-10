@@ -161,7 +161,8 @@ export default function AdminAnnouncementsPage() {
     }
   };
 
-  const getPriorityBadge = (priority: string) => {
+  const getPriorityBadge = (priority: string | null) => {
+    const actualPriority = priority || "normal";
     const variants: Record<
       string,
       "default" | "destructive" | "secondary" | "outline"
@@ -181,10 +182,10 @@ export default function AdminAnnouncementsPage() {
 
     return (
       <Badge
-        variant={variants[priority] || "secondary"}
-        className={colors[priority]}
+        variant={variants[actualPriority] || "secondary"}
+        className={colors[actualPriority]}
       >
-        {priority.charAt(0).toUpperCase() + priority.slice(1)}
+        {actualPriority.charAt(0).toUpperCase() + actualPriority.slice(1)}
       </Badge>
     );
   };
@@ -391,7 +392,9 @@ export default function AdminAnnouncementsPage() {
                         </span>
                         <span className="hidden sm:inline">•</span>
                         <span>
-                          {format(new Date(announcement.createdAt), "PPp")}
+                          {announcement.createdAt
+                            ? format(new Date(announcement.createdAt), "PPp")
+                            : "N/A"}
                         </span>
                       </div>
                     </div>

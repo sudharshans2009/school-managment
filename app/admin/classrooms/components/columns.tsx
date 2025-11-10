@@ -12,10 +12,17 @@ export interface Classroom {
   grade: string;
   section: string;
   classroomCode: string;
-  currentStrength: number;
+  classroomKey?: string | null;
+  currentStrength?: number | null;
+  capacity?: number | null;
+  academicYear?: string | null;
+  isActive?: boolean | null;
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
   teacherAssignments: Array<{
-    isPrimary: boolean;
+    isPrimary: boolean | null;
     teacher: { name: string };
+    subject?: { name: string } | null;
   }>;
   students: Array<{ id: string }>;
 }

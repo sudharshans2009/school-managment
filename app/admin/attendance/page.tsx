@@ -81,7 +81,7 @@ export default function AdminAttendancePage() {
       records: Array<{
         studentId: string;
         classroomId: string;
-        status: string;
+        status: "present" | "absent" | "late" | "excused";
         date: string;
       }>;
       markedBy: string;

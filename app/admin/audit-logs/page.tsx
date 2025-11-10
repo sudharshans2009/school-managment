@@ -42,27 +42,6 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 
-interface AuditLog {
-  id: string;
-  userId: string | null;
-  userEmail: string | null;
-  userRole: string | null;
-  action: string;
-  resource: string;
-  resourceId: string | null;
-  description: string | null;
-  metadata: string | null;
-  ipAddress: string | null;
-  userAgent: string | null;
-  timestamp: string;
-}
-
-interface PaginationInfo {
-  page: number;
-  limit: number;
-  hasMore: boolean;
-}
-
 export default function AuditLogsPage() {
   useRoleRedirect(["admin"]);
 
@@ -153,11 +132,11 @@ export default function AuditLogsPage() {
     return colors[resource.toLowerCase()] || "bg-gray-100 text-gray-800";
   };
 
-  const formatTimestamp = (timestamp: string) => {
+  const formatTimestamp = (timestamp: string | Date) => {
     try {
       return format(new Date(timestamp), "MMM dd, yyyy HH:mm:ss");
     } catch {
-      return timestamp;
+      return String(timestamp);
     }
   };
 
