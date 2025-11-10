@@ -100,10 +100,6 @@ export async function getAuditLogs(params?: AuditLogsParams) {
 
     // Audit this access
     const headersList = await headers();
-    const ipAddress =
-      headersList.get("x-forwarded-for") || headersList.get("x-real-ip");
-    const userAgent = headersList.get("user-agent");
-
     await auditResourceAccess(
       session.user.id,
       session.user.email,
@@ -113,7 +109,7 @@ export async function getAuditLogs(params?: AuditLogsParams) {
       undefined,
       "Viewed audit logs",
       { filters: { userId, action, resource, startDate, endDate, search } },
-      { headers: headersList } as any,
+      { headers: headersList } as Request,
     );
 
     return {

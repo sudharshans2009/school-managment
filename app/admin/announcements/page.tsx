@@ -29,11 +29,6 @@ import { format } from "date-fns";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdminHeader } from "@/components/admin/admin-header";
 
-interface Classroom {
-  id: string;
-  name: string;
-}
-
 interface Announcement {
   id: string;
   title: string;
@@ -405,7 +400,11 @@ export default function AdminAnnouncementsPage() {
                         variant="ghost"
                         size="icon"
                         className="rounded-xl"
-                        onClick={() => setEditingAnnouncement(announcement)}
+                        onClick={() =>
+                          setEditingAnnouncement(
+                            announcement as unknown as Announcement | null,
+                          )
+                        }
                       >
                         <Edit2 className="h-4 w-4" />
                       </Button>

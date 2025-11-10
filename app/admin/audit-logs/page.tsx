@@ -74,23 +74,7 @@ export default function AuditLogsPage() {
   const [page, setPage] = useState(1);
   // const [showFilters, setShowFilters] = useState(false);
 
-  // Build query params
-  const buildQueryParams = () => {
-    const params = new URLSearchParams();
-    params.append("page", page.toString());
-    params.append("limit", "50");
-    if (searchQuery) params.append("search", searchQuery);
-    if (actionFilter !== "all") params.append("action", actionFilter);
-    if (resourceFilter !== "all") params.append("resource", resourceFilter);
-    if (startDate) params.append("startDate", startDate.toISOString());
-    if (endDate) params.append("endDate", endDate.toISOString());
-    return params.toString();
-  };
-
-  const { data, isLoading, error } = useQuery<{
-    logs: AuditLog[];
-    pagination: PaginationInfo;
-  }>({
+  const { data, isLoading, error } = useQuery({
     queryKey: [
       "audit-logs",
       page,
@@ -111,7 +95,7 @@ export default function AuditLogsPage() {
         startDate: startDate?.toISOString(),
         endDate: endDate?.toISOString(),
       });
-      if (!result.success) throw new Error(result.error);
+      if (!result.success || !result.data) throw new Error(result.error);
       return result.data;
     },
   });

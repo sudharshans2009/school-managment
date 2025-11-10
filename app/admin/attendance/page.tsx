@@ -28,30 +28,6 @@ import { format } from "date-fns";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdminHeader } from "@/components/admin/admin-header";
 
-interface Classroom {
-  id: string;
-  name: string;
-}
-
-interface Student {
-  id: string;
-  user: {
-    name: string;
-  };
-  rollNumber: string;
-}
-
-interface AttendanceRecord {
-  id: string;
-  studentId: string;
-  studentName: string;
-  studentRollNumber: string;
-  date: string;
-  status: "present" | "absent" | "late" | "excused";
-  remarks: string | null;
-  createdAt: string;
-}
-
 export default function AdminAttendancePage() {
   const { data: session } = useSession();
   const [selectedClassroom, setSelectedClassroom] = useState<string>("");
@@ -141,7 +117,11 @@ export default function AdminAttendancePage() {
       students?.map((student) => ({
         studentId: student.id,
         classroomId: selectedClassroom,
-        status: formData.get(`status-${student.id}`) as string,
+        status: formData.get(`status-${student.id}`) as
+          | "present"
+          | "absent"
+          | "late"
+          | "excused",
         date: selectedDate, // Send as string, will be converted to Date on server
       })) || [];
 
@@ -385,7 +365,9 @@ export default function AdminAttendancePage() {
                     className="flex items-center justify-between p-4 border rounded-lg"
                   >
                     <div>
-                      <div className="font-medium">{student.user.name}</div>
+                      <div className="font-medium">
+                        {student.user?.name || "Unknown"}
+                      </div>
                       <div className="text-sm text-gray-600 dark:text-gray-400">
                         Roll No: {student.rollNumber}
                       </div>

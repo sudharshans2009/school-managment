@@ -97,7 +97,9 @@ export default function ClassroomsPage() {
       classroom.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       classroom.grade.toLowerCase().includes(searchQuery.toLowerCase()) ||
       classroom.section.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      classroom.code.toLowerCase().includes(searchQuery.toLowerCase()),
+      classroom.classroomCode
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()),
   );
 
   const primaryTeacher = (classroom: Classroom) => {
@@ -260,7 +262,7 @@ export default function ClassroomsPage() {
                         <div>
                           <CardTitle>{classroom.name}</CardTitle>
                           <CardDescription>
-                            Code: {classroom.code}
+                            Code: {classroom.classroomCode}
                           </CardDescription>
                         </div>
                         <div className="flex space-x-1">

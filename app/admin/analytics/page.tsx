@@ -35,42 +35,6 @@ import {
 import { useState } from "react";
 import { AdminHeader } from "@/components/admin/admin-header";
 
-interface AnalyticsData {
-  attendance: {
-    overall: number;
-    byGrade: { grade: string; rate: number }[];
-    trend: { date: string; rate: number }[];
-  };
-  grades: {
-    averagePercentage: number;
-    passingRate: number;
-    bySubject: { subject: string; average: number }[];
-    distribution: { grade: string; count: number }[];
-  };
-  homework: {
-    totalAssigned: number;
-    completionRate: number;
-    onTimeRate: number;
-    bySubject: { subject: string; completion: number }[];
-  };
-  exams: {
-    totalConducted: number;
-    averageScore: number;
-    finalized: number;
-    pending: number;
-  };
-  students: {
-    total: number;
-    active: number;
-    byGrade: { grade: string; count: number }[];
-  };
-  teachers: {
-    total: number;
-    active: number;
-    assignmentRate: number;
-  };
-}
-
 export default function AdminAnalyticsPage() {
   const { data: session, isPending: sessionPending } = useSession();
   const router = useRouter();
