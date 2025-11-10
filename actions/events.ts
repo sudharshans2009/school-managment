@@ -45,10 +45,9 @@ export interface EventRegistration {
   eventId: string;
   userId: string;
   studentId: string | null;
-  registrationStatus: "registered" | "attended" | "absent" | "cancelled";
+  status: "registered" | "attended" | "absent" | "cancelled";
   registeredAt: Date | null;
-  attendedAt: Date | null;
-  remarks: string | null;
+  notes: string | null;
   userName?: string | null;
   studentName?: string | null;
 }
@@ -473,7 +472,7 @@ export async function registerForEvent(
         eventId,
         userId,
         studentId: studentId || null,
-        registrationStatus: "registered",
+        status: "registered",
       })
       .returning();
 
@@ -498,7 +497,7 @@ export async function cancelEventRegistration(
 
     await db
       .update(eventRegistrations)
-      .set({ registrationStatus: "cancelled" })
+      .set({ status: "cancelled" })
       .where(eq(eventRegistrations.id, registrationId));
 
     return { success: true };
@@ -526,10 +525,9 @@ export async function getEventRegistrations(
         eventId: eventRegistrations.eventId,
         userId: eventRegistrations.userId,
         studentId: eventRegistrations.studentId,
-        registrationStatus: eventRegistrations.registrationStatus,
+        status: eventRegistrations.status,
         registeredAt: eventRegistrations.registeredAt,
-        attendedAt: eventRegistrations.attendedAt,
-        remarks: eventRegistrations.remarks,
+        notes: eventRegistrations.notes,
         userName: users.name,
         studentName: sql<string>`COALESCE((SELECT u.name FROM ${students} s JOIN ${users} u ON s.user_id = u.id WHERE s.id = ${eventRegistrations.studentId}), NULL)`,
       })
