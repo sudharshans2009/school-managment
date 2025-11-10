@@ -449,3 +449,27 @@ export async function getAttendanceForDate(
     return { success: false, error: "Failed to fetch attendance records" };
   }
 }
+
+/**
+ * Get students by classroom
+ */
+export async function getStudentsByClassroom(classroomId: string) {
+  try {
+    const studentsList = await db
+      .select({
+        id: students.id,
+        rollNumber: students.rollNumber,
+        user: {
+          name: users.name,
+        },
+      })
+      .from(students)
+      .leftJoin(users, eq(students.userId, users.id))
+      .where(eq(students.classroomId, classroomId));
+
+    return { success: true, data: studentsList };
+  } catch (error) {
+    console.error("Error fetching students:", error);
+    return { success: false, error: "Failed to fetch students" };
+  }
+}

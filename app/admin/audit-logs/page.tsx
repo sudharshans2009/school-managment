@@ -101,11 +101,18 @@ export default function AuditLogsPage() {
       endDate,
     ],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/security/audit-logs?${buildQueryParams()}`
-      );
-      if (!response.ok) throw new Error("Failed to fetch audit logs");
-      return response.json();
+      const { getAuditLogs } = await import("@/actions/audit-logs");
+      const result = await getAuditLogs({
+        page,
+        limit: 50,
+        search: searchQuery || undefined,
+        action: actionFilter !== "all" ? actionFilter : undefined,
+        resource: resourceFilter !== "all" ? resourceFilter : undefined,
+        startDate: startDate?.toISOString(),
+        endDate: endDate?.toISOString(),
+      });
+      if (!result.success) throw new Error(result.error);
+      return result.data;
     },
   });
 

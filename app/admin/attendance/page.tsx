@@ -63,43 +63,41 @@ export default function AdminAttendancePage() {
   const queryClient = useQueryClient();
 
   // Fetch classrooms
-  const { data: classrooms } = useQuery<Classroom[]>({
+  const { data: classroomsResult } = useQuery({
     queryKey: ["classrooms"],
     queryFn: async () => {
-      const response = await fetch("/api/classrooms");
-      if (!response.ok) throw new Error("Failed to fetch classrooms");
-      return response.json();
+      const { getClassrooms } = await import("@/actions/announcements");
+      return await getClassrooms();
     },
   });
 
+  const classrooms = classroomsResult?.success ? classroomsResult.data : [];
+
   // Fetch students for selected classroom
-  const { data: students } = useQuery<Student[]>({
+  const { data: studentsResult } = useQuery({
     queryKey: ["students", selectedClassroom],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/students?classroomId=${selectedClassroom}`,
-      );
-      if (!response.ok) throw new Error("Failed to fetch students");
-      return response.json();
+      const { getStudentsByClassroom } = await import("@/actions/attendance");
+      return await getStudentsByClassroom(selectedClassroom);
     },
     enabled: !!selectedClassroom,
   });
 
+  const students = studentsResult?.success ? studentsResult.data : [];
+
   // Fetch attendance records
-  const { data: attendanceRecords, isLoading } = useQuery<AttendanceRecord[]>({
+  const { data: attendanceRecordsResult, isLoading } = useQuery({
     queryKey: ["attendance", selectedClassroom, selectedDate],
     queryFn: async () => {
-      const params = new URLSearchParams({
-        classroomId: selectedClassroom,
-        startDate: selectedDate,
-        endDate: selectedDate,
-      });
-      const response = await fetch(`/api/attendance?${params}`);
-      if (!response.ok) throw new Error("Failed to fetch attendance");
-      return response.json();
+      const { getAttendanceForDate } = await import("@/actions/attendance");
+      return await getAttendanceForDate(selectedClassroom, selectedDate);
     },
     enabled: !!selectedClassroom && !!selectedDate,
   });
+
+  const attendanceRecords = attendanceRecordsResult?.success
+    ? attendanceRecordsResult.data
+    : [];
 
   // Mark attendance mutation
   const markAttendanceMutation = useMutation({
@@ -112,21 +110,17 @@ export default function AdminAttendancePage() {
       }>;
       markedBy: string;
     }) => {
-      const response = await fetch("/api/attendance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to mark attendance");
-      }
-      return response.json();
+      const { markAttendance } = await import("@/actions/attendance");
+      return await markAttendance(data.records, data.markedBy);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["attendance"] });
-      setViewMode("view");
-      setError("");
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["attendance"] });
+        setViewMode("view");
+        setError("");
+      } else {
+        setError(result.error || "Failed to mark attendance");
+      }
     },
     onError: (error: Error) => {
       setError(error.message);

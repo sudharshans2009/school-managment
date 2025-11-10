@@ -76,15 +76,16 @@ export default function AdminAnalyticsPage() {
   const router = useRouter();
   const [timeRange, setTimeRange] = useState("30");
 
-  const { data: analytics, isLoading } = useQuery<AnalyticsData>({
+  const { data: analyticsResult, isLoading } = useQuery({
     queryKey: ["admin-analytics", timeRange],
     queryFn: async () => {
-      const response = await fetch(`/api/admin/analytics?days=${timeRange}`);
-      if (!response.ok) throw new Error("Failed to fetch analytics");
-      return response.json();
+      const { getAnalytics } = await import("@/actions/analytics");
+      return await getAnalytics(parseInt(timeRange));
     },
     enabled: !!session,
   });
+
+  const analytics = analyticsResult?.success ? analyticsResult.data : undefined;
 
   if (sessionPending) {
     return (

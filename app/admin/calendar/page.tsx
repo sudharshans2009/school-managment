@@ -88,23 +88,26 @@ export default function AdminCalendarPage() {
   const monthEnd = endOfMonth(currentDate);
 
   // Fetch calendar days for current month
-  const { data: calendarDays = [], isLoading } = useQuery({
+  const { data: calendarDaysResult = [], isLoading } = useQuery({
     queryKey: [
       "calendar",
       format(monthStart, "yyyy-MM-dd"),
       format(monthEnd, "yyyy-MM-dd"),
     ],
     queryFn: async () => {
-      const res = await fetch(
-        `/api/calendar?startDate=${format(
-          monthStart,
-          "yyyy-MM-dd",
-        )}&endDate=${format(monthEnd, "yyyy-MM-dd")}`,
-      );
-      if (!res.ok) throw new Error("Failed to fetch calendar");
-      return res.json() as Promise<CalendarDay[]>;
+      const { getCalendarDays } = await import("@/actions/calendar");
+      const result = await getCalendarDays({
+        startDate: format(monthStart, "yyyy-MM-dd"),
+        endDate: format(monthEnd, "yyyy-MM-dd"),
+      });
+      if (!result.success) throw new Error(result.error);
+      return result.data as CalendarDay[];
     },
   });
+
+  const calendarDays = Array.isArray(calendarDaysResult)
+    ? calendarDaysResult
+    : [];
 
   // Fetch single day config when editing
   useQuery({
@@ -114,11 +117,12 @@ export default function AdminCalendarPage() {
     ],
     queryFn: async () => {
       if (!selectedDate) return null;
-      const res = await fetch(
-        `/api/calendar?date=${format(selectedDate, "yyyy-MM-dd")}`,
-      );
-      if (!res.ok) throw new Error("Failed to fetch day config");
-      return res.json() as Promise<CalendarDay | null>;
+      const { getCalendarDays } = await import("@/actions/calendar");
+      const result = await getCalendarDays({
+        date: format(selectedDate, "yyyy-MM-dd"),
+      });
+      if (!result.success) throw new Error(result.error);
+      return result.data as CalendarDay | null;
     },
     enabled: !!selectedDate && openDialog,
   });
@@ -126,36 +130,32 @@ export default function AdminCalendarPage() {
   // Save mutation
   const saveMutation = useMutation({
     mutationFn: async (data: typeof formData & { date: string }) => {
-      const res = await fetch("/api/calendar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to save");
-      return res.json();
+      const { saveCalendarDay } = await import("@/actions/calendar");
+      return await saveCalendarDay(data);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["calendar"] });
-      setOpenDialog(false);
-      setSelectedDate(null);
-      resetForm();
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["calendar"] });
+        setOpenDialog(false);
+        setSelectedDate(null);
+        resetForm();
+      }
     },
   });
 
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (date: string) => {
-      const res = await fetch(`/api/calendar?date=${date}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Failed to delete");
-      return res.json();
+      const { deleteCalendarDay } = await import("@/actions/calendar");
+      return await deleteCalendarDay(date);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["calendar"] });
-      setOpenDialog(false);
-      setSelectedDate(null);
-      resetForm();
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["calendar"] });
+        setOpenDialog(false);
+        setSelectedDate(null);
+        resetForm();
+      }
     },
   });
 
