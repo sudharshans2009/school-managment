@@ -104,7 +104,7 @@ export default function AdminPage() {
   return (
     <DashboardLayout
       title="Admin Portal"
-      description="Amrita School Management"
+      description="Amrita Vidyalayam Management"
     >
       {/* Page content here */}
     </DashboardLayout>
@@ -130,9 +130,9 @@ export default function AdminPage() {
 ### Rounded Corners
 
 - Cards: `rounded-2xl`
-- Buttons: `rounded-xl`
-- Icons containers: `rounded-xl` or `rounded-full`
-- Input fields: `rounded-xl` (where applicable)
+- Buttons: ``
+- Icons containers: ``or`rounded-full`
+- Input fields: `` (where applicable)
 
 ### Shadows
 
@@ -287,7 +287,7 @@ To maintain consistency when adding new pages:
 2. **Follow Patterns:**
    - Use the same Card/Button components
    - Apply consistent spacing (p-6, space-y-6)
-   - Use rounded-2xl for cards, rounded-xl for buttons
+   - Use rounded-2xl for cards, for buttons
 
 3. **Theme Awareness:**
    - Use theme colors (bg-background, text-foreground, etc.)

@@ -2,7 +2,19 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Download, Monitor, Smartphone, Apple, Check, Clock, Zap, Bell, Cloud, Shield } from "lucide-react";
+import {
+  X,
+  Download,
+  Monitor,
+  Smartphone,
+  Apple,
+  Check,
+  Clock,
+  Zap,
+  Bell,
+  Cloud,
+  Shield,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 
@@ -65,7 +77,7 @@ export function AppDownloadBanner() {
             "System tray notifications",
             "Auto-updates",
             "File system integration",
-            "Keyboard shortcuts"
+            "Keyboard shortcuts",
           ],
         };
       }
@@ -83,7 +95,7 @@ export function AppDownloadBanner() {
             "Offline mode",
             "Biometric authentication",
             "Quick actions from home screen",
-            "Battery optimized"
+            "Battery optimized",
           ],
         };
       }
@@ -101,7 +113,7 @@ export function AppDownloadBanner() {
             "iCloud integration",
             "Handoff support",
             "Spotlight search",
-            "Native macOS design"
+            "Native macOS design",
           ],
         };
       }
@@ -123,7 +135,7 @@ export function AppDownloadBanner() {
             "Widgets support",
             "Apple Pencil support",
             "Siri shortcuts",
-            "iCloud sync"
+            "iCloud sync",
           ],
         };
       }
@@ -141,7 +153,7 @@ export function AppDownloadBanner() {
             "Wayland & X11 compatible",
             "Native notifications",
             "System tray integration",
-            "Open source friendly"
+            "Open source friendly",
           ],
         };
       }
@@ -179,20 +191,20 @@ export function AppDownloadBanner() {
           {/* Left side - Icon and Message */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <div className="w-12 h-12 bg-linear-to-br from-primary to-primary/70 rounded-xl flex items-center justify-center shrink-0 shadow-lg">
-              <div className="text-primary-foreground">
-                {platform.icon}
-              </div>
+              <div className="text-primary-foreground">{platform.icon}</div>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="text-sm font-semibold truncate">
                   {platform.supported ? (
                     <>
-                      Get the <span className="text-primary">{platform.os}</span> App
+                      Get the{" "}
+                      <span className="text-primary">{platform.os}</span> App
                     </>
                   ) : (
                     <>
-                      <span className="text-primary">{platform.os}</span> App Coming Soon
+                      <span className="text-primary">{platform.os}</span> App
+                      Coming Soon
                     </>
                   )}
                 </p>

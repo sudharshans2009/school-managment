@@ -76,7 +76,7 @@ export function AppQuickActions() {
     try {
       // @ts-expect-error - Tauri API
       if (!window.__TAURI__) return;
-      
+
       // Dynamic import with fallback
       let windowModule;
       try {
@@ -85,7 +85,7 @@ export function AppQuickActions() {
         console.warn("Tauri window plugin not available");
         return;
       }
-      
+
       const appWindow = windowModule.getCurrent();
       const fullscreen = await appWindow.isFullscreen();
       await appWindow.setFullscreen(!fullscreen);
@@ -99,7 +99,7 @@ export function AppQuickActions() {
     try {
       // @ts-expect-error - Tauri API
       if (!window.__TAURI__) return;
-      
+
       let windowModule;
       try {
         windowModule = await import("@tauri-apps/plugin-window");
@@ -107,7 +107,7 @@ export function AppQuickActions() {
         console.warn("Tauri window plugin not available");
         return;
       }
-      
+
       const appWindow = windowModule.getCurrent();
       await appWindow.minimize();
     } catch (error) {
@@ -119,7 +119,7 @@ export function AppQuickActions() {
     try {
       // @ts-expect-error - Tauri API
       if (!window.__TAURI__) return;
-      
+
       let windowModule;
       try {
         windowModule = await import("@tauri-apps/plugin-window");
@@ -127,7 +127,7 @@ export function AppQuickActions() {
         console.warn("Tauri window plugin not available");
         return;
       }
-      
+
       const appWindow = windowModule.getCurrent();
       await appWindow.close();
     } catch (error) {
@@ -139,27 +139,25 @@ export function AppQuickActions() {
     try {
       // @ts-expect-error - Tauri API
       if (!window.__TAURI__) return;
-      
+
       console.log("Checking for updates...");
-      
+
       let updaterModule, processModule;
       try {
-        // @ts-expect-error - Optional Tauri plugins
         updaterModule = await import("@tauri-apps/plugin-updater");
-        // @ts-expect-error - Optional Tauri plugins
         processModule = await import("@tauri-apps/plugin-process");
       } catch {
         console.warn("Tauri updater/process plugins not available");
         alert("Update feature is not available in this build.");
         return;
       }
-      
+
       const { check } = updaterModule;
       const update = await check();
-      
+
       if (update?.available) {
         const shouldUpdate = window.confirm(
-          `Update available: v${update.version}\n\nWould you like to install it now?`
+          `Update available: v${update.version}\n\nWould you like to install it now?`,
         );
         if (shouldUpdate) {
           await update.downloadAndInstall();
@@ -207,42 +205,42 @@ export function AppQuickActions() {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>Quick Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        
+
         <DropdownMenuItem onClick={() => router.push("/")}>
           <Home className="mr-2 h-4 w-4" />
           <span>Home</span>
           <DropdownMenuShortcut>⌘⇧H</DropdownMenuShortcut>
         </DropdownMenuItem>
-        
+
         <DropdownMenuItem onClick={() => router.push("/calendar")}>
           <Calendar className="mr-2 h-4 w-4" />
           <span>Calendar</span>
           <DropdownMenuShortcut>⌘⇧C</DropdownMenuShortcut>
         </DropdownMenuItem>
-        
+
         <DropdownMenuItem onClick={() => router.push("/admin/students")}>
           <Users className="mr-2 h-4 w-4" />
           <span>Students</span>
           <DropdownMenuShortcut>⌘⇧S</DropdownMenuShortcut>
         </DropdownMenuItem>
-        
+
         <DropdownMenuSeparator />
-        
+
         <DropdownMenuItem onClick={syncOfflineData}>
           <RefreshCw className="mr-2 h-4 w-4" />
           <span>Sync Offline Data</span>
         </DropdownMenuItem>
-        
+
         <DropdownMenuItem onClick={checkForUpdates}>
           <Download className="mr-2 h-4 w-4" />
           <span>Check for Updates</span>
         </DropdownMenuItem>
-        
+
         <DropdownMenuSeparator />
         <DropdownMenuLabel className="text-xs text-muted-foreground">
           Window Controls
         </DropdownMenuLabel>
-        
+
         <DropdownMenuItem onClick={toggleFullscreen}>
           {isFullscreen ? (
             <Minimize2 className="mr-2 h-4 w-4" />
@@ -252,13 +250,16 @@ export function AppQuickActions() {
           <span>{isFullscreen ? "Exit Fullscreen" : "Fullscreen"}</span>
           <DropdownMenuShortcut>F11</DropdownMenuShortcut>
         </DropdownMenuItem>
-        
+
         <DropdownMenuItem onClick={minimizeWindow}>
           <Minimize2 className="mr-2 h-4 w-4" />
           <span>Minimize</span>
         </DropdownMenuItem>
-        
-        <DropdownMenuItem onClick={closeWindow} className="text-red-600 dark:text-red-400">
+
+        <DropdownMenuItem
+          onClick={closeWindow}
+          className="text-red-600 dark:text-red-400"
+        >
           <X className="mr-2 h-4 w-4" />
           <span>Close App</span>
           <DropdownMenuShortcut>⌘Q</DropdownMenuShortcut>

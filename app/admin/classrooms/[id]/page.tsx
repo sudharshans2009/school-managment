@@ -79,7 +79,7 @@ export default function ClassroomDetailPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/admin/classrooms">
-              <Button variant="ghost" size="sm" className="rounded-xl">
+              <Button variant="ghost" size="sm">
                 ← Back
               </Button>
             </Link>
@@ -91,7 +91,7 @@ export default function ClassroomDetailPage() {
             </div>
           </div>
           <Link href={`/admin/classrooms/${classroomId}/edit`}>
-            <Button className="rounded-xl">
+            <Button>
               <Settings className="h-4 w-4 mr-2" />
               Manage
             </Button>
@@ -206,7 +206,7 @@ export default function ClassroomDetailPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="p-4 bg-primary/5 rounded-xl">
+                  <div className="p-4 bg-primary/5">
                     <p className="text-lg font-semibold">
                       {primaryTeacher.teacher.name}
                     </p>
@@ -235,7 +235,7 @@ export default function ClassroomDetailPage() {
                       .map((student) => (
                         <div
                           key={student.id}
-                          className="flex items-center justify-between p-3 border rounded-xl hover:bg-muted/50 transition-colors"
+                          className="flex items-center justify-between p-3 border hover:bg-muted/50 transition-colors"
                         >
                           <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
@@ -274,7 +274,7 @@ export default function ClassroomDetailPage() {
                     {classroom.teacherAssignments.map((assignment) => (
                       <div
                         key={assignment.id}
-                        className="flex items-center justify-between p-4 border rounded-xl hover:bg-muted/50 transition-colors"
+                        className="flex items-center justify-between p-4 border hover:bg-muted/50 transition-colors"
                       >
                         <div className="flex items-center gap-4">
                           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">

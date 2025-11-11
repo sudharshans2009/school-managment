@@ -51,7 +51,7 @@ interface DisciplinaryAction {
  */
 export function exportMedicalIncidentsToCSV(
   incidents: MedicalIncident[],
-  studentName: string
+  studentName: string,
 ): void {
   if (!incidents || incidents.length === 0) {
     alert("No medical incidents to export");
@@ -90,7 +90,7 @@ export function exportMedicalIncidentsToCSV(
 
   downloadCSV(
     csvContent,
-    `${studentName.replace(/\s+/g, "_")}_medical_incidents_${new Date().toISOString().split("T")[0]}.csv`
+    `${studentName.replace(/\s+/g, "_")}_medical_incidents_${new Date().toISOString().split("T")[0]}.csv`,
   );
 }
 
@@ -99,7 +99,7 @@ export function exportMedicalIncidentsToCSV(
  */
 export function exportDisciplinaryActionsToCSV(
   actions: DisciplinaryAction[],
-  studentName: string
+  studentName: string,
 ): void {
   if (!actions || actions.length === 0) {
     alert("No disciplinary actions to export");
@@ -140,7 +140,7 @@ export function exportDisciplinaryActionsToCSV(
 
   downloadCSV(
     csvContent,
-    `${studentName.replace(/\s+/g, "_")}_disciplinary_actions_${new Date().toISOString().split("T")[0]}.csv`
+    `${studentName.replace(/\s+/g, "_")}_disciplinary_actions_${new Date().toISOString().split("T")[0]}.csv`,
   );
 }
 
@@ -149,7 +149,7 @@ export function exportDisciplinaryActionsToCSV(
  */
 export function exportMedicalIncidentsToJSON(
   incidents: MedicalIncident[],
-  studentName: string
+  studentName: string,
 ): void {
   if (!incidents || incidents.length === 0) {
     alert("No medical incidents to export");
@@ -176,7 +176,7 @@ export function exportMedicalIncidentsToJSON(
 
   downloadJSON(
     exportData,
-    `${studentName.replace(/\s+/g, "_")}_medical_incidents_${new Date().toISOString().split("T")[0]}.json`
+    `${studentName.replace(/\s+/g, "_")}_medical_incidents_${new Date().toISOString().split("T")[0]}.json`,
   );
 }
 
@@ -185,7 +185,7 @@ export function exportMedicalIncidentsToJSON(
  */
 export function exportDisciplinaryActionsToJSON(
   actions: DisciplinaryAction[],
-  studentName: string
+  studentName: string,
 ): void {
   if (!actions || actions.length === 0) {
     alert("No disciplinary actions to export");
@@ -213,7 +213,7 @@ export function exportDisciplinaryActionsToJSON(
 
   downloadJSON(
     exportData,
-    `${studentName.replace(/\s+/g, "_")}_disciplinary_actions_${new Date().toISOString().split("T")[0]}.json`
+    `${studentName.replace(/\s+/g, "_")}_disciplinary_actions_${new Date().toISOString().split("T")[0]}.json`,
   );
 }
 
@@ -223,7 +223,7 @@ export function exportDisciplinaryActionsToJSON(
 export function exportStudentReport(
   studentName: string,
   medicalIncidents: MedicalIncident[],
-  disciplinaryActions: DisciplinaryAction[]
+  disciplinaryActions: DisciplinaryAction[],
 ): void {
   const report = {
     studentName,
@@ -232,16 +232,16 @@ export function exportStudentReport(
       totalMedicalIncidents: medicalIncidents.length,
       totalDisciplinaryActions: disciplinaryActions.length,
       criticalMedicalIncidents: medicalIncidents.filter(
-        (i) => i.severity === "critical"
+        (i) => i.severity === "critical",
       ).length,
       severeDisciplinaryActions: disciplinaryActions.filter(
-        (a) => a.severity === "Severe"
+        (a) => a.severity === "Severe",
       ).length,
       medicalFollowUpsRequired: medicalIncidents.filter(
-        (i) => i.followUpRequired
+        (i) => i.followUpRequired,
       ).length,
       parentMeetingsRequired: disciplinaryActions.filter(
-        (a) => a.parentMeetingRequired
+        (a) => a.parentMeetingRequired,
       ).length,
     },
     medicalIncidents: medicalIncidents.map((incident) => ({
@@ -271,7 +271,7 @@ export function exportStudentReport(
 
   downloadJSON(
     report,
-    `${studentName.replace(/\s+/g, "_")}_comprehensive_report_${new Date().toISOString().split("T")[0]}.json`
+    `${studentName.replace(/\s+/g, "_")}_comprehensive_report_${new Date().toISOString().split("T")[0]}.json`,
   );
 }
 
@@ -319,7 +319,7 @@ function downloadJSON(data: Record<string, unknown>, filename: string): void {
  */
 export function printMedicalIncidentsReport(
   incidents: MedicalIncident[],
-  studentName: string
+  studentName: string,
 ): void {
   const printWindow = window.open("", "_blank");
   if (!printWindow) {
@@ -451,7 +451,7 @@ export function printMedicalIncidentsReport(
             ${incident.reporter?.name || "Unknown"}
           </div>
         </div>
-      `
+      `,
         )
         .join("")}
     </body>
@@ -472,7 +472,7 @@ export function printMedicalIncidentsReport(
  */
 export function printDisciplinaryActionsReport(
   actions: DisciplinaryAction[],
-  studentName: string
+  studentName: string,
 ): void {
   const printWindow = window.open("", "_blank");
   if (!printWindow) {
@@ -615,7 +615,7 @@ export function printDisciplinaryActionsReport(
             ${action.reporter?.name || "Unknown"}
           </div>
         </div>
-      `
+      `,
         )
         .join("")}
     </body>

@@ -47,7 +47,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="rounded-xl shadow-sm">
+              <Card className="shadow-sm">
                 <CardContent className="p-6">
                   <h3 className="font-semibold text-lg mb-4 flex items-center">
                     <User className="h-5 w-5 mr-2 text-primary" />
@@ -78,7 +78,7 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
-              <Card className="rounded-xl shadow-sm">
+              <Card className="shadow-sm">
                 <CardContent className="p-6">
                   <h3 className="font-semibold text-lg mb-4">Session Info</h3>
                   <dl className="space-y-3">
@@ -105,7 +105,7 @@ export default function DashboardPage() {
               </Card>
             </div>
 
-            <Card className="rounded-xl shadow-sm bg-primary/5 border-primary/20">
+            <Card className="shadow-sm bg-primary/5 border-primary/20">
               <CardContent className="p-6">
                 <h4 className="font-semibold text-sm mb-2">
                   🎉 Authentication Setup Complete!

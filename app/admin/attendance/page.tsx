@@ -215,7 +215,7 @@ export default function AdminAttendancePage() {
         >
           {selectedClassroom && students && students.length > 0 && (
             <Button
-              className="rounded-xl w-full sm:w-auto"
+              className="w-full sm:w-auto"
               onClick={() => setViewMode(viewMode === "view" ? "mark" : "view")}
               disabled={!selectedDate}
             >
@@ -232,7 +232,7 @@ export default function AdminAttendancePage() {
               value={selectedClassroom}
               onValueChange={setSelectedClassroom}
             >
-              <SelectTrigger className="rounded-xl w-full">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Choose a classroom" />
               </SelectTrigger>
               <SelectContent>
@@ -248,7 +248,6 @@ export default function AdminAttendancePage() {
             <Label>Select Date</Label>
             <Input
               type="date"
-              className="rounded-xl"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
             />
@@ -267,7 +266,7 @@ export default function AdminAttendancePage() {
         </div>
 
         {error && (
-          <Alert variant="destructive" className="rounded-xl">
+          <Alert variant="destructive">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -343,7 +342,7 @@ export default function AdminAttendancePage() {
                     {attendanceRecords.map((record) => (
                       <div
                         key={record.id}
-                        className="flex items-center justify-between p-4 border rounded-xl hover:bg-muted"
+                        className="flex items-center justify-between p-4 border hover:bg-muted"
                       >
                         <div className="flex items-center gap-4">
                           <div>

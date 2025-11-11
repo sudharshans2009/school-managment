@@ -86,7 +86,6 @@ export function DashboardLayout({
                   variant="ghost"
                   size="icon"
                   onClick={() => router.back()}
-                  className="rounded-xl"
                 >
                   <ArrowLeft className="h-5 w-5" />
                   <span className="sr-only">Go back</span>
@@ -96,7 +95,7 @@ export function DashboardLayout({
                 href={getDashboardUrl()}
                 className="flex items-center space-x-3 hover:opacity-80 transition-opacity"
               >
-                <div className="flex items-center justify-center w-10 h-10 bg-primary rounded-xl shadow-sm">
+                <div className="flex items-center justify-center w-10 h-10 bg-primary shadow-sm rounded-xl">
                   {(() => {
                     const Icon = icon || GraduationCap;
                     return <Icon className="w-6 h-6 text-primary-foreground" />;
@@ -136,18 +135,14 @@ export function DashboardLayout({
             <div className="flex items-center gap-2">
               {/* Navigation Links */}
               <Link href={getDashboardUrl()}>
-                <Button variant="ghost" size="sm" className="rounded-xl">
+                <Button variant="ghost" size="sm">
                   <Home className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Home</span>
                 </Button>
               </Link>
 
               <Link href="/notifications">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="rounded-xl relative"
-                >
+                <Button variant="ghost" size="sm" className="relative">
                   <Bell className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Notifications</span>
                   {unreadCount && unreadCount.count > 0 && (
@@ -162,7 +157,7 @@ export function DashboardLayout({
               </Link>
 
               <Link href="/profile">
-                <Button variant="ghost" size="sm" className="rounded-xl">
+                <Button variant="ghost" size="sm">
                   <User className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Profile</span>
                 </Button>
@@ -173,7 +168,6 @@ export function DashboardLayout({
                 variant="ghost"
                 size="icon"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="rounded-xl"
               >
                 <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                 <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -182,12 +176,7 @@ export function DashboardLayout({
 
               {/* Sign Out */}
               {session && (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={handleSignOut}
-                  className="rounded-xl"
-                >
+                <Button variant="destructive" size="sm" onClick={handleSignOut}>
                   <LogOut className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Logout</span>
                 </Button>
@@ -204,8 +193,8 @@ export function DashboardLayout({
       <footer className="border-t border-border mt-auto">
         <div className="container mx-auto px-6 py-6">
           <p className="text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Amrita School Management System. Built
-            with Next.js & ShadCN UI.
+            © {new Date().getFullYear()} Amrita Vidyalayam Management System.
+            Built with Next.js & ShadCN UI.
           </p>
         </div>
       </footer>

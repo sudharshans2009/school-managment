@@ -388,7 +388,7 @@ export default function TeacherExamsPage() {
                     students.length === 0 ||
                     selectedExamData?.isFinalized
                   }
-                  className="w-full sm:w-auto rounded-xl"
+                  className="w-full sm:w-auto"
                   size="sm"
                 >
                   <Upload className="h-4 w-4 mr-2" />

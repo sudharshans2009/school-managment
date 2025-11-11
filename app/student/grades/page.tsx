@@ -39,10 +39,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { StudentHeader } from "@/components/student/student-header";
-import {
-  getStudentGrades,
-  type StudentGrade,
-} from "@/actions/student";
+import { getStudentGrades, type StudentGrade } from "@/actions/student";
 
 export default function StudentGradesPage() {
   const { data: session, isPending: sessionPending } = useSession();
@@ -53,7 +50,12 @@ export default function StudentGradesPage() {
 
   // Fetch student grades (finalized only)
   const { data: grades, isLoading: gradesLoading } = useQuery<StudentGrade[]>({
-    queryKey: ["student-grades", session?.user?.id, filterSubject, filterExamType],
+    queryKey: [
+      "student-grades",
+      session?.user?.id,
+      filterSubject,
+      filterExamType,
+    ],
     queryFn: async () => {
       if (!session?.user?.id) return [];
       return await getStudentGrades(session.user.id, {
@@ -66,12 +68,15 @@ export default function StudentGradesPage() {
 
   // Get unique subjects from grades
   const subjects =
-    grades?.reduce((acc, grade) => {
-      if (!acc.find((s) => s.id === grade.subject.id)) {
-        acc.push(grade.subject);
-      }
-      return acc;
-    }, [] as Array<{ id: string; name: string; code: string }>) || [];
+    grades?.reduce(
+      (acc, grade) => {
+        if (!acc.find((s) => s.id === grade.subject.id)) {
+          acc.push(grade.subject);
+        }
+        return acc;
+      },
+      [] as Array<{ id: string; name: string; code: string }>,
+    ) || [];
 
   // Calculate statistics
   const stats = {

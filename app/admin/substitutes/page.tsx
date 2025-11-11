@@ -228,7 +228,7 @@ export default function SubstitutesManagementPage() {
           <Label>Select Date</Label>
           <Input
             type="date"
-            className="rounded-xl max-w-xs"
+            className="max-w-xs"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
           />
@@ -247,7 +247,7 @@ export default function SubstitutesManagementPage() {
                     {unassignedPeriods?.length || 0}
                   </p>
                 </div>
-                <div className="bg-red-100 p-3 rounded-xl">
+                <div className="bg-red-100 p-3">
                   <AlertCircle className="h-6 w-6 text-red-600" />
                 </div>
               </div>
@@ -264,7 +264,7 @@ export default function SubstitutesManagementPage() {
                     {assignments?.length || 0}
                   </p>
                 </div>
-                <div className="bg-green-100 p-3 rounded-xl">
+                <div className="bg-green-100 p-3">
                   <CheckCircle className="h-6 w-6 text-green-600" />
                 </div>
               </div>
@@ -282,10 +282,7 @@ export default function SubstitutesManagementPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {unassignedPeriods?.map((period) => (
-              <Card
-                key={period.id}
-                className="rounded-xl border-l-4 border-l-red-500"
-              >
+              <Card key={period.id} className="border-l-4 border-l-red-500">
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -307,7 +304,6 @@ export default function SubstitutesManagementPage() {
                     </div>
                     <Button
                       size="sm"
-                      className="rounded-xl"
                       onClick={() => setAssignDialog({ open: true, period })}
                     >
                       <UserPlus className="h-4 w-4 mr-1" />
@@ -337,7 +333,7 @@ export default function SubstitutesManagementPage() {
             {assignments?.map((assignment) => (
               <Card
                 key={assignment.id}
-                className="rounded-xl border-l-4 border-l-green-500"
+                className="border-l-4 border-l-green-500"
               >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
@@ -367,7 +363,6 @@ export default function SubstitutesManagementPage() {
                     <Button
                       size="sm"
                       variant="destructive"
-                      className="rounded-xl"
                       onClick={() => deleteMutation.mutate(assignment.id)}
                       disabled={deleteMutation.isPending}
                     >
@@ -401,7 +396,7 @@ export default function SubstitutesManagementPage() {
             </DialogHeader>
             <div className="space-y-4">
               {assignDialog.period && (
-                <div className="bg-muted p-4 rounded-xl">
+                <div className="bg-muted p-4">
                   <p className="font-semibold">
                     {assignDialog.period.classroomName} -{" "}
                     {assignDialog.period.subjectName}
@@ -422,7 +417,7 @@ export default function SubstitutesManagementPage() {
                   value={selectedTeacher}
                   onValueChange={setSelectedTeacher}
                 >
-                  <SelectTrigger className="rounded-xl">
+                  <SelectTrigger>
                     <SelectValue placeholder="Choose a teacher" />
                   </SelectTrigger>
                   <SelectContent>
@@ -456,7 +451,7 @@ export default function SubstitutesManagementPage() {
 
               <div className="flex gap-2">
                 <Button
-                  className="flex-1 rounded-xl"
+                  className="flex-1"
                   onClick={handleAssign}
                   disabled={assignMutation.isPending || !selectedTeacher}
                 >
@@ -468,7 +463,6 @@ export default function SubstitutesManagementPage() {
                   Assign Substitute
                 </Button>
                 <Button
-                  className="rounded-xl"
                   variant="outline"
                   onClick={() => setAssignDialog({ open: false, period: null })}
                   disabled={assignMutation.isPending}

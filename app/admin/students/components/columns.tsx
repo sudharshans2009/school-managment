@@ -98,19 +98,19 @@ export const createStudentColumns = ({
     cell: ({ row }) => {
       const house = row.getValue("house") as string | null;
       if (!house) return <span className="text-gray-400">-</span>;
-      
+
       const houseColors: Record<string, string> = {
-        Amritamayi: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 border-red-300",
-        Anandamayi: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 border-blue-300",
-        Chinmayi: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 border-green-300",
-        Jothyrmayi: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 border-yellow-300",
+        Amritamayi:
+          "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300 border-red-300",
+        Anandamayi:
+          "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 border-blue-300",
+        Chinmayi:
+          "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 border-green-300",
+        Jothyrmayi:
+          "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 border-yellow-300",
       };
-      
-      return (
-        <Badge className={houseColors[house]}>
-          {house}
-        </Badge>
-      );
+
+      return <Badge className={houseColors[house]}>{house}</Badge>;
     },
   },
   {
@@ -175,17 +175,12 @@ export const createStudentColumns = ({
       return (
         <div className="flex flex-wrap gap-2">
           <Link href={`/admin/students/${student.id}`}>
-            <Button variant="outline" size="sm" className="rounded-xl">
+            <Button variant="outline" size="sm">
               <Eye className="h-4 w-4 mr-1" />
               View
             </Button>
           </Link>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onEdit(student)}
-            className="rounded-xl"
-          >
+          <Button variant="outline" size="sm" onClick={() => onEdit(student)}>
             <Edit2 className="h-4 w-4 mr-1" />
             Edit
           </Button>
@@ -193,7 +188,7 @@ export const createStudentColumns = ({
             variant="outline"
             size="sm"
             onClick={() => onMedical(student)}
-            className="rounded-xl text-blue-600 hover:text-blue-700 border-blue-300 hover:bg-blue-50"
+            className="text-blue-600 hover:text-blue-700 border-blue-300 hover:bg-blue-50"
             title="Medical Records"
           >
             <HeartPulse className="h-4 w-4 mr-1" />
@@ -203,7 +198,7 @@ export const createStudentColumns = ({
             variant="outline"
             size="sm"
             onClick={() => onDisciplinary(student)}
-            className="rounded-xl text-orange-600 hover:text-orange-700 border-orange-300 hover:bg-orange-50"
+            className="text-orange-600 hover:text-orange-700 border-orange-300 hover:bg-orange-50"
             title="Disciplinary Actions"
           >
             <AlertTriangle className="h-4 w-4 mr-1" />
@@ -213,7 +208,6 @@ export const createStudentColumns = ({
             variant="destructive"
             size="sm"
             onClick={() => onDelete(student)}
-            className="rounded-xl"
           >
             <Trash2 className="h-4 w-4" />
           </Button>

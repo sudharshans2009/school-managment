@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -102,7 +108,8 @@ export function ExportSettingsCard() {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Download the desktop app to configure CSV export settings and save files locally.
+            Download the desktop app to configure CSV export settings and save
+            files locally.
           </p>
         </CardContent>
       </Card>
@@ -193,11 +200,7 @@ export function ExportSettingsCard() {
             <Save className="h-4 w-4 mr-2" />
             Save Settings
           </Button>
-          <Button
-            variant="outline"
-            onClick={handleReset}
-            disabled={loading}
-          >
+          <Button variant="outline" onClick={handleReset} disabled={loading}>
             <RotateCcw className="h-4 w-4 mr-2" />
             Reset
           </Button>

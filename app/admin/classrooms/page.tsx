@@ -138,7 +138,7 @@ export default function ClassroomsPage() {
               onClick={() =>
                 setViewMode(viewMode === "grid" ? "table" : "grid")
               }
-              className="rounded-xl flex-1 sm:flex-none"
+              className="flex-1 sm:flex-none"
             >
               {viewMode === "grid" ? (
                 <>
@@ -154,7 +154,7 @@ export default function ClassroomsPage() {
             </Button>
             <Dialog open={openCreate} onOpenChange={setOpenCreate}>
               <DialogTrigger asChild>
-                <Button className="rounded-xl flex-1 sm:flex-none">
+                <Button className="flex-1 sm:flex-none">
                   <Plus className="h-4 w-4 mr-2" />
                   Create Classroom
                 </Button>
@@ -167,7 +167,6 @@ export default function ClassroomsPage() {
                   <div>
                     <Label htmlFor="name">Classroom Name *</Label>
                     <Input
-                      className="rounded-xl"
                       id="name"
                       name="name"
                       placeholder="e.g., Class 10A"
@@ -177,7 +176,6 @@ export default function ClassroomsPage() {
                   <div>
                     <Label htmlFor="grade">Grade *</Label>
                     <Input
-                      className="rounded-xl"
                       id="grade"
                       name="grade"
                       placeholder="e.g., 10"
@@ -187,7 +185,6 @@ export default function ClassroomsPage() {
                   <div>
                     <Label htmlFor="section">Section *</Label>
                     <Input
-                      className="rounded-xl"
                       id="section"
                       name="section"
                       placeholder="e.g., A"
@@ -205,16 +202,11 @@ export default function ClassroomsPage() {
                     <Button
                       type="button"
                       variant="outline"
-                      className="rounded-xl"
                       onClick={() => setOpenCreate(false)}
                     >
                       Cancel
                     </Button>
-                    <Button
-                      type="submit"
-                      className="rounded-xl"
-                      disabled={createMutation.isPending}
-                    >
+                    <Button type="submit" disabled={createMutation.isPending}>
                       {createMutation.isPending ? "Creating..." : "Create"}
                     </Button>
                   </div>
@@ -240,7 +232,7 @@ export default function ClassroomsPage() {
                   placeholder="Search classrooms by name, grade, or section..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 rounded-xl"
+                  className="pl-10"
                 />
               </div>
             </div>

@@ -6,6 +6,7 @@ import {
   homeworkSubmissions,
   teacherAssignments,
   timetable,
+  students,
 } from "@/database/schema";
 import { count, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth/main";
@@ -24,24 +25,30 @@ export async function GET(req: NextRequest) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Calculate attendance rate (today)
-    const todayAttendance = await db
+    // Calculate attendance rate (last 30 days to get meaningful data)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+    const recentAttendance = await db
       .select({
         total: count(),
         present: sql<number>`count(*) filter (where ${attendance.status} = 'present')`,
       })
       .from(attendance)
-      .where(sql`DATE(${attendance.date}) = DATE(${today.toISOString()})`);
+      .where(sql`${attendance.date} >= ${thirtyDaysAgo.toISOString()}`);
 
     const attendanceRate =
-      todayAttendance[0]?.total > 0
-        ? (Number(todayAttendance[0].present) / todayAttendance[0].total) * 100
+      recentAttendance[0]?.total > 0
+        ? (Number(recentAttendance[0].present) / recentAttendance[0].total) *
+          100
         : 0;
 
     // Calculate fee collection rate (placeholder - implement when fee system is ready)
     const feeCollectionRate = 87.3; // Mock data for now
 
     // Calculate homework completion rate
+    // Formula: (completed submissions / (total homework × total students)) × 100
     const totalHomework = await db.select({ count: count() }).from(homework);
 
     const completedSubmissions = await db
@@ -49,9 +56,15 @@ export async function GET(req: NextRequest) {
       .from(homeworkSubmissions)
       .where(sql`${homeworkSubmissions.status} IN ('submitted', 'graded')`);
 
+    // Get total number of students to calculate expected submissions
+    const totalStudents = await db.select({ count: count() }).from(students);
+
+    const expectedSubmissions =
+      totalHomework[0]?.count * (totalStudents[0]?.count || 1);
+
     const homeworkCompletionRate =
-      totalHomework[0]?.count > 0
-        ? (completedSubmissions[0]?.count / totalHomework[0].count) * 100
+      expectedSubmissions > 0
+        ? (completedSubmissions[0]?.count / expectedSubmissions) * 100
         : 0;
 
     // Calculate teacher assignment rate

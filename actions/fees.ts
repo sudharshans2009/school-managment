@@ -116,7 +116,7 @@ export async function updateFeeStructure(
     dueDay: number;
     academicYear: string;
     isActive: boolean;
-  }>
+  }>,
 ): Promise<{ success: boolean; data?: FeeStructure; error?: string }> {
   try {
     if (!feeStructureId) {
@@ -133,8 +133,9 @@ export async function updateFeeStructure(
       academicYear: string;
       isActive: boolean;
     }> = {};
-    
-    if (feeData.classroomId !== undefined) updateData.classroomId = feeData.classroomId;
+
+    if (feeData.classroomId !== undefined)
+      updateData.classroomId = feeData.classroomId;
     if (feeData.grade !== undefined) updateData.grade = feeData.grade;
     if (feeData.feeType) updateData.feeType = feeData.feeType;
     if (feeData.amount) updateData.amount = feeData.amount.toString();
@@ -165,7 +166,7 @@ export async function updateFeeStructure(
  * @param feeStructureId - Fee structure ID
  */
 export async function deleteFeeStructure(
-  feeStructureId: string
+  feeStructureId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     if (!feeStructureId) {
@@ -253,10 +254,16 @@ export async function recordPayment(paymentData: {
   remarks?: string;
 }): Promise<{ success: boolean; data?: FeePayment; error?: string }> {
   try {
-    if (!paymentData.studentId || !paymentData.feeStructureId || !paymentData.amount || !paymentData.dueDate) {
+    if (
+      !paymentData.studentId ||
+      !paymentData.feeStructureId ||
+      !paymentData.amount ||
+      !paymentData.dueDate
+    ) {
       return {
         success: false,
-        error: "Student ID, fee structure ID, amount, and due date are required",
+        error:
+          "Student ID, fee structure ID, amount, and due date are required",
       };
     }
 
@@ -266,7 +273,9 @@ export async function recordPayment(paymentData: {
         studentId: paymentData.studentId,
         feeStructureId: paymentData.feeStructureId,
         amount: paymentData.amount.toString(),
-        paymentDate: paymentData.paymentDate ? new Date(paymentData.paymentDate) : new Date(),
+        paymentDate: paymentData.paymentDate
+          ? new Date(paymentData.paymentDate)
+          : new Date(),
         dueDate: new Date(paymentData.dueDate),
         status: paymentData.status || "paid",
         paymentMethod: paymentData.paymentMethod || null,
@@ -299,7 +308,7 @@ export async function updatePayment(
     transactionId: string;
     receiptNumber: string;
     remarks: string;
-  }>
+  }>,
 ): Promise<{ success: boolean; data?: FeePayment; error?: string }> {
   try {
     if (!paymentId) {
@@ -318,13 +327,18 @@ export async function updatePayment(
     }> = {};
 
     if (paymentData.amount) updateData.amount = paymentData.amount.toString();
-    if (paymentData.paymentDate) updateData.paymentDate = new Date(paymentData.paymentDate);
+    if (paymentData.paymentDate)
+      updateData.paymentDate = new Date(paymentData.paymentDate);
     if (paymentData.dueDate) updateData.dueDate = new Date(paymentData.dueDate);
     if (paymentData.status) updateData.status = paymentData.status;
-    if (paymentData.paymentMethod !== undefined) updateData.paymentMethod = paymentData.paymentMethod;
-    if (paymentData.transactionId !== undefined) updateData.transactionId = paymentData.transactionId;
-    if (paymentData.receiptNumber !== undefined) updateData.receiptNumber = paymentData.receiptNumber;
-    if (paymentData.remarks !== undefined) updateData.remarks = paymentData.remarks;
+    if (paymentData.paymentMethod !== undefined)
+      updateData.paymentMethod = paymentData.paymentMethod;
+    if (paymentData.transactionId !== undefined)
+      updateData.transactionId = paymentData.transactionId;
+    if (paymentData.receiptNumber !== undefined)
+      updateData.receiptNumber = paymentData.receiptNumber;
+    if (paymentData.remarks !== undefined)
+      updateData.remarks = paymentData.remarks;
 
     const updatedPayment = await db
       .update(feePayments)
@@ -354,7 +368,7 @@ export async function getFeesByStudent(
     status?: "pending" | "paid" | "overdue" | "partial";
     startDate?: string | Date;
     endDate?: string | Date;
-  }
+  },
 ): Promise<{ success: boolean; data?: FeePayment[]; error?: string }> {
   try {
     if (!studentId) {
@@ -412,7 +426,7 @@ export async function getFeesByClassroom(
   classroomId: string,
   filters?: {
     status?: "pending" | "paid" | "overdue" | "partial";
-  }
+  },
 ): Promise<{ success: boolean; data?: FeePayment[]; error?: string }> {
   try {
     if (!classroomId) {
@@ -474,7 +488,7 @@ export async function getFeesByClassroom(
  * @param studentId - Student ID
  */
 export async function getStudentFeeStatus(
-  studentId: string
+  studentId: string,
 ): Promise<{ success: boolean; data?: StudentFeeStatus; error?: string }> {
   try {
     if (!studentId) {
@@ -569,7 +583,7 @@ export async function getStudentFeeStatus(
 export async function generateFeeReceipts(
   classroomId: string,
   feeStructureId: string,
-  dueDate: string | Date
+  dueDate: string | Date,
 ): Promise<{ success: boolean; data?: { count: number }; error?: string }> {
   try {
     if (!classroomId || !feeStructureId || !dueDate) {

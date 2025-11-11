@@ -358,7 +358,6 @@ export default function AdminCalendarPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="rounded-xl"
                   onClick={() => setCurrentDate(subMonths(currentDate, 1))}
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -366,7 +365,6 @@ export default function AdminCalendarPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="rounded-xl"
                   onClick={() => setCurrentDate(new Date())}
                 >
                   Today

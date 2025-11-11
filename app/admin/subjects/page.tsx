@@ -242,7 +242,7 @@ export default function SubjectsPage() {
             onOpenChange={handleDialogChange}
           >
             <DialogTrigger asChild>
-              <Button className="rounded-xl w-full sm:w-auto">
+              <Button className="w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Subject
               </Button>
@@ -383,7 +383,6 @@ export default function SubjectsPage() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="rounded-xl"
                     onClick={() => {
                       setOpenCreate(false);
                       setEditingSubject(null);
@@ -397,7 +396,6 @@ export default function SubjectsPage() {
                   </Button>
                   <Button
                     type="submit"
-                    className="rounded-xl"
                     disabled={
                       createMutation.isPending || updateMutation.isPending
                     }
@@ -420,7 +418,7 @@ export default function SubjectsPage() {
               placeholder="Search subjects by name or code..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 rounded-xl"
+              className="pl-10"
             />
           </div>
         </div>

@@ -25,6 +25,7 @@ import {
   Award,
   BarChart3,
   History,
+  UserCog,
 } from "lucide-react";
 import Link from "next/link";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
@@ -160,6 +161,18 @@ export default function AdminDashboard() {
       description: "Assign teachers to classes",
     },
     {
+      title: "Manage Admins",
+      href: "/admin/admins",
+      icon: UserCog,
+      description: "Manage system administrators",
+    },
+    {
+      title: "Manage Admissions",
+      href: "/admin/admissions",
+      icon: UserPlus,
+      description: "Review and process admission applications",
+    },
+    {
       title: "Manage Subjects",
       href: "/admin/subjects",
       icon: BookOpen,
@@ -270,7 +283,7 @@ export default function AdminDashboard() {
   return (
     <DashboardLayout
       title="Admin Portal"
-      description="Amrita School Management"
+      description="Amrita Vidyalayam Management"
     >
       <div className="space-y-6">
         {/* Stats Grid */}
@@ -311,7 +324,7 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {quickActions.map((action) => (
                 <Link key={action.title} href={action.href}>
-                  <Card className="rounded-xl shadow-sm hover:shadow-md transition-all hover:border-primary cursor-pointer">
+                  <Card className="shadow-sm hover:shadow-md transition-all hover:border-primary cursor-pointer">
                     <CardContent className="p-4">
                       <div className="flex items-start space-x-3">
                         <div className="bg-primary/10 p-2 rounded-xl">

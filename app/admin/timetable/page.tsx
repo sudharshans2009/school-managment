@@ -406,7 +406,7 @@ export default function TimetablePage() {
                   value={selectedClassroom}
                   onValueChange={setSelectedClassroom}
                 >
-                  <SelectTrigger className="rounded-xl">
+                  <SelectTrigger>
                     <SelectValue placeholder="Choose a classroom" />
                   </SelectTrigger>
                   <SelectContent>
@@ -424,7 +424,7 @@ export default function TimetablePage() {
                   value={selectedDay.toString()}
                   onValueChange={(value) => setSelectedDay(parseInt(value))}
                 >
-                  <SelectTrigger className="rounded-xl">
+                  <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>

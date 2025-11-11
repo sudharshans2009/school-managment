@@ -128,7 +128,7 @@ export default function LeavesManagementPage() {
   };
 
   const LeaveCard = ({ leave }: { leave: AdminTeacherLeave }) => (
-    <Card key={leave.id} className="rounded-xl">
+    <Card key={leave.id}>
       <CardContent className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -166,7 +166,7 @@ export default function LeavesManagementPage() {
               <Button
                 variant="default"
                 size="sm"
-                className="rounded-xl bg-green-600 hover:bg-green-700"
+                className="bg-green-600 hover:bg-green-700"
                 onClick={() =>
                   setApprovalDialog({ open: true, leave, action: "approve" })
                 }
@@ -177,7 +177,6 @@ export default function LeavesManagementPage() {
               <Button
                 variant="destructive"
                 size="sm"
-                className="rounded-xl"
                 onClick={() =>
                   setApprovalDialog({ open: true, leave, action: "reject" })
                 }
@@ -217,7 +216,7 @@ export default function LeavesManagementPage() {
                     {pendingLeaves.length}
                   </p>
                 </div>
-                <div className="bg-orange-100 p-3 rounded-xl">
+                <div className="bg-orange-100 p-3">
                   <Calendar className="h-6 w-6 text-orange-600" />
                 </div>
               </div>
@@ -234,7 +233,7 @@ export default function LeavesManagementPage() {
                     {approvedLeaves.length}
                   </p>
                 </div>
-                <div className="bg-green-100 p-3 rounded-xl">
+                <div className="bg-green-100 p-3">
                   <CheckCircle className="h-6 w-6 text-green-600" />
                 </div>
               </div>
@@ -251,7 +250,7 @@ export default function LeavesManagementPage() {
                     {rejectedLeaves.length}
                   </p>
                 </div>
-                <div className="bg-red-100 p-3 rounded-xl">
+                <div className="bg-red-100 p-3">
                   <XCircle className="h-6 w-6 text-red-600" />
                 </div>
               </div>
@@ -261,7 +260,7 @@ export default function LeavesManagementPage() {
 
         {/* Tabs for different statuses */}
         <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-          <TabsList className="grid w-full grid-cols-4 rounded-xl">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="pending" className="rounded-lg">
               Pending ({pendingLeaves.length})
             </TabsTrigger>
@@ -377,7 +376,7 @@ export default function LeavesManagementPage() {
             </DialogHeader>
             <div className="space-y-4">
               {approvalDialog.leave && (
-                <div className="bg-muted p-4 rounded-xl">
+                <div className="bg-muted p-4">
                   <p className="font-semibold">
                     {approvalDialog.leave.teacherName}
                   </p>
@@ -393,7 +392,6 @@ export default function LeavesManagementPage() {
                   Notes {approvalDialog.action === "reject" && "(Required)"}
                 </Label>
                 <Textarea
-                  className="rounded-xl"
                   rows={3}
                   value={approvalNotes}
                   onChange={(e) => setApprovalNotes(e.target.value)}
@@ -406,7 +404,7 @@ export default function LeavesManagementPage() {
               </div>
               <div className="flex gap-2">
                 <Button
-                  className="flex-1 rounded-xl"
+                  className="flex-1"
                   variant={
                     approvalDialog.action === "approve"
                       ? "default"
@@ -434,7 +432,6 @@ export default function LeavesManagementPage() {
                     : "Rejection"}
                 </Button>
                 <Button
-                  className="rounded-xl"
                   variant="outline"
                   onClick={() =>
                     setApprovalDialog({

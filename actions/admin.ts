@@ -9,8 +9,10 @@ import {
   subjects,
   substituteAssignments,
   timetable,
+  admissionApplications,
+  entranceTests,
 } from "@/database/schema";
-import { eq, and, gte, lte, desc, sql } from "drizzle-orm";
+import { eq, and, gte, lte, desc, sql, inArray } from "drizzle-orm";
 import { hashPassword } from "@/lib/helpers";
 
 // ============================================
@@ -716,7 +718,7 @@ export async function getUnassignedPeriods(
       .where(
         and(
           eq(timetable.dayOfWeek, dayOfWeek),
-          sql`${timetable.teacherId} = ANY(${teachersOnLeave})`,
+          inArray(timetable.teacherId, teachersOnLeave),
           eq(timetable.isActive, true),
         ),
       );
@@ -746,9 +748,10 @@ export async function getUnassignedPeriods(
       id: period.id,
       classroomId: period.classroomId,
       classroomName: period.classroomName || "",
-      classroomGrade: typeof period.classroomGrade === 'string' 
-        ? parseInt(period.classroomGrade, 10) 
-        : period.classroomGrade || 0,
+      classroomGrade:
+        typeof period.classroomGrade === "string"
+          ? parseInt(period.classroomGrade, 10)
+          : period.classroomGrade || 0,
       classroomSection: period.classroomSection || "",
       subjectId: period.subjectId,
       subjectName: period.subjectName || "",
@@ -795,10 +798,7 @@ export async function getSubstituteAssignmentsByDate(
         subjectName: subjects.name,
       })
       .from(substituteAssignments)
-      .leftJoin(
-        users,
-        eq(substituteAssignments.originalTeacherId, users.id),
-      )
+      .leftJoin(users, eq(substituteAssignments.originalTeacherId, users.id))
       .leftJoin(
         sql`${users} AS substitute`,
         sql`${substituteAssignments.substituteTeacherId} = substitute.id`,
@@ -818,9 +818,10 @@ export async function getSubstituteAssignmentsByDate(
       substituteTeacherName: a.substituteTeacherName || "Unknown",
       classroomId: a.classroomId,
       classroomName: a.classroomName || "",
-      classroomGrade: typeof a.classroomGrade === 'string' 
-        ? parseInt(a.classroomGrade, 10) 
-        : a.classroomGrade || 0,
+      classroomGrade:
+        typeof a.classroomGrade === "string"
+          ? parseInt(a.classroomGrade, 10)
+          : a.classroomGrade || 0,
       classroomSection: a.classroomSection || "",
       subjectId: a.subjectId,
       subjectName: a.subjectName || "",
@@ -892,7 +893,10 @@ export async function createSubstituteAssignment(data: {
       .leftJoin(subjects, eq(substituteAssignments.subjectId, subjects.id))
       .where(
         and(
-          eq(substituteAssignments.substituteTeacherId, data.substituteTeacherId),
+          eq(
+            substituteAssignments.substituteTeacherId,
+            data.substituteTeacherId,
+          ),
           eq(substituteAssignments.date, data.date),
           eq(substituteAssignments.periodNumber, data.periodNumber),
         ),
@@ -1035,3 +1039,424 @@ export async function checkTeacherConflict(
   }
 }
 
+// ============================================
+// ADMIN MANAGEMENT
+// ============================================
+
+export interface Admin {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  phone: string | null;
+  address: string | null;
+  emailVerified: boolean;
+  isActive: boolean | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+}
+
+/**
+ * Get all admin users
+ */
+export async function getAllAdmins(): Promise<Admin[]> {
+  try {
+    const admins = await db.query.users.findMany({
+      where: eq(users.role, "admin"),
+      orderBy: (users, { asc }) => [asc(users.name)],
+    });
+
+    return admins;
+  } catch (error) {
+    console.error("Error fetching admins:", error);
+    throw new Error("Failed to fetch admins");
+  }
+}
+
+/**
+ * Create a new admin user
+ */
+export async function createAdmin(data: {
+  email: string;
+  name: string;
+  phone?: string;
+  address?: string;
+  password: string;
+}): Promise<{ success: boolean; error?: string; adminId?: string }> {
+  try {
+    // Check if email already exists
+    const existingUser = await db.query.users.findFirst({
+      where: eq(users.email, data.email),
+    });
+
+    if (existingUser) {
+      return { success: false, error: "Email already exists" };
+    }
+
+    // Hash password
+    const passwordHash = await hashPassword(data.password);
+
+    // Create admin user
+    const [newAdmin] = await db
+      .insert(users)
+      .values({
+        email: data.email,
+        name: data.name,
+        role: "admin",
+        phone: data.phone || null,
+        address: data.address || null,
+        passwordHash,
+        emailVerified: false,
+        isActive: true,
+      })
+      .returning();
+
+    return { success: true, adminId: newAdmin.id };
+  } catch (error) {
+    console.error("Error creating admin:", error);
+    return { success: false, error: "Failed to create admin" };
+  }
+}
+
+/**
+ * Update an admin user
+ */
+export async function updateAdmin(
+  adminId: string,
+  data: {
+    name?: string;
+    phone?: string;
+    address?: string;
+    isActive?: boolean;
+    password?: string;
+  },
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Check if admin exists
+    const existingAdmin = await db.query.users.findFirst({
+      where: eq(users.id, adminId),
+    });
+
+    if (!existingAdmin || existingAdmin.role !== "admin") {
+      return { success: false, error: "Admin not found" };
+    }
+
+    const updateData: Partial<typeof users.$inferInsert> = {
+      updatedAt: new Date(),
+    };
+
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.phone !== undefined) updateData.phone = data.phone;
+    if (data.address !== undefined) updateData.address = data.address;
+    if (data.isActive !== undefined) updateData.isActive = data.isActive;
+    if (data.password) {
+      updateData.passwordHash = await hashPassword(data.password);
+    }
+
+    await db.update(users).set(updateData).where(eq(users.id, adminId));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating admin:", error);
+    return { success: false, error: "Failed to update admin" };
+  }
+}
+
+/**
+ * Delete an admin user
+ */
+export async function deleteAdmin(
+  adminId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Check if admin exists
+    const existingAdmin = await db.query.users.findFirst({
+      where: eq(users.id, adminId),
+    });
+
+    if (!existingAdmin || existingAdmin.role !== "admin") {
+      return { success: false, error: "Admin not found" };
+    }
+
+    // Check if this is the only admin
+    const adminCount = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(users)
+      .where(eq(users.role, "admin"));
+
+    if (adminCount[0].count <= 1) {
+      return {
+        success: false,
+        error: "Cannot delete the last admin user",
+      };
+    }
+
+    // Delete admin user
+    await db.delete(users).where(eq(users.id, adminId));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting admin:", error);
+    return { success: false, error: "Failed to delete admin" };
+  }
+}
+
+// ============================================
+// ADMISSION MANAGEMENT
+// ============================================
+
+export interface AdmissionApplication {
+  id: string;
+  applicationNumber: string;
+  studentName: string;
+  dateOfBirth: Date;
+  gender: string;
+  email: string;
+  phone: string;
+  address: string;
+  guardianName: string;
+  guardianRelation: string;
+  guardianPhone: string;
+  guardianEmail: string;
+  previousSchool: string | null;
+  gradeAppliedFor: string;
+  academicYear: string;
+  status: string;
+  entranceTestId: string | null;
+  testScore: string | null;
+  interviewDate: Date | null;
+  admissionDate: Date | null;
+  rejectionReason: string | null;
+  notes: string | null;
+  reviewedBy: string | null;
+  reviewedAt: Date | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  reviewer?: {
+    id: string;
+    name: string;
+    email: string;
+  } | null;
+  entranceTest?: {
+    id: string;
+    testName: string;
+    testDate: Date;
+    totalMarks: number;
+    passingMarks: number;
+  } | null;
+}
+
+/**
+ * Get all admission applications with filters
+ */
+export async function getAllAdmissions(filters?: {
+  status?: string;
+  grade?: string;
+}): Promise<AdmissionApplication[]> {
+  try {
+    const conditions = [];
+
+    if (filters?.status && filters.status !== "all") {
+      conditions.push(
+        eq(admissionApplications.status, filters.status as never),
+      );
+    }
+
+    if (filters?.grade && filters.grade !== "all") {
+      conditions.push(eq(admissionApplications.gradeAppliedFor, filters.grade));
+    }
+
+    const applications = await db.query.admissionApplications.findMany({
+      where: conditions.length > 0 ? and(...conditions) : undefined,
+      with: {
+        reviewer: {
+          columns: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        entranceTest: {
+          columns: {
+            id: true,
+            testName: true,
+            testDate: true,
+            totalMarks: true,
+            passingMarks: true,
+          },
+        },
+      },
+      orderBy: [desc(admissionApplications.createdAt)],
+    });
+
+    return applications;
+  } catch (error) {
+    console.error("Error fetching admissions:", error);
+    throw new Error("Failed to fetch admissions");
+  }
+}
+
+/**
+ * Get single admission application by ID
+ */
+export async function getAdmissionById(
+  admissionId: string,
+): Promise<AdmissionApplication> {
+  try {
+    const application = await db.query.admissionApplications.findFirst({
+      where: eq(admissionApplications.id, admissionId),
+      with: {
+        reviewer: {
+          columns: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        entranceTest: {
+          columns: {
+            id: true,
+            testName: true,
+            testDate: true,
+            totalMarks: true,
+            passingMarks: true,
+          },
+        },
+        documents: true,
+      },
+    });
+
+    if (!application) {
+      throw new Error("Admission application not found");
+    }
+
+    return application as AdmissionApplication;
+  } catch (error) {
+    console.error("Error fetching admission:", error);
+    throw new Error("Failed to fetch admission");
+  }
+}
+
+/**
+ * Update admission application status
+ */
+export async function updateAdmissionStatus(
+  admissionId: string,
+  data: {
+    status?: string;
+    testScore?: number;
+    interviewDate?: Date | null;
+    admissionDate?: Date | null;
+    rejectionReason?: string;
+    notes?: string;
+    reviewedBy: string;
+  },
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const existingApplication = await db.query.admissionApplications.findFirst({
+      where: eq(admissionApplications.id, admissionId),
+    });
+
+    if (!existingApplication) {
+      return { success: false, error: "Application not found" };
+    }
+
+    const updateData: Partial<typeof admissionApplications.$inferInsert> = {
+      updatedAt: new Date(),
+      reviewedBy: data.reviewedBy,
+      reviewedAt: new Date(),
+    };
+
+    if (data.status !== undefined) updateData.status = data.status as never;
+    if (data.testScore !== undefined)
+      updateData.testScore = data.testScore.toString();
+    if (data.interviewDate !== undefined)
+      updateData.interviewDate = data.interviewDate;
+    if (data.admissionDate !== undefined)
+      updateData.admissionDate = data.admissionDate;
+    if (data.rejectionReason !== undefined)
+      updateData.rejectionReason = data.rejectionReason;
+    if (data.notes !== undefined) updateData.notes = data.notes;
+
+    await db
+      .update(admissionApplications)
+      .set(updateData)
+      .where(eq(admissionApplications.id, admissionId));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating admission:", error);
+    return { success: false, error: "Failed to update admission" };
+  }
+}
+
+/**
+ * Delete an admission application
+ */
+export async function deleteAdmission(
+  admissionId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const existingApplication = await db.query.admissionApplications.findFirst({
+      where: eq(admissionApplications.id, admissionId),
+    });
+
+    if (!existingApplication) {
+      return { success: false, error: "Application not found" };
+    }
+
+    // Only allow deletion of pending or rejected applications
+    if (
+      existingApplication.status !== "pending" &&
+      existingApplication.status !== "rejected"
+    ) {
+      return {
+        success: false,
+        error: "Can only delete pending or rejected applications",
+      };
+    }
+
+    await db
+      .delete(admissionApplications)
+      .where(eq(admissionApplications.id, admissionId));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting admission:", error);
+    return { success: false, error: "Failed to delete admission" };
+  }
+}
+
+/**
+ * Get all entrance tests
+ */
+export async function getAllEntranceTests(): Promise<
+  Array<{
+    id: string;
+    testName: string;
+    grade: string;
+    testDate: Date;
+    totalMarks: number;
+    passingMarks: number;
+  }>
+> {
+  try {
+    const tests = await db.query.entranceTests.findMany({
+      where: eq(entranceTests.isActive, true),
+      orderBy: [desc(entranceTests.testDate)],
+      columns: {
+        id: true,
+        testName: true,
+        grade: true,
+        testDate: true,
+        totalMarks: true,
+        passingMarks: true,
+      },
+    });
+
+    return tests;
+  } catch (error) {
+    console.error("Error fetching entrance tests:", error);
+    return [];
+  }
+}

@@ -1,6 +1,6 @@
 /**
  * Example: Integrating Tauri CSV Export with Existing Student Export
- * 
+ *
  * This shows how to update your existing export functionality
  * to use the Tauri-powered CSV export system
  */
@@ -8,10 +8,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React from "react";
-import { 
-  exportCSVToDirectory, 
+import {
+  exportCSVToDirectory,
   exportCSVBatch,
-  arrayToCSV, 
+  arrayToCSV,
   isExportAvailable,
   getExportDirectory,
 } from "@/lib/tauri/csv-export";
@@ -42,7 +42,7 @@ export async function exportMedicalIncidentsToCSV(incidents: unknown[]) {
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const link = document.createElement("a");
   const url = URL.createObjectURL(blob);
-  
+
   link.setAttribute("href", url);
   link.setAttribute("download", filename);
   link.style.visibility = "hidden";
@@ -50,7 +50,7 @@ export async function exportMedicalIncidentsToCSV(incidents: unknown[]) {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
-  
+
   return {
     success: true,
     file_path: filename,
@@ -62,34 +62,40 @@ export async function exportMedicalIncidentsToCSV(incidents: unknown[]) {
 export async function exportAllStudentData(
   students: unknown[],
   medicalIncidents: unknown[],
-  disciplinaryActions: unknown[]
+  disciplinaryActions: unknown[],
 ) {
   if (!isExportAvailable()) {
     throw new Error("Batch export only available in desktop app");
   }
 
   // Prepare all CSV files
-  const studentsCSV = arrayToCSV(students.map((s: any) => ({
-    ID: s.id,
-    Name: s.name,
-    Email: s.email,
-    Class: s.className,
-    House: s.houseName,
-  })));
+  const studentsCSV = arrayToCSV(
+    students.map((s: any) => ({
+      ID: s.id,
+      Name: s.name,
+      Email: s.email,
+      Class: s.className,
+      House: s.houseName,
+    })),
+  );
 
-  const medicalCSV = arrayToCSV(medicalIncidents.map((m: any) => ({
-    Date: new Date(m.date).toLocaleDateString(),
-    Student: m.studentName,
-    Type: m.type,
-    Severity: m.severity,
-  })));
+  const medicalCSV = arrayToCSV(
+    medicalIncidents.map((m: any) => ({
+      Date: new Date(m.date).toLocaleDateString(),
+      Student: m.studentName,
+      Type: m.type,
+      Severity: m.severity,
+    })),
+  );
 
-  const disciplinaryCSV = arrayToCSV(disciplinaryActions.map((d: any) => ({
-    Date: new Date(d.date).toLocaleDateString(),
-    Student: d.studentName,
-    Offense: d.offense,
-    Severity: d.severity,
-  })));
+  const disciplinaryCSV = arrayToCSV(
+    disciplinaryActions.map((d: any) => ({
+      Date: new Date(d.date).toLocaleDateString(),
+      Student: d.studentName,
+      Offense: d.offense,
+      Severity: d.severity,
+    })),
+  );
 
   // Batch export
   const results = await exportCSVBatch([
@@ -114,7 +120,7 @@ export function StudentExportButton({ studentId }: { studentId: string }) {
 
       // Export using Tauri if available
       const result = await exportMedicalIncidentsToCSV(data.medicalIncidents);
-      
+
       if (result.success) {
         alert(`✅ Exported successfully to: ${result.file_path}`);
       } else {
@@ -167,7 +173,8 @@ export function ExportLocationIndicator() {
 
   return (
     <div className="text-sm text-muted-foreground">
-      📁 CSV files will be saved to: <code className="bg-muted px-1 rounded">{exportDir}</code>
+      📁 CSV files will be saved to:{" "}
+      <code className="bg-muted px-1 rounded">{exportDir}</code>
     </div>
   );
 }

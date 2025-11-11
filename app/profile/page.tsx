@@ -35,10 +35,7 @@ import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { PageHeader } from "@/components/layouts/header";
 import { ExtendedUser } from "@/types/better-auth";
-import {
-  getUserProfile,
-  updateUserProfile,
-} from "@/actions/user";
+import { getUserProfile, updateUserProfile } from "@/actions/user";
 import { useState } from "react";
 
 export default function ProfilePage() {
@@ -302,99 +299,99 @@ export default function ProfilePage() {
             </div>
           ) : (
             <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Mail className="h-4 w-4 mr-2" />
-                Email
+              <div className="space-y-2">
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Mail className="h-4 w-4 mr-2" />
+                  Email
+                </div>
+                <p className="text-sm font-medium flex flex-wrap items-center gap-2">
+                  <span className="break-all">{profile.email}</span>
+                  {profile.emailVerified ? (
+                    <Badge
+                      variant="outline"
+                      className="text-green-600 border-green-600 text-xs"
+                    >
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      Verified
+                    </Badge>
+                  ) : (
+                    <Badge
+                      variant="outline"
+                      className="text-orange-600 border-orange-600 text-xs"
+                    >
+                      <XCircle className="h-3 w-3 mr-1" />
+                      Not Verified
+                    </Badge>
+                  )}
+                </p>
               </div>
-              <p className="text-sm font-medium flex flex-wrap items-center gap-2">
-                <span className="break-all">{profile.email}</span>
-                {profile.emailVerified ? (
-                  <Badge
-                    variant="outline"
-                    className="text-green-600 border-green-600 text-xs"
-                  >
-                    <CheckCircle className="h-3 w-3 mr-1" />
-                    Verified
-                  </Badge>
-                ) : (
-                  <Badge
-                    variant="outline"
-                    className="text-orange-600 border-orange-600 text-xs"
-                  >
-                    <XCircle className="h-3 w-3 mr-1" />
-                    Not Verified
-                  </Badge>
-                )}
-              </p>
-            </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Phone className="h-4 w-4 mr-2" />
-                Phone
+              <div className="space-y-2">
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Phone className="h-4 w-4 mr-2" />
+                  Phone
+                </div>
+                <p className="text-sm font-medium">
+                  {profile.phone || "Not provided"}
+                </p>
               </div>
-              <p className="text-sm font-medium">
-                {profile.phone || "Not provided"}
-              </p>
-            </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Shield className="h-4 w-4 mr-2" />
-                User ID
+              <div className="space-y-2">
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Shield className="h-4 w-4 mr-2" />
+                  User ID
+                </div>
+                <p className="text-sm font-medium font-mono">{profile.id}</p>
               </div>
-              <p className="text-sm font-medium font-mono">{profile.id}</p>
-            </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center text-sm text-muted-foreground">
-                <User className="h-4 w-4 mr-2" />
-                Role
+              <div className="space-y-2">
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <User className="h-4 w-4 mr-2" />
+                  Role
+                </div>
+                <p className="text-sm font-medium">
+                  {profile.role.charAt(0).toUpperCase() + profile.role.slice(1)}
+                </p>
               </div>
-              <p className="text-sm font-medium">
-                {profile.role.charAt(0).toUpperCase() + profile.role.slice(1)}
-              </p>
-            </div>
 
-            <div className="space-y-2 md:col-span-2">
-              <div className="flex items-center text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4 mr-2" />
-                Address
+              <div className="space-y-2 md:col-span-2">
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <MapPin className="h-4 w-4 mr-2" />
+                  Address
+                </div>
+                <p className="text-sm font-medium">
+                  {profile.address || "Not provided"}
+                </p>
               </div>
-              <p className="text-sm font-medium">
-                {profile.address || "Not provided"}
-              </p>
-            </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Calendar className="h-4 w-4 mr-2" />
-                Member Since
+              <div className="space-y-2">
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Member Since
+                </div>
+                <p className="text-sm font-medium">
+                  {new Date(profile.createdAt).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </p>
               </div>
-              <p className="text-sm font-medium">
-                {new Date(profile.createdAt).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </p>
-            </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Calendar className="h-4 w-4 mr-2" />
-                Last Updated
+              <div className="space-y-2">
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Last Updated
+                </div>
+                <p className="text-sm font-medium">
+                  {new Date(profile.updatedAt).toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </p>
               </div>
-              <p className="text-sm font-medium">
-                {new Date(profile.updatedAt).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
-              </p>
             </div>
-          </div>
           )}
 
           {!profile.emailVerified && (

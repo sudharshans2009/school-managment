@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/database";
-import {
-  groupMessages,
-  users,
-} from "@/database/schema";
+import { groupMessages, users } from "@/database/schema";
 import { eq, desc } from "drizzle-orm";
 import { auth } from "@/lib/auth/main";
 

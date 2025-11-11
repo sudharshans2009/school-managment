@@ -1,4 +1,4 @@
-# 🎓 Amrita School Management System
+# 🎓 Amrita Vidyalayam Management System
 
 A comprehensive, production-ready school management system built with Next.js 15, featuring smart classroom dashboards, real-time attendance tracking, automated timetables, exam management, and complete GDPR compliance.
 

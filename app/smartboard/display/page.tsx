@@ -110,12 +110,12 @@ export default function SmartboardDisplayPage() {
           <Skeleton className="h-28 w-full rounded-2xl mb-4" />
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
             <div className="xl:col-span-2 space-y-4">
-              <Skeleton className="h-96 w-full rounded-xl" />
-              <Skeleton className="h-64 w-full rounded-xl" />
+              <Skeleton className="h-96 w-full" />
+              <Skeleton className="h-64 w-full" />
             </div>
             <div className="space-y-4">
-              <Skeleton className="h-96 w-full rounded-xl" />
-              <Skeleton className="h-96 w-full rounded-xl" />
+              <Skeleton className="h-96 w-full" />
+              <Skeleton className="h-96 w-full" />
             </div>
           </div>
         </div>
@@ -144,7 +144,7 @@ export default function SmartboardDisplayPage() {
         <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-200/50 p-6 mb-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <div className="bg-linear-to-br from-blue-500 to-indigo-600 p-3 rounded-xl shadow-md">
+              <div className="bg-linear-to-br from-blue-500 to-indigo-600 p-3 shadow-md">
                 <BookOpen className="h-10 w-10 text-white" />
               </div>
               <div>
@@ -198,7 +198,7 @@ export default function SmartboardDisplayPage() {
                     return (
                       <div
                         key={index}
-                        className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-300 ${
+                        className={`flex items-center justify-between p-4 border transition-all duration-300 ${
                           isCurrent
                             ? "bg-linear-to-r from-blue-50 to-indigo-50 border-blue-400 shadow-md ring-2 ring-blue-200/50"
                             : isPast
@@ -279,7 +279,7 @@ export default function SmartboardDisplayPage() {
               <CardContent className="pt-4">
                 {/* Stats Grid */}
                 <div className="grid grid-cols-4 gap-3 mb-4">
-                  <div className="text-center p-4 bg-linear-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200 shadow-sm">
+                  <div className="text-center p-4 bg-linear-to-br from-green-50 to-emerald-50 border border-green-200 shadow-sm">
                     <CheckCircle className="h-8 w-8 mx-auto text-green-600 mb-2" />
                     <p className="text-3xl font-semibold text-green-600">
                       {data.attendance.present}
@@ -288,7 +288,7 @@ export default function SmartboardDisplayPage() {
                       Present
                     </p>
                   </div>
-                  <div className="text-center p-4 bg-linear-to-br from-red-50 to-rose-50 rounded-xl border border-red-200 shadow-sm">
+                  <div className="text-center p-4 bg-linear-to-br from-red-50 to-rose-50 border border-red-200 shadow-sm">
                     <XCircle className="h-8 w-8 mx-auto text-red-600 mb-2" />
                     <p className="text-3xl font-semibold text-red-600">
                       {data.attendance.absent}
@@ -297,7 +297,7 @@ export default function SmartboardDisplayPage() {
                       Absent
                     </p>
                   </div>
-                  <div className="text-center p-4 bg-linear-to-br from-yellow-50 to-amber-50 rounded-xl border border-yellow-200 shadow-sm">
+                  <div className="text-center p-4 bg-linear-to-br from-yellow-50 to-amber-50 border border-yellow-200 shadow-sm">
                     <Clock className="h-8 w-8 mx-auto text-yellow-600 mb-2" />
                     <p className="text-3xl font-semibold text-yellow-600">
                       {data.attendance.late}
@@ -306,7 +306,7 @@ export default function SmartboardDisplayPage() {
                       Late
                     </p>
                   </div>
-                  <div className="text-center p-4 bg-linear-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 shadow-sm">
+                  <div className="text-center p-4 bg-linear-to-br from-blue-50 to-indigo-50 border border-blue-200 shadow-sm">
                     <TrendingUp className="h-8 w-8 mx-auto text-blue-600 mb-2" />
                     <p className="text-3xl font-semibold text-blue-600">
                       {data.attendance.percentage}%
@@ -320,7 +320,7 @@ export default function SmartboardDisplayPage() {
                 {/* Attendance Details */}
                 <div className="grid grid-cols-2 gap-3">
                   {data.attendance.absentStudents.length > 0 && (
-                    <div className="p-3 bg-red-50/80 rounded-xl border border-red-200">
+                    <div className="p-3 bg-red-50/80 border border-red-200">
                       <h4 className="font-semibold text-red-900 mb-2 flex items-center text-sm">
                         <XCircle className="h-4 w-4 mr-1.5" />
                         Absent Students
@@ -340,7 +340,7 @@ export default function SmartboardDisplayPage() {
                   )}
 
                   {data.attendance.lateStudents.length > 0 && (
-                    <div className="p-3 bg-yellow-50/80 rounded-xl border border-yellow-200">
+                    <div className="p-3 bg-yellow-50/80 border border-yellow-200">
                       <h4 className="font-semibold text-yellow-900 mb-2 flex items-center text-sm">
                         <Clock className="h-4 w-4 mr-1.5" />
                         Late Arrivals
@@ -378,7 +378,7 @@ export default function SmartboardDisplayPage() {
                   {data.homework.map((hw) => (
                     <div
                       key={hw.id}
-                      className={`p-3 rounded-xl border transition-all hover:shadow-md ${
+                      className={`p-3 border transition-all hover:shadow-md ${
                         hw.priority === "high"
                           ? "bg-red-50/80 border-red-300"
                           : hw.priority === "medium"
@@ -445,7 +445,7 @@ export default function SmartboardDisplayPage() {
                   {data.announcements.map((msg) => (
                     <div
                       key={msg.id}
-                      className={`p-3 rounded-xl border transition-all hover:shadow-md ${
+                      className={`p-3 border transition-all hover:shadow-md ${
                         msg.priority === "high"
                           ? "bg-linear-to-br from-red-50 to-orange-50 border-red-300 shadow-sm"
                           : msg.priority === "medium"
