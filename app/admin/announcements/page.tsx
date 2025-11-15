@@ -29,11 +29,6 @@ import { format } from "date-fns";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdminHeader } from "@/components/admin/admin-header";
 
-interface Classroom {
-  id: string;
-  name: string;
-}
-
 interface Announcement {
   id: string;
   title: string;
@@ -56,25 +51,28 @@ export default function AdminAnnouncementsPage() {
   const queryClient = useQueryClient();
 
   // Fetch classrooms
-  const { data: classrooms } = useQuery<Classroom[]>({
+  const { data: classroomsResult } = useQuery({
     queryKey: ["classrooms"],
     queryFn: async () => {
-      const response = await fetch("/api/classrooms");
-      if (!response.ok) throw new Error("Failed to fetch classrooms");
-      return response.json();
+      const { getClassrooms } = await import("@/actions/announcements");
+      return await getClassrooms();
     },
   });
 
+  const classrooms = classroomsResult?.success ? classroomsResult.data : [];
+
   // Fetch announcements
-  const { data: announcements, isLoading } = useQuery<Announcement[]>({
+  const { data: announcementsResult, isLoading } = useQuery({
     queryKey: ["announcements", filterClassroom],
     queryFn: async () => {
-      const params = filterClassroom ? `?classroomId=${filterClassroom}` : "";
-      const response = await fetch(`/api/announcements${params}`);
-      if (!response.ok) throw new Error("Failed to fetch announcements");
-      return response.json();
+      const { getAnnouncements } = await import("@/actions/announcements");
+      return await getAnnouncements(filterClassroom || undefined);
     },
   });
+
+  const announcements = announcementsResult?.success
+    ? announcementsResult.data
+    : [];
 
   // Create mutation
   const createMutation = useMutation({
@@ -84,24 +82,20 @@ export default function AdminAnnouncementsPage() {
       priority: string;
       classroomId: string | null;
     }) => {
-      const response = await fetch("/api/announcements", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          createdBy: session?.user?.id,
-        }),
+      const { createAnnouncement } = await import("@/actions/announcements");
+      return await createAnnouncement({
+        ...data,
+        createdBy: session?.user?.id || "",
       });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to create announcement");
-      }
-      return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["announcements"] });
-      setOpenCreate(false);
-      setError("");
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["announcements"] });
+        setOpenCreate(false);
+        setError("");
+      } else {
+        setError(result.error || "Failed to create announcement");
+      }
     },
     onError: (error: Error) => {
       setError(error.message);
@@ -117,22 +111,18 @@ export default function AdminAnnouncementsPage() {
       priority: string;
       classroomId: string | null;
     }) => {
-      const { id, ...body } = data;
-      const response = await fetch(`/api/announcements/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to update announcement");
-      }
-      return response.json();
+      const { updateAnnouncement } = await import("@/actions/announcements");
+      const { id, ...updateData } = data;
+      return await updateAnnouncement(id, updateData);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["announcements"] });
-      setEditingAnnouncement(null);
-      setError("");
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["announcements"] });
+        setEditingAnnouncement(null);
+        setError("");
+      } else {
+        setError(result.error || "Failed to update announcement");
+      }
     },
     onError: (error: Error) => {
       setError(error.message);
@@ -142,14 +132,13 @@ export default function AdminAnnouncementsPage() {
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/announcements/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to delete announcement");
-      return response.json();
+      const { deleteAnnouncement } = await import("@/actions/announcements");
+      return await deleteAnnouncement(id);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["announcements"] });
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["announcements"] });
+      }
     },
   });
 
@@ -172,7 +161,8 @@ export default function AdminAnnouncementsPage() {
     }
   };
 
-  const getPriorityBadge = (priority: string) => {
+  const getPriorityBadge = (priority: string | null) => {
+    const actualPriority = priority || "normal";
     const variants: Record<
       string,
       "default" | "destructive" | "secondary" | "outline"
@@ -192,10 +182,10 @@ export default function AdminAnnouncementsPage() {
 
     return (
       <Badge
-        variant={variants[priority] || "secondary"}
-        className={colors[priority]}
+        variant={variants[actualPriority] || "secondary"}
+        className={colors[actualPriority]}
       >
-        {priority.charAt(0).toUpperCase() + priority.slice(1)}
+        {actualPriority.charAt(0).toUpperCase() + actualPriority.slice(1)}
       </Badge>
     );
   };
@@ -398,7 +388,9 @@ export default function AdminAnnouncementsPage() {
                         </span>
                         <span className="hidden sm:inline">•</span>
                         <span>
-                          {format(new Date(announcement.createdAt), "PPp")}
+                          {announcement.createdAt
+                            ? format(new Date(announcement.createdAt), "PPp")
+                            : "N/A"}
                         </span>
                       </div>
                     </div>
@@ -406,6 +398,12 @@ export default function AdminAnnouncementsPage() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="rounded-xl"
+                        onClick={() =>
+                          setEditingAnnouncement(
+                            announcement as unknown as Announcement | null,
+                          )
+                        }
                         onClick={() => setEditingAnnouncement(announcement)}
                       >
                         <Edit2 className="h-4 w-4" />

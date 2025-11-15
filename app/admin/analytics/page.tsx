@@ -35,56 +35,21 @@ import {
 import { useState } from "react";
 import { AdminHeader } from "@/components/admin/admin-header";
 
-interface AnalyticsData {
-  attendance: {
-    overall: number;
-    byGrade: { grade: string; rate: number }[];
-    trend: { date: string; rate: number }[];
-  };
-  grades: {
-    averagePercentage: number;
-    passingRate: number;
-    bySubject: { subject: string; average: number }[];
-    distribution: { grade: string; count: number }[];
-  };
-  homework: {
-    totalAssigned: number;
-    completionRate: number;
-    onTimeRate: number;
-    bySubject: { subject: string; completion: number }[];
-  };
-  exams: {
-    totalConducted: number;
-    averageScore: number;
-    finalized: number;
-    pending: number;
-  };
-  students: {
-    total: number;
-    active: number;
-    byGrade: { grade: string; count: number }[];
-  };
-  teachers: {
-    total: number;
-    active: number;
-    assignmentRate: number;
-  };
-}
-
 export default function AdminAnalyticsPage() {
   const { data: session, isPending: sessionPending } = useSession();
   const router = useRouter();
   const [timeRange, setTimeRange] = useState("30");
 
-  const { data: analytics, isLoading } = useQuery<AnalyticsData>({
+  const { data: analyticsResult, isLoading } = useQuery({
     queryKey: ["admin-analytics", timeRange],
     queryFn: async () => {
-      const response = await fetch(`/api/admin/analytics?days=${timeRange}`);
-      if (!response.ok) throw new Error("Failed to fetch analytics");
-      return response.json();
+      const { getAnalytics } = await import("@/actions/analytics");
+      return await getAnalytics(parseInt(timeRange));
     },
     enabled: !!session,
   });
+
+  const analytics = analyticsResult?.success ? analyticsResult.data : undefined;
 
   if (sessionPending) {
     return (

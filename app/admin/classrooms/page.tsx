@@ -43,14 +43,15 @@ export default function ClassroomsPage() {
   const [viewMode, setViewMode] = useState<"grid" | "table">("grid");
   const queryClient = useQueryClient();
 
-  const { data: classrooms, isLoading } = useQuery<Classroom[]>({
+  const { data: classroomsResult, isLoading } = useQuery({
     queryKey: ["classrooms"],
     queryFn: async () => {
-      const response = await fetch("/api/classrooms");
-      if (!response.ok) throw new Error("Failed to fetch classrooms");
-      return response.json();
+      const { getAllClassrooms } = await import("@/actions/classrooms");
+      return await getAllClassrooms();
     },
   });
+
+  const classrooms = classroomsResult?.success ? classroomsResult.data : [];
 
   const createMutation = useMutation({
     mutationFn: async (data: {
@@ -58,30 +59,26 @@ export default function ClassroomsPage() {
       grade: string;
       section: string;
     }) => {
-      const response = await fetch("/api/classrooms", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) throw new Error("Failed to create classroom");
-      return response.json();
+      const { createClassroom } = await import("@/actions/classrooms");
+      return await createClassroom(data);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["classrooms"] });
-      setOpenCreate(false);
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["classrooms"] });
+        setOpenCreate(false);
+      }
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/classrooms/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to delete classroom");
-      return response.json();
+      const { deleteClassroom } = await import("@/actions/classrooms");
+      return await deleteClassroom(id);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["classrooms"] });
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["classrooms"] });
+      }
     },
   });
 
@@ -100,7 +97,9 @@ export default function ClassroomsPage() {
       classroom.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       classroom.grade.toLowerCase().includes(searchQuery.toLowerCase()) ||
       classroom.section.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      classroom.code.toLowerCase().includes(searchQuery.toLowerCase()),
+      classroom.classroomCode
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()),
   );
 
   const primaryTeacher = (classroom: Classroom) => {
@@ -255,7 +254,7 @@ export default function ClassroomsPage() {
                         <div>
                           <CardTitle>{classroom.name}</CardTitle>
                           <CardDescription>
-                            Code: {classroom.code}
+                            Code: {classroom.classroomCode}
                           </CardDescription>
                         </div>
                         <div className="flex space-x-1">
