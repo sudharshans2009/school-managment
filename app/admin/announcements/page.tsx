@@ -33,12 +33,15 @@ interface Announcement {
   id: string;
   title: string;
   content: string;
-  priority: string;
+  // priority may be null from the server, normalize in UI where needed
+  priority: string | null;
   classroomId: string | null;
   classroomName: string | null;
   createdBy: string;
-  createdByName: string;
-  createdAt: string;
+  // creator name may be null for system announcements
+  createdByName: string | null;
+  // createdAt can be a string or Date (or null) depending on source
+  createdAt: string | Date | null;
 }
 
 export default function AdminAnnouncementsPage() {
@@ -399,11 +402,6 @@ export default function AdminAnnouncementsPage() {
                         variant="ghost"
                         size="icon"
                         className="rounded-xl"
-                        onClick={() =>
-                          setEditingAnnouncement(
-                            announcement as unknown as Announcement | null,
-                          )
-                        }
                         onClick={() => setEditingAnnouncement(announcement)}
                       >
                         <Edit2 className="h-4 w-4" />
@@ -411,6 +409,7 @@ export default function AdminAnnouncementsPage() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="rounded-xl"
                         onClick={() => {
                           if (
                             confirm(

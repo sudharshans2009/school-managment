@@ -76,11 +76,6 @@ export default function AuditLogsPage() {
       });
       if (!result.success || !result.data) throw new Error(result.error);
       return result.data;
-      const response = await fetch(
-        `/api/security/audit-logs?${buildQueryParams()}`,
-      );
-      if (!response.ok) throw new Error("Failed to fetch audit logs");
-      return response.json();
     },
   });
 
