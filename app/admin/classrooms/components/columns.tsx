@@ -11,11 +11,18 @@ export interface Classroom {
   name: string;
   grade: string;
   section: string;
-  code: string;
-  currentStrength: number;
+  classroomCode: string;
+  classroomKey?: string | null;
+  currentStrength?: number | null;
+  capacity?: number | null;
+  academicYear?: string | null;
+  isActive?: boolean | null;
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
   teacherAssignments: Array<{
-    isPrimary: boolean;
+    isPrimary: boolean | null;
     teacher: { name: string };
+    subject?: { name: string } | null;
   }>;
   students: Array<{ id: string }>;
 }
@@ -46,7 +53,7 @@ export const createClassroomColumns = ({
         <div className="flex flex-col">
           <span className="font-medium">{classroom.name}</span>
           <span className="text-xs text-muted-foreground">
-            Code: {classroom.code}
+            Code: {classroom.classroomCode}
           </span>
         </div>
       );

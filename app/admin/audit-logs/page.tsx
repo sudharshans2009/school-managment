@@ -42,27 +42,6 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 
-interface AuditLog {
-  id: string;
-  userId: string | null;
-  userEmail: string | null;
-  userRole: string | null;
-  action: string;
-  resource: string;
-  resourceId: string | null;
-  description: string | null;
-  metadata: string | null;
-  ipAddress: string | null;
-  userAgent: string | null;
-  timestamp: string;
-}
-
-interface PaginationInfo {
-  page: number;
-  limit: number;
-  hasMore: boolean;
-}
-
 export default function AuditLogsPage() {
   useRoleRedirect(["admin"]);
 
@@ -74,23 +53,7 @@ export default function AuditLogsPage() {
   const [page, setPage] = useState(1);
   // const [showFilters, setShowFilters] = useState(false);
 
-  // Build query params
-  const buildQueryParams = () => {
-    const params = new URLSearchParams();
-    params.append("page", page.toString());
-    params.append("limit", "50");
-    if (searchQuery) params.append("search", searchQuery);
-    if (actionFilter !== "all") params.append("action", actionFilter);
-    if (resourceFilter !== "all") params.append("resource", resourceFilter);
-    if (startDate) params.append("startDate", startDate.toISOString());
-    if (endDate) params.append("endDate", endDate.toISOString());
-    return params.toString();
-  };
-
-  const { data, isLoading, error } = useQuery<{
-    logs: AuditLog[];
-    pagination: PaginationInfo;
-  }>({
+  const { data, isLoading, error } = useQuery({
     queryKey: [
       "audit-logs",
       page,
@@ -101,6 +64,18 @@ export default function AuditLogsPage() {
       endDate,
     ],
     queryFn: async () => {
+      const { getAuditLogs } = await import("@/actions/audit-logs");
+      const result = await getAuditLogs({
+        page,
+        limit: 50,
+        search: searchQuery || undefined,
+        action: actionFilter !== "all" ? actionFilter : undefined,
+        resource: resourceFilter !== "all" ? resourceFilter : undefined,
+        startDate: startDate?.toISOString(),
+        endDate: endDate?.toISOString(),
+      });
+      if (!result.success || !result.data) throw new Error(result.error);
+      return result.data;
       const response = await fetch(
         `/api/security/audit-logs?${buildQueryParams()}`,
       );
@@ -162,11 +137,11 @@ export default function AuditLogsPage() {
     return colors[resource.toLowerCase()] || "bg-gray-100 text-gray-800";
   };
 
-  const formatTimestamp = (timestamp: string) => {
+  const formatTimestamp = (timestamp: string | Date) => {
     try {
       return format(new Date(timestamp), "MMM dd, yyyy HH:mm:ss");
     } catch {
-      return timestamp;
+      return String(timestamp);
     }
   };
 
