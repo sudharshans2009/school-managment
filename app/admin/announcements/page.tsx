@@ -207,7 +207,7 @@ export default function AdminAnnouncementsPage() {
             }}
           >
             <DialogTrigger asChild>
-              <Button className="rounded-xl w-full sm:w-auto">
+              <Button className="w-full sm:w-auto">
                 <Plus className="h-4 w-4 mr-2" />
                 New Announcement
               </Button>
@@ -226,7 +226,6 @@ export default function AdminAnnouncementsPage() {
                   <Input
                     id="title"
                     name="title"
-                    className="rounded-xl"
                     placeholder="e.g., Mid-term Examination Schedule"
                     required
                     defaultValue={editingAnnouncement?.title}
@@ -237,7 +236,6 @@ export default function AdminAnnouncementsPage() {
                   <Textarea
                     id="content"
                     name="content"
-                    className="rounded-xl"
                     placeholder="Enter announcement details..."
                     rows={6}
                     required
@@ -251,7 +249,7 @@ export default function AdminAnnouncementsPage() {
                       name="priority"
                       defaultValue={editingAnnouncement?.priority || "normal"}
                     >
-                      <SelectTrigger id="priority" className="rounded-xl">
+                      <SelectTrigger id="priority">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -268,7 +266,7 @@ export default function AdminAnnouncementsPage() {
                       name="classroomId"
                       defaultValue={editingAnnouncement?.classroomId || "all"}
                     >
-                      <SelectTrigger id="classroomId" className="rounded-xl">
+                      <SelectTrigger id="classroomId">
                         <SelectValue placeholder="All Classrooms" />
                       </SelectTrigger>
                       <SelectContent>
@@ -283,7 +281,7 @@ export default function AdminAnnouncementsPage() {
                   </div>
                 </div>
                 {error && (
-                  <Alert variant="destructive" className="rounded-xl">
+                  <Alert variant="destructive">
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
                 )}
@@ -291,7 +289,6 @@ export default function AdminAnnouncementsPage() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="rounded-xl"
                     onClick={() => {
                       setOpenCreate(false);
                       setEditingAnnouncement(null);
@@ -302,7 +299,6 @@ export default function AdminAnnouncementsPage() {
                   </Button>
                   <Button
                     type="submit"
-                    className="rounded-xl"
                     disabled={
                       createMutation.isPending || updateMutation.isPending
                     }
@@ -332,7 +328,7 @@ export default function AdminAnnouncementsPage() {
               setFilterClassroom(val === "all" ? "" : val)
             }
           >
-            <SelectTrigger className="w-full sm:w-64 rounded-xl">
+            <SelectTrigger className="w-full sm:w-64">
               <SelectValue placeholder="All Classrooms" />
             </SelectTrigger>
             <SelectContent>
@@ -348,7 +344,7 @@ export default function AdminAnnouncementsPage() {
             <Button
               variant="outline"
               size="sm"
-              className="rounded-xl w-full sm:w-auto"
+              className="w-full sm:w-auto"
               onClick={() => setFilterClassroom("")}
             >
               Clear Filter
@@ -408,13 +404,13 @@ export default function AdminAnnouncementsPage() {
                             announcement as unknown as Announcement | null,
                           )
                         }
+                        onClick={() => setEditingAnnouncement(announcement)}
                       >
                         <Edit2 className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="rounded-xl"
                         onClick={() => {
                           if (
                             confirm(

@@ -42,6 +42,7 @@ import {
   UserCheck,
   ClipboardList,
   AlertCircle,
+  Check,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -61,6 +62,7 @@ import {
   createTeacherLeave,
   cancelTeacherLeave,
   createWorkDone,
+  markMessageAsRead,
   type TeacherAssignment,
   type Message,
   type TeacherLeave,
@@ -112,6 +114,13 @@ export default function TeacherPage() {
 
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [showWorkDoneDialog, setShowWorkDoneDialog] = useState(false);
+  const [messageFilters, setMessageFilters] = useState<{
+    status: "sent" | "read" | "all";
+    messageType: "absence" | "query" | "request" | "general" | "all";
+  }>({
+    status: "all",
+    messageType: "all",
+  });
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -134,10 +143,10 @@ export default function TeacherPage() {
 
   // Fetch messages
   const { data: messages } = useQuery<Message[]>({
-    queryKey: ["messages", session?.user?.id],
+    queryKey: ["messages", session?.user?.id, messageFilters],
     queryFn: async () => {
       if (!session?.user?.id) return [];
-      return await getTeacherMessages(session.user.id);
+      return await getTeacherMessages(session.user.id, messageFilters);
     },
     enabled: !!session?.user?.id,
   });
@@ -242,6 +251,18 @@ export default function TeacherPage() {
     },
     onError: () => {
       toast.error("Failed to post message");
+    },
+  });
+
+  // Mark message as read mutation
+  const markAsReadMutation = useMutation({
+    mutationFn: async (messageId: string) => {
+      const result = await markMessageAsRead(messageId);
+      if (!result.success) throw new Error(result.error);
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
     },
   });
 
@@ -429,13 +450,13 @@ export default function TeacherPage() {
 
         {/* Unread messages badge */}
         {unreadMessages > 0 && (
-          <Badge variant="destructive" className="h-8 px-3 rounded-xl">
+          <Badge variant="destructive" className="h-8 px-3">
             {unreadMessages} New Messages
           </Badge>
         )}
 
         <Tabs defaultValue="homework" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-6 rounded-xl text-xs sm:text-sm">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-6 text-xs sm:text-sm">
             <TabsTrigger value="homework" className="rounded-lg">
               Homework
             </TabsTrigger>
@@ -478,7 +499,7 @@ export default function TeacherPage() {
                         }))
                       }
                     >
-                      <SelectTrigger className="rounded-xl w-full">
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select class" />
                       </SelectTrigger>
                       <SelectContent>
@@ -504,7 +525,7 @@ export default function TeacherPage() {
                         }))
                       }
                     >
-                      <SelectTrigger className="rounded-xl w-full">
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select subject" />
                       </SelectTrigger>
                       <SelectContent>
@@ -527,7 +548,6 @@ export default function TeacherPage() {
                 <div className="flex flex-col gap-2">
                   <Label>Title</Label>
                   <Input
-                    className="rounded-xl"
                     placeholder="Enter homework title"
                     value={homeworkForm.title}
                     onChange={(e) =>
@@ -541,7 +561,6 @@ export default function TeacherPage() {
                 <div className="flex flex-col gap-2">
                   <Label>Description</Label>
                   <Textarea
-                    className="rounded-xl"
                     placeholder="Describe the homework assignment"
                     value={homeworkForm.description}
                     onChange={(e) =>
@@ -556,7 +575,6 @@ export default function TeacherPage() {
                 <div className="flex flex-col gap-2">
                   <Label>Due Date</Label>
                   <Input
-                    className="rounded-xl"
                     type="date"
                     value={homeworkForm.dueDate}
                     onChange={(e) =>
@@ -568,7 +586,6 @@ export default function TeacherPage() {
                   />
                 </div>
                 <Button
-                  className="rounded-xl"
                   onClick={handleCreateHomework}
                   disabled={homeworkMutation.isPending}
                 >
@@ -590,34 +607,96 @@ export default function TeacherPage() {
                   View and respond to student messages
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
+                {/* Filter Options */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/50">
+                  <div className="flex flex-col gap-2">
+                    <Label className="text-xs font-medium">
+                      Filter by Status
+                    </Label>
+                    <Select
+                      value={messageFilters.status}
+                      onValueChange={(value: "sent" | "read" | "all") =>
+                        setMessageFilters((prev) => ({
+                          ...prev,
+                          status: value,
+                        }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Messages</SelectItem>
+                        <SelectItem value="sent">Unread Only</SelectItem>
+                        <SelectItem value="read">Read Only</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="text-xs font-medium">
+                      Filter by Type
+                    </Label>
+                    <Select
+                      value={messageFilters.messageType}
+                      onValueChange={(
+                        value:
+                          | "absence"
+                          | "query"
+                          | "request"
+                          | "general"
+                          | "all",
+                      ) =>
+                        setMessageFilters((prev) => ({
+                          ...prev,
+                          messageType: value,
+                        }))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Types</SelectItem>
+                        <SelectItem value="absence">Absence</SelectItem>
+                        <SelectItem value="query">Query</SelectItem>
+                        <SelectItem value="request">Request</SelectItem>
+                        <SelectItem value="general">General</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Messages List */}
                 <div className="space-y-3">
                   {messages?.map((message) => (
                     <Card
                       key={message.id}
                       className={
-                        message.status === "sent"
-                          ? "border-l-4 border-l-primary"
-                          : ""
+                        !message.readAt ? "border-l-4 border-l-primary" : ""
                       }
                     >
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
+                            <div className="flex items-center gap-2 mb-2 flex-wrap">
                               <h4 className="font-semibold">
                                 {message.subject}
                               </h4>
                               <Badge
                                 variant={
-                                  message.status === "sent"
-                                    ? "default"
-                                    : "secondary"
+                                  message.messageType === "absence"
+                                    ? "destructive"
+                                    : message.messageType === "query"
+                                      ? "default"
+                                      : message.messageType === "request"
+                                        ? "secondary"
+                                        : "outline"
                                 }
                               >
                                 {message.messageType}
                               </Badge>
-                              {message.status === "sent" && (
+                              {!message.readAt && (
                                 <Badge variant="destructive">New</Badge>
                               )}
                             </div>
@@ -625,17 +704,39 @@ export default function TeacherPage() {
                               From: {message.senderName}
                             </p>
                             <p className="text-sm">{message.message}</p>
-                            <p className="text-xs text-muted-foreground mt-2">
-                              {new Date(message.createdAt).toLocaleString()}
-                            </p>
+                            <div className="flex items-center justify-between mt-2">
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(message.createdAt).toLocaleString()}
+                              </p>
+                              {message.readAt && (
+                                <p className="text-xs text-muted-foreground">
+                                  Read:{" "}
+                                  {new Date(message.readAt).toLocaleString()}
+                                </p>
+                              )}
+                            </div>
                           </div>
+                          {!message.readAt && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="ml-2"
+                              onClick={() =>
+                                markAsReadMutation.mutate(message.id)
+                              }
+                              disabled={markAsReadMutation.isPending}
+                            >
+                              <Check className="h-4 w-4 mr-1" />
+                              Mark Read
+                            </Button>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
                   ))}
                   {(!messages || messages.length === 0) && (
                     <p className="text-center py-8 text-muted-foreground">
-                      No messages yet
+                      No messages found
                     </p>
                   )}
                 </div>
@@ -671,7 +772,7 @@ export default function TeacherPage() {
                               .map((msg) => (
                                 <div
                                   key={msg.id}
-                                  className="p-4 bg-primary/5 border border-primary/20 rounded-xl"
+                                  className="p-4 bg-primary/5 border border-primary/20"
                                 >
                                   <div className="flex items-start justify-between">
                                     <div className="flex-1">
@@ -709,7 +810,7 @@ export default function TeacherPage() {
                           }))
                         }
                       >
-                        <SelectTrigger className="rounded-xl">
+                        <SelectTrigger>
                           <SelectValue placeholder="Choose class" />
                         </SelectTrigger>
                         <SelectContent>
@@ -736,7 +837,7 @@ export default function TeacherPage() {
                           }))
                         }
                       >
-                        <SelectTrigger className="rounded-xl">
+                        <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -752,7 +853,6 @@ export default function TeacherPage() {
                     <div className="flex flex-col gap-2">
                       <Label>Message</Label>
                       <Textarea
-                        className="rounded-xl"
                         placeholder="Enter your message..."
                         value={quoteForm.content}
                         onChange={(e) =>
@@ -766,7 +866,6 @@ export default function TeacherPage() {
                     </div>
 
                     <Button
-                      className="rounded-xl"
                       onClick={handlePostQuote}
                       disabled={quoteMutation.isPending}
                     >
@@ -804,7 +903,7 @@ export default function TeacherPage() {
                   onOpenChange={setShowLeaveDialog}
                 >
                   <DialogTrigger asChild>
-                    <Button className="rounded-xl">
+                    <Button>
                       <FileText className="h-4 w-4 mr-2" />
                       Request Leave
                     </Button>
@@ -833,7 +932,7 @@ export default function TeacherPage() {
                             }))
                           }
                         >
-                          <SelectTrigger className="rounded-xl">
+                          <SelectTrigger>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -850,7 +949,6 @@ export default function TeacherPage() {
                           <Label>Start Date</Label>
                           <Input
                             type="date"
-                            className="rounded-xl"
                             value={leaveForm.startDate}
                             onChange={(e) =>
                               setLeaveForm((prev) => ({
@@ -864,7 +962,6 @@ export default function TeacherPage() {
                           <Label>End Date</Label>
                           <Input
                             type="date"
-                            className="rounded-xl"
                             value={leaveForm.endDate}
                             onChange={(e) =>
                               setLeaveForm((prev) => ({
@@ -878,7 +975,6 @@ export default function TeacherPage() {
                       <div>
                         <Label>Reason</Label>
                         <Textarea
-                          className="rounded-xl"
                           rows={3}
                           value={leaveForm.reason}
                           onChange={(e) =>
@@ -891,7 +987,7 @@ export default function TeacherPage() {
                         />
                       </div>
                       <Button
-                        className="w-full rounded-xl"
+                        className="w-full"
                         onClick={() =>
                           leaveMutation.mutate({
                             ...leaveForm,
@@ -913,7 +1009,7 @@ export default function TeacherPage() {
 
                 <div className="space-y-3">
                   {leaves?.map((leave) => (
-                    <Card key={leave.id} className="rounded-xl">
+                    <Card key={leave.id}>
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -954,7 +1050,6 @@ export default function TeacherPage() {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="rounded-xl"
                               onClick={() =>
                                 cancelLeaveMutation.mutate(leave.id)
                               }
@@ -991,7 +1086,7 @@ export default function TeacherPage() {
                   {substituteAssignments?.map((assignment) => (
                     <Card
                       key={assignment.id}
-                      className="rounded-xl border-l-4 border-l-orange-500"
+                      className="border-l-4 border-l-orange-500"
                     >
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
@@ -1057,7 +1152,7 @@ export default function TeacherPage() {
                     onOpenChange={setShowWorkDoneDialog}
                   >
                     <DialogTrigger asChild>
-                      <Button className="rounded-xl">
+                      <Button>
                         <ClipboardList className="h-4 w-4 mr-2" />
                         Record Work Done
                       </Button>
@@ -1082,7 +1177,7 @@ export default function TeacherPage() {
                                 }))
                               }
                             >
-                              <SelectTrigger className="rounded-xl">
+                              <SelectTrigger>
                                 <SelectValue placeholder="Select class" />
                               </SelectTrigger>
                               <SelectContent>
@@ -1108,7 +1203,7 @@ export default function TeacherPage() {
                                 }))
                               }
                             >
-                              <SelectTrigger className="rounded-xl">
+                              <SelectTrigger>
                                 <SelectValue placeholder="Select subject" />
                               </SelectTrigger>
                               <SelectContent>
@@ -1129,7 +1224,6 @@ export default function TeacherPage() {
                             <Label>Date</Label>
                             <Input
                               type="date"
-                              className="rounded-xl"
                               value={workDoneForm.date}
                               onChange={(e) =>
                                 setWorkDoneForm((prev) => ({
@@ -1150,7 +1244,7 @@ export default function TeacherPage() {
                                 }))
                               }
                             >
-                              <SelectTrigger className="rounded-xl">
+                              <SelectTrigger>
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -1166,7 +1260,6 @@ export default function TeacherPage() {
                         <div>
                           <Label>Topics Covered *</Label>
                           <Textarea
-                            className="rounded-xl"
                             rows={3}
                             value={workDoneForm.topicsCovered}
                             onChange={(e) =>
@@ -1181,7 +1274,6 @@ export default function TeacherPage() {
                         <div>
                           <Label>Homework Assigned (Optional)</Label>
                           <Textarea
-                            className="rounded-xl"
                             rows={2}
                             value={workDoneForm.homeworkAssigned}
                             onChange={(e) =>
@@ -1196,7 +1288,6 @@ export default function TeacherPage() {
                         <div>
                           <Label>Remarks (Optional)</Label>
                           <Textarea
-                            className="rounded-xl"
                             rows={2}
                             value={workDoneForm.remarks}
                             onChange={(e) =>
@@ -1209,7 +1300,7 @@ export default function TeacherPage() {
                           />
                         </div>
                         <Button
-                          className="w-full rounded-xl"
+                          className="w-full"
                           onClick={() =>
                             workDoneMutation.mutate({
                               ...workDoneForm,
@@ -1239,7 +1330,7 @@ export default function TeacherPage() {
                     </h3>
                     <div className="space-y-3">
                       {workDoneRecords?.map((record) => (
-                        <Card key={record.id} className="rounded-xl">
+                        <Card key={record.id}>
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between mb-2">
                               <div>
@@ -1357,7 +1448,7 @@ export default function TeacherPage() {
                                   new Date(a.date).getTime(),
                               )
                               .map((record) => (
-                                <Card key={record.id} className="rounded-xl">
+                                <Card key={record.id}>
                                   <CardContent className="p-4">
                                     <div className="flex items-start justify-between mb-2">
                                       <div className="flex-1">

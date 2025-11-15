@@ -11,9 +11,11 @@ All attendance operations are handled through server actions located in `/action
 ### Available Actions
 
 #### 1. markAttendance
+
 Mark attendance for students in a classroom.
 
 **Signature:**
+
 ```typescript
 markAttendance(
   records: Array<{
@@ -28,12 +30,14 @@ markAttendance(
 ```
 
 **Features:**
+
 - Bulk attendance marking for multiple students
 - Automatic update of existing records if attendance already exists for the date
 - Supports all attendance statuses: present, absent, late, excused
 - Optional remarks for each record
 
 **Example Usage:**
+
 ```typescript
 import { markAttendance } from "@/actions/attendance";
 
@@ -52,7 +56,7 @@ const result = await markAttendance(
       remarks: "Sick leave",
     },
   ],
-  userId
+  userId,
 );
 
 if (result.success) {
@@ -63,9 +67,11 @@ if (result.success) {
 ```
 
 #### 2. getAttendanceByClassroom
+
 Get attendance records for a specific classroom.
 
 **Signature:**
+
 ```typescript
 getAttendanceByClassroom(
   classroomId: string,
@@ -75,13 +81,14 @@ getAttendanceByClassroom(
 ```
 
 **Example Usage:**
+
 ```typescript
 import { getAttendanceByClassroom } from "@/actions/attendance";
 
 const result = await getAttendanceByClassroom(
   "classroom-uuid",
   "2024-01-01",
-  "2024-01-31"
+  "2024-01-31",
 );
 
 if (result.success) {
@@ -91,9 +98,11 @@ if (result.success) {
 ```
 
 #### 3. getAttendanceByStudent
+
 Get attendance records for a specific student.
 
 **Signature:**
+
 ```typescript
 getAttendanceByStudent(
   studentId: string,
@@ -103,13 +112,14 @@ getAttendanceByStudent(
 ```
 
 **Example Usage:**
+
 ```typescript
 import { getAttendanceByStudent } from "@/actions/attendance";
 
 const result = await getAttendanceByStudent(
   "student-uuid",
   "2024-01-01",
-  "2024-12-31"
+  "2024-12-31",
 );
 
 if (result.success) {
@@ -118,9 +128,11 @@ if (result.success) {
 ```
 
 #### 4. getAttendanceStats
+
 Calculate attendance statistics for a classroom.
 
 **Signature:**
+
 ```typescript
 getAttendanceStats(
   classroomId: string,
@@ -130,6 +142,7 @@ getAttendanceStats(
 ```
 
 **Returns:**
+
 ```typescript
 interface AttendanceStats {
   total: number;
@@ -142,6 +155,7 @@ interface AttendanceStats {
 ```
 
 **Example Usage:**
+
 ```typescript
 import { getAttendanceStats } from "@/actions/attendance";
 
@@ -154,9 +168,11 @@ if (result.success && result.data) {
 ```
 
 #### 5. getClassroomAttendanceSummary
+
 Get attendance summary for all students in a classroom.
 
 **Signature:**
+
 ```typescript
 getClassroomAttendanceSummary(
   classroomId: string,
@@ -166,6 +182,7 @@ getClassroomAttendanceSummary(
 ```
 
 **Returns:**
+
 ```typescript
 interface StudentAttendanceSummary {
   studentId: string;
@@ -181,26 +198,29 @@ interface StudentAttendanceSummary {
 ```
 
 **Example Usage:**
+
 ```typescript
 import { getClassroomAttendanceSummary } from "@/actions/attendance";
 
 const result = await getClassroomAttendanceSummary(
   "classroom-uuid",
   "2024-01-01",
-  "2024-03-31"
+  "2024-03-31",
 );
 
 if (result.success && result.data) {
-  result.data.forEach(student => {
+  result.data.forEach((student) => {
     console.log(`${student.studentName}: ${student.percentage.toFixed(2)}%`);
   });
 }
 ```
 
 #### 6. getAttendanceForDate
+
 Get attendance records for a specific date.
 
 **Signature:**
+
 ```typescript
 getAttendanceForDate(
   classroomId: string,
@@ -209,13 +229,11 @@ getAttendanceForDate(
 ```
 
 **Example Usage:**
+
 ```typescript
 import { getAttendanceForDate } from "@/actions/attendance";
 
-const result = await getAttendanceForDate(
-  "classroom-uuid",
-  new Date()
-);
+const result = await getAttendanceForDate("classroom-uuid", new Date());
 
 if (result.success && result.data) {
   console.log(`Today's attendance: ${result.data.length} records`);
@@ -223,9 +241,11 @@ if (result.success && result.data) {
 ```
 
 #### 7. deleteAttendance
+
 Delete an attendance record.
 
 **Signature:**
+
 ```typescript
 deleteAttendance(
   attendanceId: string
@@ -233,6 +253,7 @@ deleteAttendance(
 ```
 
 **Example Usage:**
+
 ```typescript
 import { deleteAttendance } from "@/actions/attendance";
 
@@ -246,6 +267,7 @@ if (result.success) {
 ## Data Types
 
 ### AttendanceRecord
+
 ```typescript
 interface AttendanceRecord {
   id: string;
@@ -262,6 +284,7 @@ interface AttendanceRecord {
 ```
 
 ### Attendance Statuses
+
 - **present**: Student is present in class
 - **absent**: Student is absent without excuse
 - **late**: Student arrived late
@@ -270,6 +293,7 @@ interface AttendanceRecord {
 ## Usage in Pages
 
 ### Admin Attendance Page
+
 The admin attendance page should use these server actions with React Query for optimal performance:
 
 ```typescript
@@ -284,7 +308,7 @@ import {
 
 export default function AttendancePage() {
   const queryClient = useQueryClient();
-  
+
   // Fetch attendance records
   const { data: attendanceResult } = useQuery({
     queryKey: ["attendance", classroomId, date],
@@ -293,8 +317,7 @@ export default function AttendancePage() {
 
   // Mark attendance mutation
   const markAttendanceMutation = useMutation({
-    mutationFn: ({ records, markedBy }) => 
-      markAttendance(records, markedBy),
+    mutationFn: ({ records, markedBy }) => markAttendance(records, markedBy),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["attendance"] });
     },
@@ -313,6 +336,7 @@ export default function AttendancePage() {
 ```
 
 ### Teacher Portal
+
 Teachers can mark attendance for their assigned classrooms:
 
 ```typescript
@@ -320,7 +344,7 @@ import { markAttendance } from "@/actions/attendance";
 
 // In teacher portal, get assigned classrooms first
 const handleMarkAttendance = async (students, classroomId) => {
-  const records = students.map(student => ({
+  const records = students.map((student) => ({
     studentId: student.id,
     classroomId,
     status: student.selectedStatus,
@@ -328,7 +352,7 @@ const handleMarkAttendance = async (students, classroomId) => {
   }));
 
   const result = await markAttendance(records, teacherId);
-  
+
   if (result.success) {
     toast.success("Attendance marked successfully");
   } else {
@@ -338,6 +362,7 @@ const handleMarkAttendance = async (students, classroomId) => {
 ```
 
 ### Student Portal
+
 Students can view their own attendance:
 
 ```typescript
@@ -350,7 +375,7 @@ const { data: attendanceResult } = useQuery({
 
 if (attendanceResult?.success) {
   const records = attendanceResult.data;
-  const presentCount = records.filter(r => r.status === "present").length;
+  const presentCount = records.filter((r) => r.status === "present").length;
   const percentage = (presentCount / records.length) * 100;
 }
 ```
@@ -362,6 +387,7 @@ if (attendanceResult?.success) {
 2. **Date Handling**: Always pass dates in ISO format or as Date objects. The server actions handle conversion automatically.
 
 3. **Error Handling**: Always check the `success` field in the response before accessing `data`:
+
 ```typescript
 const result = await markAttendance(records, userId);
 if (result.success && result.data) {
@@ -372,6 +398,7 @@ if (result.success && result.data) {
 ```
 
 4. **Caching**: Use React Query's caching mechanisms to avoid unnecessary API calls:
+
 ```typescript
 const { data } = useQuery({
   queryKey: ["attendance", classroomId, date],
@@ -381,6 +408,7 @@ const { data } = useQuery({
 ```
 
 5. **Optimistic Updates**: For better UX, use optimistic updates when marking attendance:
+
 ```typescript
 const mutation = useMutation({
   mutationFn: markAttendance,
@@ -423,6 +451,7 @@ CREATE TABLE attendance (
 ## Performance Considerations
 
 1. **Date Range Queries**: When querying large date ranges, consider pagination:
+
 ```typescript
 const { data } = useQuery({
   queryKey: ["attendance", classroomId, page],
@@ -455,12 +484,15 @@ Planned improvements for the attendance system:
 ### Common Issues
 
 **Issue**: Attendance not saving
+
 - **Solution**: Check that the user has proper permissions and the `markedBy` field is valid
 
 **Issue**: Duplicate attendance records
+
 - **Solution**: The system automatically updates existing records for the same date. Ensure proper date comparison.
 
 **Issue**: Incorrect statistics
+
 - **Solution**: Verify the date range is correct and includes the expected records
 
 ## Related Documentation
@@ -473,6 +505,7 @@ Planned improvements for the attendance system:
 ## Support
 
 For issues or questions about the Attendance Management System, please:
+
 1. Check this documentation
 2. Review the server action code in `/actions/attendance.ts`
 3. Check the database schema in `/database/schema.ts`

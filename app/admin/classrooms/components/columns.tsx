@@ -118,13 +118,13 @@ export const createClassroomColumns = ({
       return (
         <div className="flex gap-2">
           <Link href={`/admin/classrooms/${classroom.id}`}>
-            <Button variant="outline" size="sm" className="rounded-xl">
+            <Button variant="outline" size="sm">
               <Eye className="h-4 w-4 mr-1" />
               View
             </Button>
           </Link>
           <Link href={`/admin/classrooms/${classroom.id}/edit`}>
-            <Button variant="outline" size="sm" className="rounded-xl">
+            <Button variant="outline" size="sm">
               <Edit className="h-4 w-4 mr-1" />
               Manage
             </Button>
@@ -133,7 +133,6 @@ export const createClassroomColumns = ({
             variant="destructive"
             size="sm"
             onClick={() => onDelete(classroom)}
-            className="rounded-xl"
           >
             <Trash2 className="h-4 w-4" />
           </Button>

@@ -1,6 +1,6 @@
 /**
  * Tauri Social Authentication Utilities
- * 
+ *
  * Provides helper functions for social sign-in in Tauri desktop app.
  * Uses Better Auth Tauri plugin for deep link handling.
  */
@@ -11,7 +11,7 @@ import { isTauriApp } from "@/lib/tauri/utils";
 /**
  * Initiate social sign-in flow
  * Opens system browser for OAuth and handles deep link callback
- * 
+ *
  * @param provider - OAuth provider (e.g., "google", "github", "microsoft")
  */
 export async function handleSocialSignIn(provider: string) {

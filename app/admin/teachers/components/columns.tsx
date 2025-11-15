@@ -138,17 +138,12 @@ export const createTeacherColumns = ({
       return (
         <div className="flex gap-2">
           <Link href={`/admin/teachers/${teacher.id}`}>
-            <Button variant="outline" size="sm" className="rounded-xl">
+            <Button variant="outline" size="sm">
               <Eye className="h-4 w-4 mr-1" />
               View
             </Button>
           </Link>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onEdit(teacher)}
-            className="rounded-xl"
-          >
+          <Button variant="outline" size="sm" onClick={() => onEdit(teacher)}>
             <Edit2 className="h-4 w-4 mr-1" />
             Edit
           </Button>
@@ -156,7 +151,6 @@ export const createTeacherColumns = ({
             variant="destructive"
             size="sm"
             onClick={() => onDelete(teacher)}
-            className="rounded-xl"
           >
             <Trash2 className="h-4 w-4" />
           </Button>

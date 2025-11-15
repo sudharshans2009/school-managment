@@ -23,9 +23,15 @@ const nextConfig: NextConfig = {
   // Disable trailing slashes for cleaner URLs
   trailingSlash: process.env.TAURI_BUILD === "true",
 
-  // Empty turbopack config to acknowledge Turbopack usage
-  // (Tauri plugin warnings are expected and safe for web builds)
-  turbopack: {},
+  // Turbopack configuration - suppress optional Tauri plugin warnings for web builds
+  turbopack: {
+    resolveAlias: {
+      // These are optional Tauri plugins, only needed for desktop builds
+      // Setting to empty object prevents resolution warnings in web builds
+      "@tauri-apps/plugin-updater": {},
+      "@tauri-apps/plugin-process": {},
+    },
+  },
 };
 
 export default nextConfig;

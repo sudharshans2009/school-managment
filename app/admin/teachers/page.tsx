@@ -79,16 +79,17 @@ export default function TeachersPage() {
         phone: t.phone,
         address: t.address,
         isActive: t.isActive ?? true,
-        teacherAssignments: t.teacherAssignments?.map((a) => ({
-          classroom: {
-            name: a.classroom.name,
-            grade: a.classroom.grade,
-            section: a.classroom.section,
-          },
-          subject: {
-            name: a.subject.name,
-          },
-        })) || [],
+        teacherAssignments:
+          t.teacherAssignments?.map((a) => ({
+            classroom: {
+              name: a.classroom.name,
+              grade: a.classroom.grade,
+              section: a.classroom.section,
+            },
+            subject: {
+              name: a.subject.name,
+            },
+          })) || [],
       }));
     },
   });
@@ -164,13 +165,15 @@ export default function TeachersPage() {
   });
 
   const bulkUploadMutation = useMutation({
-    mutationFn: async (teachers: Array<{
-      name: string;
-      email: string;
-      password: string;
-      phone?: string;
-      address?: string;
-    }>) => {
+    mutationFn: async (
+      teachers: Array<{
+        name: string;
+        email: string;
+        password: string;
+        phone?: string;
+        address?: string;
+      }>,
+    ) => {
       const result = await bulkUploadTeachers(teachers);
       return result;
     },
@@ -281,7 +284,7 @@ export default function TeachersPage() {
               onClick={() =>
                 setViewMode(viewMode === "grid" ? "table" : "grid")
               }
-              className="rounded-xl flex-1 sm:flex-none"
+              className="flex-1 sm:flex-none"
             >
               {viewMode === "grid" ? (
                 <>
@@ -299,10 +302,7 @@ export default function TeachersPage() {
             </Button>
             <Dialog open={csvDialogOpen} onOpenChange={setCsvDialogOpen}>
               <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="rounded-xl flex-1 sm:flex-none"
-                >
+                <Button variant="outline" className="flex-1 sm:flex-none">
                   <Upload className="h-4 w-4 mr-2" />
                   Upload CSV
                 </Button>
@@ -318,7 +318,6 @@ export default function TeachersPage() {
                       type="file"
                       accept=".csv"
                       onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
-                      className="rounded-xl"
                     />
                     <p className="text-sm text-muted-foreground mt-2">
                       CSV should have headers: name, email, password, phone,
@@ -328,7 +327,7 @@ export default function TeachersPage() {
                   <Button
                     onClick={handleCSVUpload}
                     disabled={!csvFile || bulkUploadMutation.isPending}
-                    className="w-full rounded-xl"
+                    className="w-full"
                   >
                     {bulkUploadMutation.isPending
                       ? "Uploading..."
@@ -345,7 +344,7 @@ export default function TeachersPage() {
               }}
             >
               <DialogTrigger asChild>
-                <Button className="rounded-xl">
+                <Button>
                   <UserPlus className="h-4 w-4 mr-2" />
                   Add Teacher
                 </Button>
@@ -360,7 +359,6 @@ export default function TeachersPage() {
                   <div>
                     <Label htmlFor="name">Full Name *</Label>
                     <Input
-                      className="rounded-xl"
                       id="name"
                       name="name"
                       required
@@ -370,7 +368,6 @@ export default function TeachersPage() {
                   <div>
                     <Label htmlFor="email">Email *</Label>
                     <Input
-                      className="rounded-xl"
                       id="email"
                       name="email"
                       type="email"
@@ -383,7 +380,6 @@ export default function TeachersPage() {
                       Password {editingTeacher ? "" : "*"}
                     </Label>
                     <Input
-                      className="rounded-xl"
                       id="password"
                       name="password"
                       type="password"
@@ -399,7 +395,6 @@ export default function TeachersPage() {
                   <div>
                     <Label htmlFor="phone">Phone</Label>
                     <Input
-                      className="rounded-xl"
                       id="phone"
                       name="phone"
                       type="tel"
@@ -409,7 +404,6 @@ export default function TeachersPage() {
                   <div>
                     <Label htmlFor="address">Address</Label>
                     <Input
-                      className="rounded-xl"
                       id="address"
                       name="address"
                       defaultValue={editingTeacher?.address || ""}
@@ -427,7 +421,6 @@ export default function TeachersPage() {
                     <Button
                       type="button"
                       variant="outline"
-                      className="rounded-xl"
                       onClick={() => {
                         setOpen(false);
                         setEditingTeacher(null);
@@ -437,7 +430,6 @@ export default function TeachersPage() {
                     </Button>
                     <Button
                       type="submit"
-                      className="rounded-xl"
                       disabled={
                         createMutation.isPending || updateMutation.isPending
                       }
@@ -502,7 +494,7 @@ export default function TeachersPage() {
                   placeholder="Search teachers..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 rounded-xl"
+                  className="pl-10"
                 />
               </div>
             </div>
@@ -553,18 +545,13 @@ export default function TeachersPage() {
                       )}
                       <div className="flex gap-2 mt-4">
                         <Link href={`/admin/teachers/${teacher.id}`}>
-                          <Button
-                            variant="default"
-                            size="sm"
-                            className="rounded-xl"
-                          >
+                          <Button variant="default" size="sm">
                             View Details
                           </Button>
                         </Link>
                         <Button
                           variant="outline"
                           size="sm"
-                          className="rounded-xl"
                           onClick={() => {
                             setEditingTeacher(teacher);
                             setOpen(true);
@@ -576,7 +563,6 @@ export default function TeachersPage() {
                         <Button
                           variant="destructive"
                           size="sm"
-                          className="rounded-xl"
                           onClick={() => setDeletingTeacher(teacher)}
                         >
                           <Trash2 className="h-4 w-4" />

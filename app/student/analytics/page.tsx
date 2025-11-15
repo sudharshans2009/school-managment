@@ -12,7 +12,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";import {
+import { Badge } from "@/components/ui/badge";
+import {
   Loader2,
   TrendingUp,
   BookOpen,
@@ -24,10 +25,7 @@ import { Badge } from "@/components/ui/badge";import {
   BarChart,
 } from "lucide-react";
 import { StudentHeader } from "@/components/student/student-header";
-import {
-  getStudentAnalytics,
-  type StudentAnalytics,
-} from "@/actions/student";
+import { getStudentAnalytics, type StudentAnalytics } from "@/actions/student";
 
 export default function StudentAnalyticsPage() {
   const { data: session, isPending: sessionPending } = useSession();

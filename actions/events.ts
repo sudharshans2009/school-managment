@@ -23,7 +23,13 @@ export interface Event {
   id: string;
   title: string;
   description: string | null;
-  eventType: "academic" | "sports" | "cultural" | "meeting" | "holiday" | "other";
+  eventType:
+    | "academic"
+    | "sports"
+    | "cultural"
+    | "meeting"
+    | "holiday"
+    | "other";
   status: "upcoming" | "ongoing" | "completed" | "cancelled";
   startDate: Date;
   endDate: Date;
@@ -61,7 +67,13 @@ export async function createEvent(
   eventData: {
     title: string;
     description: string;
-    eventType: "academic" | "sports" | "cultural" | "meeting" | "holiday" | "other";
+    eventType:
+      | "academic"
+      | "sports"
+      | "cultural"
+      | "meeting"
+      | "holiday"
+      | "other";
     status?: "upcoming" | "ongoing" | "completed" | "cancelled";
     startDate: string | Date;
     endDate: string | Date;
@@ -73,13 +85,20 @@ export async function createEvent(
     allowRegistration?: boolean;
     attachments?: string[];
   },
-  userId: string
+  userId: string,
 ): Promise<{ success: boolean; data?: Event; error?: string }> {
   try {
-    if (!eventData.title || !eventData.description || !eventData.eventType || !eventData.startDate || !eventData.endDate) {
+    if (
+      !eventData.title ||
+      !eventData.description ||
+      !eventData.eventType ||
+      !eventData.startDate ||
+      !eventData.endDate
+    ) {
       return {
         success: false,
-        error: "Title, description, event type, start date, and end date are required",
+        error:
+          "Title, description, event type, start date, and end date are required",
       };
     }
 
@@ -98,13 +117,17 @@ export async function createEvent(
         endDate: new Date(eventData.endDate),
         location: eventData.location || null,
         organizer: eventData.organizer || null,
-        targetAudience: eventData.targetAudience ? JSON.stringify(eventData.targetAudience) : null,
+        targetAudience: eventData.targetAudience
+          ? JSON.stringify(eventData.targetAudience)
+          : null,
         maxParticipants: eventData.maxParticipants || null,
         registrationDeadline: eventData.registrationDeadline
           ? new Date(eventData.registrationDeadline)
           : null,
         allowRegistration: eventData.allowRegistration || false,
-        attachments: eventData.attachments ? JSON.stringify(eventData.attachments) : null,
+        attachments: eventData.attachments
+          ? JSON.stringify(eventData.attachments)
+          : null,
         createdBy: userId,
       })
       .returning();
@@ -129,11 +152,15 @@ export async function createEvent(
           dayType: eventData.eventType === "holiday" ? "holiday" : "working",
           dayDuration: "full",
           holidayFor: eventData.eventType === "holiday" ? "all" : null,
-          holidayName: eventData.eventType === "holiday" ? eventData.title : null,
+          holidayName:
+            eventData.eventType === "holiday" ? eventData.title : null,
           notes: `Event: ${eventData.title}`,
           createdBy: userId,
         });
-      } else if (eventData.eventType === "holiday" && existingDay.dayType !== "holiday") {
+      } else if (
+        eventData.eventType === "holiday" &&
+        existingDay.dayType !== "holiday"
+      ) {
         // Update existing day to holiday if event is a holiday
         await db
           .update(calendarDays)
@@ -193,7 +220,13 @@ export async function updateEvent(
   eventData: Partial<{
     title: string;
     description: string;
-    eventType: "academic" | "sports" | "cultural" | "meeting" | "holiday" | "other";
+    eventType:
+      | "academic"
+      | "sports"
+      | "cultural"
+      | "meeting"
+      | "holiday"
+      | "other";
     status: "upcoming" | "ongoing" | "completed" | "cancelled";
     startDate: string | Date;
     endDate: string | Date;
@@ -204,7 +237,7 @@ export async function updateEvent(
     registrationDeadline: string | Date;
     allowRegistration: boolean;
     attachments: string[];
-  }>
+  }>,
 ): Promise<{ success: boolean; data?: Event; error?: string }> {
   try {
     if (!eventId) {
@@ -214,7 +247,13 @@ export async function updateEvent(
     const updateData: Partial<{
       title: string;
       description: string;
-      eventType: "academic" | "sports" | "cultural" | "meeting" | "holiday" | "other";
+      eventType:
+        | "academic"
+        | "sports"
+        | "cultural"
+        | "meeting"
+        | "holiday"
+        | "other";
       status: "upcoming" | "ongoing" | "completed" | "cancelled";
       startDate: Date;
       endDate: Date;
@@ -231,15 +270,25 @@ export async function updateEvent(
     if (eventData.description) updateData.description = eventData.description;
     if (eventData.eventType) updateData.eventType = eventData.eventType;
     if (eventData.status) updateData.status = eventData.status;
-    if (eventData.startDate) updateData.startDate = new Date(eventData.startDate);
+    if (eventData.startDate)
+      updateData.startDate = new Date(eventData.startDate);
     if (eventData.endDate) updateData.endDate = new Date(eventData.endDate);
-    if (eventData.location !== undefined) updateData.location = eventData.location;
-    if (eventData.organizer !== undefined) updateData.organizer = eventData.organizer;
-    if (eventData.targetAudience) updateData.targetAudience = JSON.stringify(eventData.targetAudience);
-    if (eventData.maxParticipants !== undefined) updateData.maxParticipants = eventData.maxParticipants;
-    if (eventData.registrationDeadline) updateData.registrationDeadline = new Date(eventData.registrationDeadline);
-    if (eventData.allowRegistration !== undefined) updateData.allowRegistration = eventData.allowRegistration;
-    if (eventData.attachments) updateData.attachments = JSON.stringify(eventData.attachments);
+    if (eventData.location !== undefined)
+      updateData.location = eventData.location;
+    if (eventData.organizer !== undefined)
+      updateData.organizer = eventData.organizer;
+    if (eventData.targetAudience)
+      updateData.targetAudience = JSON.stringify(eventData.targetAudience);
+    if (eventData.maxParticipants !== undefined)
+      updateData.maxParticipants = eventData.maxParticipants;
+    if (eventData.registrationDeadline)
+      updateData.registrationDeadline = new Date(
+        eventData.registrationDeadline,
+      );
+    if (eventData.allowRegistration !== undefined)
+      updateData.allowRegistration = eventData.allowRegistration;
+    if (eventData.attachments)
+      updateData.attachments = JSON.stringify(eventData.attachments);
 
     const updatedEvent = await db
       .update(events)
@@ -263,7 +312,7 @@ export async function updateEvent(
  * @param eventId - Event ID
  */
 export async function deleteEvent(
-  eventId: string
+  eventId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     if (!eventId) {
@@ -284,7 +333,13 @@ export async function deleteEvent(
  * @param filters - Optional filters for events
  */
 export async function getEvents(filters?: {
-  eventType?: "academic" | "sports" | "cultural" | "meeting" | "holiday" | "other";
+  eventType?:
+    | "academic"
+    | "sports"
+    | "cultural"
+    | "meeting"
+    | "holiday"
+    | "other";
   status?: "upcoming" | "ongoing" | "completed" | "cancelled";
   startDate?: string | Date;
   endDate?: string | Date;
@@ -304,7 +359,7 @@ export async function getEvents(filters?: {
     if (filters?.startDate && filters?.endDate) {
       const dateCondition = and(
         gte(events.startDate, new Date(filters.startDate)),
-        lte(events.endDate, new Date(filters.endDate))
+        lte(events.endDate, new Date(filters.endDate)),
       );
       if (dateCondition) {
         conditions.push(dateCondition);
@@ -345,7 +400,8 @@ export async function getEvents(filters?: {
         try {
           const audiences = JSON.parse(event.targetAudience);
           return (
-            audiences.includes("all") || audiences.includes(filters.targetAudience)
+            audiences.includes("all") ||
+            audiences.includes(filters.targetAudience)
           );
         } catch {
           return true;
@@ -365,7 +421,7 @@ export async function getEvents(filters?: {
  * @param eventId - Event ID
  */
 export async function getEventById(
-  eventId: string
+  eventId: string,
 ): Promise<{ success: boolean; data?: Event; error?: string }> {
   try {
     if (!eventId) {
@@ -418,7 +474,7 @@ export async function getEventById(
 export async function registerForEvent(
   eventId: string,
   userId: string,
-  studentId?: string
+  studentId?: string,
 ): Promise<{ success: boolean; data?: EventRegistration; error?: string }> {
   try {
     if (!eventId || !userId) {
@@ -435,7 +491,10 @@ export async function registerForEvent(
     }
 
     if (!event.allowRegistration) {
-      return { success: false, error: "Registration is not allowed for this event" };
+      return {
+        success: false,
+        error: "Registration is not allowed for this event",
+      };
     }
 
     if (event.registrationDeadline && new Date() > event.registrationDeadline) {
@@ -446,7 +505,7 @@ export async function registerForEvent(
     const existingRegistration = await db.query.eventRegistrations.findFirst({
       where: and(
         eq(eventRegistrations.eventId, eventId),
-        eq(eventRegistrations.userId, userId)
+        eq(eventRegistrations.userId, userId),
       ),
     });
 
@@ -462,7 +521,10 @@ export async function registerForEvent(
         .where(eq(eventRegistrations.eventId, eventId));
 
       if (registrationCount[0].count >= event.maxParticipants) {
-        return { success: false, error: "Event has reached maximum participants" };
+        return {
+          success: false,
+          error: "Event has reached maximum participants",
+        };
       }
     }
 
@@ -488,7 +550,7 @@ export async function registerForEvent(
  * @param registrationId - Registration ID
  */
 export async function cancelEventRegistration(
-  registrationId: string
+  registrationId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     if (!registrationId) {
@@ -512,7 +574,7 @@ export async function cancelEventRegistration(
  * @param eventId - Event ID
  */
 export async function getEventRegistrations(
-  eventId: string
+  eventId: string,
 ): Promise<{ success: boolean; data?: EventRegistration[]; error?: string }> {
   try {
     if (!eventId) {

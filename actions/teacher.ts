@@ -51,6 +51,7 @@ export interface Message {
   createdAt: string;
   senderName: string;
   senderEmail: string;
+  readAt?: string | null;
 }
 
 export interface TeacherLeave {
@@ -281,10 +282,30 @@ export async function getTeacherAssignments(
 // MESSAGES
 // ============================================================================
 
-export async function getTeacherMessages(userId: string): Promise<Message[]> {
+export async function getTeacherMessages(
+  userId: string,
+  filters?: {
+    status?: "sent" | "read" | "all";
+    messageType?: "absence" | "query" | "request" | "general" | "all";
+  },
+): Promise<Message[]> {
   try {
+    const conditions = [eq(messages.receiverId, userId)];
+
+    if (filters?.status && filters.status !== "all") {
+      conditions.push(
+        filters.status === "sent"
+          ? sql`${messages.readAt} IS NULL`
+          : sql`${messages.readAt} IS NOT NULL`,
+      );
+    }
+
+    if (filters?.messageType && filters.messageType !== "all") {
+      conditions.push(eq(messages.messageType, filters.messageType));
+    }
+
     const messageList = await db.query.messages.findMany({
-      where: eq(messages.receiverId, userId),
+      where: and(...conditions),
       orderBy: [desc(messages.createdAt)],
       limit: 50,
       with: {
@@ -301,10 +322,30 @@ export async function getTeacherMessages(userId: string): Promise<Message[]> {
       createdAt: m.createdAt?.toISOString() || "",
       senderName: m.sender?.name || "Unknown",
       senderEmail: m.sender?.email || "",
+      readAt: m.readAt?.toISOString() || null,
     }));
   } catch (error) {
     console.error("Error fetching messages:", error);
     return [];
+  }
+}
+
+/**
+ * Mark a message as read
+ */
+export async function markMessageAsRead(
+  messageId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await db
+      .update(messages)
+      .set({ readAt: new Date(), status: "read" })
+      .where(eq(messages.id, messageId));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error marking message as read:", error);
+    return { success: false, error: "Failed to mark message as read" };
   }
 }
 
@@ -769,9 +810,7 @@ export async function deleteHomeworkSubmission(
   }
 }
 
-export async function getClassroomStudents(
-  classroomId: string,
-): Promise<
+export async function getClassroomStudents(classroomId: string): Promise<
   Array<{
     id: string;
     rollNumber: string;
@@ -1248,7 +1287,9 @@ export async function getTeacherTimetable(
       .from(timetable)
       .leftJoin(classrooms, eq(timetable.classroomId, classrooms.id))
       .leftJoin(subjects, eq(timetable.subjectId, subjects.id))
-      .where(and(eq(timetable.teacherId, teacherId), eq(timetable.isActive, true)))
+      .where(
+        and(eq(timetable.teacherId, teacherId), eq(timetable.isActive, true)),
+      )
       .orderBy(timetable.dayOfWeek, timetable.periodNumber);
 
     return timetableEntries.map((entry) => ({

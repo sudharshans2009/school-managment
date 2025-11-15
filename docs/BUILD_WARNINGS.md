@@ -38,6 +38,7 @@ try {
 ### When to Address
 
 These warnings should **only** be addressed if:
+
 - You're building the desktop app with Tauri (`TAURI_BUILD=true`)
 - Users report that the desktop app update feature isn't working
 - You want to add the plugins to package.json for desktop builds
@@ -57,11 +58,13 @@ bun add @tauri-apps/plugin-process @tauri-apps/plugin-updater
 The `EventRegistration` interface was using outdated field names that didn't match the database schema:
 
 **Old (Incorrect)**:
+
 - `registrationStatus` → Should be `status`
 - `attendedAt` → Removed (not in schema)
 - `remarks` → Should be `notes`
 
 **New (Correct)**:
+
 ```typescript
 export interface EventRegistration {
   id: string;
@@ -82,9 +85,15 @@ export interface EventRegistration {
 // database/schema.ts
 export const eventRegistrations = pgTable("event_registrations", {
   id: uuid("id").defaultRandom().primaryKey(),
-  eventId: uuid("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
-  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  studentId: uuid("student_id").references(() => students.id, { onDelete: "cascade" }),
+  eventId: uuid("event_id")
+    .notNull()
+    .references(() => events.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  studentId: uuid("student_id").references(() => students.id, {
+    onDelete: "cascade",
+  }),
   status: registrationStatusEnum("status").notNull().default("registered"),
   registeredAt: timestamp("registered_at").defaultNow(),
   notes: text("notes"),

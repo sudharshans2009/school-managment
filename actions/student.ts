@@ -16,7 +16,7 @@ import {
   messages,
   classrooms,
 } from "@/database/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 
 // ============================================================================
 // TYPES
@@ -317,7 +317,12 @@ export async function getStudentTimetable(
       .from(timetable)
       .leftJoin(subjects, eq(timetable.subjectId, subjects.id))
       .leftJoin(users, eq(timetable.teacherId, users.id))
-      .where(and(eq(timetable.classroomId, classroomId), eq(timetable.isActive, true)))
+      .where(
+        and(
+          eq(timetable.classroomId, classroomId),
+          eq(timetable.isActive, true),
+        ),
+      )
       .orderBy(timetable.dayOfWeek, timetable.periodNumber);
 
     return timetableEntries.map((entry) => ({
@@ -435,21 +440,151 @@ export async function sendMessage(data: {
   subject: string;
   message: string;
   messageType: "absence" | "query" | "request" | "general";
-}): Promise<{ success: boolean; error?: string }> {
+}): Promise<{ success: boolean; error?: string; messageId?: string }> {
   try {
-    await db.insert(messages).values({
-      senderId: data.senderId,
-      receiverId: data.receiverId,
-      subject: data.subject,
-      message: data.message,
-      messageType: data.messageType,
-      status: "sent",
-    });
+    const [newMessage] = await db
+      .insert(messages)
+      .values({
+        senderId: data.senderId,
+        receiverId: data.receiverId,
+        subject: data.subject,
+        message: data.message,
+        messageType: data.messageType,
+        status: "sent",
+      })
+      .returning();
 
-    return { success: true };
+    return { success: true, messageId: newMessage.id };
   } catch (error) {
     console.error("Error sending message:", error);
     return { success: false, error: "Failed to send message" };
+  }
+}
+
+/**
+ * Get sent messages for a student
+ */
+export async function getSentMessages(userId: string): Promise<
+  {
+    id: string;
+    subject: string;
+    message: string;
+    messageType: string | null;
+    status: string | null;
+    receiverName: string;
+    receiverEmail: string;
+    createdAt: string;
+    readAt: string | null;
+  }[]
+> {
+  try {
+    const sentMessages = await db.query.messages.findMany({
+      where: eq(messages.senderId, userId),
+      orderBy: [desc(messages.createdAt)],
+      limit: 50,
+      with: {
+        receiver: true,
+      },
+    });
+
+    return sentMessages.map((m) => ({
+      id: m.id,
+      subject: m.subject,
+      message: m.message,
+      messageType: m.messageType,
+      status: m.status,
+      receiverName: m.receiver?.name || "Unknown",
+      receiverEmail: m.receiver?.email || "",
+      createdAt: m.createdAt?.toISOString() || "",
+      readAt: m.readAt?.toISOString() || null,
+    }));
+  } catch (error) {
+    console.error("Error fetching sent messages:", error);
+    return [];
+  }
+}
+
+/**
+ * Update a sent message (only if unread)
+ */
+export async function updateSentMessage(data: {
+  messageId: string;
+  senderId: string;
+  subject: string;
+  message: string;
+  messageType: "absence" | "query" | "request" | "general";
+}): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Check if message exists, belongs to sender, and is unread
+    const [existingMessage] = await db
+      .select()
+      .from(messages)
+      .where(
+        and(
+          eq(messages.id, data.messageId),
+          eq(messages.senderId, data.senderId),
+          sql`${messages.readAt} IS NULL`,
+        ),
+      );
+
+    if (!existingMessage) {
+      return {
+        success: false,
+        error:
+          "Message not found, already read, or you don't have permission to edit it",
+      };
+    }
+
+    await db
+      .update(messages)
+      .set({
+        subject: data.subject,
+        message: data.message,
+        messageType: data.messageType,
+      })
+      .where(eq(messages.id, data.messageId));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating message:", error);
+    return { success: false, error: "Failed to update message" };
+  }
+}
+
+/**
+ * Delete a sent message (only if unread)
+ */
+export async function deleteSentMessage(
+  messageId: string,
+  senderId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Check if message exists, belongs to sender, and is unread
+    const [existingMessage] = await db
+      .select()
+      .from(messages)
+      .where(
+        and(
+          eq(messages.id, messageId),
+          eq(messages.senderId, senderId),
+          sql`${messages.readAt} IS NULL`,
+        ),
+      );
+
+    if (!existingMessage) {
+      return {
+        success: false,
+        error:
+          "Message not found, already read, or you don't have permission to delete it",
+      };
+    }
+
+    await db.delete(messages).where(eq(messages.id, messageId));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting message:", error);
+    return { success: false, error: "Failed to delete message" };
   }
 }
 
@@ -595,8 +730,12 @@ export async function getStudentAnalytics(
       .where(eq(attendance.studentId, studentRecord.id));
 
     const totalDays = studentAttendance.length;
-    const present = studentAttendance.filter((a) => a.status === "present").length;
-    const absent = studentAttendance.filter((a) => a.status === "absent").length;
+    const present = studentAttendance.filter(
+      (a) => a.status === "present",
+    ).length;
+    const absent = studentAttendance.filter(
+      (a) => a.status === "absent",
+    ).length;
     const late = studentAttendance.filter((a) => a.status === "late").length;
     const attendanceRate = totalDays > 0 ? (present / totalDays) * 100 : 0;
 
@@ -629,11 +768,15 @@ export async function getStudentAnalytics(
       .from(exams)
       .where(eq(exams.isFinalized, true));
 
-    const validGrades = studentGradesData.filter((g) => !g.isAbsent && g.percentage);
+    const validGrades = studentGradesData.filter(
+      (g) => !g.isAbsent && g.percentage,
+    );
     const averagePercentage =
       validGrades.length > 0
-        ? validGrades.reduce((sum, g) => sum + parseFloat(g.percentage || "0"), 0) /
-          validGrades.length
+        ? validGrades.reduce(
+            (sum, g) => sum + parseFloat(g.percentage || "0"),
+            0,
+          ) / validGrades.length
         : 0;
 
     const getLetterGrade = (percentage: number): string => {
@@ -659,17 +802,23 @@ export async function getStudentAnalytics(
     const failedExams = validGrades.length - passedExams;
 
     // Grades by subject
-    const subjectData = await db.select({ id: subjects.id, name: subjects.name }).from(subjects);
+    const subjectData = await db
+      .select({ id: subjects.id, name: subjects.name })
+      .from(subjects);
     const gradesBySubject = subjectData
       .map((subject) => {
-        const subjectExams = finalizedExamsData.filter((e) => e.subjectId === subject.id);
+        const subjectExams = finalizedExamsData.filter(
+          (e) => e.subjectId === subject.id,
+        );
         const subjectGrades = studentGradesData.filter(
           (g) => subjectExams.some((e) => e.id === g.examId) && !g.isAbsent,
         );
         const average =
           subjectGrades.length > 0
-            ? subjectGrades.reduce((sum, g) => sum + parseFloat(g.percentage || "0"), 0) /
-              subjectGrades.length
+            ? subjectGrades.reduce(
+                (sum, g) => sum + parseFloat(g.percentage || "0"),
+                0,
+              ) / subjectGrades.length
             : 0;
         return {
           subject: subject.name,
@@ -717,14 +866,18 @@ export async function getStudentAnalytics(
 
     const totalAssigned = studentHomework.length;
     const submitted = studentSubmissions.length;
-    const graded = studentSubmissions.filter((s) => s.status === "graded").length;
+    const graded = studentSubmissions.filter(
+      (s) => s.status === "graded",
+    ).length;
     const pending = totalAssigned - submitted;
 
     const gradedSubmissions = studentSubmissions.filter((s) => s.marksObtained);
     const averageScore =
       gradedSubmissions.length > 0
-        ? gradedSubmissions.reduce((sum, s) => sum + parseInt(String(s.marksObtained) || "0"), 0) /
-          gradedSubmissions.length
+        ? gradedSubmissions.reduce(
+            (sum, s) => sum + parseInt(String(s.marksObtained) || "0"),
+            0,
+          ) / gradedSubmissions.length
         : 0;
 
     const onTimeSubmissions = studentSubmissions.filter((s) => {
@@ -733,7 +886,9 @@ export async function getStudentAnalytics(
       return new Date(s.submittedAt) <= new Date(hw.dueDate);
     }).length;
     const onTimeRate =
-      studentSubmissions.length > 0 ? (onTimeSubmissions / studentSubmissions.length) * 100 : 0;
+      studentSubmissions.length > 0
+        ? (onTimeSubmissions / studentSubmissions.length) * 100
+        : 0;
 
     // Overall performance
     const classStudents = await db
@@ -750,16 +905,22 @@ export async function getStudentAnalytics(
       .from(studentGrades);
 
     const studentAverages = classStudents.map((student) => {
-      const grades = allStudentGrades.filter((g) => g.studentId === student.id && !g.isAbsent);
+      const grades = allStudentGrades.filter(
+        (g) => g.studentId === student.id && !g.isAbsent,
+      );
       const avg =
         grades.length > 0
-          ? grades.reduce((sum, g) => sum + parseFloat(g.percentage || "0"), 0) / grades.length
+          ? grades.reduce(
+              (sum, g) => sum + parseFloat(g.percentage || "0"),
+              0,
+            ) / grades.length
           : 0;
       return { studentId: student.id, average: avg };
     });
 
     studentAverages.sort((a, b) => b.average - a.average);
-    const rank = studentAverages.findIndex((s) => s.studentId === studentRecord.id) + 1;
+    const rank =
+      studentAverages.findIndex((s) => s.studentId === studentRecord.id) + 1;
 
     const performanceLevel =
       averagePercentage >= 85

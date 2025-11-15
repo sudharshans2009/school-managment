@@ -67,7 +67,7 @@ export default function TeacherDetailPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/admin/teachers">
-              <Button variant="ghost" size="sm" className="rounded-xl">
+              <Button variant="ghost" size="sm">
                 ← Back
               </Button>
             </Link>
@@ -151,12 +151,13 @@ export default function TeacherDetailPage() {
                 <CardTitle>Classroom Assignments</CardTitle>
               </CardHeader>
               <CardContent>
-                {teacher.teacherAssignments && teacher.teacherAssignments.length > 0 ? (
+                {teacher.teacherAssignments &&
+                teacher.teacherAssignments.length > 0 ? (
                   <div className="space-y-2">
                     {teacher.teacherAssignments.map((assignment) => (
                       <div
                         key={assignment.id}
-                        className="flex items-center justify-between p-4 border rounded-xl hover:bg-muted/50 transition-colors"
+                        className="flex items-center justify-between p-4 border hover:bg-muted/50 transition-colors"
                       >
                         <div className="flex items-center gap-4">
                           <div className="p-2 bg-primary/10 rounded-lg">
@@ -209,7 +210,7 @@ export default function TeacherDetailPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="p-4 bg-primary/5 rounded-xl">
+                  <div className="p-4 bg-primary/5">
                     <p className="text-sm text-muted-foreground mb-1">
                       Class Teacher of
                     </p>
@@ -235,7 +236,7 @@ export default function TeacherDetailPage() {
                 {leaveStats ? (
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                      <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20">
                         <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                           {leaveStats.totalLeaves}
                         </p>
@@ -243,7 +244,7 @@ export default function TeacherDetailPage() {
                           Total Leaves
                         </p>
                       </div>
-                      <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
+                      <div className="text-center p-4 bg-red-50 dark:bg-red-900/20">
                         <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                           {leaveStats.sickLeaves}
                         </p>
@@ -251,7 +252,7 @@ export default function TeacherDetailPage() {
                           Sick Leaves
                         </p>
                       </div>
-                      <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                      <div className="text-center p-4 bg-green-50 dark:bg-green-900/20">
                         <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                           {leaveStats.casualLeaves}
                         </p>
@@ -259,7 +260,7 @@ export default function TeacherDetailPage() {
                           Casual Leaves
                         </p>
                       </div>
-                      <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
+                      <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20">
                         <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                           {leaveStats.earnedLeaves}
                         </p>
@@ -269,7 +270,7 @@ export default function TeacherDetailPage() {
                       </div>
                     </div>
                     {leaveStats.pendingLeaves > 0 && (
-                      <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border border-yellow-200 dark:border-yellow-800">
+                      <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
                         <p className="text-sm text-muted-foreground">
                           Pending Leave Requests
                         </p>

@@ -255,9 +255,7 @@ export default function StudentsPage() {
       });
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(
-          error.error || "Failed to create disciplinary action"
-        );
+        throw new Error(error.error || "Failed to create disciplinary action");
       }
       return response.json();
     },
@@ -318,7 +316,7 @@ export default function StudentsPage() {
     (student) =>
       student.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       student.rollNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.admissionNumber.toLowerCase().includes(searchQuery.toLowerCase())
+      student.admissionNumber.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const columns = createStudentColumns({
@@ -361,7 +359,7 @@ export default function StudentsPage() {
               onClick={() =>
                 setViewMode(viewMode === "grid" ? "table" : "grid")
               }
-              className="rounded-xl flex-1 sm:flex-none"
+              className="flex-1 sm:flex-none"
             >
               {viewMode === "grid" ? (
                 <>
@@ -379,10 +377,7 @@ export default function StudentsPage() {
             </Button>
             <Dialog open={csvDialogOpen} onOpenChange={setCsvDialogOpen}>
               <DialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="rounded-xl flex-1 sm:flex-none"
-                >
+                <Button variant="outline" className="flex-1 sm:flex-none">
                   <Upload className="h-4 w-4 mr-2" />
                   <span className="hidden sm:inline">Upload CSV</span>
                   <span className="sm:hidden">CSV</span>
@@ -399,7 +394,6 @@ export default function StudentsPage() {
                       type="file"
                       accept=".csv"
                       onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
-                      className="rounded-xl"
                     />
                     <p className="text-sm text-muted-foreground mt-2">
                       CSV should have headers: name, email, password, phone,
@@ -410,7 +404,7 @@ export default function StudentsPage() {
                   <Button
                     onClick={handleCSVUpload}
                     disabled={!csvFile || bulkUploadMutation.isPending}
-                    className="w-full rounded-xl"
+                    className="w-full"
                   >
                     {bulkUploadMutation.isPending
                       ? "Uploading..."
@@ -427,7 +421,7 @@ export default function StudentsPage() {
               }}
             >
               <DialogTrigger asChild>
-                <Button className="rounded-xl">
+                <Button>
                   <UserPlus className="h-4 w-4 mr-2" />
                   Add Student
                 </Button>
@@ -447,7 +441,6 @@ export default function StudentsPage() {
                         name="name"
                         required
                         defaultValue={editingStudent?.user.name}
-                        className="rounded-xl"
                       />
                     </div>
                     <div>
@@ -458,7 +451,6 @@ export default function StudentsPage() {
                         type="email"
                         required
                         defaultValue={editingStudent?.user.email}
-                        className="rounded-xl"
                       />
                     </div>
                   </div>
@@ -477,7 +469,6 @@ export default function StudentsPage() {
                           ? "Leave blank to keep current password"
                           : ""
                       }
-                      className="rounded-xl"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
@@ -550,18 +541,10 @@ export default function StudentsPage() {
                           <SelectValue placeholder="Select house" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Amritamayi">
-                            Amritamayi
-                          </SelectItem>
-                          <SelectItem value="Anandamayi">
-                            Anandamayi
-                          </SelectItem>
-                          <SelectItem value="Chinmayi">
-                            Chinmayi
-                          </SelectItem>
-                          <SelectItem value="Jothyrmayi">
-                            Jothyrmayi
-                          </SelectItem>
+                          <SelectItem value="Amritamayi">Amritamayi</SelectItem>
+                          <SelectItem value="Anandamayi">Anandamayi</SelectItem>
+                          <SelectItem value="Chinmayi">Chinmayi</SelectItem>
+                          <SelectItem value="Jothyrmayi">Jothyrmayi</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -609,7 +592,6 @@ export default function StudentsPage() {
                     <Button
                       type="button"
                       variant="outline"
-                      className="rounded-xl"
                       onClick={() => {
                         setOpen(false);
                         setEditingStudent(null);
@@ -619,7 +601,6 @@ export default function StudentsPage() {
                     </Button>
                     <Button
                       type="submit"
-                      className="rounded-xl"
                       disabled={
                         createMutation.isPending || updateMutation.isPending
                       }
@@ -629,8 +610,8 @@ export default function StudentsPage() {
                           ? "Updating..."
                           : "Update Student"
                         : createMutation.isPending
-                        ? "Creating..."
-                        : "Create Student"}
+                          ? "Creating..."
+                          : "Create Student"}
                     </Button>
                   </div>
                 </form>
@@ -684,7 +665,7 @@ export default function StudentsPage() {
                   placeholder="Search students..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 rounded-xl"
+                  className="pl-10"
                 />
               </div>
             </div>
@@ -740,18 +721,13 @@ export default function StudentsPage() {
                       </div>
                       <div className="flex flex-wrap gap-2 mt-4">
                         <Link href={`/admin/students/${student.id}`}>
-                          <Button
-                            variant="default"
-                            size="sm"
-                            className="rounded-xl"
-                          >
+                          <Button variant="default" size="sm">
                             View Details
                           </Button>
                         </Link>
                         <Button
                           variant="outline"
                           size="sm"
-                          className="rounded-xl"
                           onClick={() => {
                             setEditingStudent(student);
                             setOpen(true);
@@ -767,7 +743,7 @@ export default function StudentsPage() {
                             setSelectedStudent(student);
                             setMedicalDialogOpen(true);
                           }}
-                          className="rounded-xl text-blue-600 hover:text-blue-700 border-blue-300 hover:bg-blue-50"
+                          className="text-blue-600 hover:text-blue-700 border-blue-300 hover:bg-blue-50"
                           title="Medical Records"
                         >
                           <HeartPulse className="h-4 w-4" />
@@ -779,7 +755,7 @@ export default function StudentsPage() {
                             setSelectedStudent(student);
                             setDisciplinaryDialogOpen(true);
                           }}
-                          className="rounded-xl text-orange-600 hover:text-orange-700 border-orange-300 hover:bg-orange-50"
+                          className="text-orange-600 hover:text-orange-700 border-orange-300 hover:bg-orange-50"
                           title="Disciplinary Actions"
                         >
                           <AlertTriangle className="h-4 w-4" />
@@ -787,7 +763,6 @@ export default function StudentsPage() {
                         <Button
                           variant="destructive"
                           size="sm"
-                          className="rounded-xl"
                           onClick={() => setDeletingStudent(student)}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -879,7 +854,6 @@ export default function StudentsPage() {
                     name="incidentDate"
                     type="datetime-local"
                     required
-                    className="rounded-xl"
                   />
                 </div>
                 <div>
@@ -920,7 +894,6 @@ export default function StudentsPage() {
                   name="description"
                   required
                   placeholder="Describe what happened"
-                  className="rounded-xl"
                 />
               </div>
               <div>
@@ -929,7 +902,6 @@ export default function StudentsPage() {
                   id="treatment"
                   name="treatment"
                   placeholder="Treatment given"
-                  className="rounded-xl"
                 />
               </div>
               <div className="flex items-center space-x-2">
@@ -947,7 +919,6 @@ export default function StudentsPage() {
                   id="followUpNotes"
                   name="followUpNotes"
                   placeholder="Any follow-up instructions"
-                  className="rounded-xl"
                 />
               </div>
               <div className="flex items-center space-x-2">
@@ -967,13 +938,11 @@ export default function StudentsPage() {
                     setMedicalDialogOpen(false);
                     setSelectedStudent(null);
                   }}
-                  className="rounded-xl"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  className="rounded-xl"
                   disabled={createMedicalIncidentMutation.isPending}
                 >
                   {createMedicalIncidentMutation.isPending
@@ -1017,7 +986,9 @@ export default function StudentsPage() {
                   parentNotified: formData.get("parentNotified") === "on",
                   parentMeetingRequired:
                     formData.get("parentMeetingRequired") === "on",
-                  parentMeetingDate: formData.get("parentMeetingDate") as string,
+                  parentMeetingDate: formData.get(
+                    "parentMeetingDate",
+                  ) as string,
                   resolutionNotes: formData.get("resolutionNotes") as string,
                 });
               }}
@@ -1031,7 +1002,6 @@ export default function StudentsPage() {
                     name="incidentDate"
                     type="datetime-local"
                     required
-                    className="rounded-xl"
                   />
                 </div>
                 <div>
@@ -1073,7 +1043,6 @@ export default function StudentsPage() {
                   name="description"
                   required
                   placeholder="Describe the incident"
-                  className="rounded-xl"
                 />
               </div>
               <div>
@@ -1083,7 +1052,6 @@ export default function StudentsPage() {
                   name="actionTaken"
                   required
                   placeholder="What action was taken"
-                  className="rounded-xl"
                 />
               </div>
               <div>
@@ -1094,7 +1062,6 @@ export default function StudentsPage() {
                   id="witnessesOrInvolved"
                   name="witnessesOrInvolved"
                   placeholder="Names of witnesses or other students involved"
-                  className="rounded-xl"
                 />
               </div>
               <div className="flex items-center space-x-2">
@@ -1123,7 +1090,6 @@ export default function StudentsPage() {
                   id="parentMeetingDate"
                   name="parentMeetingDate"
                   type="datetime-local"
-                  className="rounded-xl"
                 />
               </div>
               <div>
@@ -1132,7 +1098,6 @@ export default function StudentsPage() {
                   id="resolutionNotes"
                   name="resolutionNotes"
                   placeholder="Notes about resolution or next steps"
-                  className="rounded-xl"
                 />
               </div>
               <div className="flex justify-end gap-2">
@@ -1143,13 +1108,11 @@ export default function StudentsPage() {
                     setDisciplinaryDialogOpen(false);
                     setSelectedStudent(null);
                   }}
-                  className="rounded-xl"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
-                  className="rounded-xl"
                   disabled={createDisciplinaryActionMutation.isPending}
                 >
                   {createDisciplinaryActionMutation.isPending

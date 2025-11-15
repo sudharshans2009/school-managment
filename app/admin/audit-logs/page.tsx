@@ -76,6 +76,11 @@ export default function AuditLogsPage() {
       });
       if (!result.success || !result.data) throw new Error(result.error);
       return result.data;
+      const response = await fetch(
+        `/api/security/audit-logs?${buildQueryParams()}`,
+      );
+      if (!response.ok) throw new Error("Failed to fetch audit logs");
+      return response.json();
     },
   });
 
@@ -163,7 +168,7 @@ export default function AuditLogsPage() {
           log.resource,
           `"${log.description?.replace(/"/g, '""') || "N/A"}"`,
           log.ipAddress || "N/A",
-        ].join(",")
+        ].join(","),
       ),
     ].join("\n");
 
@@ -212,11 +217,10 @@ export default function AuditLogsPage() {
                   <Input
                     placeholder="Search user or description..."
                     value={searchQuery}
-                    className="rounded-xl"
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   />
-                  <Button onClick={handleSearch} size="icon" className="rounded-xl">
+                  <Button onClick={handleSearch} size="icon">
                     <Search className="h-4 w-4" />
                   </Button>
                 </div>
@@ -226,7 +230,7 @@ export default function AuditLogsPage() {
               <div className="space-y-2">
                 <Label>Action</Label>
                 <Select value={actionFilter} onValueChange={setActionFilter}>
-                  <SelectTrigger className="rounded-xl w-full">
+                  <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -248,7 +252,7 @@ export default function AuditLogsPage() {
                   value={resourceFilter}
                   onValueChange={setResourceFilter}
                 >
-                  <SelectTrigger className="rounded-xl w-full">
+                  <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -273,8 +277,8 @@ export default function AuditLogsPage() {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal rounded-xl",
-                        !startDate && "text-muted-foreground"
+                        "w-full justify-start text-left font-normal",
+                        !startDate && "text-muted-foreground",
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
@@ -304,8 +308,8 @@ export default function AuditLogsPage() {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal rounded-xl",
-                        !endDate && "text-muted-foreground"
+                        "w-full justify-start text-left font-normal",
+                        !endDate && "text-muted-foreground",
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
@@ -332,7 +336,7 @@ export default function AuditLogsPage() {
                 <Button
                   variant="outline"
                   onClick={handleClearFilters}
-                  className="w-full rounded-xl"
+                  className="w-full"
                 >
                   Clear All Filters
                 </Button>

@@ -22,6 +22,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Table,
   TableBody,
   TableCell,
@@ -41,6 +49,10 @@ import {
   Users,
   School,
   BarChart3,
+  Mail,
+  Edit,
+  Trash2,
+  Eye,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -53,6 +65,9 @@ import {
   getClassroomMessages,
   getClassroomTeachers,
   sendMessage,
+  getSentMessages,
+  updateSentMessage,
+  deleteSentMessage,
   type StudentProfile,
   type StudentHomework,
   type StudentTimetableEntry,
@@ -72,6 +87,13 @@ export default function StudentPage() {
     messageType: "general" as "absence" | "query" | "request" | "general",
   });
 
+  const [editingMessage, setEditingMessage] = useState<{
+    id: string;
+    subject: string;
+    message: string;
+    messageType: "absence" | "query" | "request" | "general";
+  } | null>(null);
+
   // Fetch student profile
   const { data: studentProfile } = useQuery<StudentProfile>({
     queryKey: ["student-profile", session?.user?.id],
@@ -89,7 +111,10 @@ export default function StudentPage() {
     queryKey: ["homework", studentProfile?.classroomId, session?.user?.id],
     queryFn: async () => {
       if (!studentProfile?.classroomId || !session?.user?.id) return [];
-      return await getStudentHomework(studentProfile.classroomId, session.user.id);
+      return await getStudentHomework(
+        studentProfile.classroomId,
+        session.user.id,
+      );
     },
     enabled: !!studentProfile?.classroomId && !!session?.user?.id,
   });
@@ -124,6 +149,16 @@ export default function StudentPage() {
     enabled: !!studentProfile?.classroomId,
   });
 
+  // Fetch sent messages
+  const { data: sentMessages } = useQuery({
+    queryKey: ["sent-messages", session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return [];
+      return await getSentMessages(session.user.id);
+    },
+    enabled: !!session?.user?.id,
+  });
+
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (data: typeof messageForm & { senderId: string }) => {
@@ -141,7 +176,50 @@ export default function StudentPage() {
         message: "",
         messageType: "general",
       });
-      queryClient.invalidateQueries({ queryKey: ["messages"] });
+      queryClient.invalidateQueries({ queryKey: ["sent-messages"] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  // Update sent message mutation
+  const updateMessageMutation = useMutation({
+    mutationFn: async (data: {
+      messageId: string;
+      senderId: string;
+      subject: string;
+      message: string;
+      messageType: "absence" | "query" | "request" | "general";
+    }) => {
+      const result = await updateSentMessage(data);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to update message");
+      }
+      return result;
+    },
+    onSuccess: () => {
+      toast.success("Message updated successfully");
+      setEditingMessage(null);
+      queryClient.invalidateQueries({ queryKey: ["sent-messages"] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  // Delete sent message mutation
+  const deleteMessageMutation = useMutation({
+    mutationFn: async (data: { messageId: string; senderId: string }) => {
+      const result = await deleteSentMessage(data.messageId, data.senderId);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to delete message");
+      }
+      return result;
+    },
+    onSuccess: () => {
+      toast.success("Message deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["sent-messages"] });
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -181,7 +259,10 @@ export default function StudentPage() {
     const dueDate = new Date(homework.dueDate);
     const today = new Date();
 
-    if (homework.submission?.status === "submitted" || homework.submission?.status === "graded") {
+    if (
+      homework.submission?.status === "submitted" ||
+      homework.submission?.status === "graded"
+    ) {
       return { variant: "default" as const, text: "Submitted" };
     } else if (dueDate < today) {
       return { variant: "destructive" as const, text: "Overdue" };
@@ -203,7 +284,9 @@ export default function StudentPage() {
   const todayTimetable =
     timetable?.filter((entry) => entry.dayOfWeek === new Date().getDay()) || [];
   const pendingHomework =
-    homework?.filter((hw) => !hw.submission || hw.submission.status === "pending").length || 0;
+    homework?.filter(
+      (hw) => !hw.submission || hw.submission.status === "pending",
+    ).length || 0;
   const todayQuote = classroomMessages?.find(
     (msg) => msg.messageType === "quote",
   );
@@ -219,7 +302,7 @@ export default function StudentPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <Badge
               variant="outline"
-              className="text-sm sm:text-base px-3 sm:px-4 py-2 rounded-xl"
+              className="text-sm sm:text-base px-3 sm:px-4 py-2"
             >
               {studentProfile.classroom.name}
             </Badge>
@@ -361,7 +444,7 @@ export default function StudentPage() {
         )}
 
         <Tabs defaultValue="homework" className="space-y-4 sm:space-y-6">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 rounded-xl text-xs sm:text-sm">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 text-xs sm:text-sm">
             <TabsTrigger value="homework" className="rounded-lg">
               Homework
             </TabsTrigger>
@@ -372,7 +455,10 @@ export default function StudentPage() {
               Classroom
             </TabsTrigger>
             <TabsTrigger value="message" className="rounded-lg">
-              Message Teacher
+              Send Message
+            </TabsTrigger>
+            <TabsTrigger value="sent-messages" className="rounded-lg">
+              Sent
             </TabsTrigger>
           </TabsList>
 
@@ -392,7 +478,7 @@ export default function StudentPage() {
                     return (
                       <Card
                         key={hw.id}
-                        className="rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                        className="shadow-sm hover:shadow-md transition-shadow"
                       >
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between">
@@ -432,13 +518,16 @@ export default function StudentPage() {
                             <Button
                               size="sm"
                               variant={
-                                hw.submission?.status === "submitted" || hw.submission?.status === "graded"
+                                hw.submission?.status === "submitted" ||
+                                hw.submission?.status === "graded"
                                   ? "outline"
                                   : "default"
                               }
-                              className="rounded-xl"
                             >
-                              {hw.submission?.status === "submitted" || hw.submission?.status === "graded" ? "View" : "Submit"}
+                              {hw.submission?.status === "submitted" ||
+                              hw.submission?.status === "graded"
+                                ? "View"
+                                : "Submit"}
                             </Button>
                           </div>
                         </CardContent>
@@ -638,7 +727,7 @@ export default function StudentPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
+                <div className="flex flex-col gap-2">
                   <Label>Select Teacher</Label>
                   <Select
                     value={messageForm.receiverId}
@@ -646,7 +735,7 @@ export default function StudentPage() {
                       setMessageForm((prev) => ({ ...prev, receiverId: value }))
                     }
                   >
-                    <SelectTrigger className="rounded-xl">
+                    <SelectTrigger>
                       <SelectValue placeholder="Choose a teacher" />
                     </SelectTrigger>
                     <SelectContent>
@@ -659,7 +748,7 @@ export default function StudentPage() {
                   </Select>
                 </div>
 
-                <div>
+                <div className="flex flex-col gap-2">
                   <Label>Message Type</Label>
                   <Select
                     value={messageForm.messageType}
@@ -670,7 +759,7 @@ export default function StudentPage() {
                       }))
                     }
                   >
-                    <SelectTrigger className="rounded-xl">
+                    <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -684,10 +773,9 @@ export default function StudentPage() {
                   </Select>
                 </div>
 
-                <div>
+                <div className="flex flex-col gap-2">
                   <Label>Subject</Label>
                   <Input
-                    className="rounded-xl"
                     placeholder="Enter message subject"
                     value={messageForm.subject}
                     onChange={(e) =>
@@ -699,10 +787,9 @@ export default function StudentPage() {
                   />
                 </div>
 
-                <div>
+                <div className="flex flex-col gap-2">
                   <Label>Message</Label>
                   <Textarea
-                    className="rounded-xl"
                     placeholder="Write your message..."
                     value={messageForm.message}
                     onChange={(e) =>
@@ -718,7 +805,6 @@ export default function StudentPage() {
                 <Button
                   onClick={handleSendMessage}
                   disabled={sendMessageMutation.isPending}
-                  className="rounded-xl"
                 >
                   {sendMessageMutation.isPending && (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -726,6 +812,231 @@ export default function StudentPage() {
                   <Send className="h-4 w-4 mr-2" />
                   Send Message
                 </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Sent Messages Tab */}
+          <TabsContent value="sent-messages">
+            <Card className="rounded-2xl shadow-sm">
+              <CardHeader>
+                <CardTitle>Sent Messages</CardTitle>
+                <CardDescription>
+                  View, edit, or delete your sent messages (only unread messages
+                  can be edited/deleted)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {sentMessages?.map((msg) => (
+                    <Card
+                      key={msg.id}
+                      className={
+                        !msg.readAt ? "border-l-4 border-l-blue-500" : ""
+                      }
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2 flex-wrap">
+                              <h4 className="font-semibold">{msg.subject}</h4>
+                              <Badge
+                                variant={
+                                  msg.messageType === "absence"
+                                    ? "destructive"
+                                    : msg.messageType === "query"
+                                      ? "default"
+                                      : msg.messageType === "request"
+                                        ? "secondary"
+                                        : "outline"
+                                }
+                              >
+                                {msg.messageType}
+                              </Badge>
+                              {!msg.readAt ? (
+                                <Badge
+                                  variant="outline"
+                                  className="bg-blue-50 text-blue-700 border-blue-200"
+                                >
+                                  <Clock className="h-3 w-3 mr-1" />
+                                  Unread
+                                </Badge>
+                              ) : (
+                                <Badge variant="secondary">
+                                  <Eye className="h-3 w-3 mr-1" />
+                                  Read
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-2">
+                              To: {msg.receiverName}
+                            </p>
+                            <p className="text-sm">{msg.message}</p>
+                            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                              <span>
+                                Sent: {new Date(msg.createdAt).toLocaleString()}
+                              </span>
+                              {msg.readAt && (
+                                <span>
+                                  Read: {new Date(msg.readAt).toLocaleString()}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Edit/Delete Actions - Only for unread messages */}
+                          {!msg.readAt && (
+                            <div className="flex gap-2">
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() =>
+                                      setEditingMessage({
+                                        id: msg.id,
+                                        subject: msg.subject,
+                                        message: msg.message,
+                                        messageType: msg.messageType as
+                                          | "absence"
+                                          | "query"
+                                          | "request"
+                                          | "general",
+                                      })
+                                    }
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[525px]">
+                                  <DialogHeader>
+                                    <DialogTitle>Edit Message</DialogTitle>
+                                    <DialogDescription>
+                                      Update your message before it&apos;s read
+                                      by the teacher
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  {editingMessage && (
+                                    <div className="space-y-4 py-4">
+                                      <div>
+                                        <Label>Message Type</Label>
+                                        <Select
+                                          value={editingMessage.messageType}
+                                          onValueChange={(value) =>
+                                            setEditingMessage({
+                                              ...editingMessage,
+                                              messageType:
+                                                value as typeof editingMessage.messageType,
+                                            })
+                                          }
+                                        >
+                                          <SelectTrigger>
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="absence">
+                                              Absence
+                                            </SelectItem>
+                                            <SelectItem value="query">
+                                              Query
+                                            </SelectItem>
+                                            <SelectItem value="request">
+                                              Request
+                                            </SelectItem>
+                                            <SelectItem value="general">
+                                              General
+                                            </SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </div>
+                                      <div>
+                                        <Label>Subject</Label>
+                                        <Input
+                                          value={editingMessage.subject}
+                                          onChange={(e) =>
+                                            setEditingMessage({
+                                              ...editingMessage,
+                                              subject: e.target.value,
+                                            })
+                                          }
+                                        />
+                                      </div>
+                                      <div>
+                                        <Label>Message</Label>
+                                        <Textarea
+                                          value={editingMessage.message}
+                                          onChange={(e) =>
+                                            setEditingMessage({
+                                              ...editingMessage,
+                                              message: e.target.value,
+                                            })
+                                          }
+                                          rows={6}
+                                        />
+                                      </div>
+                                      <Button
+                                        className="w-full"
+                                        onClick={() => {
+                                          if (!session?.user?.id) return;
+                                          updateMessageMutation.mutate({
+                                            messageId: editingMessage.id,
+                                            senderId: session.user.id,
+                                            subject: editingMessage.subject,
+                                            message: editingMessage.message,
+                                            messageType:
+                                              editingMessage.messageType,
+                                          });
+                                        }}
+                                        disabled={
+                                          updateMessageMutation.isPending
+                                        }
+                                      >
+                                        {updateMessageMutation.isPending && (
+                                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                        )}
+                                        <Send className="h-4 w-4 mr-2" />
+                                        Update Message
+                                      </Button>
+                                    </div>
+                                  )}
+                                </DialogContent>
+                              </Dialog>
+
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => {
+                                  if (!session?.user?.id) return;
+                                  if (
+                                    confirm(
+                                      "Are you sure you want to delete this message?",
+                                    )
+                                  ) {
+                                    deleteMessageMutation.mutate({
+                                      messageId: msg.id,
+                                      senderId: session.user.id,
+                                    });
+                                  }
+                                }}
+                                disabled={deleteMessageMutation.isPending}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                  {(!sentMessages || sentMessages.length === 0) && (
+                    <div className="text-center py-12">
+                      <Mail className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                      <p className="text-muted-foreground">
+                        No sent messages yet
+                      </p>
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

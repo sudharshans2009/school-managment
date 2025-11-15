@@ -17,7 +17,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="rounded-xl text-muted-foreground hover:text-foreground"
+          className="text-muted-foreground hover:text-foreground rounded-xl"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Home

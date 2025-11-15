@@ -1,4 +1,4 @@
-# 🎓 Amrita School Management System
+# 🎓 Amrita Vidyalayam Management System
 
 ## Setup Summary
 

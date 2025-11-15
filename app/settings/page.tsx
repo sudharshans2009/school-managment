@@ -153,13 +153,12 @@ export default function SettingsPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={updateSettingsMutation.isPending}
-                className="rounded-xl"
               />
             </div>
             <Button
               onClick={handleUpdateEmail}
               disabled={updateSettingsMutation.isPending || !email}
-              className="w-full sm:w-auto rounded-xl"
+              className="w-full sm:w-auto"
             >
               {updateSettingsMutation.isPending && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -194,7 +193,6 @@ export default function SettingsPage() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   disabled={updateSettingsMutation.isPending}
-                  className="rounded-xl"
                 />
                 <Button
                   type="button"
@@ -224,7 +222,6 @@ export default function SettingsPage() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   disabled={updateSettingsMutation.isPending}
-                  className="rounded-xl"
                 />
                 <Button
                   type="button"
@@ -254,7 +251,6 @@ export default function SettingsPage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   disabled={updateSettingsMutation.isPending}
-                  className="rounded-xl"
                 />
                 <Button
                   type="button"
@@ -289,7 +285,7 @@ export default function SettingsPage() {
                 !confirmPassword ||
                 newPassword !== confirmPassword
               }
-              className="w-full sm:w-auto rounded-xl"
+              className="w-full sm:w-auto"
             >
               {updateSettingsMutation.isPending && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

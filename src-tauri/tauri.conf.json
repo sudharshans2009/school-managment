@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Amrita School Management System",
+        "title": "Amrita Vidyalayam Management System",
         "width": 960,
         "height": 540,
         "minWidth": 683,
@@ -47,7 +47,7 @@
       "icons/icon.ico"
     ],
     "resources": [],
-    "copyright": "© 2025 Amrita School Management System",
+    "copyright": "© 2025 Amrita Vidyalayam Management System",
     "category": "Education",
     "shortDescription": "Complete school management system",
     "longDescription": "A comprehensive school management system for managing students, teachers, attendance, grades, and more."

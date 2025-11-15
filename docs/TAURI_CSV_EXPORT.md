@@ -73,6 +73,7 @@ This system provides a robust CSV export functionality for the Tauri desktop app
 Export CSV files to a configured location with automatic directory creation.
 
 **TypeScript Usage:**
+
 ```typescript
 import { exportCSVToDirectory, arrayToCSV } from "@/lib/tauri/csv-export";
 
@@ -93,6 +94,7 @@ if (result.success) {
 ```
 
 **Rust Implementation:**
+
 ```rust
 #[tauri::command]
 pub async fn export_csv_to_directory(
@@ -107,6 +109,7 @@ pub async fn export_csv_to_directory(
 Export multiple CSV files in a single operation.
 
 **TypeScript Usage:**
+
 ```typescript
 import { exportCSVBatch, arrayToCSV } from "@/lib/tauri/csv-export";
 
@@ -118,7 +121,7 @@ const exports: [string, string][] = [
 
 const results = await exportCSVBatch(exports);
 
-results.forEach(result => {
+results.forEach((result) => {
   if (result.success) {
     console.log(`✅ ${result.message}`);
   } else {
@@ -132,11 +135,13 @@ results.forEach(result => {
 Settings are stored in a local SQLite database:
 
 **Database Location:**
+
 - Windows: `%APPDATA%/com.school-management.app/settings.db`
 - macOS: `~/Library/Application Support/com.school-management.app/settings.db`
 - Linux: `~/.local/share/com.school-management.app/settings.db`
 
 **Settings Schema:**
+
 ```sql
 CREATE TABLE export_settings (
     id INTEGER PRIMARY KEY CHECK (id = 1),
@@ -147,8 +152,12 @@ CREATE TABLE export_settings (
 ```
 
 **TypeScript Usage:**
+
 ```typescript
-import { getExportSettings, updateExportSettings } from "@/lib/tauri/csv-export";
+import {
+  getExportSettings,
+  updateExportSettings,
+} from "@/lib/tauri/csv-export";
 
 // Get current settings
 const settings = await getExportSettings();
@@ -172,6 +181,7 @@ await updateExportSettings({
 Native folder picker dialog for selecting export directory.
 
 **TypeScript Usage:**
+
 ```typescript
 import { selectExportDirectory } from "@/lib/tauri/csv-export";
 
@@ -186,6 +196,7 @@ if (newDir) {
 Open the export directory in the system file explorer.
 
 **TypeScript Usage:**
+
 ```typescript
 import { openExportDirectory } from "@/lib/tauri/csv-export";
 
@@ -199,16 +210,19 @@ await openExportDirectory();
 ## Configuration Options
 
 ### Export Directory
+
 - **Default**: `Documents/SchoolManagement/Exports`
 - **Customizable**: Yes, via folder picker
 - **Auto-create**: Yes, directories created automatically
 
 ### Auto-open Files
+
 - **Default**: `false`
 - **Description**: Automatically open CSV files in default app after export
 - **Platform Support**: Windows, macOS, Linux
 
 ### Include Timestamp
+
 - **Default**: `true`
 - **Description**: Add timestamp to filename
 - **Format**: `filename_YYYYMMDD_HHMMSS.csv`
@@ -225,10 +239,10 @@ export default function SettingsPage() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <h1 className="text-3xl font-bold">Settings</h1>
-      
+
       {/* CSV Export Settings */}
       <ExportSettingsCard />
-      
+
       {/* Other settings... */}
     </div>
   );
@@ -240,6 +254,7 @@ export default function SettingsPage() {
 Update your existing export utilities to use the Tauri backend:
 
 ### Before (Browser-only):
+
 ```typescript
 // lib/export-utils.ts
 export function downloadCSV(filename: string, content: string) {
@@ -254,9 +269,13 @@ export function downloadCSV(filename: string, content: string) {
 ```
 
 ### After (Tauri-aware):
+
 ```typescript
 // lib/export-utils.ts
-import { exportCSVToDirectory, isExportAvailable } from "@/lib/tauri/csv-export";
+import {
+  exportCSVToDirectory,
+  isExportAvailable,
+} from "@/lib/tauri/csv-export";
 
 export async function downloadCSV(filename: string, content: string) {
   // Use Tauri export if available
@@ -266,7 +285,7 @@ export async function downloadCSV(filename: string, content: string) {
       return result;
     }
   }
-  
+
   // Fallback to browser download
   const blob = new Blob([content], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
@@ -375,6 +394,7 @@ console.log("Export directory:", dir);
 **Problem**: Files don't open automatically
 
 **Solution**:
+
 1. Check `auto_open` setting is enabled
 2. Verify file association in OS
 3. Check console for errors
@@ -401,31 +421,31 @@ console.log("Auto-open enabled:", settings.auto_open);
 
 ### TypeScript Functions
 
-| Function | Parameters | Returns | Description |
-|----------|-----------|---------|-------------|
-| `exportCSVToDirectory` | `filename: string, csvContent: string` | `Promise<ExportResult>` | Export single CSV file |
-| `exportCSVBatch` | `exports: [string, string][]` | `Promise<ExportResult[]>` | Export multiple CSV files |
-| `getExportDirectory` | - | `Promise<string>` | Get current export directory |
-| `openExportDirectory` | - | `Promise<void>` | Open directory in explorer |
-| `getExportSettings` | - | `Promise<ExportSettings>` | Get all settings |
-| `updateExportSettings` | `settings: ExportSettings` | `Promise<void>` | Update settings |
-| `resetExportSettings` | - | `Promise<ExportSettings>` | Reset to defaults |
-| `selectExportDirectory` | - | `Promise<string \| null>` | Open folder picker |
-| `isExportAvailable` | - | `boolean` | Check if in Tauri |
-| `arrayToCSV` | `data: T[], headers?: string[]` | `string` | Convert array to CSV |
+| Function                | Parameters                             | Returns                   | Description                  |
+| ----------------------- | -------------------------------------- | ------------------------- | ---------------------------- |
+| `exportCSVToDirectory`  | `filename: string, csvContent: string` | `Promise<ExportResult>`   | Export single CSV file       |
+| `exportCSVBatch`        | `exports: [string, string][]`          | `Promise<ExportResult[]>` | Export multiple CSV files    |
+| `getExportDirectory`    | -                                      | `Promise<string>`         | Get current export directory |
+| `openExportDirectory`   | -                                      | `Promise<void>`           | Open directory in explorer   |
+| `getExportSettings`     | -                                      | `Promise<ExportSettings>` | Get all settings             |
+| `updateExportSettings`  | `settings: ExportSettings`             | `Promise<void>`           | Update settings              |
+| `resetExportSettings`   | -                                      | `Promise<ExportSettings>` | Reset to defaults            |
+| `selectExportDirectory` | -                                      | `Promise<string \| null>` | Open folder picker           |
+| `isExportAvailable`     | -                                      | `boolean`                 | Check if in Tauri            |
+| `arrayToCSV`            | `data: T[], headers?: string[]`        | `string`                  | Convert array to CSV         |
 
 ### Rust Commands
 
-| Command | Invokable As | Description |
-|---------|-------------|-------------|
+| Command                   | Invokable As              | Description                        |
+| ------------------------- | ------------------------- | ---------------------------------- |
 | `export_csv_to_directory` | `export_csv_to_directory` | Export CSV to configured directory |
-| `export_csv_batch` | `export_csv_batch` | Batch export multiple CSVs |
-| `get_export_directory` | `get_export_directory` | Get export directory path |
-| `open_export_directory` | `open_export_directory` | Open in file explorer |
-| `get_settings` | `get_settings` | Retrieve settings from DB |
-| `update_settings` | `update_settings` | Update settings in DB |
-| `reset_settings` | `reset_settings` | Reset to default settings |
-| `select_export_directory` | `select_export_directory` | Native folder picker |
+| `export_csv_batch`        | `export_csv_batch`        | Batch export multiple CSVs         |
+| `get_export_directory`    | `get_export_directory`    | Get export directory path          |
+| `open_export_directory`   | `open_export_directory`   | Open in file explorer              |
+| `get_settings`            | `get_settings`            | Retrieve settings from DB          |
+| `update_settings`         | `update_settings`         | Update settings in DB              |
+| `reset_settings`          | `reset_settings`          | Reset to default settings          |
+| `select_export_directory` | `select_export_directory` | Native folder picker               |
 
 ## Related Documentation
 

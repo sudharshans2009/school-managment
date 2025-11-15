@@ -195,8 +195,7 @@ export default function StudentDetailPage() {
       const response = await fetch(
         `/api/students/disciplinary-actions?studentId=${studentId}`,
       );
-      if (!response.ok)
-        throw new Error("Failed to fetch disciplinary actions");
+      if (!response.ok) throw new Error("Failed to fetch disciplinary actions");
       return response.json();
     },
   });
@@ -253,9 +252,7 @@ export default function StudentDetailPage() {
       });
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(
-          error.error || "Failed to create disciplinary action",
-        );
+        throw new Error(error.error || "Failed to create disciplinary action");
       }
       return response.json();
     },
@@ -289,7 +286,7 @@ export default function StudentDetailPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/admin/students">
-              <Button variant="ghost" size="sm" className="rounded-xl">
+              <Button variant="ghost" size="sm">
                 ← Back
               </Button>
             </Link>
@@ -304,13 +301,16 @@ export default function StudentDetailPage() {
           <Button
             variant="outline"
             size="sm"
-            className="rounded-xl"
             onClick={() => {
               if (medicalIncidents && disciplinaryActions) {
                 exportStudentReport(
                   student.user.name,
-                  medicalIncidents as unknown as Parameters<typeof exportStudentReport>[1],
-                  disciplinaryActions as unknown as Parameters<typeof exportStudentReport>[2]
+                  medicalIncidents as unknown as Parameters<
+                    typeof exportStudentReport
+                  >[1],
+                  disciplinaryActions as unknown as Parameters<
+                    typeof exportStudentReport
+                  >[2],
                 );
               }
             }}
@@ -425,10 +425,10 @@ export default function StudentDetailPage() {
                             student.house === "Amritamayi"
                               ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
                               : student.house === "Anandamayi"
-                              ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
-                              : student.house === "Chinmayi"
-                              ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                              : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
+                                ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+                                : student.house === "Chinmayi"
+                                  ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                                  : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
                           }
                         >
                           {student.house}
@@ -510,7 +510,7 @@ export default function StudentDetailPage() {
                   <p className="text-sm text-muted-foreground mb-2">
                     Medical History & Allergies
                   </p>
-                  <div className="bg-muted p-4 rounded-xl">
+                  <div className="bg-muted p-4">
                     {student.medicalInfo ? (
                       <p className="whitespace-pre-wrap">
                         {student.medicalInfo}
@@ -542,11 +542,9 @@ export default function StudentDetailPage() {
               <Card className="rounded-2xl">
                 <CardContent className="pt-6">
                   <div className="text-2xl font-bold text-red-600">
-                    {
-                      medicalIncidents?.filter(
-                        (i: MedicalIncident) => i.severity === "critical"
-                      ).length || 0
-                    }
+                    {medicalIncidents?.filter(
+                      (i: MedicalIncident) => i.severity === "critical",
+                    ).length || 0}
                   </div>
                   <p className="text-xs text-muted-foreground">Critical</p>
                 </CardContent>
@@ -554,11 +552,9 @@ export default function StudentDetailPage() {
               <Card className="rounded-2xl">
                 <CardContent className="pt-6">
                   <div className="text-2xl font-bold text-orange-600">
-                    {
-                      medicalIncidents?.filter(
-                        (i: MedicalIncident) => i.followUpRequired
-                      ).length || 0
-                    }
+                    {medicalIncidents?.filter(
+                      (i: MedicalIncident) => i.followUpRequired,
+                    ).length || 0}
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Requires Follow-up
@@ -568,11 +564,9 @@ export default function StudentDetailPage() {
               <Card className="rounded-2xl">
                 <CardContent className="pt-6">
                   <div className="text-2xl font-bold text-green-600">
-                    {
-                      medicalIncidents?.filter(
-                        (i: MedicalIncident) => i.parentNotified
-                      ).length || 0
-                    }
+                    {medicalIncidents?.filter(
+                      (i: MedicalIncident) => i.parentNotified,
+                    ).length || 0}
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Parents Notified
@@ -588,9 +582,18 @@ export default function StudentDetailPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="rounded-xl"
-                    onClick={() => medicalIncidents && printMedicalIncidentsReport(medicalIncidents as unknown as Parameters<typeof printMedicalIncidentsReport>[0], student?.user?.name || "Student")}
-                    disabled={!medicalIncidents || medicalIncidents.length === 0}
+                    onClick={() =>
+                      medicalIncidents &&
+                      printMedicalIncidentsReport(
+                        medicalIncidents as unknown as Parameters<
+                          typeof printMedicalIncidentsReport
+                        >[0],
+                        student?.user?.name || "Student",
+                      )
+                    }
+                    disabled={
+                      !medicalIncidents || medicalIncidents.length === 0
+                    }
                   >
                     <Printer className="h-4 w-4 mr-2" />
                     Print
@@ -598,15 +601,27 @@ export default function StudentDetailPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="rounded-xl"
-                    onClick={() => medicalIncidents && exportMedicalIncidentsToCSV(medicalIncidents as unknown as Parameters<typeof exportMedicalIncidentsToCSV>[0], student?.user?.name || "Student")}
-                    disabled={!medicalIncidents || medicalIncidents.length === 0}
+                    onClick={() =>
+                      medicalIncidents &&
+                      exportMedicalIncidentsToCSV(
+                        medicalIncidents as unknown as Parameters<
+                          typeof exportMedicalIncidentsToCSV
+                        >[0],
+                        student?.user?.name || "Student",
+                      )
+                    }
+                    disabled={
+                      !medicalIncidents || medicalIncidents.length === 0
+                    }
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Export CSV
                   </Button>
-                  <Select value={medicalFilter} onValueChange={setMedicalFilter}>
-                    <SelectTrigger className="w-[180px] rounded-xl">
+                  <Select
+                    value={medicalFilter}
+                    onValueChange={setMedicalFilter}
+                  >
+                    <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Filter by severity" />
                     </SelectTrigger>
                     <SelectContent>
@@ -623,150 +638,158 @@ export default function StudentDetailPage() {
                     onOpenChange={setMedicalDialogOpen}
                   >
                     <DialogTrigger asChild>
-                      <Button size="sm" className="rounded-xl">
+                      <Button size="sm">
                         <Plus className="h-4 w-4 mr-2" />
                         Add Incident
                       </Button>
                     </DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-2">
-                        <HeartPulse className="h-5 w-5 text-blue-600" />
-                        Add Medical Incident
-                      </DialogTitle>
-                    </DialogHeader>
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        const formData = new FormData(e.currentTarget);
-                        createMedicalIncidentMutation.mutate({
-                          studentId: studentId,
-                          incidentDate: formData.get("incidentDate") as string,
-                          incidentType: formData.get("incidentType") as string,
-                          description: formData.get("description") as string,
-                          treatment: formData.get("treatment") as string,
-                          severity: formData.get("severity") as string,
-                          followUpRequired:
-                            formData.get("followUpRequired") === "on",
-                          followUpNotes: formData.get("followUpNotes") as string,
-                          parentNotified:
-                            formData.get("parentNotified") === "on",
-                        });
-                      }}
-                      className="space-y-4"
-                    >
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="incidentDate">Incident Date *</Label>
-                          <Input
-                            id="incidentDate"
-                            name="incidentDate"
-                            type="datetime-local"
-                            required
-                            className="rounded-xl"
-                          />
+                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                          <HeartPulse className="h-5 w-5 text-blue-600" />
+                          Add Medical Incident
+                        </DialogTitle>
+                      </DialogHeader>
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          const formData = new FormData(e.currentTarget);
+                          createMedicalIncidentMutation.mutate({
+                            studentId: studentId,
+                            incidentDate: formData.get(
+                              "incidentDate",
+                            ) as string,
+                            incidentType: formData.get(
+                              "incidentType",
+                            ) as string,
+                            description: formData.get("description") as string,
+                            treatment: formData.get("treatment") as string,
+                            severity: formData.get("severity") as string,
+                            followUpRequired:
+                              formData.get("followUpRequired") === "on",
+                            followUpNotes: formData.get(
+                              "followUpNotes",
+                            ) as string,
+                            parentNotified:
+                              formData.get("parentNotified") === "on",
+                          });
+                        }}
+                        className="space-y-4"
+                      >
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="incidentDate">
+                              Incident Date *
+                            </Label>
+                            <Input
+                              id="incidentDate"
+                              name="incidentDate"
+                              type="datetime-local"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="incidentType">
+                              Incident Type *
+                            </Label>
+                            <Select name="incidentType">
+                              <SelectTrigger id="incidentType">
+                                <SelectValue placeholder="Select type" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Injury">Injury</SelectItem>
+                                <SelectItem value="Illness">Illness</SelectItem>
+                                <SelectItem value="Allergy Reaction">
+                                  Allergy Reaction
+                                </SelectItem>
+                                <SelectItem value="Emergency">
+                                  Emergency
+                                </SelectItem>
+                                <SelectItem value="Other">Other</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
                         <div>
-                          <Label htmlFor="incidentType">Incident Type *</Label>
-                          <Select name="incidentType">
-                            <SelectTrigger id="incidentType">
-                              <SelectValue placeholder="Select type" />
+                          <Label htmlFor="severity">Severity *</Label>
+                          <Select name="severity">
+                            <SelectTrigger id="severity">
+                              <SelectValue placeholder="Select severity" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Injury">Injury</SelectItem>
-                              <SelectItem value="Illness">Illness</SelectItem>
-                              <SelectItem value="Allergy Reaction">
-                                Allergy Reaction
-                              </SelectItem>
-                              <SelectItem value="Emergency">Emergency</SelectItem>
-                              <SelectItem value="Other">Other</SelectItem>
+                              <SelectItem value="Minor">Minor</SelectItem>
+                              <SelectItem value="Moderate">Moderate</SelectItem>
+                              <SelectItem value="Severe">Severe</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
-                      </div>
-                      <div>
-                        <Label htmlFor="severity">Severity *</Label>
-                        <Select name="severity">
-                          <SelectTrigger id="severity">
-                            <SelectValue placeholder="Select severity" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Minor">Minor</SelectItem>
-                            <SelectItem value="Moderate">Moderate</SelectItem>
-                            <SelectItem value="Severe">Severe</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="description">Description *</Label>
-                        <Input
-                          id="description"
-                          name="description"
-                          required
-                          placeholder="Describe what happened"
-                          className="rounded-xl"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="treatment">Treatment Provided</Label>
-                        <Input
-                          id="treatment"
-                          name="treatment"
-                          placeholder="Treatment given"
-                          className="rounded-xl"
-                        />
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="followUpRequired"
-                          name="followUpRequired"
-                          className="rounded"
-                        />
-                        <Label htmlFor="followUpRequired">
-                          Follow-up Required
-                        </Label>
-                      </div>
-                      <div>
-                        <Label htmlFor="followUpNotes">Follow-up Notes</Label>
-                        <Input
-                          id="followUpNotes"
-                          name="followUpNotes"
-                          placeholder="Any follow-up instructions"
-                          className="rounded-xl"
-                        />
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="parentNotified"
-                          name="parentNotified"
-                          className="rounded"
-                        />
-                        <Label htmlFor="parentNotified">Parent Notified</Label>
-                      </div>
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setMedicalDialogOpen(false)}
-                          className="rounded-xl"
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          type="submit"
-                          className="rounded-xl"
-                          disabled={createMedicalIncidentMutation.isPending}
-                        >
-                          {createMedicalIncidentMutation.isPending
-                            ? "Adding..."
-                            : "Add Record"}
-                        </Button>
-                      </div>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                        <div>
+                          <Label htmlFor="description">Description *</Label>
+                          <Input
+                            id="description"
+                            name="description"
+                            required
+                            placeholder="Describe what happened"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="treatment">Treatment Provided</Label>
+                          <Input
+                            id="treatment"
+                            name="treatment"
+                            placeholder="Treatment given"
+                          />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="followUpRequired"
+                            name="followUpRequired"
+                            className="rounded"
+                          />
+                          <Label htmlFor="followUpRequired">
+                            Follow-up Required
+                          </Label>
+                        </div>
+                        <div>
+                          <Label htmlFor="followUpNotes">Follow-up Notes</Label>
+                          <Input
+                            id="followUpNotes"
+                            name="followUpNotes"
+                            placeholder="Any follow-up instructions"
+                          />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="parentNotified"
+                            name="parentNotified"
+                            className="rounded"
+                          />
+                          <Label htmlFor="parentNotified">
+                            Parent Notified
+                          </Label>
+                        </div>
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setMedicalDialogOpen(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            type="submit"
+                            disabled={createMedicalIncidentMutation.isPending}
+                          >
+                            {createMedicalIncidentMutation.isPending
+                              ? "Adding..."
+                              : "Add Record"}
+                          </Button>
+                        </div>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </CardHeader>
               <CardContent>
@@ -775,70 +798,68 @@ export default function StudentDetailPage() {
                     {medicalIncidents
                       .filter((incident: MedicalIncident) => {
                         if (medicalFilter === "all") return true;
-                        if (medicalFilter === "followup") return incident.followUpRequired;
+                        if (medicalFilter === "followup")
+                          return incident.followUpRequired;
                         return incident.severity === medicalFilter;
                       })
                       .map((incident: MedicalIncident) => (
-                      <div
-                        key={incident.id}
-                        className="p-4 border rounded-xl space-y-2"
-                      >
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <Badge
-                                variant={
-                                  incident.severity === "Severe"
-                                    ? "destructive"
-                                    : "secondary"
-                                }
-                              >
-                                {incident.severity}
-                              </Badge>
-                              <Badge variant="outline">
-                                {incident.incidentType}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {new Date(
-                                incident.incidentDate,
-                              ).toLocaleString()}
-                            </p>
-                          </div>
-                          {incident.parentNotified && (
-                            <Badge variant="outline">Parent Notified</Badge>
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium">Description:</p>
-                          <p className="text-sm">{incident.description}</p>
-                        </div>
-                        {incident.treatment && (
-                          <div>
-                            <p className="font-medium">Treatment:</p>
-                            <p className="text-sm">{incident.treatment}</p>
-                          </div>
-                        )}
-                        {incident.followUpRequired && (
-                          <div className="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded">
-                            <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
-                              Follow-up Required
-                            </p>
-                            {incident.followUpNotes && (
-                              <p className="text-sm text-yellow-700 dark:text-yellow-400">
-                                {incident.followUpNotes}
+                        <div key={incident.id} className="p-4 border space-y-2">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <Badge
+                                  variant={
+                                    incident.severity === "Severe"
+                                      ? "destructive"
+                                      : "secondary"
+                                  }
+                                >
+                                  {incident.severity}
+                                </Badge>
+                                <Badge variant="outline">
+                                  {incident.incidentType}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {new Date(
+                                  incident.incidentDate,
+                                ).toLocaleString()}
                               </p>
+                            </div>
+                            {incident.parentNotified && (
+                              <Badge variant="outline">Parent Notified</Badge>
                             )}
                           </div>
-                        )}
-                        {incident.reporter && (
-                          <p className="text-xs text-muted-foreground">
-                            Reported by: {incident.reporter.name} (
-                            {incident.reporter.email})
-                          </p>
-                        )}
-                      </div>
-                    ))}
+                          <div>
+                            <p className="font-medium">Description:</p>
+                            <p className="text-sm">{incident.description}</p>
+                          </div>
+                          {incident.treatment && (
+                            <div>
+                              <p className="font-medium">Treatment:</p>
+                              <p className="text-sm">{incident.treatment}</p>
+                            </div>
+                          )}
+                          {incident.followUpRequired && (
+                            <div className="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded">
+                              <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
+                                Follow-up Required
+                              </p>
+                              {incident.followUpNotes && (
+                                <p className="text-sm text-yellow-700 dark:text-yellow-400">
+                                  {incident.followUpNotes}
+                                </p>
+                              )}
+                            </div>
+                          )}
+                          {incident.reporter && (
+                            <p className="text-xs text-muted-foreground">
+                              Reported by: {incident.reporter.name} (
+                              {incident.reporter.email})
+                            </p>
+                          )}
+                        </div>
+                      ))}
                   </div>
                 ) : (
                   <p className="text-muted-foreground text-center py-8">
@@ -857,19 +878,15 @@ export default function StudentDetailPage() {
                   <div className="text-2xl font-bold">
                     {disciplinaryActions?.length || 0}
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Total Actions
-                  </p>
+                  <p className="text-xs text-muted-foreground">Total Actions</p>
                 </CardContent>
               </Card>
               <Card className="rounded-2xl">
                 <CardContent className="pt-6">
                   <div className="text-2xl font-bold text-red-600">
-                    {
-                      disciplinaryActions?.filter(
-                        (a: DisciplinaryAction) => a.severity === "Severe"
-                      ).length || 0
-                    }
+                    {disciplinaryActions?.filter(
+                      (a: DisciplinaryAction) => a.severity === "Severe",
+                    ).length || 0}
                   </div>
                   <p className="text-xs text-muted-foreground">Severe</p>
                 </CardContent>
@@ -877,11 +894,9 @@ export default function StudentDetailPage() {
               <Card className="rounded-2xl">
                 <CardContent className="pt-6">
                   <div className="text-2xl font-bold text-orange-600">
-                    {
-                      disciplinaryActions?.filter(
-                        (a: DisciplinaryAction) => a.parentMeetingRequired
-                      ).length || 0
-                    }
+                    {disciplinaryActions?.filter(
+                      (a: DisciplinaryAction) => a.parentMeetingRequired,
+                    ).length || 0}
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Parent Meetings Required
@@ -891,11 +906,9 @@ export default function StudentDetailPage() {
               <Card className="rounded-2xl">
                 <CardContent className="pt-6">
                   <div className="text-2xl font-bold text-blue-600">
-                    {
-                      disciplinaryActions?.filter(
-                        (a: DisciplinaryAction) => a.severity === "Minor"
-                      ).length || 0
-                    }
+                    {disciplinaryActions?.filter(
+                      (a: DisciplinaryAction) => a.severity === "Minor",
+                    ).length || 0}
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Minor Incidents
@@ -911,9 +924,18 @@ export default function StudentDetailPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="rounded-xl"
-                    onClick={() => disciplinaryActions && printDisciplinaryActionsReport(disciplinaryActions as unknown as Parameters<typeof printDisciplinaryActionsReport>[0], student?.user?.name || "Student")}
-                    disabled={!disciplinaryActions || disciplinaryActions.length === 0}
+                    onClick={() =>
+                      disciplinaryActions &&
+                      printDisciplinaryActionsReport(
+                        disciplinaryActions as unknown as Parameters<
+                          typeof printDisciplinaryActionsReport
+                        >[0],
+                        student?.user?.name || "Student",
+                      )
+                    }
+                    disabled={
+                      !disciplinaryActions || disciplinaryActions.length === 0
+                    }
                   >
                     <Printer className="h-4 w-4 mr-2" />
                     Print
@@ -921,15 +943,27 @@ export default function StudentDetailPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="rounded-xl"
-                    onClick={() => disciplinaryActions && exportDisciplinaryActionsToCSV(disciplinaryActions as unknown as Parameters<typeof exportDisciplinaryActionsToCSV>[0], student?.user?.name || "Student")}
-                    disabled={!disciplinaryActions || disciplinaryActions.length === 0}
+                    onClick={() =>
+                      disciplinaryActions &&
+                      exportDisciplinaryActionsToCSV(
+                        disciplinaryActions as unknown as Parameters<
+                          typeof exportDisciplinaryActionsToCSV
+                        >[0],
+                        student?.user?.name || "Student",
+                      )
+                    }
+                    disabled={
+                      !disciplinaryActions || disciplinaryActions.length === 0
+                    }
                   >
                     <Download className="h-4 w-4 mr-2" />
                     Export CSV
                   </Button>
-                  <Select value={disciplinaryFilter} onValueChange={setDisciplinaryFilter}>
-                    <SelectTrigger className="w-[180px] rounded-xl">
+                  <Select
+                    value={disciplinaryFilter}
+                    onValueChange={setDisciplinaryFilter}
+                  >
+                    <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Filter by severity" />
                     </SelectTrigger>
                     <SelectContent>
@@ -946,196 +980,192 @@ export default function StudentDetailPage() {
                     onOpenChange={setDisciplinaryDialogOpen}
                   >
                     <DialogTrigger asChild>
-                      <Button size="sm" className="rounded-xl">
+                      <Button size="sm">
                         <Plus className="h-4 w-4 mr-2" />
                         Add Action
                       </Button>
                     </DialogTrigger>
-                  <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-2">
-                        <AlertTriangle className="h-5 w-5 text-orange-600" />
-                        Add Disciplinary Action
-                      </DialogTitle>
-                    </DialogHeader>
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        const formData = new FormData(e.currentTarget);
-                        createDisciplinaryActionMutation.mutate({
-                          studentId: studentId,
-                          incidentDate: formData.get("incidentDate") as string,
-                          actionType: formData.get("actionType") as string,
-                          severity: formData.get("severity") as string,
-                          description: formData.get("description") as string,
-                          actionTaken: formData.get("actionTaken") as string,
-                          witnessesOrInvolved: formData.get(
-                            "witnessesOrInvolved",
-                          ) as string,
-                          parentNotified:
-                            formData.get("parentNotified") === "on",
-                          parentMeetingRequired:
-                            formData.get("parentMeetingRequired") === "on",
-                          parentMeetingDate: formData.get(
-                            "parentMeetingDate",
-                          ) as string,
-                          resolutionNotes: formData.get(
-                            "resolutionNotes",
-                          ) as string,
-                        });
-                      }}
-                      className="space-y-4"
-                    >
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label htmlFor="disc-incidentDate">
-                            Incident Date *
-                          </Label>
-                          <Input
-                            id="disc-incidentDate"
-                            name="incidentDate"
-                            type="datetime-local"
-                            required
-                            className="rounded-xl"
-                          />
+                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2">
+                          <AlertTriangle className="h-5 w-5 text-orange-600" />
+                          Add Disciplinary Action
+                        </DialogTitle>
+                      </DialogHeader>
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          const formData = new FormData(e.currentTarget);
+                          createDisciplinaryActionMutation.mutate({
+                            studentId: studentId,
+                            incidentDate: formData.get(
+                              "incidentDate",
+                            ) as string,
+                            actionType: formData.get("actionType") as string,
+                            severity: formData.get("severity") as string,
+                            description: formData.get("description") as string,
+                            actionTaken: formData.get("actionTaken") as string,
+                            witnessesOrInvolved: formData.get(
+                              "witnessesOrInvolved",
+                            ) as string,
+                            parentNotified:
+                              formData.get("parentNotified") === "on",
+                            parentMeetingRequired:
+                              formData.get("parentMeetingRequired") === "on",
+                            parentMeetingDate: formData.get(
+                              "parentMeetingDate",
+                            ) as string,
+                            resolutionNotes: formData.get(
+                              "resolutionNotes",
+                            ) as string,
+                          });
+                        }}
+                        className="space-y-4"
+                      >
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label htmlFor="disc-incidentDate">
+                              Incident Date *
+                            </Label>
+                            <Input
+                              id="disc-incidentDate"
+                              name="incidentDate"
+                              type="datetime-local"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="actionType">Action Type *</Label>
+                            <Select name="actionType">
+                              <SelectTrigger id="actionType">
+                                <SelectValue placeholder="Select action" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Warning">Warning</SelectItem>
+                                <SelectItem value="Detention">
+                                  Detention
+                                </SelectItem>
+                                <SelectItem value="Suspension">
+                                  Suspension
+                                </SelectItem>
+                                <SelectItem value="Counseling">
+                                  Counseling
+                                </SelectItem>
+                                <SelectItem value="Probation">
+                                  Probation
+                                </SelectItem>
+                                <SelectItem value="Other">Other</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
                         <div>
-                          <Label htmlFor="actionType">Action Type *</Label>
-                          <Select name="actionType">
-                            <SelectTrigger id="actionType">
-                              <SelectValue placeholder="Select action" />
+                          <Label htmlFor="disc-severity">Severity *</Label>
+                          <Select name="severity">
+                            <SelectTrigger id="disc-severity">
+                              <SelectValue placeholder="Select severity" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Warning">Warning</SelectItem>
-                              <SelectItem value="Detention">
-                                Detention
-                              </SelectItem>
-                              <SelectItem value="Suspension">
-                                Suspension
-                              </SelectItem>
-                              <SelectItem value="Counseling">
-                                Counseling
-                              </SelectItem>
-                              <SelectItem value="Probation">
-                                Probation
-                              </SelectItem>
-                              <SelectItem value="Other">Other</SelectItem>
+                              <SelectItem value="Minor">Minor</SelectItem>
+                              <SelectItem value="Moderate">Moderate</SelectItem>
+                              <SelectItem value="Severe">Severe</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
-                      </div>
-                      <div>
-                        <Label htmlFor="disc-severity">Severity *</Label>
-                        <Select name="severity">
-                          <SelectTrigger id="disc-severity">
-                            <SelectValue placeholder="Select severity" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Minor">Minor</SelectItem>
-                            <SelectItem value="Moderate">Moderate</SelectItem>
-                            <SelectItem value="Severe">Severe</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="disc-description">
-                          What Happened (Description) *
-                        </Label>
-                        <Input
-                          id="disc-description"
-                          name="description"
-                          required
-                          placeholder="Describe the incident"
-                          className="rounded-xl"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="actionTaken">Action Taken *</Label>
-                        <Input
-                          id="actionTaken"
-                          name="actionTaken"
-                          required
-                          placeholder="What action was taken"
-                          className="rounded-xl"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="witnessesOrInvolved">
-                          Witnesses or Others Involved
-                        </Label>
-                        <Input
-                          id="witnessesOrInvolved"
-                          name="witnessesOrInvolved"
-                          placeholder="Names of witnesses or other students involved"
-                          className="rounded-xl"
-                        />
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="disc-parentNotified"
-                          name="parentNotified"
-                          className="rounded"
-                        />
-                        <Label htmlFor="disc-parentNotified">
-                          Parent Notified
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          id="parentMeetingRequired"
-                          name="parentMeetingRequired"
-                          className="rounded"
-                        />
-                        <Label htmlFor="parentMeetingRequired">
-                          Parent Meeting Required
-                        </Label>
-                      </div>
-                      <div>
-                        <Label htmlFor="parentMeetingDate">
-                          Parent Meeting Date
-                        </Label>
-                        <Input
-                          id="parentMeetingDate"
-                          name="parentMeetingDate"
-                          type="datetime-local"
-                          className="rounded-xl"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="resolutionNotes">
-                          Resolution Notes
-                        </Label>
-                        <Input
-                          id="resolutionNotes"
-                          name="resolutionNotes"
-                          placeholder="Notes about resolution or next steps"
-                          className="rounded-xl"
-                        />
-                      </div>
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => setDisciplinaryDialogOpen(false)}
-                          className="rounded-xl"
-                        >
-                          Cancel
-                        </Button>
-                        <Button
-                          type="submit"
-                          className="rounded-xl"
-                          disabled={createDisciplinaryActionMutation.isPending}
-                        >
-                          {createDisciplinaryActionMutation.isPending
-                            ? "Adding..."
-                            : "Add Action"}
-                        </Button>
-                      </div>
-                    </form>
-                  </DialogContent>
-                </Dialog>
+                        <div>
+                          <Label htmlFor="disc-description">
+                            What Happened (Description) *
+                          </Label>
+                          <Input
+                            id="disc-description"
+                            name="description"
+                            required
+                            placeholder="Describe the incident"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="actionTaken">Action Taken *</Label>
+                          <Input
+                            id="actionTaken"
+                            name="actionTaken"
+                            required
+                            placeholder="What action was taken"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="witnessesOrInvolved">
+                            Witnesses or Others Involved
+                          </Label>
+                          <Input
+                            id="witnessesOrInvolved"
+                            name="witnessesOrInvolved"
+                            placeholder="Names of witnesses or other students involved"
+                          />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="disc-parentNotified"
+                            name="parentNotified"
+                            className="rounded"
+                          />
+                          <Label htmlFor="disc-parentNotified">
+                            Parent Notified
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="parentMeetingRequired"
+                            name="parentMeetingRequired"
+                            className="rounded"
+                          />
+                          <Label htmlFor="parentMeetingRequired">
+                            Parent Meeting Required
+                          </Label>
+                        </div>
+                        <div>
+                          <Label htmlFor="parentMeetingDate">
+                            Parent Meeting Date
+                          </Label>
+                          <Input
+                            id="parentMeetingDate"
+                            name="parentMeetingDate"
+                            type="datetime-local"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="resolutionNotes">
+                            Resolution Notes
+                          </Label>
+                          <Input
+                            id="resolutionNotes"
+                            name="resolutionNotes"
+                            placeholder="Notes about resolution or next steps"
+                          />
+                        </div>
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setDisciplinaryDialogOpen(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            type="submit"
+                            disabled={
+                              createDisciplinaryActionMutation.isPending
+                            }
+                          >
+                            {createDisciplinaryActionMutation.isPending
+                              ? "Adding..."
+                              : "Add Action"}
+                          </Button>
+                        </div>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </CardHeader>
               <CardContent>
@@ -1144,77 +1174,80 @@ export default function StudentDetailPage() {
                     {disciplinaryActions
                       .filter((action: DisciplinaryAction) => {
                         if (disciplinaryFilter === "all") return true;
-                        if (disciplinaryFilter === "meeting") return action.parentMeetingRequired;
+                        if (disciplinaryFilter === "meeting")
+                          return action.parentMeetingRequired;
                         return action.severity === disciplinaryFilter;
                       })
                       .map((action: DisciplinaryAction) => (
-                      <div
-                        key={action.id}
-                        className="p-4 border rounded-xl space-y-2"
-                      >
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <Badge
-                                variant={
-                                  action.severity === "major" ||
-                                  action.severity === "critical"
-                                    ? "destructive"
-                                    : "secondary"
-                                }
-                              >
-                                {action.severity}
-                              </Badge>
-                              <Badge variant="outline">
-                                {action.incidentType}
-                              </Badge>
+                        <div key={action.id} className="p-4 border space-y-2">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <Badge
+                                  variant={
+                                    action.severity === "major" ||
+                                    action.severity === "critical"
+                                      ? "destructive"
+                                      : "secondary"
+                                  }
+                                >
+                                  {action.severity}
+                                </Badge>
+                                <Badge variant="outline">
+                                  {action.incidentType}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {new Date(action.incidentDate).toLocaleString()}
+                              </p>
                             </div>
-                            <p className="text-sm text-muted-foreground mt-1">
-                              {new Date(action.incidentDate).toLocaleString()}
+                            {action.parentMeetingRequired && (
+                              <Badge variant="outline" className="bg-yellow-50">
+                                Parent Meeting Required
+                              </Badge>
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-medium">Description:</p>
+                            <p className="text-sm whitespace-pre-wrap">
+                              {action.description}
                             </p>
                           </div>
-                          {action.parentMeetingRequired && (
-                            <Badge variant="outline" className="bg-yellow-50">
-                              Parent Meeting Required
-                            </Badge>
+                          {action.actionTaken && (
+                            <div>
+                              <p className="font-medium">Action Taken:</p>
+                              <p className="text-sm">{action.actionTaken}</p>
+                            </div>
                           )}
-                        </div>
-                        <div>
-                          <p className="font-medium">Description:</p>
-                          <p className="text-sm whitespace-pre-wrap">
-                            {action.description}
+                          {action.witnesses && (
+                            <div>
+                              <p className="font-medium">Witnesses:</p>
+                              <p className="text-sm">{action.witnesses}</p>
+                            </div>
+                          )}
+                          {action.resolution && (
+                            <div>
+                              <p className="font-medium">Resolution:</p>
+                              <p className="text-sm">{action.resolution}</p>
+                            </div>
+                          )}
+                          {action.parentMeetingRequired &&
+                            action.parentMeetingDate && (
+                              <div className="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded">
+                                <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
+                                  Parent Meeting:{" "}
+                                  {new Date(
+                                    action.parentMeetingDate,
+                                  ).toLocaleDateString()}
+                                </p>
+                              </div>
+                            )}
+                          <p className="text-xs text-muted-foreground">
+                            Reported by: {action.reporter?.name || "Unknown"} (
+                            {action.reporter?.email || "N/A"})
                           </p>
                         </div>
-                        {action.actionTaken && (
-                          <div>
-                            <p className="font-medium">Action Taken:</p>
-                            <p className="text-sm">{action.actionTaken}</p>
-                          </div>
-                        )}
-                        {action.witnesses && (
-                          <div>
-                            <p className="font-medium">Witnesses:</p>
-                            <p className="text-sm">{action.witnesses}</p>
-                          </div>
-                        )}
-                        {action.resolution && (
-                          <div>
-                            <p className="font-medium">Resolution:</p>
-                            <p className="text-sm">{action.resolution}</p>
-                          </div>
-                        )}
-                        {action.parentMeetingRequired && action.parentMeetingDate && (
-                          <div className="bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded">
-                            <p className="text-sm font-medium text-yellow-800 dark:text-yellow-300">
-                              Parent Meeting: {new Date(action.parentMeetingDate).toLocaleDateString()}
-                            </p>
-                          </div>
-                        )}
-                        <p className="text-xs text-muted-foreground">
-                          Reported by: {action.reporter?.name || "Unknown"} ({action.reporter?.email || "N/A"})
-                        </p>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 ) : (
                   <p className="text-muted-foreground text-center py-8">
@@ -1236,7 +1269,7 @@ export default function StudentDetailPage() {
                     {examResults.map((result) => (
                       <div
                         key={result.id}
-                        className="flex items-center justify-between p-3 border rounded-xl"
+                        className="flex items-center justify-between p-3 border"
                       >
                         <div>
                           <p className="font-medium">{result.examName}</p>
@@ -1277,32 +1310,32 @@ export default function StudentDetailPage() {
                 {attendanceStats ? (
                   <div className="space-y-4">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                      <div className="text-center p-4 bg-green-50 dark:bg-green-900/20">
                         <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                           {attendanceStats.present}
                         </p>
                         <p className="text-sm text-muted-foreground">Present</p>
                       </div>
-                      <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
+                      <div className="text-center p-4 bg-red-50 dark:bg-red-900/20">
                         <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                           {attendanceStats.absent}
                         </p>
                         <p className="text-sm text-muted-foreground">Absent</p>
                       </div>
-                      <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl">
+                      <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20">
                         <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                           {attendanceStats.late}
                         </p>
                         <p className="text-sm text-muted-foreground">Late</p>
                       </div>
-                      <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                      <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20">
                         <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                           {attendanceStats.excused}
                         </p>
                         <p className="text-sm text-muted-foreground">Excused</p>
                       </div>
                     </div>
-                    <div className="p-4 bg-muted rounded-xl">
+                    <div className="p-4 bg-muted">
                       <div className="flex justify-between items-center">
                         <div>
                           <p className="text-sm text-muted-foreground">

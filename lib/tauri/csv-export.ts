@@ -1,6 +1,6 @@
 /**
  * Tauri CSV Export Utilities
- * 
+ *
  * TypeScript bindings for Rust-powered CSV export functionality
  * with SQLite-backed settings storage
  */
@@ -21,11 +21,11 @@ export interface ExportSettings {
 
 /**
  * Export CSV data to the configured directory
- * 
+ *
  * @param filename - Name of the CSV file (e.g., "students.csv")
  * @param csvContent - CSV content as a string
  * @returns ExportResult with success status and file path
- * 
+ *
  * @example
  * ```ts
  * const result = await exportCSVToDirectory("students.csv", csvData);
@@ -36,7 +36,7 @@ export interface ExportSettings {
  */
 export async function exportCSVToDirectory(
   filename: string,
-  csvContent: string
+  csvContent: string,
 ): Promise<ExportResult> {
   try {
     return await invoke<ExportResult>("export_csv_to_directory", {
@@ -54,10 +54,10 @@ export async function exportCSVToDirectory(
 
 /**
  * Export multiple CSV files in a batch operation
- * 
+ *
  * @param exports - Array of [filename, content] tuples
  * @returns Array of ExportResults for each file
- * 
+ *
  * @example
  * ```ts
  * const results = await exportCSVBatch([
@@ -67,7 +67,7 @@ export async function exportCSVToDirectory(
  * ```
  */
 export async function exportCSVBatch(
-  exports: [string, string][]
+  exports: [string, string][],
 ): Promise<ExportResult[]> {
   try {
     return await invoke<ExportResult[]>("export_csv_batch", {
@@ -85,7 +85,7 @@ export async function exportCSVBatch(
 
 /**
  * Get the current export directory path
- * 
+ *
  * @returns The configured export directory path
  */
 export async function getExportDirectory(): Promise<string> {
@@ -111,7 +111,7 @@ export async function openExportDirectory(): Promise<void> {
 
 /**
  * Get current export settings from SQLite database
- * 
+ *
  * @returns Current export settings
  */
 export async function getExportSettings(): Promise<ExportSettings> {
@@ -130,9 +130,9 @@ export async function getExportSettings(): Promise<ExportSettings> {
 
 /**
  * Update export settings in SQLite database
- * 
+ *
  * @param settings - New settings to save
- * 
+ *
  * @example
  * ```ts
  * await updateExportSettings({
@@ -143,7 +143,7 @@ export async function getExportSettings(): Promise<ExportSettings> {
  * ```
  */
 export async function updateExportSettings(
-  settings: ExportSettings
+  settings: ExportSettings,
 ): Promise<void> {
   try {
     await invoke("update_settings", { settings });
@@ -155,7 +155,7 @@ export async function updateExportSettings(
 
 /**
  * Reset export settings to defaults
- * 
+ *
  * @returns Default settings
  */
 export async function resetExportSettings(): Promise<ExportSettings> {
@@ -170,9 +170,9 @@ export async function resetExportSettings(): Promise<ExportSettings> {
 /**
  * Open a folder picker dialog to select export directory
  * Updates settings automatically if a folder is selected
- * 
+ *
  * @returns Selected directory path or null if cancelled
- * 
+ *
  * @example
  * ```ts
  * const newDir = await selectExportDirectory();
@@ -200,11 +200,11 @@ export function isExportAvailable(): boolean {
 
 /**
  * Helper to convert data array to CSV string
- * 
+ *
  * @param data - Array of objects to convert
  * @param headers - Optional custom headers (defaults to object keys)
  * @returns CSV string
- * 
+ *
  * @example
  * ```ts
  * const data = [
@@ -217,7 +217,7 @@ export function isExportAvailable(): boolean {
  */
 export function arrayToCSV<T extends Record<string, unknown>>(
   data: T[],
-  headers?: string[]
+  headers?: string[],
 ): string {
   if (data.length === 0) return "";
 
@@ -230,7 +230,7 @@ export function arrayToCSV<T extends Record<string, unknown>>(
         const value = row[col];
         return escapeCSVField(String(value ?? ""));
       })
-      .join(",")
+      .join(","),
   );
 
   return [headerRow, ...rows].join("\n");

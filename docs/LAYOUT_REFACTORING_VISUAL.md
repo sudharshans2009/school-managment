@@ -14,12 +14,12 @@
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│ [Logo] Amrita School Management    [Theme] [Sign In/Up] │ ← Navbar
+│ [Logo] Amrita Vidyalayam Management    [Theme] [Sign In/Up] │ ← Navbar
 └─────────────────────────────────────────────────────────┘
 │                                                         │
 │              [Logo Icon]                                │
 │                                                         │
-│        Amrita School Management System                   │
+│        Amrita Vidyalayam Management System                   │
 │     Modern, efficient, and intelligent school...        │
 │                                                         │
 │          [Sign In]  [Create Account]                    │
@@ -74,12 +74,12 @@
 │              All use consistent styling                 │
 │                                                         │
 │              - rounded-2xl for cards                    │
-│              - rounded-xl for buttons                   │
+│              - for buttons                   │
 │              - p-6 spacing                              │
 │              - shadow-sm for depth                      │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
-│  © 2025 Amrita School Management System. Built with...  │ ← Footer
+│  © 2025 Amrita Vidyalayam Management System. Built with...  │ ← Footer
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -148,7 +148,7 @@ space-y-6: 1.5rem gap between elements
 
 ```
 rounded-2xl: 1rem    (16px) - Cards
-rounded-xl:  0.75rem (12px) - Buttons, Inputs
+:  0.75rem (12px) - Buttons, Inputs
 rounded-full: 50%          - Icon containers
 ```
 

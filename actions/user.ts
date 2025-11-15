@@ -176,9 +176,7 @@ export async function updateUserProfile(
 /**
  * Update user settings (email, password)
  */
-export async function updateUserSettings(
-  data: UpdateSettingsData,
-): Promise<{
+export async function updateUserSettings(data: UpdateSettingsData): Promise<{
   success: boolean;
   emailChanged?: boolean;
   passwordChanged?: boolean;

@@ -181,7 +181,7 @@ export default function TeacherClassesPage() {
         <TeacherQuickActions currentPage="classes" />
 
         <Tabs defaultValue="classes" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 rounded-xl">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="classes" className="rounded-lg">
               My Classes
             </TabsTrigger>
@@ -204,7 +204,7 @@ export default function TeacherClassesPage() {
                   {assignments?.map((assignment) => (
                     <Card
                       key={assignment.id}
-                      className="rounded-xl shadow-sm hover:shadow-lg transition-shadow"
+                      className="shadow-sm hover:shadow-lg transition-shadow"
                     >
                       <CardContent className="p-6">
                         <div className="flex items-start justify-between mb-3">
@@ -258,7 +258,7 @@ export default function TeacherClassesPage() {
                       value={selectedClass}
                       onValueChange={setSelectedClass}
                     >
-                      <SelectTrigger className="rounded-xl w-full">
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Choose a class" />
                       </SelectTrigger>
                       <SelectContent>
@@ -277,7 +277,6 @@ export default function TeacherClassesPage() {
                   <div className="flex flex-col gap-2">
                     <Label>Date</Label>
                     <Input
-                      className="rounded-xl"
                       type="date"
                       value={attendanceDate}
                       onChange={(e) => setAttendanceDate(e.target.value)}
@@ -289,7 +288,6 @@ export default function TeacherClassesPage() {
                   <>
                     <div className="flex gap-2">
                       <Button
-                        className="rounded-xl"
                         size="sm"
                         variant="outline"
                         onClick={() => markAllStudents("present")}
@@ -298,7 +296,6 @@ export default function TeacherClassesPage() {
                         Present
                       </Button>
                       <Button
-                        className="rounded-xl"
                         size="sm"
                         variant="outline"
                         onClick={() => markAllStudents("absent")}

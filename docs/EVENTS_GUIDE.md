@@ -11,9 +11,11 @@ All event operations are handled through server actions located in `/actions/eve
 ### Available Actions
 
 #### 1. createEvent
+
 Create a new event with automatic calendar integration.
 
 **Signature:**
+
 ```typescript
 createEvent(
   eventData: {
@@ -36,6 +38,7 @@ createEvent(
 ```
 
 **Features:**
+
 - Automatic calendar entry creation for event dates
 - Holiday events automatically mark calendar days as holidays
 - Bulk notifications sent to admins and teachers
@@ -43,6 +46,7 @@ createEvent(
 - Flexible targeting by audience (students, teachers, parents, etc.)
 
 **Example Usage:**
+
 ```typescript
 import { createEvent } from "@/actions/events";
 
@@ -60,7 +64,7 @@ const result = await createEvent(
     registrationDeadline: "2024-12-10",
     allowRegistration: true,
   },
-  userId
+  userId,
 );
 
 if (result.success) {
@@ -69,9 +73,11 @@ if (result.success) {
 ```
 
 #### 2. updateEvent
+
 Update an existing event.
 
 **Signature:**
+
 ```typescript
 updateEvent(
   eventId: string,
@@ -94,6 +100,7 @@ updateEvent(
 ```
 
 **Example Usage:**
+
 ```typescript
 import { updateEvent } from "@/actions/events";
 
@@ -108,9 +115,11 @@ if (result.success) {
 ```
 
 #### 3. deleteEvent
+
 Delete an event.
 
 **Signature:**
+
 ```typescript
 deleteEvent(
   eventId: string
@@ -118,6 +127,7 @@ deleteEvent(
 ```
 
 **Example Usage:**
+
 ```typescript
 import { deleteEvent } from "@/actions/events";
 
@@ -129,9 +139,11 @@ if (result.success) {
 ```
 
 #### 4. getEvents
+
 Get all events with optional filters.
 
 **Signature:**
+
 ```typescript
 getEvents(filters?: {
   eventType?: "academic" | "sports" | "cultural" | "meeting" | "holiday" | "other";
@@ -143,6 +155,7 @@ getEvents(filters?: {
 ```
 
 **Example Usage:**
+
 ```typescript
 import { getEvents } from "@/actions/events";
 
@@ -165,9 +178,11 @@ const studentEvents = await getEvents({
 ```
 
 #### 5. getEventById
+
 Get a single event by ID.
 
 **Signature:**
+
 ```typescript
 getEventById(
   eventId: string
@@ -175,6 +190,7 @@ getEventById(
 ```
 
 **Example Usage:**
+
 ```typescript
 import { getEventById } from "@/actions/events";
 
@@ -188,9 +204,11 @@ if (result.success && result.data) {
 ```
 
 #### 6. registerForEvent
+
 Register a user for an event.
 
 **Signature:**
+
 ```typescript
 registerForEvent(
   eventId: string,
@@ -200,12 +218,14 @@ registerForEvent(
 ```
 
 **Features:**
+
 - Validates registration deadline
 - Checks maximum participants limit
 - Prevents duplicate registrations
 - Supports parent registration on behalf of student
 
 **Example Usage:**
+
 ```typescript
 import { registerForEvent } from "@/actions/events";
 
@@ -216,7 +236,7 @@ const result = await registerForEvent("event-uuid", userId);
 const parentResult = await registerForEvent(
   "event-uuid",
   parentUserId,
-  studentId
+  studentId,
 );
 
 if (result.success) {
@@ -227,9 +247,11 @@ if (result.success) {
 ```
 
 #### 7. cancelEventRegistration
+
 Cancel an event registration.
 
 **Signature:**
+
 ```typescript
 cancelEventRegistration(
   registrationId: string
@@ -237,6 +259,7 @@ cancelEventRegistration(
 ```
 
 **Example Usage:**
+
 ```typescript
 import { cancelEventRegistration } from "@/actions/events";
 
@@ -248,9 +271,11 @@ if (result.success) {
 ```
 
 #### 8. getEventRegistrations
+
 Get all registrations for an event.
 
 **Signature:**
+
 ```typescript
 getEventRegistrations(
   eventId: string
@@ -258,6 +283,7 @@ getEventRegistrations(
 ```
 
 **Example Usage:**
+
 ```typescript
 import { getEventRegistrations } from "@/actions/events";
 
@@ -266,9 +292,9 @@ const result = await getEventRegistrations("event-uuid");
 if (result.success && result.data) {
   const registrations = result.data;
   console.log(`Total registrations: ${registrations.length}`);
-  
+
   const attended = registrations.filter(
-    r => r.registrationStatus === "attended"
+    (r) => r.registrationStatus === "attended",
   ).length;
   console.log(`Attended: ${attended}`);
 }
@@ -277,12 +303,19 @@ if (result.success && result.data) {
 ## Data Types
 
 ### Event
+
 ```typescript
 interface Event {
   id: string;
   title: string;
   description: string | null;
-  eventType: "academic" | "sports" | "cultural" | "meeting" | "holiday" | "other";
+  eventType:
+    | "academic"
+    | "sports"
+    | "cultural"
+    | "meeting"
+    | "holiday"
+    | "other";
   status: "upcoming" | "ongoing" | "completed" | "cancelled";
   startDate: Date;
   endDate: Date;
@@ -301,6 +334,7 @@ interface Event {
 ```
 
 ### EventRegistration
+
 ```typescript
 interface EventRegistration {
   id: string;
@@ -317,6 +351,7 @@ interface EventRegistration {
 ```
 
 ### Event Types
+
 - **academic**: Academic events (exams, workshops, seminars)
 - **sports**: Sports activities and competitions
 - **cultural**: Cultural programs and celebrations
@@ -325,6 +360,7 @@ interface EventRegistration {
 - **other**: Other miscellaneous events
 
 ### Event Statuses
+
 - **upcoming**: Event is scheduled for the future
 - **ongoing**: Event is currently happening
 - **completed**: Event has finished
@@ -347,7 +383,7 @@ import {
 
 export default function AdminEventsPage() {
   const queryClient = useQueryClient();
-  
+
   // Fetch all events
   const { data: eventsResult } = useQuery({
     queryKey: ["events"],
@@ -394,10 +430,11 @@ export default function StudentEventsPage() {
   // Fetch events for students
   const { data: eventsResult } = useQuery({
     queryKey: ["student-events"],
-    queryFn: () => getEvents({ 
-      targetAudience: "students",
-      status: "upcoming",
-    }),
+    queryFn: () =>
+      getEvents({
+        targetAudience: "students",
+        status: "upcoming",
+      }),
   });
 
   // Register for event
@@ -426,10 +463,11 @@ export default function CalendarView() {
 
   const { data: eventsResult } = useQuery({
     queryKey: ["calendar-events", currentMonth],
-    queryFn: () => getEvents({
-      startDate: startOfMonth(currentMonth),
-      endDate: endOfMonth(currentMonth),
-    }),
+    queryFn: () =>
+      getEvents({
+        startDate: startOfMonth(currentMonth),
+        endDate: endOfMonth(currentMonth),
+      }),
   });
 
   // Render calendar with events...
@@ -459,11 +497,13 @@ When an event is created, the system automatically:
 ## Notifications
 
 Event creation automatically sends notifications to:
+
 - All admin users
 - All teacher users
 - Users specified in `targetAudience` (future enhancement)
 
 Notification includes:
+
 - Event title
 - Event type
 - Description preview
@@ -472,11 +512,13 @@ Notification includes:
 ## Best Practices
 
 1. **Target Audience**: Always specify target audience for better event filtering:
+
 ```typescript
-targetAudience: ["students", "teachers", "parents"]
+targetAudience: ["students", "teachers", "parents"];
 ```
 
 2. **Registration Limits**: Set `maxParticipants` for events with limited capacity:
+
 ```typescript
 maxParticipants: 100,
 allowRegistration: true,
@@ -484,14 +526,16 @@ registrationDeadline: "2024-12-10"
 ```
 
 3. **File Attachments**: Store attachments as URL array:
+
 ```typescript
 attachments: [
   "https://example.com/event-poster.pdf",
-  "https://example.com/event-schedule.pdf"
-]
+  "https://example.com/event-schedule.pdf",
+];
 ```
 
 4. **Event Status Management**: Update status as event progresses:
+
 ```typescript
 // When event starts
 await updateEvent(eventId, { status: "ongoing" });
@@ -501,6 +545,7 @@ await updateEvent(eventId, { status: "completed" });
 ```
 
 5. **Cancellations**: Don't delete cancelled events, update status instead:
+
 ```typescript
 await updateEvent(eventId, { status: "cancelled" });
 ```
@@ -508,24 +553,28 @@ await updateEvent(eventId, { status: "cancelled" });
 ## Permission-Based Access
 
 ### Admin
+
 - Create, update, and delete all events
 - View all event registrations
 - Mark attendance for events
 - Full calendar management
 
 ### Teacher
+
 - Create events (subject to admin approval)
 - View all events
 - Register for events
 - View registrations for their events
 
 ### Student
+
 - View events targeted to students
 - Register for events (if allowed)
 - View own registrations
 - Cancel own registrations
 
 ### Parent
+
 - View events targeted to parents
 - Register children for events
 - View children's registrations
@@ -533,6 +582,7 @@ await updateEvent(eventId, { status: "cancelled" });
 ## Database Schema
 
 ### Events Table
+
 ```sql
 CREATE TABLE events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -556,6 +606,7 @@ CREATE TABLE events (
 ```
 
 ### Event Registrations Table
+
 ```sql
 CREATE TABLE event_registrations (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -572,43 +623,50 @@ CREATE TABLE event_registrations (
 ## Advanced Features
 
 ### Recurring Events
+
 For recurring events (future enhancement), create multiple event entries:
 
 ```typescript
 // Create monthly meeting series
 const months = ["2024-01", "2024-02", "2024-03"];
 for (const month of months) {
-  await createEvent({
-    title: `Monthly Staff Meeting - ${month}`,
-    description: "Regular monthly staff meeting",
-    eventType: "meeting",
-    startDate: `${month}-15T10:00:00`,
-    endDate: `${month}-15T12:00:00`,
-    // ... other fields
-  }, userId);
+  await createEvent(
+    {
+      title: `Monthly Staff Meeting - ${month}`,
+      description: "Regular monthly staff meeting",
+      eventType: "meeting",
+      startDate: `${month}-15T10:00:00`,
+      endDate: `${month}-15T12:00:00`,
+      // ... other fields
+    },
+    userId,
+  );
 }
 ```
 
 ### Event Categories
+
 Filter events by multiple types:
 
 ```typescript
 const academicEvents = await getEvents({ eventType: "academic" });
-const funEvents = await getEvents({ 
+const funEvents = await getEvents({
   // Get both sports and cultural
 });
 // Note: Currently supports single type, multi-type filtering is a future enhancement
 ```
 
 ### Attendance Tracking
+
 Track event attendance through registration status:
 
 ```typescript
 // Mark student as attended
-await db.update(eventRegistrations)
-  .set({ 
+await db
+  .update(eventRegistrations)
+  .set({
     registrationStatus: "attended",
-    attendedAt: new Date() 
+    attendedAt: new Date(),
   })
   .where(eq(eventRegistrations.id, registrationId));
 ```
@@ -618,9 +676,11 @@ await db.update(eventRegistrations)
 ### Common Issues
 
 **Issue**: Event not appearing in calendar
+
 - **Solution**: Check that the event date range is valid and calendar page is refreshing
 
 **Issue**: Cannot register for event
+
 - **Solution**: Verify:
   - `allowRegistration` is `true`
   - Registration deadline hasn't passed
@@ -628,6 +688,7 @@ await db.update(eventRegistrations)
   - User hasn't already registered
 
 **Issue**: Notifications not sent
+
 - **Solution**: Ensure admins and teachers exist in database. Check notification service logs.
 
 ## Future Enhancements
@@ -649,6 +710,7 @@ await db.update(eventRegistrations)
 ## Support
 
 For issues or questions about the Events & Calendar System:
+
 1. Check this documentation
 2. Review server action code in `/actions/events.ts`
 3. Check database schema in `/database/schema.ts`

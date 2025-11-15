@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Amrita School Management System",
+  title: "Amrita Vidyalayam Management System",
   description:
     "Modern school management with classroom dashboards, attendance, fees, and homework tracking",
 };

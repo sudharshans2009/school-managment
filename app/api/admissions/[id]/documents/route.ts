@@ -72,9 +72,7 @@ export async function POST(
 }
 
 // PUT - Verify/Reject a document (admin only)
-export async function PUT(
-  request: NextRequest,
-) {
+export async function PUT(request: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
 

@@ -39,7 +39,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Map severity from form to database enum
-    const severityMap: Record<string, "minor" | "moderate" | "major" | "critical"> = {
+    const severityMap: Record<
+      string,
+      "minor" | "moderate" | "major" | "critical"
+    > = {
       Minor: "minor",
       Moderate: "moderate",
       Severe: "major",

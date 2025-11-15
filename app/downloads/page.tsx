@@ -106,7 +106,7 @@ export default function DownloadsPage() {
           {/* Header */}
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-              Download Amrita School Management
+              Download Amrita Vidyalayam Management
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Get the native app for the best experience on your device. Fast,
@@ -128,7 +128,7 @@ export default function DownloadsPage() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div
-                      className={`w-16 h-16 rounded-xl flex items-center justify-center ${
+                      className={`w-16 h-16 flex items-center justify-center ${
                         platform.supported
                           ? "bg-primary/10 text-primary"
                           : "bg-muted text-muted-foreground"
@@ -187,7 +187,7 @@ export default function DownloadsPage() {
                   <div className="pt-2">
                     {platform.supported ? (
                       <Button
-                        className="w-full rounded-xl"
+                        className="w-full"
                         onClick={() => {
                           // In production, this would trigger the actual download
                           window.location.href = platform.downloadUrl;
@@ -197,11 +197,7 @@ export default function DownloadsPage() {
                         Download for {platform.name}
                       </Button>
                     ) : (
-                      <Button
-                        className="w-full rounded-xl"
-                        variant="outline"
-                        disabled
-                      >
+                      <Button className="w-full" variant="outline" disabled>
                         <Clock className="h-4 w-4 mr-2" />
                         Coming Soon
                       </Button>
@@ -217,7 +213,7 @@ export default function DownloadsPage() {
             <Card className="rounded-2xl border-blue-200 dark:border-blue-900 bg-blue-50/50 dark:bg-blue-950/20">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center shrink-0">
                     <Info className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div className="space-y-2">
@@ -230,8 +226,8 @@ export default function DownloadsPage() {
                         RAM minimum, 200MB free disk space
                       </p>
                       <p>
-                        <strong>Android:</strong> Android 8.0+, 2GB RAM
-                        minimum, 100MB free storage
+                        <strong>Android:</strong> Android 8.0+, 2GB RAM minimum,
+                        100MB free storage
                       </p>
                       <p>
                         <strong>macOS (Soon):</strong> macOS 11 (Big Sur) or
@@ -309,13 +305,13 @@ export default function DownloadsPage() {
                   </p>
                   <div className="space-y-2">
                     <Link href="/docs/installation">
-                      <Button variant="outline" className="w-full rounded-xl">
+                      <Button variant="outline" className="w-full">
                         <Download className="h-4 w-4 mr-2" />
                         Installation Guide
                       </Button>
                     </Link>
                     <Link href="/">
-                      <Button variant="outline" className="w-full rounded-xl">
+                      <Button variant="outline" className="w-full">
                         <Monitor className="h-4 w-4 mr-2" />
                         Use Web Version
                       </Button>

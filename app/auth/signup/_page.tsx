@@ -100,7 +100,7 @@ export default function SignUpPage() {
             Create Account
           </CardTitle>
           <CardDescription className="text-center">
-            Join Amrita School Management System
+            Join Amrita Vidyalayam Management System
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -204,11 +204,7 @@ export default function SignUpPage() {
           </CardContent>
 
           <CardFooter className="flex flex-col space-y-4 pb-8">
-            <Button
-              type="submit"
-              className="w-full rounded-xl"
-              disabled={isLoading}
-            >
+            <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

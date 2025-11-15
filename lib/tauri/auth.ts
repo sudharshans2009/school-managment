@@ -37,7 +37,7 @@ export const configureTauriAuth = () => {
  */
 export const authFetch = async (
   endpoint: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<Response> => {
   const baseURL = getAuthBaseURL();
   const url = `${baseURL}${endpoint}`;

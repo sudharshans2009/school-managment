@@ -27,13 +27,13 @@ export function PageHeader({
       <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
         <div className="flex items-start gap-3 sm:gap-4">
           <Link href={backHref}>
-            <Button variant="outline" className="rounded-xl h-12 -ml-2">
+            <Button variant="outline" className="h-12 -ml-2">
               <ArrowLeft className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">{backLabel}</span>
             </Button>
           </Link>
           <div className="flex items-start gap-3">
-            <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-xl shrink-0">
+            <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 shrink-0">
               <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             </div>
             <div>

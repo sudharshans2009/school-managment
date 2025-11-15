@@ -11,9 +11,11 @@ All fee management operations are handled through server actions located in `/ac
 ### Available Actions
 
 #### 1. createFeeStructure
+
 Create a new fee structure for a classroom or grade.
 
 **Signature:**
+
 ```typescript
 createFeeStructure(feeData: {
   classroomId?: string;
@@ -31,6 +33,7 @@ createFeeStructure(feeData: {
 **Frequency**: monthly, quarterly, annually, one-time
 
 **Example Usage:**
+
 ```typescript
 import { createFeeStructure } from "@/actions/fees";
 
@@ -50,9 +53,11 @@ if (result.success) {
 ```
 
 #### 2. updateFeeStructure
+
 Update an existing fee structure.
 
 **Signature:**
+
 ```typescript
 updateFeeStructure(
   feeStructureId: string,
@@ -70,6 +75,7 @@ updateFeeStructure(
 ```
 
 **Example Usage:**
+
 ```typescript
 import { updateFeeStructure } from "@/actions/fees";
 
@@ -84,9 +90,11 @@ if (result.success) {
 ```
 
 #### 3. deleteFeeStructure
+
 Delete a fee structure.
 
 **Signature:**
+
 ```typescript
 deleteFeeStructure(
   feeStructureId: string
@@ -96,6 +104,7 @@ deleteFeeStructure(
 **Note**: Deleting a fee structure will affect associated payment records. Consider setting `isActive: false` instead.
 
 **Example Usage:**
+
 ```typescript
 import { deleteFeeStructure } from "@/actions/fees";
 
@@ -107,9 +116,11 @@ if (result.success) {
 ```
 
 #### 4. getFeeStructures
+
 Get all fee structures with optional filters.
 
 **Signature:**
+
 ```typescript
 getFeeStructures(filters?: {
   classroomId?: string;
@@ -120,6 +131,7 @@ getFeeStructures(filters?: {
 ```
 
 **Example Usage:**
+
 ```typescript
 import { getFeeStructures } from "@/actions/fees";
 
@@ -135,16 +147,18 @@ const classroomFees = await getFeeStructures({
 });
 
 if (result.success && result.data) {
-  result.data.forEach(fee => {
+  result.data.forEach((fee) => {
     console.log(`${fee.feeType}: ₹${fee.amount} (${fee.frequency})`);
   });
 }
 ```
 
 #### 5. recordPayment
+
 Record a fee payment for a student.
 
 **Signature:**
+
 ```typescript
 recordPayment(paymentData: {
   studentId: string;
@@ -163,6 +177,7 @@ recordPayment(paymentData: {
 **Payment Methods**: cash, online, cheque, bank_transfer, upi, card
 
 **Example Usage:**
+
 ```typescript
 import { recordPayment } from "@/actions/fees";
 
@@ -185,9 +200,11 @@ if (result.success) {
 ```
 
 #### 6. updatePayment
+
 Update an existing fee payment.
 
 **Signature:**
+
 ```typescript
 updatePayment(
   paymentId: string,
@@ -205,6 +222,7 @@ updatePayment(
 ```
 
 **Example Usage:**
+
 ```typescript
 import { updatePayment } from "@/actions/fees";
 
@@ -220,9 +238,11 @@ if (result.success) {
 ```
 
 #### 7. getFeesByStudent
+
 Get all fee payments for a specific student.
 
 **Signature:**
+
 ```typescript
 getFeesByStudent(
   studentId: string,
@@ -235,6 +255,7 @@ getFeesByStudent(
 ```
 
 **Example Usage:**
+
 ```typescript
 import { getFeesByStudent } from "@/actions/fees";
 
@@ -251,17 +272,19 @@ const yearFees = await getFeesByStudent("student-uuid", {
 
 if (result.success && result.data) {
   const totalDue = result.data.reduce(
-    (sum, fee) => sum + parseFloat(fee.amount), 
-    0
+    (sum, fee) => sum + parseFloat(fee.amount),
+    0,
   );
   console.log(`Total due: ₹${totalDue}`);
 }
 ```
 
 #### 8. getFeesByClassroom
+
 Get all fee payments for students in a classroom.
 
 **Signature:**
+
 ```typescript
 getFeesByClassroom(
   classroomId: string,
@@ -273,6 +296,7 @@ getFeesByClassroom(
 ```
 
 **Example Usage:**
+
 ```typescript
 import { getFeesByClassroom } from "@/actions/fees";
 
@@ -286,9 +310,11 @@ if (result.success && result.data) {
 ```
 
 #### 9. getStudentFeeStatus
+
 Get comprehensive fee status for a student including all dues and payments.
 
 **Signature:**
+
 ```typescript
 getStudentFeeStatus(
   studentId: string
@@ -296,6 +322,7 @@ getStudentFeeStatus(
 ```
 
 **Returns:**
+
 ```typescript
 interface StudentFeeStatus {
   studentId: string;
@@ -310,6 +337,7 @@ interface StudentFeeStatus {
 ```
 
 **Example Usage:**
+
 ```typescript
 import { getStudentFeeStatus } from "@/actions/fees";
 
@@ -326,9 +354,11 @@ if (result.success && result.data) {
 ```
 
 #### 10. generateFeeReceipts
+
 Generate fee receipts for all students in a classroom.
 
 **Signature:**
+
 ```typescript
 generateFeeReceipts(
   classroomId: string,
@@ -340,6 +370,7 @@ generateFeeReceipts(
 **Use Case**: Bulk generation of monthly fee receipts for entire classroom.
 
 **Example Usage:**
+
 ```typescript
 import { generateFeeReceipts } from "@/actions/fees";
 
@@ -347,7 +378,7 @@ import { generateFeeReceipts } from "@/actions/fees";
 const result = await generateFeeReceipts(
   "classroom-uuid",
   "tuition-fee-structure-uuid",
-  "2024-12-05"
+  "2024-12-05",
 );
 
 if (result.success && result.data) {
@@ -358,6 +389,7 @@ if (result.success && result.data) {
 ## Data Types
 
 ### FeeStructure
+
 ```typescript
 interface FeeStructure {
   id: string;
@@ -375,6 +407,7 @@ interface FeeStructure {
 ```
 
 ### FeePayment
+
 ```typescript
 interface FeePayment {
   id: string;
@@ -411,14 +444,15 @@ import {
 
 export default function AdminFeesPage() {
   const queryClient = useQueryClient();
-  
+
   // Fetch fee structures
   const { data: feesResult } = useQuery({
     queryKey: ["fee-structures", academicYear],
-    queryFn: () => getFeeStructures({ 
-      academicYear,
-      isActive: true 
-    }),
+    queryFn: () =>
+      getFeeStructures({
+        academicYear,
+        isActive: true,
+      }),
   });
 
   // Create fee structure
@@ -463,7 +497,7 @@ export default function StudentFeesPage() {
 
   if (statusResult?.success && statusResult.data) {
     const status = statusResult.data;
-    
+
     return (
       <div>
         <h2>Fee Status</h2>
@@ -496,10 +530,11 @@ export default function ParentFeeDashboard() {
 
   // Get fee status for each child
   const childFeeStatuses = useQueries({
-    queries: children?.map(child => ({
-      queryKey: ["fee-status", child.id],
-      queryFn: () => getStudentFeeStatus(child.id),
-    })) || [],
+    queries:
+      children?.map((child) => ({
+        queryKey: ["fee-status", child.id],
+        queryFn: () => getStudentFeeStatus(child.id),
+      })) || [],
   });
 
   // Calculate total pending across all children
@@ -517,6 +552,7 @@ export default function ParentFeeDashboard() {
 ## Fee Collection Workflow
 
 ### 1. Setup Fee Structures
+
 Admin creates fee structures for the academic year:
 
 ```typescript
@@ -541,17 +577,19 @@ await createFeeStructure({
 ```
 
 ### 2. Generate Monthly Receipts
+
 At the start of each month, generate fee receipts:
 
 ```typescript
 const result = await generateFeeReceipts(
   "class-10-a",
   "tuition-fee-id",
-  "2024-12-05" // Due date: 5th Dec
+  "2024-12-05", // Due date: 5th Dec
 );
 ```
 
 ### 3. Record Payments
+
 When student makes payment:
 
 ```typescript
@@ -569,6 +607,7 @@ await recordPayment({
 ```
 
 ### 4. Track Overdue Fees
+
 Automatically identify overdue payments:
 
 ```typescript
@@ -577,25 +616,25 @@ const result = await getFeesByStudent(studentId, {
 });
 
 const today = new Date();
-const overdueFees = result.data?.filter(
-  fee => new Date(fee.dueDate) < today
-);
+const overdueFees = result.data?.filter((fee) => new Date(fee.dueDate) < today);
 ```
 
 ## Best Practices
 
 1. **Receipt Numbers**: Generate unique receipt numbers for each payment:
+
 ```typescript
 const generateReceiptNumber = () => {
   const date = new Date();
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
   const random = Math.floor(Math.random() * 10000);
-  return `REC${year}${month}${String(random).padStart(4, '0')}`;
+  return `REC${year}${month}${String(random).padStart(4, "0")}`;
 };
 ```
 
 2. **Partial Payments**: For partial payments:
+
 ```typescript
 await recordPayment({
   // ... other fields
@@ -606,6 +645,7 @@ await recordPayment({
 ```
 
 3. **Payment Reminders**: Send reminders before due date:
+
 ```typescript
 const upcomingDues = await getFeesByStudent(studentId, {
   status: "pending",
@@ -615,7 +655,7 @@ const threeDaysFromNow = new Date();
 threeDaysFromNow.setDate(threeDaysFromNow.getDate() + 3);
 
 const duesSoon = upcomingDues.data?.filter(
-  fee => new Date(fee.dueDate) <= threeDaysFromNow
+  (fee) => new Date(fee.dueDate) <= threeDaysFromNow,
 );
 
 if (duesSoon && duesSoon.length > 0) {
@@ -624,6 +664,7 @@ if (duesSoon && duesSoon.length > 0) {
 ```
 
 4. **Fee Concessions**: Handle fee concessions through remarks:
+
 ```typescript
 await createFeeStructure({
   // ... other fields
@@ -633,6 +674,7 @@ await createFeeStructure({
 ```
 
 5. **Multi-Fee Payments**: Pay multiple fees at once:
+
 ```typescript
 const fees = [tuitionFee, transportFee, labFee];
 const totalAmount = fees.reduce((sum, fee) => sum + fee.amount, 0);
@@ -655,6 +697,7 @@ for (const fee of fees) {
 ## Role-Based Access
 
 ### Admin
+
 - Create and manage fee structures
 - Generate fee receipts for classrooms
 - View all payments across school
@@ -662,6 +705,7 @@ for (const fee of fees) {
 - Generate fee reports
 
 ### Accountant (Future Role)
+
 - Record payments
 - View all payments
 - Generate receipts
@@ -669,16 +713,19 @@ for (const fee of fees) {
 - Generate financial reports
 
 ### Teacher
+
 - View fee status for assigned classes
 - Generate class-wise fee reports
 - Cannot modify fee structures or payments
 
 ### Student
+
 - View own fee status
 - View payment history
 - Download receipts
 
 ### Parent
+
 - View children's fee status
 - View payment history
 - Make online payments (future enhancement)
@@ -687,6 +734,7 @@ for (const fee of fees) {
 ## Database Schema
 
 ### Fee Structures Table
+
 ```sql
 CREATE TABLE fee_structures (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -703,6 +751,7 @@ CREATE TABLE fee_structures (
 ```
 
 ### Fee Payments Table
+
 ```sql
 CREATE TABLE fee_payments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -723,6 +772,7 @@ CREATE TABLE fee_payments (
 ## Reporting & Analytics
 
 ### Fee Collection Report
+
 ```typescript
 const result = await getFeesByClassroom(classroomId, {
   status: "paid",
@@ -731,14 +781,15 @@ const result = await getFeesByClassroom(classroomId, {
 if (result.success && result.data) {
   const totalCollected = result.data.reduce(
     (sum, payment) => sum + parseFloat(payment.amount),
-    0
+    0,
   );
-  
+
   console.log(`Total Collected: ₹${totalCollected}`);
 }
 ```
 
 ### Defaulter List
+
 ```typescript
 const allStudents = await getClassroomStudents(classroomId);
 
@@ -774,12 +825,15 @@ for (const student of allStudents) {
 ### Common Issues
 
 **Issue**: Fee receipts not generated
+
 - **Solution**: Verify fee structure exists and is active for the academic year
 
 **Issue**: Incorrect fee amounts
+
 - **Solution**: Check fee structure amount and ensure no partial payments exist
 
 **Issue**: Overdue fees not showing
+
 - **Solution**: System compares due date with current date. Ensure dates are correct.
 
 ## Related Documentation
@@ -791,6 +845,7 @@ for (const student of allStudents) {
 ## Support
 
 For issues or questions about the Fee Management System:
+
 1. Check this documentation
 2. Review server action code in `/actions/fees.ts`
 3. Check database schema in `/database/schema.ts`

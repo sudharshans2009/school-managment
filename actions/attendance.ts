@@ -1,11 +1,7 @@
 "use server";
 
 import { db } from "@/database";
-import {
-  attendance,
-  students,
-  users,
-} from "@/database/schema";
+import { attendance, students, users } from "@/database/schema";
 import { eq, and, gte, lte, desc } from "drizzle-orm";
 
 // ============================================
@@ -59,7 +55,7 @@ export async function markAttendance(
     date?: string | Date;
     remarks?: string;
   }>,
-  markedBy: string
+  markedBy: string,
 ): Promise<{ success: boolean; data?: { count: number }; error?: string }> {
   try {
     if (!records || records.length === 0) {
@@ -87,17 +83,17 @@ export async function markAttendance(
         and(
           eq(attendance.classroomId, classroomId),
           gte(attendance.date, dateStart),
-          lte(attendance.date, dateEnd)
-        )
+          lte(attendance.date, dateEnd),
+        ),
       );
 
     if (existingRecords.length > 0) {
       // Update existing records
       for (const record of records) {
         const existing = existingRecords.find(
-          r => r.studentId === record.studentId
+          (r) => r.studentId === record.studentId,
         );
-        
+
         if (existing) {
           await db
             .update(attendance)
@@ -149,7 +145,7 @@ export async function markAttendance(
 export async function getAttendanceByClassroom(
   classroomId: string,
   startDate?: string | Date,
-  endDate?: string | Date
+  endDate?: string | Date,
 ): Promise<{ success: boolean; data?: AttendanceRecord[]; error?: string }> {
   try {
     if (!classroomId) {
@@ -201,7 +197,7 @@ export async function getAttendanceByClassroom(
 export async function getAttendanceByStudent(
   studentId: string,
   startDate?: string | Date,
-  endDate?: string | Date
+  endDate?: string | Date,
 ): Promise<{ success: boolean; data?: AttendanceRecord[]; error?: string }> {
   try {
     if (!studentId) {
@@ -253,7 +249,7 @@ export async function getAttendanceByStudent(
 export async function getAttendanceStats(
   classroomId: string,
   startDate?: string | Date,
-  endDate?: string | Date
+  endDate?: string | Date,
 ): Promise<{ success: boolean; data?: AttendanceStats; error?: string }> {
   try {
     if (!classroomId) {
@@ -308,7 +304,7 @@ export async function getAttendanceStats(
 export async function getClassroomAttendanceSummary(
   classroomId: string,
   startDate?: string | Date,
-  endDate?: string | Date
+  endDate?: string | Date,
 ): Promise<{
   success: boolean;
   data?: StudentAttendanceSummary[];
@@ -351,10 +347,14 @@ export async function getClassroomAttendanceSummary(
     const summary = classroomStudents.map((student) => {
       const studentRecords = records.filter((r) => r.studentId === student.id);
       const total = studentRecords.length;
-      const present = studentRecords.filter((r) => r.status === "present").length;
+      const present = studentRecords.filter(
+        (r) => r.status === "present",
+      ).length;
       const absent = studentRecords.filter((r) => r.status === "absent").length;
       const late = studentRecords.filter((r) => r.status === "late").length;
-      const excused = studentRecords.filter((r) => r.status === "excused").length;
+      const excused = studentRecords.filter(
+        (r) => r.status === "excused",
+      ).length;
       const percentage = total > 0 ? (present / total) * 100 : 0;
 
       return {
@@ -382,7 +382,7 @@ export async function getClassroomAttendanceSummary(
  * @param attendanceId - Attendance record ID
  */
 export async function deleteAttendance(
-  attendanceId: string
+  attendanceId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     if (!attendanceId) {
@@ -405,7 +405,7 @@ export async function deleteAttendance(
  */
 export async function getAttendanceForDate(
   classroomId: string,
-  date: string | Date
+  date: string | Date,
 ): Promise<{ success: boolean; data?: AttendanceRecord[]; error?: string }> {
   try {
     if (!classroomId || !date) {
@@ -438,8 +438,8 @@ export async function getAttendanceForDate(
         and(
           eq(attendance.classroomId, classroomId),
           gte(attendance.date, dateStart),
-          lte(attendance.date, dateEnd)
-        )
+          lte(attendance.date, dateEnd),
+        ),
       )
       .orderBy(students.rollNumber);
 

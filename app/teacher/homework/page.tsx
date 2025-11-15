@@ -110,7 +110,7 @@ export default function TeacherHomeworkPage() {
       if (!selectedClassroom) return [];
       return await getClassroomStudents(selectedClassroom);
     },
-    enabled: !!selectedClassroom && viewMode === "students",
+    enabled: !!selectedClassroom,
   });
 
   // Fetch submissions for selected homework
@@ -269,12 +269,15 @@ export default function TeacherHomeworkPage() {
                   value={selectedClassroom}
                   onValueChange={setSelectedClassroom}
                 >
-                  <SelectTrigger className="rounded-xl w-full">
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Choose a classroom" />
                   </SelectTrigger>
                   <SelectContent>
                     {classrooms?.map((classroom) => (
-                      <SelectItem key={classroom.id} value={classroom.classroom.id}>
+                      <SelectItem
+                        key={classroom.id}
+                        value={classroom.classroom.id}
+                      >
                         {classroom.classroom.name}
                       </SelectItem>
                     ))}
@@ -290,7 +293,7 @@ export default function TeacherHomeworkPage() {
                       value={selectedHomework}
                       onValueChange={setSelectedHomework}
                     >
-                      <SelectTrigger className="rounded-xl w-full">
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Choose homework" />
                       </SelectTrigger>
                       <SelectContent>
@@ -311,7 +314,7 @@ export default function TeacherHomeworkPage() {
                         setViewMode(v as "homework" | "students")
                       }
                     >
-                      <SelectTrigger className="rounded-xl w-full">
+                      <SelectTrigger className="w-full">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -367,9 +370,7 @@ export default function TeacherHomeworkPage() {
 
                       return (
                         <TableRow key={submission.id}>
-                          <TableCell>
-                            {submission.student.rollNumber}
-                          </TableCell>
+                          <TableCell>{submission.student.rollNumber}</TableCell>
                           <TableCell className="font-medium">
                             {submission.student.user.name}
                           </TableCell>
@@ -508,8 +509,9 @@ export default function TeacherHomeworkPage() {
               <div>
                 <Label htmlFor="marks">
                   Marks Obtained (out of{" "}
-                  {homework?.find((h) => h.id === selectedSubmission?.homeworkId)
-                    ?.totalMarks || "N/A"}
+                  {homework?.find(
+                    (h) => h.id === selectedSubmission?.homeworkId,
+                  )?.totalMarks || "N/A"}
                   )
                 </Label>
                 <Input
@@ -518,8 +520,9 @@ export default function TeacherHomeworkPage() {
                   type="number"
                   min="0"
                   max={
-                    homework?.find((h) => h.id === selectedSubmission?.homeworkId)
-                      ?.totalMarks
+                    homework?.find(
+                      (h) => h.id === selectedSubmission?.homeworkId,
+                    )?.totalMarks
                   }
                   defaultValue={selectedSubmission?.marksObtained || ""}
                   required

@@ -60,7 +60,7 @@ export default function WorkDoneManagementPage() {
     queryKey: ["work-done", filters],
     queryFn: async () => {
       const filterParams: Parameters<typeof getWorkDoneRecords>[0] = {};
-      
+
       if (filters.startDate) filterParams.startDate = filters.startDate;
       if (filters.endDate) filterParams.endDate = filters.endDate;
       if (filters.classroomId && filters.classroomId !== "all")
@@ -146,7 +146,6 @@ export default function WorkDoneManagementPage() {
                 <Label>Start Date</Label>
                 <Input
                   type="date"
-                  className="rounded-xl"
                   value={filters.startDate}
                   onChange={(e) =>
                     setFilters((prev) => ({
@@ -160,7 +159,6 @@ export default function WorkDoneManagementPage() {
                 <Label>End Date</Label>
                 <Input
                   type="date"
-                  className="rounded-xl"
                   value={filters.endDate}
                   onChange={(e) =>
                     setFilters((prev) => ({ ...prev, endDate: e.target.value }))
@@ -175,7 +173,7 @@ export default function WorkDoneManagementPage() {
                     setFilters((prev) => ({ ...prev, classroomId: value }))
                   }
                 >
-                  <SelectTrigger className="rounded-xl w-full">
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="All classrooms" />
                   </SelectTrigger>
                   <SelectContent>
@@ -196,7 +194,7 @@ export default function WorkDoneManagementPage() {
                     setFilters((prev) => ({ ...prev, subjectId: value }))
                   }
                 >
-                  <SelectTrigger className="rounded-xl w-full">
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="All subjects" />
                   </SelectTrigger>
                   <SelectContent>
@@ -217,7 +215,7 @@ export default function WorkDoneManagementPage() {
                     setFilters((prev) => ({ ...prev, isSubstitute: value }))
                   }
                 >
-                  <SelectTrigger className="rounded-xl w-full">
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="All records" />
                   </SelectTrigger>
                   <SelectContent>
@@ -230,7 +228,7 @@ export default function WorkDoneManagementPage() {
               <div className="flex items-end">
                 <Button
                   variant="outline"
-                  className="rounded-xl w-full"
+                  className="w-full"
                   onClick={clearFilters}
                 >
                   Clear Filters
@@ -252,7 +250,7 @@ export default function WorkDoneManagementPage() {
                   {workDoneRecords?.length || 0}
                 </p>
               </div>
-              <Button variant="outline" className="rounded-xl" disabled>
+              <Button variant="outline" disabled>
                 <Download className="h-4 w-4 mr-2" />
                 Export (Coming Soon)
               </Button>
@@ -270,7 +268,7 @@ export default function WorkDoneManagementPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {workDoneRecords?.map((record) => (
-              <Card key={record.id} className="rounded-xl">
+              <Card key={record.id}>
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">

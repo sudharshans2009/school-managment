@@ -1,7 +1,8 @@
 # App Download Feature Implementation
 
 ## Overview
-The Amrita School Management System now includes a smart app download feature that detects when users access the application through a web browser and prompts them to download the native application for their platform.
+
+The Amrita Vidyalayam Management System now includes a smart app download feature that detects when users access the application through a web browser and prompts them to download the native application for their platform.
 
 ---
 
@@ -10,6 +11,7 @@ The Amrita School Management System now includes a smart app download feature th
 ### 1. **Smart Download Banner** (`components/app-download-banner.tsx`)
 
 A client-side component that:
+
 - **Detects if running in Tauri**: Automatically hides if the app is already running as a native application
 - **Platform Detection**: Identifies the user's operating system (Windows, macOS, Linux, Android, iOS)
 - **Persistent Dismissal**: Remembers if the user dismissed the banner using localStorage
@@ -19,10 +21,12 @@ A client-side component that:
 #### Platform Support Status
 
 **Currently Available:**
+
 - ✅ Windows (Windows 10/11, 64-bit)
 - ✅ Android (Android 8.0+)
 
 **Coming Soon:**
+
 - 🚧 macOS (macOS 11 Big Sur and above)
 - 🚧 iOS (iOS 14.0 and above)
 - 🚧 Linux (Ubuntu 20.04+, Fedora 35+)
@@ -30,6 +34,7 @@ A client-side component that:
 ### 2. **Downloads Page** (`app/downloads/page.tsx`)
 
 A comprehensive downloads page featuring:
+
 - **Platform Cards**: Visual cards for each supported platform with:
   - Platform icon and name
   - System requirements
@@ -47,6 +52,7 @@ A comprehensive downloads page featuring:
 ### 3. **Home Page Integration**
 
 Updated home page (`app/page.tsx`) to include:
+
 - App download banner at the top
 - Footer link to the downloads page
 
@@ -102,6 +108,7 @@ if (dismissed === "true") {
 ### Banner Display Conditions
 
 The download banner appears when:
+
 1. User is NOT running the app in Tauri (native app)
 2. User has NOT previously dismissed the banner
 3. Platform is detected successfully
@@ -109,10 +116,12 @@ The download banner appears when:
 ### Banner Actions
 
 **For Supported Platforms (Windows/Android):**
+
 - "Download for [Platform]" button - Triggers download
 - "Continue in Browser" button - Dismisses banner
 
 **For Coming Soon Platforms (macOS/iOS/Linux):**
+
 - Shows informational message about upcoming availability
 - Lists all supported and coming soon platforms
 - Can be dismissed with X button
@@ -137,12 +146,14 @@ docs/
 ## Styling & Design
 
 ### Color Coding
+
 - **Available Platforms**: Green badges with checkmarks
 - **Coming Soon**: Yellow badges with clock icons
 - **Primary Platform Cards**: Blue/primary color theme
 - **Info Sections**: Blue-tinted informational cards
 
 ### Animations
+
 - Banner: Slide-in from top with `animate-in` and `slide-in-from-top`
 - Cards: Hover effects with shadow transitions
 - Responsive layout for all screen sizes
@@ -152,6 +163,7 @@ docs/
 ## Download URLs
 
 **Current Structure:**
+
 ```
 /downloads/amrita-school-management_windows.msi
 /downloads/amrita-school-management_android.apk
@@ -167,6 +179,7 @@ docs/
 ## Platform-Specific Features
 
 ### Windows
+
 - Native performance
 - Offline access
 - System notifications
@@ -174,6 +187,7 @@ docs/
 - File size: ~85 MB
 
 ### Android
+
 - Mobile-optimized UI
 - Push notifications
 - Offline mode
@@ -181,6 +195,7 @@ docs/
 - File size: ~45 MB
 
 ### macOS (Coming Soon)
+
 - Apple Silicon optimized
 - TouchBar support
 - iCloud integration
@@ -188,6 +203,7 @@ docs/
 - File size: ~90 MB
 
 ### iOS (Coming Soon)
+
 - Native iOS experience
 - Face ID / Touch ID
 - Widgets
@@ -195,6 +211,7 @@ docs/
 - File size: ~40 MB
 
 ### Linux (Coming Soon)
+
 - AppImage format
 - Cross-distribution support
 - Wayland support
@@ -206,27 +223,32 @@ docs/
 ## System Requirements
 
 ### Windows
+
 - Windows 10/11 (64-bit)
 - 4GB RAM minimum
 - 200MB free disk space
 
 ### Android
+
 - Android 8.0 or higher
 - 2GB RAM minimum
 - 100MB free storage
 
 ### macOS (Coming Soon)
+
 - macOS 11 (Big Sur) or later
 - Apple Silicon or Intel processor
 - 4GB RAM minimum
 - 250MB free disk space
 
 ### iOS (Coming Soon)
+
 - iOS 14.0 or later
 - Compatible with iPhone, iPad, iPod touch
 - 100MB free storage
 
 ### Linux (Coming Soon)
+
 - Ubuntu 20.04+ / Fedora 35+ or equivalent
 - 4GB RAM minimum
 - 200MB free disk space
@@ -247,6 +269,7 @@ docs/
 ## Future Enhancements
 
 ### Planned Features
+
 1. **Direct Download Links**: Generate platform-specific download links from GitHub releases
 2. **Version Check**: Display latest version and changelog
 3. **Update Notifications**: Notify users of new versions
@@ -256,6 +279,7 @@ docs/
 7. **App Store Links**: Direct links to official app stores when available
 
 ### Upcoming Platforms
+
 1. **macOS** - Q1 2026
 2. **iOS** - Q2 2026
 3. **Linux** - Q2 2026
@@ -268,6 +292,7 @@ docs/
 ### Manual Testing Checklist
 
 **Banner Component:**
+
 - [ ] Banner appears on first visit from browser
 - [ ] Banner does NOT appear when running in Tauri
 - [ ] "Continue in Browser" dismisses banner
@@ -281,6 +306,7 @@ docs/
 - [ ] X button dismisses banner
 
 **Downloads Page:**
+
 - [ ] All platform cards display correctly
 - [ ] Supported platforms show "Available" badge
 - [ ] Coming soon platforms show "Coming Soon" badge
@@ -293,6 +319,7 @@ docs/
 - [ ] Dark mode styling is correct
 
 **Home Page:**
+
 - [ ] Banner appears at the top
 - [ ] Footer link to downloads page works
 - [ ] No layout shifts when banner appears
@@ -302,16 +329,19 @@ docs/
 ## Troubleshooting
 
 ### Banner Not Appearing
+
 1. Check if running in Tauri (banner is hidden for native apps)
 2. Check localStorage for "appDownloadBannerDismissed"
 3. Clear localStorage to reset: `localStorage.removeItem("appDownloadBannerDismissed")`
 
 ### Wrong Platform Detected
+
 1. Check browser user agent
 2. Verify platform detection logic in `app-download-banner.tsx`
 3. Test with different user agent strings
 
 ### Download Not Working
+
 1. Verify download URLs are correct
 2. Check file permissions on server
 3. Ensure CORS headers allow downloads
@@ -342,6 +372,7 @@ docs/
 ## Support
 
 For issues or questions:
+
 - Check the [Installation Guide](/docs/installation)
 - Use the [Web Version](/) as an alternative
 - Report bugs via GitHub issues
