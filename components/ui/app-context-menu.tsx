@@ -43,7 +43,7 @@ function renderMenuItems(actions: ContextMenuAction[]) {
     return (
       <ContextMenuItem
         key={`${action.label}-${index}`}
-        onClick={action.onClick}
+        onClick={action.onClick || (() => {})}
         disabled={action.disabled}
         variant={action.variant}
       >

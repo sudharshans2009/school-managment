@@ -5,7 +5,7 @@ import { createContext, useContext, useState, ReactNode } from "react";
 export interface ContextMenuAction {
   label: string;
   icon?: ReactNode;
-  onClick: () => void;
+  onClick?: () => void;
   variant?: "default" | "destructive";
   disabled?: boolean;
   shortcut?: string;
