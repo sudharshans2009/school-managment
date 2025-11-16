@@ -22,6 +22,12 @@ import {
   Users,
   Briefcase,
   Building2,
+  PartyPopper,
+  GraduationCap,
+  Trophy,
+  Mic2,
+  Megaphone,
+  Info,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -56,6 +62,27 @@ interface CalendarDay {
   holidayName: string | null;
   customTimetable: number | null;
   notes: string | null;
+}
+
+interface Event {
+  id: string;
+  title: string;
+  description: string | null;
+  eventType: "academic" | "sports" | "cultural" | "meeting" | "holiday" | "other";
+  status: "upcoming" | "ongoing" | "completed" | "cancelled";
+  startDate: Date;
+  endDate: Date;
+  location: string | null;
+  organizer: string | null;
+  targetAudience: string | null;
+  maxParticipants: number | null;
+  registrationDeadline: Date | null;
+  allowRegistration: boolean | null;
+  attachments: string | null;
+  createdBy: string;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  createdByName?: string | null;
 }
 
 const DAYS_OF_WEEK = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -108,6 +135,26 @@ export default function AdminCalendarPage() {
   const calendarDays = Array.isArray(calendarDaysResult)
     ? calendarDaysResult
     : [];
+
+  // Fetch events for current month
+  const { data: eventsResult = [] } = useQuery({
+    queryKey: [
+      "events",
+      format(monthStart, "yyyy-MM-dd"),
+      format(monthEnd, "yyyy-MM-dd"),
+    ],
+    queryFn: async () => {
+      const { getEvents } = await import("@/actions/events");
+      const result = await getEvents({
+        startDate: format(monthStart, "yyyy-MM-dd"),
+        endDate: format(monthEnd, "yyyy-MM-dd"),
+      });
+      if (!result.success) throw new Error(result.error);
+      return result.data as Event[];
+    },
+  });
+
+  const events = Array.isArray(eventsResult) ? eventsResult : [];
 
   // Fetch single day config when editing
   useQuery({
@@ -215,6 +262,31 @@ export default function AdminCalendarPage() {
     return calendarDays.find((d) => d.date === dateStr);
   };
 
+  const getEventsForDate = (date: Date): Event[] => {
+    return events.filter((event) => {
+      const eventStart = new Date(event.startDate);
+      const eventEnd = new Date(event.endDate);
+      return date >= eventStart && date <= eventEnd;
+    });
+  };
+
+  const getEventIcon = (eventType: string) => {
+    switch (eventType) {
+      case "academic":
+        return <GraduationCap className="w-3 h-3" />;
+      case "sports":
+        return <Trophy className="w-3 h-3" />;
+      case "cultural":
+        return <Mic2 className="w-3 h-3" />;
+      case "meeting":
+        return <Users className="w-3 h-3" />;
+      case "holiday":
+        return <PartyPopper className="w-3 h-3" />;
+      default:
+        return <Info className="w-3 h-3" />;
+    }
+  };
+
   const getDayBadge = (date: Date) => {
     const config = getDayConfig(date);
     const dayOfWeek = getDay(date);
@@ -299,13 +371,21 @@ export default function AdminCalendarPage() {
         <AdminHeader
           icon={Calendar}
           title="Calendar Management"
-          description="Manage working days, holidays, and custom timetables"
-        />
+          description="Manage working days, holidays, and events"
+        >
+          <Button
+            variant="outline"
+            onClick={() => (window.location.href = "/admin/events")}
+          >
+            <Megaphone className="h-4 w-4 mr-2" />
+            Manage Events
+          </Button>
+        </AdminHeader>
 
         {/* Legend */}
         <Card className="rounded-2xl shadow-sm">
           <CardHeader>
-            <CardTitle className="text-sm">Default Schedule</CardTitle>
+            <CardTitle className="text-sm">Legend</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-4 text-sm">
             <div className="flex items-center gap-2">
@@ -343,6 +423,14 @@ export default function AdminCalendarPage() {
                 Half Day
               </Badge>
               <span className="text-muted-foreground">Half working day</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 text-primary">
+                <GraduationCap className="w-3 h-3" />
+                <Trophy className="w-3 h-3" />
+                <Mic2 className="w-3 h-3" />
+              </div>
+              <span className="text-muted-foreground">Events</span>
             </div>
           </CardContent>
         </Card>
@@ -408,6 +496,7 @@ export default function AdminCalendarPage() {
                     }
 
                     const config = getDayConfig(date);
+                    const dateEvents = getEventsForDate(date);
                     const today = isToday(date);
 
                     return (
@@ -415,10 +504,10 @@ export default function AdminCalendarPage() {
                         key={format(date, "yyyy-MM-dd")}
                         onClick={() => handleDateClick(date)}
                         className={`
-                        aspect-square border rounded-lg p-2 flex flex-col items-start justify-between
+                        aspect-square border rounded-lg p-2 flex flex-col items-start justify-between overflow-hidden
                         hover:border-primary hover:bg-accent transition-colors
                         ${today ? "border-primary border-2 bg-accent" : ""}
-                        ${config ? "bg-muted/30" : ""}
+                        ${config || dateEvents.length > 0 ? "bg-muted/30" : ""}
                       `}
                       >
                         <div className="flex items-center justify-between w-full">
@@ -429,15 +518,30 @@ export default function AdminCalendarPage() {
                           >
                             {format(date, "d")}
                           </span>
-                          {config && (
+                          {(config || dateEvents.length > 0) && (
                             <Edit2 className="w-3 h-3 text-muted-foreground" />
                           )}
                         </div>
-                        <div className="w-full mt-1">
+                        <div className="w-full mt-1 space-y-1">
                           {getDayBadge(date)}
                           {config?.holidayName && (
-                            <div className="text-xs text-muted-foreground mt-1 truncate">
+                            <div className="text-xs text-muted-foreground truncate">
                               {config.holidayName}
+                            </div>
+                          )}
+                          {dateEvents.slice(0, 2).map((event) => (
+                            <div
+                              key={event.id}
+                              className="text-xs flex items-center gap-1 text-primary truncate"
+                              title={event.title}
+                            >
+                              {getEventIcon(event.eventType)}
+                              <span className="truncate">{event.title}</span>
+                            </div>
+                          ))}
+                          {dateEvents.length > 2 && (
+                            <div className="text-xs text-muted-foreground">
+                              +{dateEvents.length - 2} more
                             </div>
                           )}
                         </div>

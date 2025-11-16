@@ -20,9 +20,7 @@ export default function AdminDashboard() {
 
   return (
     <DashboardLayout title="Dashboard" description="Admin Portal">
-      <div className="space-y-6">
-        {/* Dashboard content */}
-      </div>
+      <div className="space-y-6">{/* Dashboard content */}</div>
     </DashboardLayout>
   );
 }
@@ -41,7 +39,7 @@ import { useRouter } from "next/navigation";
 export default function AdminDashboard() {
   const queryClient = useQueryClient();
   const router = useRouter();
-  
+
   const { data: stats } = useQuery({
     queryKey: ["admin-stats"],
     queryFn: fetchStats,
@@ -50,14 +48,14 @@ export default function AdminDashboard() {
   return (
     <DashboardLayout title="Dashboard" description="Admin Portal">
       <AdminDashboardContextMenu
-        onRefresh={() => queryClient.invalidateQueries({ queryKey: ["admin-stats"] })}
+        onRefresh={() =>
+          queryClient.invalidateQueries({ queryKey: ["admin-stats"] })
+        }
         onViewAnalytics={() => router.push("/admin/analytics")}
         onViewUsers={() => router.push("/admin/users")}
         onViewCalendar={() => router.push("/admin/calendar")}
       >
-        <div className="space-y-6">
-          {/* Dashboard content */}
-        </div>
+        <div className="space-y-6">{/* Dashboard content */}</div>
       </AdminDashboardContextMenu>
     </DashboardLayout>
   );
@@ -67,17 +65,20 @@ export default function AdminDashboard() {
 ## What Changed?
 
 1. **Import the context menu component**
+
    ```tsx
    import { AdminDashboardContextMenu } from "@/components/admin/admin-dashboard-context-menu";
    ```
 
 2. **Import necessary hooks**
+
    ```tsx
    import { useQueryClient } from "@tanstack/react-query";
    import { useRouter } from "next/navigation";
    ```
 
 3. **Wrap your content**
+
    ```tsx
    <AdminDashboardContextMenu
      onRefresh={handleRefresh}
@@ -89,14 +90,15 @@ export default function AdminDashboard() {
    ```
 
 4. **Define action handlers**
+
    ```tsx
    const queryClient = useQueryClient();
    const router = useRouter();
-   
+
    const handleRefresh = () => {
      queryClient.invalidateQueries({ queryKey: ["admin-stats"] });
    };
-   
+
    const handleViewAnalytics = () => {
      router.push("/admin/analytics");
    };
@@ -105,11 +107,13 @@ export default function AdminDashboard() {
 ## Result
 
 Now when users right-click anywhere on the admin dashboard page, they will see a context menu with:
+
 - Quick navigation options (Analytics, Users, Calendar)
 - Refresh action to reload data
 - Optional settings and notifications
 
 The context menu is:
+
 - ✅ Role-aware (only shows for admin users)
 - ✅ Page-specific (different pages have different menus)
 - ✅ Customizable (you can add/remove actions as needed)
@@ -119,6 +123,7 @@ The context menu is:
 ## Testing the Integration
 
 1. **Run the app in Tauri dev mode:**
+
    ```bash
    npm run tauri:dev
    ```
@@ -197,7 +202,11 @@ const actions: ContextMenuAction[] = [
 const actions: ContextMenuAction[] = [
   {
     label: isEditing ? "Save Changes" : "Edit Mode",
-    icon: isEditing ? <Save className="mr-2 h-4 w-4" /> : <Edit className="mr-2 h-4 w-4" />,
+    icon: isEditing ? (
+      <Save className="mr-2 h-4 w-4" />
+    ) : (
+      <Edit className="mr-2 h-4 w-4" />
+    ),
     onClick: isEditing ? handleSave : handleEdit,
   },
   {
@@ -212,26 +221,31 @@ const actions: ContextMenuAction[] = [
 ## Common Patterns
 
 ### Pattern 1: Refresh Data
+
 ```tsx
 onRefresh={() => queryClient.invalidateQueries({ queryKey: ["data-key"] })}
 ```
 
 ### Pattern 2: Navigate to Page
+
 ```tsx
 onNavigate={() => router.push("/path/to/page")}
 ```
 
 ### Pattern 3: Open Dialog
+
 ```tsx
 onOpenDialog={() => setDialogOpen(true)}
 ```
 
 ### Pattern 4: Trigger Mutation
+
 ```tsx
 onAction={() => mutation.mutate(data)}
 ```
 
 ### Pattern 5: Download/Export
+
 ```tsx
 onExport={() => {
   const csv = generateCSV(data);

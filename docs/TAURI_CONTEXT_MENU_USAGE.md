@@ -21,6 +21,7 @@ Custom hook for registering page-specific context menus.
 **Location:** `hooks/use-context-menu.ts`
 
 **Usage:**
+
 ```tsx
 import { useContextMenu } from "@/hooks/use-context-menu";
 import { type ContextMenuAction } from "@/components/providers/context-menu-provider";
@@ -29,7 +30,9 @@ const actions: ContextMenuAction[] = [
   {
     label: "Action Name",
     icon: <IconComponent className="mr-2 h-4 w-4" />,
-    onClick: () => { /* action handler */ },
+    onClick: () => {
+      /* action handler */
+    },
     shortcut: "⌘K",
   },
   { separator: true },
@@ -39,10 +42,12 @@ const actions: ContextMenuAction[] = [
     submenu: [
       {
         label: "Nested Action",
-        onClick: () => { /* nested action handler */ },
-      }
-    ]
-  }
+        onClick: () => {
+          /* nested action handler */
+        },
+      },
+    ],
+  },
 ];
 
 useContextMenu("unique-page-id", actions);
@@ -55,12 +60,13 @@ Wrapper component that renders the context menu around any children.
 **Location:** `components/ui/app-context-menu.tsx`
 
 **Usage:**
+
 ```tsx
 import { AppContextMenu } from "@/components/ui/app-context-menu";
 
 <AppContextMenu actions={actions}>
   <div>Your page content here</div>
-</AppContextMenu>
+</AppContextMenu>;
 ```
 
 ## Pre-built Context Menu Components
@@ -70,6 +76,7 @@ import { AppContextMenu } from "@/components/ui/app-context-menu";
 **Location:** `components/admin/admin-students-context-menu.tsx`
 
 **Example:**
+
 ```tsx
 import { AdminStudentsContextMenu } from "@/components/admin/admin-students-context-menu";
 
@@ -79,10 +86,8 @@ import { AdminStudentsContextMenu } from "@/components/admin/admin-students-cont
   onRefresh={() => queryClient.invalidateQueries({ queryKey: ["students"] })}
   onExport={() => exportToCSV()}
 >
-  <div className="space-y-4">
-    {/* Your page content */}
-  </div>
-</AdminStudentsContextMenu>
+  <div className="space-y-4">{/* Your page content */}</div>
+</AdminStudentsContextMenu>;
 ```
 
 ### Teacher Classroom Context Menu
@@ -90,19 +95,18 @@ import { AdminStudentsContextMenu } from "@/components/admin/admin-students-cont
 **Location:** `components/teacher/teacher-classroom-context-menu.tsx`
 
 **Example:**
+
 ```tsx
 import { TeacherClassroomContextMenu } from "@/components/teacher/teacher-classroom-context-menu";
 
 <TeacherClassroomContextMenu
-  onTakeAttendance={() => router.push('/teacher/attendance')}
+  onTakeAttendance={() => router.push("/teacher/attendance")}
   onAssignHomework={() => setHomeworkDialogOpen(true)}
   onViewStudents={() => setStudentsDialogOpen(true)}
   onRefresh={() => queryClient.invalidateQueries()}
 >
-  <div className="dashboard-content">
-    {/* Your classroom content */}
-  </div>
-</TeacherClassroomContextMenu>
+  <div className="dashboard-content">{/* Your classroom content */}</div>
+</TeacherClassroomContextMenu>;
 ```
 
 ### Student Dashboard Context Menu
@@ -110,19 +114,18 @@ import { TeacherClassroomContextMenu } from "@/components/teacher/teacher-classr
 **Location:** `components/student/student-dashboard-context-menu.tsx`
 
 **Example:**
+
 ```tsx
 import { StudentDashboardContextMenu } from "@/components/student/student-dashboard-context-menu";
 
 <StudentDashboardContextMenu
-  onViewHomework={() => router.push('/student/homework')}
-  onViewSchedule={() => router.push('/student/schedule')}
-  onViewGrades={() => router.push('/student/grades')}
+  onViewHomework={() => router.push("/student/homework")}
+  onViewSchedule={() => router.push("/student/schedule")}
+  onViewGrades={() => router.push("/student/grades")}
   onRefresh={() => queryClient.invalidateQueries()}
 >
-  <div className="student-dashboard">
-    {/* Your dashboard content */}
-  </div>
-</StudentDashboardContextMenu>
+  <div className="student-dashboard">{/* Your dashboard content */}</div>
+</StudentDashboardContextMenu>;
 ```
 
 ## Creating Custom Context Menus
@@ -182,14 +185,14 @@ export function CustomContextMenu({
 
 ```typescript
 interface ContextMenuAction {
-  label: string;              // Display text for the menu item
-  icon?: ReactNode;           // Optional icon (usually from lucide-react)
-  onClick: () => void;        // Action to perform when clicked
-  variant?: "default" | "destructive";  // Style variant (destructive for delete actions)
-  disabled?: boolean;         // Whether the action is disabled
-  shortcut?: string;          // Keyboard shortcut hint (display only)
-  separator?: boolean;        // Renders a separator instead of an action
-  submenu?: ContextMenuAction[];  // Nested submenu actions
+  label: string; // Display text for the menu item
+  icon?: ReactNode; // Optional icon (usually from lucide-react)
+  onClick: () => void; // Action to perform when clicked
+  variant?: "default" | "destructive"; // Style variant (destructive for delete actions)
+  disabled?: boolean; // Whether the action is disabled
+  shortcut?: string; // Keyboard shortcut hint (display only)
+  separator?: boolean; // Renders a separator instead of an action
+  submenu?: ContextMenuAction[]; // Nested submenu actions
 }
 ```
 
@@ -239,16 +242,19 @@ To test the context menu:
 ## Troubleshooting
 
 ### Context menu not appearing
+
 - Ensure the page component is wrapped with a context menu component
 - Verify that actions array is not empty
 - Check that the ContextMenuProvider is in the provider hierarchy
 
 ### Actions not working
+
 - Verify that onClick handlers are properly defined
 - Check browser console for any errors
 - Ensure the action is not disabled
 
 ### Styling issues
+
 - Verify that the ShadCN UI context menu styles are loaded
 - Check for conflicting CSS
 - Ensure Tailwind CSS is properly configured

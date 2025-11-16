@@ -13,6 +13,7 @@ This implementation provides a custom, role-aware context menu system for the Ta
 ✅ **Role-Aware Actions** - Different context menus for admin, teacher, and student roles
 
 ✅ **Rich UI Components** - Support for:
+
 - Icons from lucide-react
 - Keyboard shortcuts (display only)
 - Separators for grouping actions
@@ -60,15 +61,13 @@ import { StudentDashboardContextMenu } from "@/components/student/student-dashbo
 ```tsx
 export default function MyPage() {
   const queryClient = useQueryClient();
-  
+
   return (
     <AdminDashboardContextMenu
       onRefresh={() => queryClient.invalidateQueries()}
       onViewAnalytics={() => router.push("/admin/analytics")}
     >
-      <div className="page-content">
-        {/* Your page content here */}
-      </div>
+      <div className="page-content">{/* Your page content here */}</div>
     </AdminDashboardContextMenu>
   );
 }
@@ -81,6 +80,7 @@ Right-click anywhere on your page to see the context menu!
 ## Demo Page
 
 Visit `/examples/context-menu-demo` to see an interactive demonstration of:
+
 - Basic context menus
 - Submenus
 - Destructive actions
@@ -111,11 +111,7 @@ const actions: ContextMenuAction[] = [
   },
 ];
 
-return (
-  <AppContextMenu actions={actions}>
-    {children}
-  </AppContextMenu>
-);
+return <AppContextMenu actions={actions}>{children}</AppContextMenu>;
 ```
 
 ## Files Structure
@@ -155,14 +151,14 @@ src-tauri/
 
 ```typescript
 interface ContextMenuAction {
-  label: string;                    // Menu item text
-  icon?: ReactNode;                 // Optional icon
-  onClick?: () => void;             // Action handler (optional for submenus)
+  label: string; // Menu item text
+  icon?: ReactNode; // Optional icon
+  onClick?: () => void; // Action handler (optional for submenus)
   variant?: "default" | "destructive"; // Style variant
-  disabled?: boolean;               // Disabled state
-  shortcut?: string;                // Keyboard shortcut hint
-  separator?: boolean;              // Render as separator
-  submenu?: ContextMenuAction[];    // Nested menu items
+  disabled?: boolean; // Disabled state
+  shortcut?: string; // Keyboard shortcut hint
+  separator?: boolean; // Render as separator
+  submenu?: ContextMenuAction[]; // Nested menu items
 }
 ```
 
@@ -238,6 +234,7 @@ The default Tauri webview context menu is disabled in `src-tauri/tauri.conf.json
 ## Browser Compatibility
 
 This context menu system works in:
+
 - ✅ Tauri desktop application (primary target)
 - ✅ Modern web browsers (Chrome, Firefox, Safari, Edge)
 - ✅ Mobile browsers (with touch-and-hold gesture)
@@ -245,16 +242,19 @@ This context menu system works in:
 ## Troubleshooting
 
 ### Context menu not appearing
+
 - Verify ContextMenuProvider is in the provider hierarchy
 - Check that actions array is not empty
 - Ensure page is wrapped with a context menu component
 
 ### Actions not triggering
+
 - Check onClick handlers are defined
 - Look for errors in browser console
 - Verify action is not disabled
 
 ### Styling issues
+
 - Ensure ShadCN UI styles are loaded
 - Check Tailwind CSS configuration
 - Verify no conflicting CSS
@@ -273,6 +273,7 @@ Potential improvements for future iterations:
 ## Support
 
 For questions or issues:
+
 1. Check the [Usage Guide](./docs/TAURI_CONTEXT_MENU_USAGE.md)
 2. Review [Integration Examples](./docs/CONTEXT_MENU_INTEGRATION_EXAMPLE.md)
 3. Try the [Demo Page](/examples/context-menu-demo)

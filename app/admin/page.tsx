@@ -32,65 +32,44 @@ import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface DashboardStats {
-  totalStudents: number;
-  totalTeachers: number;
-  activeClassrooms: number;
-  attendanceRate: number;
-}
-
-interface RecentActivity {
-  id: string;
-  type: string;
-  action: string;
-  detail: string;
-  time: string;
-}
-
-interface SystemMetrics {
-  attendanceRate: number;
-  feeCollectionRate: number;
-  homeworkCompletionRate: number;
-  teacherAssignmentRate: number;
-}
-
 export default function AdminDashboard() {
   const { session, isPending } = useRoleRedirect(["admin"]);
 
   // Fetch dashboard stats
-  const { data: stats, isLoading: statsLoading } = useQuery<DashboardStats>({
+  const { data: statsResult, isLoading: statsLoading } = useQuery({
     queryKey: ["admin-stats"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/stats");
-      if (!response.ok) throw new Error("Failed to fetch stats");
-      return response.json();
+      const { getAdminStats } = await import("@/actions/admin");
+      return await getAdminStats();
     },
     enabled: !!session,
   });
+
+  const stats = statsResult?.success ? statsResult.data : null;
 
   // Fetch recent activity
-  const { data: recentActivity, isLoading: activityLoading } = useQuery<
-    RecentActivity[]
-  >({
+  const { data: activityResult, isLoading: activityLoading } = useQuery({
     queryKey: ["admin-activity"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/recent-activity");
-      if (!response.ok) throw new Error("Failed to fetch activity");
-      return response.json();
+      const { getRecentActivity } = await import("@/actions/admin");
+      return await getRecentActivity();
     },
     enabled: !!session,
   });
 
+  const recentActivity = activityResult?.success ? activityResult.data : [];
+
   // Fetch system metrics
-  const { data: metrics, isLoading: metricsLoading } = useQuery<SystemMetrics>({
+  const { data: metricsResult, isLoading: metricsLoading } = useQuery({
     queryKey: ["admin-metrics"],
     queryFn: async () => {
-      const response = await fetch("/api/admin/metrics");
-      if (!response.ok) throw new Error("Failed to fetch metrics");
-      return response.json();
+      const { getAdminMetrics } = await import("@/actions/admin");
+      return await getAdminMetrics();
     },
     enabled: !!session,
   });
+
+  const metrics = metricsResult?.success ? metricsResult.data : null;
 
   if (isPending) {
     return (

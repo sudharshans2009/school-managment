@@ -162,6 +162,7 @@ export async function updateAnnouncement(
     content: string;
     priority: string;
     classroomId: string | null;
+    eventId?: string | null;
   },
 ) {
   try {
@@ -173,7 +174,7 @@ export async function updateAnnouncement(
       return { success: false, error: "Unauthorized" };
     }
 
-    const { title, content, priority, classroomId } = data;
+    const { title, content, priority, classroomId, eventId } = data;
 
     if (!title || !content) {
       return { success: false, error: "Title and content are required" };
@@ -186,6 +187,7 @@ export async function updateAnnouncement(
         content,
         priority: priority || "normal",
         classroomId: classroomId || null,
+        eventId: eventId || null,
       })
       .where(eq(announcements.id, id))
       .returning();

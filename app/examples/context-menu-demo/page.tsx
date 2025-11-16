@@ -1,7 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { AppContextMenu } from "@/components/ui/app-context-menu";
 import { type ContextMenuAction } from "@/components/providers/context-menu-provider";
 import { AdminStudentsContextMenu } from "@/components/admin/admin-students-context-menu";
@@ -135,10 +141,7 @@ export default function ContextMenuDemo() {
               </p>
             ) : (
               actionLog.map((action, index) => (
-                <div
-                  key={index}
-                  className="text-sm p-2 bg-muted rounded-md"
-                >
+                <div key={index} className="text-sm p-2 bg-muted rounded-md">
                   {action}
                 </div>
               ))
@@ -161,12 +164,14 @@ export default function ContextMenuDemo() {
           <CardHeader>
             <CardTitle>Basic Context Menu</CardTitle>
             <CardDescription>
-              Right-click here to see a basic context menu with icons, shortcuts, and a destructive action
+              Right-click here to see a basic context menu with icons,
+              shortcuts, and a destructive action
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              This demonstrates a simple context menu with common actions like View, Edit, Copy, Download, and Delete.
+              This demonstrates a simple context menu with common actions like
+              View, Edit, Copy, Download, and Delete.
             </p>
           </CardContent>
         </Card>
@@ -183,7 +188,8 @@ export default function ContextMenuDemo() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              This demonstrates context menus with submenu support. Hover over &quot;File&quot; or &quot;Share&quot; to see nested options.
+              This demonstrates context menus with submenu support. Hover over
+              &quot;File&quot; or &quot;Share&quot; to see nested options.
             </p>
           </CardContent>
         </Card>
@@ -206,8 +212,9 @@ export default function ContextMenuDemo() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              This is a pre-built context menu designed for the admin student management page.
-              It includes actions for adding students, bulk upload, refreshing, and exporting data.
+              This is a pre-built context menu designed for the admin student
+              management page. It includes actions for adding students, bulk
+              upload, refreshing, and exporting data.
             </p>
           </CardContent>
         </Card>
@@ -230,7 +237,8 @@ export default function ContextMenuDemo() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Pre-built context menu for the admin dashboard with quick navigation and refresh options.
+              Pre-built context menu for the admin dashboard with quick
+              navigation and refresh options.
             </p>
           </CardContent>
         </Card>
@@ -254,7 +262,8 @@ export default function ContextMenuDemo() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Pre-built context menu for teacher classroom pages with attendance, homework, and student management actions.
+              Pre-built context menu for teacher classroom pages with
+              attendance, homework, and student management actions.
             </p>
           </CardContent>
         </Card>
@@ -278,7 +287,8 @@ export default function ContextMenuDemo() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground">
-              Pre-built context menu for student dashboard with quick access to homework, schedule, grades, and profile.
+              Pre-built context menu for student dashboard with quick access to
+              homework, schedule, grades, and profile.
             </p>
           </CardContent>
         </Card>
@@ -299,7 +309,9 @@ export default function ContextMenuDemo() {
               <li>Watch the action log above to see the result</li>
               <li>Try hovering over items with submenus (File, Share)</li>
               <li>Notice the keyboard shortcuts displayed</li>
-              <li>Try the destructive action (Delete) to see the red styling</li>
+              <li>
+                Try the destructive action (Delete) to see the red styling
+              </li>
             </ol>
           </div>
           <div>
@@ -309,7 +321,9 @@ export default function ContextMenuDemo() {
               <li>Submenus with nested actions</li>
               <li>Separators for grouping actions</li>
               <li>Destructive variant for dangerous actions</li>
-              <li>Role-specific pre-built context menus (Admin, Teacher, Student)</li>
+              <li>
+                Role-specific pre-built context menus (Admin, Teacher, Student)
+              </li>
               <li>Page-specific context menus</li>
             </ul>
           </div>
@@ -317,9 +331,15 @@ export default function ContextMenuDemo() {
             <h4 className="font-medium mb-2">Notes:</h4>
             <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
               <li>The default browser/Tauri context menu is disabled</li>
-              <li>Keyboard shortcuts are displayed but not bound (implement separately)</li>
+              <li>
+                Keyboard shortcuts are displayed but not bound (implement
+                separately)
+              </li>
               <li>All actions are logged to the Action Log above</li>
-              <li>Context menus are consistent with the app&apos;s ShadCN UI design system</li>
+              <li>
+                Context menus are consistent with the app&apos;s ShadCN UI
+                design system
+              </li>
             </ul>
           </div>
         </CardContent>

@@ -97,9 +97,7 @@ export default function ClassroomsPage() {
       classroom.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       classroom.grade.toLowerCase().includes(searchQuery.toLowerCase()) ||
       classroom.section.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      classroom.classroomCode
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()),
+      classroom.classroomCode.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const primaryTeacher = (classroom: Classroom) => {

@@ -502,6 +502,7 @@ export default function TeacherClassesPage() {
 ## 🎯 Implementation Priority
 
 ### Phase 1: Core Infrastructure (Week 1)
+
 1. ✅ Create `ContextMenuProvider` component
 2. ✅ Create `useContextMenu` hook
 3. ✅ Create `AppContextMenu` wrapper component
@@ -509,6 +510,7 @@ export default function TeacherClassesPage() {
 5. ✅ Test basic functionality
 
 ### Phase 2: Admin Portal (Week 2)
+
 1. ✅ Admin dashboard context menu
 2. ✅ Student management context menus
 3. ✅ Teacher management context menus
@@ -516,6 +518,7 @@ export default function TeacherClassesPage() {
 5. ✅ Admission management context menus
 
 ### Phase 3: Teacher Portal (Week 3)
+
 1. ✅ Teacher dashboard context menu
 2. ✅ Classroom card context menus
 3. ✅ Student card context menus
@@ -523,12 +526,14 @@ export default function TeacherClassesPage() {
 5. ✅ Attendance marking context menus
 
 ### Phase 4: Student Portal (Week 4)
+
 1. ✅ Student dashboard context menu
 2. ✅ Homework submission context menus
 3. ✅ Grade view context menus
 4. ✅ Timetable context menus
 
 ### Phase 5: Polish & Optimization (Week 5)
+
 1. ✅ Add keyboard shortcuts
 2. ✅ Optimize performance
 3. ✅ Add animations/transitions
@@ -538,6 +543,7 @@ export default function TeacherClassesPage() {
 ## 📚 Context Menu Patterns
 
 ### Pattern 1: Data Card Context Menu
+
 ```typescript
 // For cards displaying data (students, teachers, classrooms)
 actions: [
@@ -546,11 +552,12 @@ actions: [
   { separator },
   { export: "Export Data" },
   { separator },
-  { delete: "Delete" (destructive) }
-]
+  { delete: "Delete"(destructive) },
+];
 ```
 
 ### Pattern 2: Dashboard Context Menu
+
 ```typescript
 // For dashboard sections
 actions: [
@@ -558,11 +565,12 @@ actions: [
   { export: "Export Report" },
   { separator },
   { settings: "Settings" },
-  { analytics: "View Analytics" }
-]
+  { analytics: "View Analytics" },
+];
 ```
 
 ### Pattern 3: Table Row Context Menu
+
 ```typescript
 // For table rows
 actions: [
@@ -571,8 +579,8 @@ actions: [
   { duplicate: "Duplicate" },
   { separator },
   { archive: "Archive" },
-  { delete: "Delete" }
-]
+  { delete: "Delete" },
+];
 ```
 
 ## 🔐 Role-Based Menu Items
@@ -582,9 +590,9 @@ import { useSession } from "@/lib/auth-client";
 
 function useRoleBasedActions() {
   const { data: session } = useSession();
-  
+
   const getActions = (baseActions: ContextMenuAction[]) => {
-    return baseActions.filter(action => {
+    return baseActions.filter((action) => {
       // Filter actions based on role
       if (action.requiresRole) {
         return action.requiresRole.includes(session?.user?.role);
@@ -634,9 +642,10 @@ Create user documentation in `docs/TAURI_CONTEXT_MENU_USAGE.md`:
 
 **Start Date:** TBD  
 **Expected Completion:** 5 weeks  
-**Assigned To:** AI Code Agent  
+**Assigned To:** AI Code Agent
 
 **Dependencies:**
+
 - ShadCN UI Context Menu component
 - Tauri desktop app setup
 - Existing admin/teacher/student portals

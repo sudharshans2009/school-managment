@@ -37,6 +37,8 @@ interface Announcement {
   priority: string | null;
   classroomId: string | null;
   classroomName: string | null;
+  eventId: string | null;
+  eventTitle: string | null;
   createdBy: string;
   // creator name may be null for system announcements
   createdByName: string | null;
@@ -64,6 +66,17 @@ export default function AdminAnnouncementsPage() {
 
   const classrooms = classroomsResult?.success ? classroomsResult.data : [];
 
+  // Fetch events for linking
+  const { data: eventsResult } = useQuery({
+    queryKey: ["events-list"],
+    queryFn: async () => {
+      const { getEvents } = await import("@/actions/events");
+      return await getEvents();
+    },
+  });
+
+  const events = eventsResult?.success ? eventsResult.data : [];
+
   // Fetch announcements
   const { data: announcementsResult, isLoading } = useQuery({
     queryKey: ["announcements", filterClassroom],
@@ -84,6 +97,7 @@ export default function AdminAnnouncementsPage() {
       content: string;
       priority: string;
       classroomId: string | null;
+      eventId?: string | null;
     }) => {
       const { createAnnouncement } = await import("@/actions/announcements");
       return await createAnnouncement({
@@ -113,6 +127,7 @@ export default function AdminAnnouncementsPage() {
       content: string;
       priority: string;
       classroomId: string | null;
+      eventId?: string | null;
     }) => {
       const { updateAnnouncement } = await import("@/actions/announcements");
       const { id, ...updateData } = data;
@@ -150,11 +165,13 @@ export default function AdminAnnouncementsPage() {
     const formData = new FormData(e.currentTarget);
 
     const classroomIdValue = formData.get("classroomId") as string;
+    const eventIdValue = formData.get("eventId") as string;
     const data = {
       title: formData.get("title") as string,
       content: formData.get("content") as string,
       priority: formData.get("priority") as string,
       classroomId: classroomIdValue === "all" ? null : classroomIdValue,
+      eventId: eventIdValue === "none" ? null : eventIdValue || null,
     };
 
     if (editingAnnouncement) {
@@ -283,6 +300,28 @@ export default function AdminAnnouncementsPage() {
                     </Select>
                   </div>
                 </div>
+                <div>
+                  <Label htmlFor="eventId">Linked Event (Optional)</Label>
+                  <Select
+                    name="eventId"
+                    defaultValue={editingAnnouncement?.eventId || "none"}
+                  >
+                    <SelectTrigger id="eventId">
+                      <SelectValue placeholder="No event linked" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No event linked</SelectItem>
+                      {events?.map((event) => (
+                        <SelectItem key={event.id} value={event.id}>
+                          {event.title} ({format(new Date(event.startDate), "MMM d, yyyy")})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Link this announcement to a calendar event
+                  </p>
+                </div>
                 {error && (
                   <Alert variant="destructive">
                     <AlertDescription>{error}</AlertDescription>
@@ -384,6 +423,14 @@ export default function AdminAnnouncementsPage() {
                           <strong>Target:</strong>{" "}
                           {announcement.classroomName || "All Classrooms"}
                         </span>
+                        {announcement.eventTitle && (
+                          <>
+                            <span className="hidden sm:inline">•</span>
+                            <span>
+                              <strong>Event:</strong> {announcement.eventTitle}
+                            </span>
+                          </>
+                        )}
                         <span className="hidden sm:inline">•</span>
                         <span>
                           <strong>Posted by:</strong>{" "}
