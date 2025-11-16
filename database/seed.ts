@@ -6,165 +6,119 @@ import {
   teacherAssignments,
   students,
   timetable,
-  attendance,
   homework,
   announcements,
-  messages,
   classroomMessages,
 } from "./schema";
 import { auth } from "@/lib/auth/main";
 import { eq } from "drizzle-orm";
 
-async function clearData() {
-  console.log("🗑️  Clearing existing data...");
-
-  // Delete in reverse order of dependencies
-  await db.delete(attendance);
-  await db.delete(homework);
-  await db.delete(announcements);
-  await db.delete(messages);
-  await db.delete(classroomMessages);
-  await db.delete(timetable);
-  await db.delete(teacherAssignments);
-  await db.delete(students);
-  await db.delete(classrooms);
-  await db.delete(subjects);
-
-  console.log("✅ Data cleared (users managed by Better Auth)");
-}
-
 async function seed() {
-  console.log("🌱 Starting database seed for Class 11B...");
+  console.log("🌱 Starting improved database seed...");
 
   try {
-    const forceReseed = process.argv.includes("--force");
-
-    if (forceReseed) {
-      await clearData();
-    }
-
-    const existingAdmin = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, "admin@school.com"),
-    });
-
-    if (existingAdmin && !forceReseed) {
-      console.log("⚠️  Database already seeded. Use --force to reseed");
-      return;
-    }
-
-    console.log("👤 Creating users via Better Auth...");
+    console.log("\n👤 Creating users via Better Auth...");
 
     // Create Admin
-    await auth.api.signUpEmail({
-      body: {
-        email: "admin@school.com",
-        password: "admin123",
-        name: "Admin User",
-      },
-    });
+    try {
+      await auth.api.signUpEmail({
+        body: {
+          email: "admin@school.com",
+          password: "admin123",
+          name: "Admin User",
+        },
+      });
+    } catch {
+      console.log("Admin already exists");
+    }
+
     const admin = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, "admin@school.com"),
+      where: eq(users.email, "admin@school.com"),
     });
+
     if (admin) {
       await db
         .update(users)
-        .set({ role: "admin" })
+        .set({ role: "admin", emailVerified: true })
         .where(eq(users.id, admin.id));
+      console.log("✅ Admin user ready");
     }
-    console.log("✅ Created admin");
 
-    // Create 7 Teachers
-    const teacherEmails = [
-      { email: "kumar@school.com", name: "Dr. Kumar (Maths - Class Teacher)" },
-      { email: "sharma@school.com", name: "Ms. Sharma (English)" },
-      { email: "patel@school.com", name: "Mr. Patel (Physics)" },
-      { email: "singh@school.com", name: "Mrs. Singh (Chemistry)" },
-      { email: "verma@school.com", name: "Mr. Verma (Computer Science)" },
-      { email: "gupta@school.com", name: "Ms. Gupta (KTPI)" },
-      { email: "reddy@school.com", name: "Coach Reddy (Sports)" },
+    // Create 7 Teachers (one for each main subject)
+    const teacherData = [
+      { email: "kumar@school.com", name: "Dr. Kumar", subject: "Mathematics" },
+      { email: "sharma@school.com", name: "Ms. Sharma", subject: "English" },
+      { email: "patel@school.com", name: "Mr. Patel", subject: "Physics" },
+      { email: "singh@school.com", name: "Mrs. Singh", subject: "Chemistry" },
+      {
+        email: "verma@school.com",
+        name: "Mr. Verma",
+        subject: "Computer Science",
+      },
+      { email: "gupta@school.com", name: "Ms. Gupta", subject: "KTPI" },
+      { email: "reddy@school.com", name: "Coach Reddy", subject: "Sports" },
     ];
 
-    for (const teacher of teacherEmails) {
-      await auth.api.signUpEmail({
-        body: {
-          email: teacher.email,
-          password: "teacher123",
-          name: teacher.name,
-        },
-      });
+    const teacherUsers = [];
+    for (const teacher of teacherData) {
+      try {
+        await auth.api.signUpEmail({
+          body: {
+            email: teacher.email,
+            password: "teacher123",
+            name: teacher.name,
+          },
+        });
+      } catch {
+        console.log(`${teacher.name} already exists`);
+      }
+
       const teacherUser = await db.query.users.findFirst({
-        where: (users, { eq }) => eq(users.email, teacher.email),
+        where: eq(users.email, teacher.email),
       });
+
       if (teacherUser) {
         await db
           .update(users)
-          .set({ role: "teacher" })
+          .set({ role: "teacher", emailVerified: true })
           .where(eq(users.id, teacherUser.id));
+        teacherUsers.push(teacherUser);
       }
     }
-    console.log("✅ Created 7 teachers");
-
-    // Fetch teacher users
-    const teacher1 = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, "kumar@school.com"),
-    });
-    const teacher2 = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, "sharma@school.com"),
-    });
-    const teacher3 = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, "patel@school.com"),
-    });
-    const teacher4 = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, "singh@school.com"),
-    });
-    const teacher5 = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, "verma@school.com"),
-    });
-    const teacher6 = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, "gupta@school.com"),
-    });
-    const teacher7 = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.email, "reddy@school.com"),
-    });
-
-    if (
-      !teacher1 ||
-      !teacher2 ||
-      !teacher3 ||
-      !teacher4 ||
-      !teacher5 ||
-      !teacher6 ||
-      !teacher7 ||
-      !admin
-    ) {
-      throw new Error("Failed to create users");
-    }
+    console.log(`✅ Created ${teacherUsers.length} teachers`);
 
     // Create 30 Students
-    console.log("👨‍🎓 Creating 30 students...");
+    console.log("\n👨‍🎓 Creating 30 students...");
     const studentUsers = [];
     for (let i = 1; i <= 30; i++) {
-      await auth.api.signUpEmail({
-        body: {
-          email: `student${i}@school.com`,
-          password: "student123",
-          name: `Student ${i}`,
-        },
-      });
+      try {
+        await auth.api.signUpEmail({
+          body: {
+            email: `student${i}@school.com`,
+            password: "student123",
+            name: `Student ${i}`,
+          },
+        });
+      } catch {
+        console.log(`Student ${i} already exists`);
+      }
+
       const student = await db.query.users.findFirst({
-        where: (users, { eq }) => eq(users.email, `student${i}@school.com`),
+        where: eq(users.email, `student${i}@school.com`),
       });
+
       if (student) {
         await db
           .update(users)
-          .set({ role: "student" })
+          .set({ role: "student", emailVerified: true })
           .where(eq(users.id, student.id));
         studentUsers.push(student);
       }
     }
     console.log(`✅ Created ${studentUsers.length} students`);
 
-    // Create Class 11B
+    // Create Classroom
+    console.log("\n🏫 Creating classroom...");
     const [classroom] = await db
       .insert(classrooms)
       .values({
@@ -180,962 +134,364 @@ async function seed() {
       .returning();
     console.log("✅ Created Class 11B");
 
-    // Create Subjects
-    const [english] = await db
-      .insert(subjects)
-      .values({
-        name: "English",
-        code: "ENG11",
-        description: "English - Class 11",
-        applicableGrades: JSON.stringify(["11"]),
-        applicableSections: JSON.stringify(["B"]),
-      })
-      .returning();
-
-    const [maths] = await db
-      .insert(subjects)
-      .values({
-        name: "Mathematics",
-        code: "MATH11",
-        description: "Mathematics - Class 11",
-        applicableGrades: JSON.stringify(["11"]),
-        applicableSections: JSON.stringify(["B"]),
-      })
-      .returning();
-
-    const [computer] = await db
-      .insert(subjects)
-      .values({
+    // Create Subjects (NO DUPLICATES - unique codes)
+    console.log("\n📚 Creating subjects...");
+    const subjectsList = [
+      { name: "Mathematics", code: "MATH11", desc: "Mathematics - Class 11" },
+      { name: "English", code: "ENG11", desc: "English - Class 11" },
+      { name: "Physics", code: "PHY11", desc: "Physics - Class 11" },
+      { name: "Chemistry", code: "CHEM11", desc: "Chemistry - Class 11" },
+      {
         name: "Computer Science",
         code: "CS11",
-        description: "Computer Science - Class 11",
-        applicableGrades: JSON.stringify(["11"]),
-        applicableSections: JSON.stringify(["B"]),
-      })
-      .returning();
-
-    const [physics] = await db
-      .insert(subjects)
-      .values({
-        name: "Physics",
-        code: "PHY11",
-        description: "Physics - Class 11",
-        applicableGrades: JSON.stringify(["11"]),
-        applicableSections: JSON.stringify(["B"]),
-      })
-      .returning();
-
-    const [chemistry] = await db
-      .insert(subjects)
-      .values({
-        name: "Chemistry",
-        code: "CHEM11",
-        description: "Chemistry - Class 11",
-        applicableGrades: JSON.stringify(["11"]),
-        applicableSections: JSON.stringify(["B"]),
-      })
-      .returning();
-
-    const [ktpi] = await db
-      .insert(subjects)
-      .values({
-        name: "Knowledge Traditions & Practices of India",
+        desc: "Computer Science - Class 11",
+      },
+      {
+        name: "KTPI",
         code: "KTPI11",
-        description: "KTPI - Elective",
-        applicableGrades: JSON.stringify(["11"]),
-        applicableSections: JSON.stringify(["B"]),
-      })
-      .returning();
-
-    const [sports] = await db
-      .insert(subjects)
-      .values({
+        desc: "Knowledge Traditions & Practices of India",
+      },
+      {
         name: "Sports Education",
         code: "SPORT11",
-        description: "Sports - Elective",
-        applicableGrades: JSON.stringify(["11"]),
-        applicableSections: JSON.stringify(["B"]),
-      })
-      .returning();
-
-    // Extra periods
-    const [valueEd] = await db
-      .insert(subjects)
-      .values({
-        name: "Value Education",
-        code: "VE",
-        description: "Value Education",
-        applicableGrades: null,
-        applicableSections: null,
-      })
-      .returning();
-
-    const [library] = await db
-      .insert(subjects)
-      .values({
-        name: "Library",
-        code: "LIB",
-        description: "Library Period",
-        applicableGrades: null,
-        applicableSections: null,
-      })
-      .returning();
-
-    const [hpe] = await db
-      .insert(subjects)
-      .values({
+        desc: "Sports Education - Elective",
+      },
+      { name: "Value Education", code: "VE11", desc: "Value Education" },
+      { name: "Library", code: "LIB11", desc: "Library Period" },
+      {
         name: "Health & Physical Education",
-        code: "HPE",
-        description: "Sports/HPE",
-        applicableGrades: null,
-        applicableSections: null,
-      })
-      .returning();
+        code: "HPE11",
+        desc: "Health & Physical Education",
+      },
+      { name: "Bhajan", code: "BHAJAN11", desc: "Bhajan/Prayer" },
+      { name: "Break", code: "BREAK", desc: "Break Time" },
+    ];
 
-    const [bhajan] = await db
-      .insert(subjects)
-      .values({
-        name: "Bhajan",
-        code: "BHAJAN",
-        description: "Bhajan/Prayer",
-        applicableGrades: null,
-        applicableSections: null,
-      })
-      .returning();
-
-    const [breakSubject] = await db
-      .insert(subjects)
-      .values({
-        name: "Break",
-        code: "BREAK",
-        description: "Break Time",
-        applicableGrades: null,
-        applicableSections: null,
-      })
-      .returning();
-    console.log("✅ Created subjects");
-
-    // Assign Teachers
-    await db.insert(teacherAssignments).values([
-      {
-        teacherId: teacher1.id,
-        classroomId: classroom.id,
-        subjectId: maths.id,
-        isPrimary: true,
-      },
-      {
-        teacherId: teacher2.id,
-        classroomId: classroom.id,
-        subjectId: english.id,
-        isPrimary: false,
-      },
-      {
-        teacherId: teacher3.id,
-        classroomId: classroom.id,
-        subjectId: physics.id,
-        isPrimary: false,
-      },
-      {
-        teacherId: teacher4.id,
-        classroomId: classroom.id,
-        subjectId: chemistry.id,
-        isPrimary: false,
-      },
-      {
-        teacherId: teacher5.id,
-        classroomId: classroom.id,
-        subjectId: computer.id,
-        isPrimary: false,
-      },
-      {
-        teacherId: teacher6.id,
-        classroomId: classroom.id,
-        subjectId: ktpi.id,
-        isPrimary: false,
-      },
-      {
-        teacherId: teacher7.id,
-        classroomId: classroom.id,
-        subjectId: sports.id,
-        isPrimary: false,
-      },
-    ]);
-    console.log("✅ Assigned teachers");
-
-    // Create Student Records with electives
-    const studentRecords = [];
-    for (let i = 0; i < studentUsers.length; i++) {
-      const elective = i < 15 ? "KTPI" : "Sports";
-      const [student] = await db
-        .insert(students)
+    const createdSubjects: Record<string, typeof subjects.$inferSelect> = {};
+    for (const sub of subjectsList) {
+      const [subject] = await db
+        .insert(subjects)
         .values({
-          userId: studentUsers[i].id,
-          classroomId: classroom.id,
-          rollNumber: `11B${String(i + 1).padStart(3, "0")}`,
-          admissionNumber: `ADM2025${String(i + 1).padStart(4, "0")}`,
-          dateOfBirth: new Date(2008, 3, 15 + i),
-          bloodGroup: ["A+", "B+", "O+", "AB+", "A-"][i % 5],
-          elective: elective,
-          admissionDate: new Date(2025, 3, 1),
+          name: sub.name,
+          code: sub.code,
+          description: sub.desc,
+          applicableGrades:
+            sub.code === "BREAK" ? null : JSON.stringify(["11"]),
+          applicableSections:
+            sub.code === "BREAK" ? null : JSON.stringify(["B"]),
         })
         .returning();
-      studentRecords.push(student);
+      createdSubjects[sub.code] = subject;
     }
-    console.log("✅ Created student records (15 KTPI, 15 Sports)");
+    console.log(
+      `✅ Created ${Object.keys(createdSubjects).length} unique subjects`,
+    );
 
-    // Create 9-Period Timetable
-    // Monday
-    await db.insert(timetable).values([
-      {
+    // Assign Teachers to Subjects
+    console.log("\n👨‍🏫 Assigning teachers to subjects...");
+    const assignments = [
+      { teacher: teacherUsers[0], subject: "MATH11", isPrimary: true }, // Dr. Kumar - Class Teacher
+      { teacher: teacherUsers[1], subject: "ENG11", isPrimary: false }, // Ms. Sharma
+      { teacher: teacherUsers[2], subject: "PHY11", isPrimary: false }, // Mr. Patel
+      { teacher: teacherUsers[3], subject: "CHEM11", isPrimary: false }, // Mrs. Singh
+      { teacher: teacherUsers[4], subject: "CS11", isPrimary: false }, // Mr. Verma
+      { teacher: teacherUsers[5], subject: "KTPI11", isPrimary: false }, // Ms. Gupta
+      { teacher: teacherUsers[6], subject: "SPORT11", isPrimary: false }, // Coach Reddy
+    ];
+
+    for (const assignment of assignments) {
+      await db.insert(teacherAssignments).values({
+        teacherId: assignment.teacher.id,
         classroomId: classroom.id,
-        subjectId: english.id,
-        teacherId: teacher2.id,
-        dayOfWeek: 1,
-        periodNumber: 1,
-        startTime: "08:00",
-        endTime: "08:50",
-        room: "Room 201",
-        sessionType: "regular",
+        subjectId: createdSubjects[assignment.subject].id,
+        isPrimary: assignment.isPrimary,
+      });
+    }
+    console.log("✅ Teachers assigned to subjects");
+
+    // Create Student Records
+    console.log("\n📝 Creating student records...");
+    for (let i = 0; i < studentUsers.length; i++) {
+      const elective = i < 15 ? "KTPI" : "Sports";
+
+      await db.insert(students).values({
+        userId: studentUsers[i].id,
+        classroomId: classroom.id,
+        rollNumber: `11B${String(i + 1).padStart(3, "0")}`,
+        admissionNumber: `ADM2025${String(i + 1).padStart(4, "0")}`,
+        dateOfBirth: new Date(2008, 3, 15 + i),
+        bloodGroup: ["A+", "B+", "O+", "AB+", "A-"][i % 5],
+        elective: elective,
+        admissionDate: new Date(2025, 3, 1),
+      });
+    }
+    console.log(`✅ Created ${studentUsers.length} student records`);
+
+    // Create Timetable (Monday to Saturday)
+    console.log("\n📅 Creating timetable...");
+
+    const periodTimes = [
+      { period: 1, start: "08:45", end: "09:25" },
+      { period: 2, start: "09:25", end: "10:05" },
+      { period: 3, start: "10:15", end: "10:55" }, // After 10min break
+      { period: 4, start: "10:55", end: "11:35" },
+      { period: 5, start: "11:35", end: "12:15" },
+      { period: 6, start: "12:55", end: "13:35" }, // After lunch 40min
+      { period: 7, start: "13:35", end: "14:15" },
+      { period: 8, start: "14:25", end: "15:05" }, // After 10min break
+      { period: 9, start: "15:05", end: "15:45" },
+    ];
+
+    // Monday - 9 periods
+    const mondaySchedule = [
+      {
+        subject: "ENG11",
+        teacher: teacherUsers[1],
+        type: "regular",
+        room: "201",
       },
       {
-        classroomId: classroom.id,
-        subjectId: maths.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 1,
-        periodNumber: 2,
-        startTime: "08:50",
-        endTime: "09:40",
-        room: "Room 201",
-        sessionType: "regular",
+        subject: "MATH11",
+        teacher: teacherUsers[0],
+        type: "regular",
+        room: "201",
       },
       {
-        classroomId: classroom.id,
-        subjectId: physics.id,
-        teacherId: teacher3.id,
-        dayOfWeek: 1,
-        periodNumber: 3,
-        startTime: "09:40",
-        endTime: "10:30",
-        room: "Room 201",
-        sessionType: "regular",
+        subject: "PHY11",
+        teacher: teacherUsers[2],
+        type: "regular",
+        room: "201",
       },
       {
-        classroomId: classroom.id,
-        subjectId: breakSubject.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 1,
-        periodNumber: 4,
-        startTime: "10:30",
-        endTime: "11:00",
-        room: "Playground",
-        sessionType: "extra",
+        subject: "CHEM11",
+        teacher: teacherUsers[3],
+        type: "regular",
+        room: "201",
       },
       {
-        classroomId: classroom.id,
-        subjectId: chemistry.id,
-        teacherId: teacher4.id,
-        dayOfWeek: 1,
-        periodNumber: 5,
-        startTime: "11:00",
-        endTime: "11:50",
-        room: "Room 201",
-        sessionType: "regular",
+        subject: "CS11",
+        teacher: teacherUsers[4],
+        type: "regular",
+        room: "201",
       },
       {
-        classroomId: classroom.id,
-        subjectId: computer.id,
-        teacherId: teacher5.id,
-        dayOfWeek: 1,
-        periodNumber: 6,
-        startTime: "11:50",
-        endTime: "12:40",
-        room: "Room 201",
-        sessionType: "regular",
+        subject: "KTPI11",
+        teacher: teacherUsers[5],
+        type: "regular",
+        room: "201",
       },
       {
-        classroomId: classroom.id,
-        subjectId: ktpi.id,
-        teacherId: teacher6.id,
-        dayOfWeek: 1,
-        periodNumber: 7,
-        startTime: "12:40",
-        endTime: "13:30",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: breakSubject.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 1,
-        periodNumber: 8,
-        startTime: "13:30",
-        endTime: "14:15",
-        room: "Cafeteria",
-        sessionType: "extra",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: valueEd.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 1,
-        periodNumber: 9,
-        startTime: "14:15",
-        endTime: "15:05",
-        room: "Room 201",
-        sessionType: "extra",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: hpe.id,
-        teacherId: teacher7.id,
-        dayOfWeek: 1,
-        periodNumber: 10,
-        startTime: "15:05",
-        endTime: "15:55",
+        subject: "SPORT11",
+        teacher: teacherUsers[6],
+        type: "regular",
         room: "Sports Ground",
-        sessionType: "extra",
       },
       {
-        classroomId: classroom.id,
-        subjectId: library.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 1,
-        periodNumber: 11,
-        startTime: "15:55",
-        endTime: "16:45",
+        subject: "HPE11",
+        teacher: teacherUsers[6],
+        type: "extra",
+        room: "Sports Ground",
+      },
+      {
+        subject: "LIB11",
+        teacher: teacherUsers[0],
+        type: "extra",
         room: "Library",
-        sessionType: "extra",
       },
-    ]);
+    ];
 
-    // Tuesday - Computer Lab day
-    await db.insert(timetable).values([
-      {
+    for (let i = 0; i < mondaySchedule.length; i++) {
+      const schedule = mondaySchedule[i];
+      const time = periodTimes[i];
+      await db.insert(timetable).values({
         classroomId: classroom.id,
-        subjectId: maths.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 2,
-        periodNumber: 1,
-        startTime: "08:00",
-        endTime: "08:50",
-        room: "Room 201",
-        sessionType: "regular",
+        subjectId: createdSubjects[schedule.subject].id,
+        teacherId: schedule.teacher.id,
+        dayOfWeek: 1,
+        periodNumber: time.period,
+        startTime: time.start,
+        endTime: time.end,
+        room: schedule.room,
+        sessionType: schedule.type as "regular" | "lab" | "test" | "extra",
+      });
+    }
+
+    // Tuesday (with Computer Lab) - 9 periods
+    const tuesdaySchedule = [
+      {
+        subject: "MATH11",
+        teacher: teacherUsers[0],
+        type: "regular",
+        room: "201",
       },
       {
-        classroomId: classroom.id,
-        subjectId: english.id,
-        teacherId: teacher2.id,
-        dayOfWeek: 2,
-        periodNumber: 2,
-        startTime: "08:50",
-        endTime: "09:40",
-        room: "Room 201",
-        sessionType: "regular",
+        subject: "ENG11",
+        teacher: teacherUsers[1],
+        type: "regular",
+        room: "201",
       },
       {
-        classroomId: classroom.id,
-        subjectId: computer.id,
-        teacherId: teacher5.id,
-        dayOfWeek: 2,
-        periodNumber: 3,
-        startTime: "09:40",
-        endTime: "10:30",
+        subject: "CS11",
+        teacher: teacherUsers[4],
+        type: "lab",
         room: "Computer Lab",
-        sessionType: "lab",
       },
       {
-        classroomId: classroom.id,
-        subjectId: breakSubject.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 2,
-        periodNumber: 4,
-        startTime: "10:30",
-        endTime: "11:00",
-        room: "Playground",
-        sessionType: "extra",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: computer.id,
-        teacherId: teacher5.id,
-        dayOfWeek: 2,
-        periodNumber: 5,
-        startTime: "11:00",
-        endTime: "11:50",
+        subject: "CS11",
+        teacher: teacherUsers[4],
+        type: "lab",
         room: "Computer Lab",
-        sessionType: "lab",
       },
       {
-        classroomId: classroom.id,
-        subjectId: physics.id,
-        teacherId: teacher3.id,
-        dayOfWeek: 2,
-        periodNumber: 6,
-        startTime: "11:50",
-        endTime: "12:40",
-        room: "Room 201",
-        sessionType: "regular",
+        subject: "PHY11",
+        teacher: teacherUsers[2],
+        type: "regular",
+        room: "201",
       },
       {
-        classroomId: classroom.id,
-        subjectId: chemistry.id,
-        teacherId: teacher4.id,
-        dayOfWeek: 2,
-        periodNumber: 7,
-        startTime: "12:40",
-        endTime: "13:30",
-        room: "Room 201",
-        sessionType: "regular",
+        subject: "CHEM11",
+        teacher: teacherUsers[3],
+        type: "regular",
+        room: "201",
       },
       {
-        classroomId: classroom.id,
-        subjectId: breakSubject.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 2,
-        periodNumber: 8,
-        startTime: "13:30",
-        endTime: "14:15",
-        room: "Cafeteria",
-        sessionType: "extra",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: sports.id,
-        teacherId: teacher7.id,
-        dayOfWeek: 2,
-        periodNumber: 9,
-        startTime: "14:15",
-        endTime: "15:05",
+        subject: "SPORT11",
+        teacher: teacherUsers[6],
+        type: "regular",
         room: "Sports Ground",
-        sessionType: "regular",
       },
       {
-        classroomId: classroom.id,
-        subjectId: maths.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 2,
-        periodNumber: 10,
-        startTime: "15:05",
-        endTime: "15:55",
-        room: "Room 201",
-        sessionType: "test",
+        subject: "MATH11",
+        teacher: teacherUsers[0],
+        type: "test",
+        room: "201",
       },
       {
-        classroomId: classroom.id,
-        subjectId: bhajan.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 2,
-        periodNumber: 11,
-        startTime: "15:55",
-        endTime: "16:45",
+        subject: "BHAJAN11",
+        teacher: teacherUsers[0],
+        type: "extra",
         room: "Assembly Hall",
-        sessionType: "extra",
       },
-    ]);
+    ];
 
-    // Wednesday - Physics Lab day
-    await db.insert(timetable).values([
-      {
+    for (let i = 0; i < tuesdaySchedule.length; i++) {
+      const schedule = tuesdaySchedule[i];
+      const time = periodTimes[i];
+      await db.insert(timetable).values({
         classroomId: classroom.id,
-        subjectId: physics.id,
-        teacherId: teacher3.id,
-        dayOfWeek: 3,
-        periodNumber: 1,
-        startTime: "08:00",
-        endTime: "08:50",
-        room: "Physics Lab",
-        sessionType: "lab",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: physics.id,
-        teacherId: teacher3.id,
-        dayOfWeek: 3,
-        periodNumber: 2,
-        startTime: "08:50",
-        endTime: "09:40",
-        room: "Physics Lab",
-        sessionType: "lab",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: maths.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 3,
-        periodNumber: 3,
-        startTime: "09:40",
-        endTime: "10:30",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: breakSubject.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 3,
-        periodNumber: 4,
-        startTime: "10:30",
-        endTime: "11:00",
-        room: "Playground",
-        sessionType: "extra",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: english.id,
-        teacherId: teacher2.id,
-        dayOfWeek: 3,
-        periodNumber: 5,
-        startTime: "11:00",
-        endTime: "11:50",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: chemistry.id,
-        teacherId: teacher4.id,
-        dayOfWeek: 3,
-        periodNumber: 6,
-        startTime: "11:50",
-        endTime: "12:40",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: computer.id,
-        teacherId: teacher5.id,
-        dayOfWeek: 3,
-        periodNumber: 7,
-        startTime: "12:40",
-        endTime: "13:30",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: breakSubject.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 3,
-        periodNumber: 8,
-        startTime: "13:30",
-        endTime: "14:15",
-        room: "Cafeteria",
-        sessionType: "extra",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: ktpi.id,
-        teacherId: teacher6.id,
-        dayOfWeek: 3,
-        periodNumber: 9,
-        startTime: "14:15",
-        endTime: "15:05",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: english.id,
-        teacherId: teacher2.id,
-        dayOfWeek: 3,
-        periodNumber: 10,
-        startTime: "15:05",
-        endTime: "15:55",
-        room: "Room 201",
-        sessionType: "test",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: hpe.id,
-        teacherId: teacher7.id,
-        dayOfWeek: 3,
-        periodNumber: 11,
-        startTime: "15:55",
-        endTime: "16:45",
-        room: "Sports Ground",
-        sessionType: "extra",
-      },
-    ]);
+        subjectId: createdSubjects[schedule.subject].id,
+        teacherId: schedule.teacher.id,
+        dayOfWeek: 2,
+        periodNumber: time.period,
+        startTime: time.start,
+        endTime: time.end,
+        room: schedule.room,
+        sessionType: schedule.type as "regular" | "lab" | "test" | "extra",
+      });
+    }
 
-    // Thursday - Chemistry Lab day
-    await db.insert(timetable).values([
-      {
-        classroomId: classroom.id,
-        subjectId: chemistry.id,
-        teacherId: teacher4.id,
-        dayOfWeek: 4,
-        periodNumber: 1,
-        startTime: "08:00",
-        endTime: "08:50",
-        room: "Chemistry Lab",
-        sessionType: "lab",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: chemistry.id,
-        teacherId: teacher4.id,
-        dayOfWeek: 4,
-        periodNumber: 2,
-        startTime: "08:50",
-        endTime: "09:40",
-        room: "Chemistry Lab",
-        sessionType: "lab",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: english.id,
-        teacherId: teacher2.id,
-        dayOfWeek: 4,
-        periodNumber: 3,
-        startTime: "09:40",
-        endTime: "10:30",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: breakSubject.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 4,
-        periodNumber: 4,
-        startTime: "10:30",
-        endTime: "11:00",
-        room: "Playground",
-        sessionType: "extra",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: maths.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 4,
-        periodNumber: 5,
-        startTime: "11:00",
-        endTime: "11:50",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: physics.id,
-        teacherId: teacher3.id,
-        dayOfWeek: 4,
-        periodNumber: 6,
-        startTime: "11:50",
-        endTime: "12:40",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: sports.id,
-        teacherId: teacher7.id,
-        dayOfWeek: 4,
-        periodNumber: 7,
-        startTime: "12:40",
-        endTime: "13:30",
-        room: "Sports Ground",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: breakSubject.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 4,
-        periodNumber: 8,
-        startTime: "13:30",
-        endTime: "14:15",
-        room: "Cafeteria",
-        sessionType: "extra",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: computer.id,
-        teacherId: teacher5.id,
-        dayOfWeek: 4,
-        periodNumber: 9,
-        startTime: "14:15",
-        endTime: "15:05",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: physics.id,
-        teacherId: teacher3.id,
-        dayOfWeek: 4,
-        periodNumber: 10,
-        startTime: "15:05",
-        endTime: "15:55",
-        room: "Room 201",
-        sessionType: "test",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: library.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 4,
-        periodNumber: 11,
-        startTime: "15:55",
-        endTime: "16:45",
-        room: "Library",
-        sessionType: "extra",
-      },
-    ]);
+    // Wednesday through Saturday (simplified 9-period days)
+    const remainingDays = [
+      { day: 3, name: "Wednesday" },
+      { day: 4, name: "Thursday" },
+      { day: 5, name: "Friday" },
+      { day: 6, name: "Saturday" }, // Full day now
+    ];
 
-    // Friday - Test day
-    await db.insert(timetable).values([
-      {
-        classroomId: classroom.id,
-        subjectId: computer.id,
-        teacherId: teacher5.id,
-        dayOfWeek: 5,
-        periodNumber: 1,
-        startTime: "08:00",
-        endTime: "08:50",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: maths.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 5,
-        periodNumber: 2,
-        startTime: "08:50",
-        endTime: "09:40",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: chemistry.id,
-        teacherId: teacher4.id,
-        dayOfWeek: 5,
-        periodNumber: 3,
-        startTime: "09:40",
-        endTime: "10:30",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: breakSubject.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 5,
-        periodNumber: 4,
-        startTime: "10:30",
-        endTime: "11:00",
-        room: "Playground",
-        sessionType: "extra",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: english.id,
-        teacherId: teacher2.id,
-        dayOfWeek: 5,
-        periodNumber: 5,
-        startTime: "11:00",
-        endTime: "11:50",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: physics.id,
-        teacherId: teacher3.id,
-        dayOfWeek: 5,
-        periodNumber: 6,
-        startTime: "11:50",
-        endTime: "12:40",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: ktpi.id,
-        teacherId: teacher6.id,
-        dayOfWeek: 5,
-        periodNumber: 7,
-        startTime: "12:40",
-        endTime: "13:30",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: breakSubject.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 5,
-        periodNumber: 8,
-        startTime: "13:30",
-        endTime: "14:15",
-        room: "Cafeteria",
-        sessionType: "extra",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: chemistry.id,
-        teacherId: teacher4.id,
-        dayOfWeek: 5,
-        periodNumber: 9,
-        startTime: "14:15",
-        endTime: "15:05",
-        room: "Room 201",
-        sessionType: "test",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: computer.id,
-        teacherId: teacher5.id,
-        dayOfWeek: 5,
-        periodNumber: 10,
-        startTime: "15:05",
-        endTime: "15:55",
-        room: "Room 201",
-        sessionType: "test",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: ktpi.id,
-        teacherId: teacher6.id,
-        dayOfWeek: 5,
-        periodNumber: 11,
-        startTime: "15:55",
-        endTime: "16:45",
-        room: "Room 201",
-        sessionType: "test",
-      },
-    ]);
+    for (const dayInfo of remainingDays) {
+      const periodsForDay = 9; // All days have 9 periods now
 
-    // Saturday - Half day (Monday's schedule)
-    await db.insert(timetable).values([
-      {
-        classroomId: classroom.id,
-        subjectId: english.id,
-        teacherId: teacher2.id,
-        dayOfWeek: 6,
-        periodNumber: 1,
-        startTime: "08:00",
-        endTime: "08:50",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: maths.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 6,
-        periodNumber: 2,
-        startTime: "08:50",
-        endTime: "09:40",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: physics.id,
-        teacherId: teacher3.id,
-        dayOfWeek: 6,
-        periodNumber: 3,
-        startTime: "09:40",
-        endTime: "10:30",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: breakSubject.id,
-        teacherId: teacher1.id,
-        dayOfWeek: 6,
-        periodNumber: 4,
-        startTime: "10:30",
-        endTime: "11:00",
-        room: "Playground",
-        sessionType: "extra",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: chemistry.id,
-        teacherId: teacher4.id,
-        dayOfWeek: 6,
-        periodNumber: 5,
-        startTime: "11:00",
-        endTime: "11:50",
-        room: "Room 201",
-        sessionType: "regular",
-      },
-      {
-        classroomId: classroom.id,
-        subjectId: sports.id,
-        teacherId: teacher7.id,
-        dayOfWeek: 6,
-        periodNumber: 6,
-        startTime: "11:50",
-        endTime: "12:40",
-        room: "Sports Ground",
-        sessionType: "test",
-      },
-    ]);
-    console.log("✅ Created 9-period timetable with labs and tests");
+      for (let i = 0; i < periodsForDay; i++) {
+        const time = periodTimes[i];
 
-    // Create homework
+        // Rotate subjects for variety
+        const subjectCodes = [
+          "MATH11",
+          "ENG11",
+          "PHY11",
+          "CHEM11",
+          "CS11",
+          "KTPI11",
+          "SPORT11",
+          "VE11",
+          "HPE11",
+        ];
+        const subjectCode = subjectCodes[i % subjectCodes.length];
+        const subject = createdSubjects[subjectCode];
+        const teacherIndex = Math.min(
+          subjectCodes.indexOf(subjectCode),
+          teacherUsers.length - 1,
+        );
+        const teacher = teacherUsers[teacherIndex];
+        const room =
+          subjectCode.includes("SPORT") || subjectCode.includes("HPE")
+            ? "Sports Ground"
+            : "201";
+        const type =
+          subjectCode.includes("VE") || subjectCode.includes("HPE")
+            ? "extra"
+            : "regular";
+
+        await db.insert(timetable).values({
+          classroomId: classroom.id,
+          subjectId: subject.id,
+          teacherId: teacher.id,
+          dayOfWeek: dayInfo.day,
+          periodNumber: time.period,
+          startTime: time.start,
+          endTime: time.end,
+          room: room,
+          sessionType: type as "regular" | "lab" | "test" | "extra",
+        });
+      }
+    }
+    console.log("✅ Created complete weekly timetable (9 periods/day)");
+
+    // Create sample homework
+    console.log("\n📖 Creating homework...");
     const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const nextWeek = new Date();
-    nextWeek.setDate(nextWeek.getDate() + 7);
+    tomorrow.setDate(tomorrow.getDate() + 3);
 
     await db.insert(homework).values([
       {
-        teacherId: teacher1.id,
+        teacherId: teacherUsers[0].id,
         classroomId: classroom.id,
-        subjectId: maths.id,
-        title: "Calculus Practice Set 1",
+        subjectId: createdSubjects["MATH11"].id,
+        title: "Calculus Practice Problems",
         description:
-          "Complete all problems from Exercise 3.2 - Limits and Derivatives",
+          "Complete Exercise 3.2 - Limits and Derivatives from textbook",
         dueDate: tomorrow,
         totalMarks: 25,
       },
       {
-        teacherId: teacher3.id,
+        teacherId: teacherUsers[2].id,
         classroomId: classroom.id,
-        subjectId: physics.id,
-        title: "Lab Report: Newton's Laws of Motion",
+        subjectId: createdSubjects["PHY11"].id,
+        title: "Newton's Laws Lab Report",
         description:
-          "Write a detailed lab report on the experiment conducted today",
-        dueDate: nextWeek,
+          "Write detailed lab report with observations and conclusions",
+        dueDate: tomorrow,
         totalMarks: 30,
       },
-      {
-        teacherId: teacher2.id,
-        classroomId: classroom.id,
-        subjectId: english.id,
-        title: "Essay: Impact of Literature on Society",
-        description:
-          "Write a 750-word essay analyzing the role of literature in shaping society",
-        dueDate: nextWeek,
-        totalMarks: 40,
-      },
     ]);
-    console.log("✅ Created homework");
+    console.log("✅ Created sample homework");
 
     // Create announcements
+    console.log("\n📢 Creating announcements...");
     await db.insert(announcements).values([
       {
-        title: "📚 Mid-term Examinations Schedule",
-        content:
-          "Mid-term exams will begin from November 15th. Exam schedule will be shared by November 5th.",
+        title: "📚 Mid-term Examinations",
+        content: "Mid-term exams will begin from November 15th. Prepare well!",
         classroomId: classroom.id,
-        createdBy: teacher1.id,
+        createdBy: teacherUsers[0].id,
         priority: "high",
       },
       {
-        title: "🔬 Science Exhibition Reminder",
+        title: "🔬 Science Exhibition",
         content:
-          "Start preparing your science projects. Submission deadline: November 10th.",
+          "Start working on your science projects. Submission deadline: November 10th",
         classroomId: classroom.id,
-        createdBy: teacher3.id,
+        createdBy: teacherUsers[2].id,
         priority: "normal",
       },
     ]);
@@ -1144,33 +500,37 @@ async function seed() {
     // Create classroom message
     await db.insert(classroomMessages).values({
       classroomId: classroom.id,
-      teacherId: teacher1.id,
+      teacherId: teacherUsers[0].id,
       messageType: "quote",
       content:
-        "The only way to do great work is to love what you do. - Steve Jobs",
+        "Education is the most powerful weapon you can use to change the world. - Nelson Mandela",
       date: new Date(),
     });
     console.log("✅ Created classroom message");
 
-    console.log("\n🎉 Class 11B System Ready!");
+    console.log("\n🎉 DATABASE SEEDED SUCCESSFULLY!");
     console.log("\n📝 Login Credentials:");
-    console.log("Admin: admin@school.com / admin123");
-    console.log("Class Teacher: kumar@school.com / teacher123");
-    console.log("English Teacher: sharma@school.com / teacher123");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log("Admin:          admin@school.com / admin123");
+    console.log("Class Teacher:  kumar@school.com / teacher123");
+    console.log("English:        sharma@school.com / teacher123");
+    console.log("Physics:        patel@school.com / teacher123");
+    console.log("Chemistry:      singh@school.com / teacher123");
+    console.log("Computer:       verma@school.com / teacher123");
+    console.log("KTPI:           gupta@school.com / teacher123");
+    console.log("Sports:         reddy@school.com / teacher123");
     console.log("Student (KTPI): student1@school.com / student123");
-    console.log("Student (Sports): student16@school.com / student123");
-    console.log(`\n🔗 Classroom ID: ${classroom.id}`);
-    console.log("\n📊 System Features:");
-    console.log("✅ 9-period day (08:00-16:45)");
-    console.log(
-      "✅ Labs: Computer (Tue P3-5), Physics (Wed P1-2), Chemistry (Thu P1-2)",
-    );
-    console.log("✅ Tests: Weekly for all subjects");
-    console.log("✅ Extras: Value Ed, Library, HPE, Bhajan");
-    console.log("✅ Electives: 15 KTPI, 15 Sports");
-    console.log("✅ Saturday: Half day (6 periods)");
+    console.log("Student (Sport):student16@school.com / student123");
+    console.log("\n📊 System Summary:");
+    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    console.log(`✅ Classroom: ${classroom.name} (${classroom.classroomCode})`);
+    console.log(`✅ Students: 30 (15 KTPI, 15 Sports)`);
+    console.log(`✅ Teachers: 7 (all assigned to subjects)`);
+    console.log(`✅ Subjects: 12 (no duplicates)`);
+    console.log(`✅ Timetable: 9 periods/day (Mon-Sat)`);
+    console.log(`✅ Timings: 08:45-15:45 with breaks at 10:05, 12:15, 14:15`);
   } catch (error) {
-    console.error("❌ Error seeding database:", error);
+    console.error("\n❌ Error seeding database:", error);
     throw error;
   }
 }
