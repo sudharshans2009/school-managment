@@ -21,8 +21,7 @@
         "fullscreen": false,
         "center": true,
         "decorations": true,
-        "transparent": false,
-        "disableContextMenu": true
+        "transparent": false
       }
     ],
     "withGlobalTauri": true,
