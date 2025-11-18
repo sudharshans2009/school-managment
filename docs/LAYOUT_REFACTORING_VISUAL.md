@@ -14,12 +14,12 @@
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│ [Logo] Amrita Vidyalayam Management    [Theme] [Sign In/Up] │ ← Navbar
+│ [Logo] Amrita Vidyalayam, Ettimadai    [Theme] [Sign In/Up] │ ← Navbar
 └─────────────────────────────────────────────────────────┘
 │                                                         │
 │              [Logo Icon]                                │
 │                                                         │
-│        Amrita Vidyalayam Management System                   │
+│        Amrita Vidyalayam, Ettimadai                   │
 │     Modern, efficient, and intelligent school...        │
 │                                                         │
 │          [Sign In]  [Create Account]                    │
@@ -79,7 +79,7 @@
 │              - shadow-sm for depth                      │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
-│  © 2025 Amrita Vidyalayam Management System. Built with...  │ ← Footer
+│  © 2025 Amrita Vidyalayam, Ettimadai. Built with...  │ ← Footer
 └─────────────────────────────────────────────────────────┘
 ```
 

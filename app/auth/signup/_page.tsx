@@ -100,7 +100,7 @@ export default function SignUpPage() {
             Create Account
           </CardTitle>
           <CardDescription className="text-center">
-            Join Amrita Vidyalayam Management System
+            Join Amrita Vidyalayam, Ettimadai
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>

@@ -61,7 +61,7 @@ export function HomeLayout({ children }: HomeLayoutProps) {
               <div className="flex items-center gap-2">
                 <div>
                   <h1 className="text-lg font-semibold">
-                    Amrita Vidyalayam Management
+                    Amrita Vidyalayam, Ettimadai
                   </h1>
                   <p className="text-xs text-muted-foreground">
                     Modern School Management System
@@ -127,6 +127,34 @@ export function HomeLayout({ children }: HomeLayoutProps) {
 
       {/* Main Content */}
       <main>{children}</main>
+
+      {/* Footer */}
+      <footer className="border-t border-border bg-background/95 backdrop-blur">
+        <div className="container mx-auto px-6 py-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+            <p>
+              © {new Date().getFullYear()} Amrita Vidyalayam, Ettimadai.
+              All rights reserved.
+            </p>
+            <div className="flex items-center gap-6">
+              <Link
+                href="/contributors"
+                className="hover:text-foreground transition-colors"
+              >
+                Contributors
+              </Link>
+              <a
+                href="https://github.com/sudharshans2009/school-managment"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-foreground transition-colors"
+              >
+                GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
 
       {/* Offline Indicator */}
       <OfflineIndicator />

@@ -1,4 +1,4 @@
-# 🎓 Amrita Vidyalayam Management System
+# 🎓 Amrita Vidyalayam, Ettimadai
 
 A comprehensive, production-ready school management system built with Next.js 15/16, featuring smart classroom dashboards, real-time attendance tracking, automated timetables, exam management, admission processing, and complete GDPR compliance.
 
@@ -12,7 +12,7 @@ A comprehensive, production-ready school management system built with Next.js 15
 - 📊 **Advanced Analytics** - Real-time dashboards with 30-day rolling metrics
 - 📱 **Smart Classroom Displays** - Interactive classroom dashboards with live data
 - ⏰ **Automated Timetables** - 9-period day structure with fixed break timings
-- 🎯 **Exam & Grade Management** - Complete assessment lifecycle with A* to F grading
+- 🎯 **Exam & Grade Management** - Complete assessment lifecycle with A\* to F grading
 - 📝 **Homework Tracking** - Assignment creation, submission, and grading
 - 👥 **Bulk Upload Support** - CSV import for students and teachers
 - 🔔 **Multi-Channel Notifications** - Announcements, messages, and alerts
@@ -903,13 +903,16 @@ Detailed documentation is available in the `/docs` folder:
 ### ✅ November 2025 Updates
 
 **Admin Management Enhancements:**
+
 - **Admin User Management** - Complete CRUD system for managing admin users
+
   - Create, edit, activate/deactivate, and delete admin accounts
   - Safety features: Cannot delete last admin or own account
   - Search functionality by name/email
   - Role-based permissions enforced
 
 - **Admission Application Management** - Full application processing system
+
   - Filter by status (pending, under review, accepted, rejected, etc.)
   - Filter by grade level (1-12)
   - Status update workflow with rejection reasons
@@ -918,6 +921,7 @@ Detailed documentation is available in the `/docs` folder:
   - Delete restricted to pending/rejected applications only
 
 - **Attendance Metrics Fix** - System overview now shows accurate attendance rates
+
   - Changed from daily to 30-day rolling calculation
   - Provides meaningful percentage based on recent data
 
@@ -930,30 +934,35 @@ Detailed documentation is available in the `/docs` folder:
 ### ✅ Core Features (Production Ready)
 
 - **Automatic Grade System** (A\* to F)
+
   - 7-level grading scale
   - Automatic calculation from percentage
   - Color-coded displays
   - Consistent across all exams
 
 - **Dynamic Quote System**
+
   - Teacher-controlled motivational quotes
   - Displayed on smartboard and student dashboard
   - Classroom-specific messages
   - Easy update through teacher portal
 
 - **Fixed Timetable Structure**
+
   - Immutable 9-period day structure
   - 3 scheduled breaks (10:05-10:15, 12:15-12:55, 14:15-14:25)
   - Consistent timings across all classes
   - Automatic current period highlighting
 
 - **Email Verification System**
+
   - Beautiful HTML email templates
   - Required verification for all signups
   - Auto-verified for admin-created accounts
   - Re-verification on email change
 
 - **Profile & Settings Pages**
+
   - View-only profiles for students and teachers
   - Admin can edit any profile
   - Email and password update functionality
@@ -1069,6 +1078,6 @@ Using shadcn/ui for beautiful, accessible components:
 
 ---
 
-*For detailed project statistics, roadmap, and recent updates, see the sections above.*
+_For detailed project statistics, roadmap, and recent updates, see the sections above._
 
 **Last Updated:** November 2025

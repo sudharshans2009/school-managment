@@ -104,7 +104,7 @@ export default function AdminPage() {
   return (
     <DashboardLayout
       title="Admin Portal"
-      description="Amrita Vidyalayam Management"
+      description="Amrita Vidyalayam, Ettimadai"
     >
       {/* Page content here */}
     </DashboardLayout>
@@ -181,11 +181,13 @@ As per requirements, all pages under `/smartboard/**` were left unchanged:
 All layouts include responsive design considerations:
 
 1. **Mobile Navigation:**
+
    - User info in DashboardLayout is hidden on small screens (`hidden sm:flex`)
    - Buttons stack vertically on small screens where needed
    - Container padding adjusts for smaller viewports
 
 2. **Content Adaptation:**
+
    - Grid layouts in pages use responsive columns (`md:grid-cols-2`, `lg:grid-cols-3`)
    - Cards stack on mobile, display side-by-side on larger screens
 
@@ -216,10 +218,12 @@ Layouts include accessibility features:
 ## Performance Considerations
 
 1. **Client-Side Only Where Needed:**
+
    - All layouts are client components (`"use client"`)
    - Required for auth session, theme toggle, and interactivity
 
 2. **Optimized Imports:**
+
    - Tree-shakeable icon imports from lucide-react
    - Minimal dependencies in layout components
 
@@ -232,16 +236,19 @@ Layouts include accessibility features:
 Potential improvements for future iterations:
 
 1. **Navigation Menus:**
+
    - Add dynamic navigation items based on user role
    - Implement breadcrumb navigation for nested pages
    - Add mobile hamburger menu for smaller screens
 
 2. **Layout Variants:**
+
    - Create `MinimalLayout` for landing pages
    - Add `PrintLayout` for printable reports
    - Implement `FullScreenLayout` for presentations
 
 3. **Customization:**
+
    - Allow pages to override navbar items
    - Support custom footer content
    - Add layout configuration options
@@ -256,16 +263,19 @@ Potential improvements for future iterations:
 When testing the refactored layouts:
 
 1. **Visual Testing:**
+
    - Verify navbar appears on all expected pages
    - Check theme toggle works in all layouts
    - Ensure responsive design works across breakpoints
 
 2. **Functional Testing:**
+
    - Test auth flows (sign in/out, redirects)
    - Verify "Back to Home" button on auth pages
    - Check session persistence across pages
 
 3. **Cross-Browser Testing:**
+
    - Test in Chrome, Firefox, Safari, Edge
    - Verify backdrop-blur support (or fallback)
    - Check sticky positioning works correctly
@@ -280,16 +290,19 @@ When testing the refactored layouts:
 To maintain consistency when adding new pages:
 
 1. **Identify the Section:**
+
    - Public page? Use `HomeLayout`
    - Auth page? Use `AuthLayout`
    - Dashboard page? Use `DashboardLayout`
 
 2. **Follow Patterns:**
+
    - Use the same Card/Button components
    - Apply consistent spacing (p-6, space-y-6)
    - Use rounded-2xl for cards, for buttons
 
 3. **Theme Awareness:**
+
    - Use theme colors (bg-background, text-foreground, etc.)
    - Test in both light and dark modes
    - Avoid hardcoded colors

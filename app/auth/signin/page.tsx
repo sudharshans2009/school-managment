@@ -76,7 +76,7 @@ export default function SignInPage() {
             Welcome Back
           </CardTitle>
           <CardDescription className="text-center">
-            Sign in to your Amrita Vidyalayam Management account
+            Sign in to your Amrita Vidyalayam, Ettimadai account
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>

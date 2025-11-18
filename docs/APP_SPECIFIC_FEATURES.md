@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Amrita Vidyalayam Management System includes enhanced features specifically designed for the native desktop and mobile applications. These features provide a superior user experience compared to the web version, including offline functionality, keyboard shortcuts, system integration, and native performance optimizations.
+The Amrita Vidyalayam, Ettimadai includes enhanced features specifically designed for the native desktop and mobile applications. These features provide a superior user experience compared to the web version, including offline functionality, keyboard shortcuts, system integration, and native performance optimizations.
 
 ## Features Implemented
 
@@ -26,6 +26,7 @@ A smart, context-aware banner that prompts browser users to download the native 
 **Currently Available:**
 
 - ✅ **Windows** (.msi installer)
+
   - Native desktop performance
   - Offline access to schedules & data
   - System tray notifications
@@ -44,6 +45,7 @@ A smart, context-aware banner that prompts browser users to download the native 
 **Coming Soon:**
 
 - 🚧 **macOS** (.dmg installer)
+
   - Apple Silicon optimized
   - TouchBar support
   - iCloud integration
@@ -52,6 +54,7 @@ A smart, context-aware banner that prompts browser users to download the native 
   - Native macOS design
 
 - 🚧 **iOS** (.ipa installer)
+
   - Native iOS experience
   - Face ID / Touch ID
   - Widgets support
@@ -350,14 +353,17 @@ Output: `src-tauri/gen/android/app/build/outputs/apk/universal/release/app-unive
 ### Test Offline Indicator
 
 1. **Browser Online:**
+
    - Badge should be hidden
 
 2. **Browser Offline:**
+
    - Disconnect internet
    - "Offline Mode" badge should appear (red)
    - Reconnect - badge disappears
 
 3. **Tauri Online:**
+
    - Badge shows "App Mode • Online" (green)
 
 4. **Tauri Offline:**
@@ -367,6 +373,7 @@ Output: `src-tauri/gen/android/app/build/outputs/apk/universal/release/app-unive
 ### Test Quick Actions
 
 1. **In Browser:**
+
    - Lightning bolt icon should NOT appear
 
 2. **In Tauri:**

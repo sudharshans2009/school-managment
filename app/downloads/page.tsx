@@ -106,7 +106,7 @@ export default function DownloadsPage() {
           {/* Header */}
           <div className="text-center space-y-4">
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-              Download Amrita Vidyalayam Management
+              Download Amrita Vidyalayam, Ettimadai
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Get the native app for the best experience on your device. Fast,

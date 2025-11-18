@@ -1,6 +1,6 @@
 # Work Done and Substitute Management Systems
 
-This document describes the implementation of two interconnected systems for the Amrita Vidyalayam Management platform.
+This document describes the implementation of two interconnected systems for the Amrita Vidyalayam, Ettimadai platform.
 
 ## Overview
 

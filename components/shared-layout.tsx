@@ -18,7 +18,7 @@ interface SharedLayoutProps {
 
 export function SharedLayout({
   children,
-  title = "Amrita Vidyalayam Management",
+  title = "Amrita Vidyalayam, Ettimadai",
   description,
   showAuth = true,
 }: SharedLayoutProps) {
@@ -118,7 +118,7 @@ export function SharedLayout({
       <footer className="border-t border-border mt-auto">
         <div className="container mx-auto px-6 py-6">
           <p className="text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Amrita Vidyalayam Management System.
+            © {new Date().getFullYear()} Amrita Vidyalayam, Ettimadai.
             Built with Next.js & ShadCN UI.
           </p>
         </div>

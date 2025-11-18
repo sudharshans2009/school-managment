@@ -23,7 +23,7 @@ export default function Home() {
           {/* Hero Section */}
           <div className="space-y-4 max-w-3xl">
             <h1 className="text-5xl font-bold tracking-tight sm:text-6xl">
-              Amrita Vidyalayam Management System
+              Amrita Vidyalayam, Ettimadai
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Modern, efficient, and intelligent school management with

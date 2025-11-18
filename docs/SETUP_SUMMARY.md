@@ -1,4 +1,4 @@
-# 🎓 Amrita Vidyalayam Management System
+# 🎓 Amrita Vidyalayam, Ettimadai
 
 ## Setup Summary
 
@@ -210,8 +210,8 @@ Already installed and ready to use:
 ### Using Auth Hook
 
 ```typescript
-'use client';
-import { useSession } from '@/lib/auth/client';
+"use client";
+import { useSession } from "@/lib/auth/client";
 
 export function Dashboard() {
   const { data: session, isPending } = useSession();
@@ -226,13 +226,13 @@ export function Dashboard() {
 ### Using React Query
 
 ```typescript
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
 export function ClassroomList() {
   const { data, isLoading } = useQuery({
-    queryKey: ['classrooms'],
+    queryKey: ["classrooms"],
     queryFn: async () => {
-      const res = await fetch('/api/classrooms');
+      const res = await fetch("/api/classrooms");
       return res.json();
     },
   });

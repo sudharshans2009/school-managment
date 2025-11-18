@@ -262,7 +262,7 @@ export default function AdminDashboard() {
   return (
     <DashboardLayout
       title="Admin Portal"
-      description="Amrita Vidyalayam Management"
+      description="Amrita Vidyalayam, Ettimadai"
     >
       <div className="space-y-6">
         {/* Stats Grid */}

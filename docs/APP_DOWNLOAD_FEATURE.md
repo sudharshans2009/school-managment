@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Amrita Vidyalayam Management System now includes a smart app download feature that detects when users access the application through a web browser and prompts them to download the native application for their platform.
+The Amrita Vidyalayam, Ettimadai now includes a smart app download feature that detects when users access the application through a web browser and prompts them to download the native application for their platform.
 
 ---
 
@@ -36,6 +36,7 @@ A client-side component that:
 A comprehensive downloads page featuring:
 
 - **Platform Cards**: Visual cards for each supported platform with:
+
   - Platform icon and name
   - System requirements
   - File size and version information
