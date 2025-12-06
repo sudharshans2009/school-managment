@@ -2386,3 +2386,218 @@ export async function deleteTimetableEntry(
     return { success: false, error: "Failed to delete timetable entry" };
   }
 }
+
+// ============================================
+// STUDENT MANAGEMENT
+// ============================================
+
+export async function getAllStudents(): Promise<any[]> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user || session.user.role !== "admin") {
+      throw new Error("Unauthorized");
+    }
+
+    const allStudents = await db.query.students.findMany({
+      with: {
+        user: true,
+        classroom: true,
+      },
+      orderBy: (students, { asc }) => [asc(students.rollNumber)],
+    });
+
+    return allStudents;
+  } catch (error) {
+    console.error("Error fetching students:", error);
+    throw error;
+  }
+}
+
+export async function createStudent(data: {
+  email: string;
+  name: string;
+  phone?: string;
+  address?: string;
+  password: string;
+  classroomId?: string;
+  rollNumber: string;
+  admissionNumber: string;
+  dateOfBirth: string;
+  bloodGroup?: string;
+  house?: string;
+  admissionDate?: string;
+}): Promise<{ success: boolean; error?: string; data?: any }> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user || session.user.role !== "admin") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    // Check if email already exists
+    const existing = await db.query.users.findFirst({
+      where: eq(users.email, data.email),
+    });
+
+    if (existing) {
+      return { success: false, error: "Email already exists" };
+    }
+
+    const passwordHash = await hashPassword(data.password);
+
+    // Create user
+    const [newUser] = await db
+      .insert(users)
+      .values({
+        email: data.email,
+        name: data.name,
+        phone: data.phone || null,
+        address: data.address || null,
+        role: "student",
+        passwordHash,
+        emailVerified: false,
+      })
+      .returning();
+
+    // Create student
+    const [newStudent] = await db
+      .insert(students)
+      .values({
+        userId: newUser.id,
+        classroomId: data.classroomId || null,
+        rollNumber: data.rollNumber,
+        admissionNumber: data.admissionNumber,
+        dateOfBirth: data.dateOfBirth,
+        bloodGroup: data.bloodGroup || null,
+        house: data.house || null,
+        admissionDate: data.admissionDate || new Date().toISOString(),
+      })
+      .returning();
+
+    // Update classroom strength if classroom assigned
+    if (data.classroomId) {
+      await db
+        .update(classrooms)
+        .set({
+          currentStrength: sql`${classrooms.currentStrength} + 1`,
+        })
+        .where(eq(classrooms.id, data.classroomId));
+    }
+
+    return { success: true, data: { ...newStudent, user: newUser } };
+  } catch (error) {
+    console.error("Error creating student:", error);
+    return { success: false, error: "Failed to create student" };
+  }
+}
+
+export async function updateStudent(
+  id: string,
+  data: {
+    email?: string;
+    name?: string;
+    phone?: string;
+    address?: string;
+    classroomId?: string;
+    rollNumber?: string;
+    bloodGroup?: string;
+    house?: string;
+  },
+): Promise<{ success: boolean; error?: string; data?: any }> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user || session.user.role !== "admin") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const student = await db.query.students.findFirst({
+      where: eq(students.id, id),
+    });
+
+    if (!student) {
+      return { success: false, error: "Student not found" };
+    }
+
+    // Update user if user fields provided
+    if (data.email || data.name || data.phone || data.address) {
+      await db
+        .update(users)
+        .set({
+          email: data.email,
+          name: data.name,
+          phone: data.phone,
+          address: data.address,
+        })
+        .where(eq(users.id, student.userId));
+    }
+
+    // Update student
+    const updateData: any = {};
+    if (data.classroomId !== undefined) updateData.classroomId = data.classroomId;
+    if (data.rollNumber) updateData.rollNumber = data.rollNumber;
+    if (data.bloodGroup) updateData.bloodGroup = data.bloodGroup;
+    if (data.house) updateData.house = data.house;
+
+    const [updatedStudent] = await db
+      .update(students)
+      .set(updateData)
+      .where(eq(students.id, id))
+      .returning();
+
+    return { success: true, data: updatedStudent };
+  } catch (error) {
+    console.error("Error updating student:", error);
+    return { success: false, error: "Failed to update student" };
+  }
+}
+
+export async function deleteStudent(
+  id: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user || session.user.role !== "admin") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const student = await db.query.students.findFirst({
+      where: eq(students.id, id),
+    });
+
+    if (!student) {
+      return { success: false, error: "Student not found" };
+    }
+
+    // Delete student record
+    await db.delete(students).where(eq(students.id, id));
+
+    // Delete user record
+    await db.delete(users).where(eq(users.id, student.userId));
+
+    // Update classroom strength if student was in a classroom
+    if (student.classroomId) {
+      await db
+        .update(classrooms)
+        .set({
+          currentStrength: sql`${classrooms.currentStrength} - 1`,
+        })
+        .where(eq(classrooms.id, student.classroomId));
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting student:", error);
+    return { success: false, error: "Failed to delete student" };
+  }
+}
