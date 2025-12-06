@@ -15,6 +15,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
+import { useSession } from "@/lib/auth/client";
+import { getUnreadCount, getNotifications, markAsRead } from "@/actions/notifications";
 
 interface Notification {
   id: string;
@@ -30,38 +32,36 @@ interface Notification {
 export function NotificationBell() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { data: session } = useSession();
 
   const { data: unreadCount } = useQuery({
     queryKey: ["notification-count"],
     queryFn: async () => {
-      const res = await fetch("/api/notifications?countOnly=true");
-      if (!res.ok) return 0;
-      const data = await res.json();
-      return data.count || 0;
+      if (!session?.user?.id) return 0;
+      const result = await getUnreadCount(session.user.id);
+      return result.success ? result.data : 0;
     },
+    enabled: !!session?.user?.id,
     refetchInterval: 30000, // Refetch every 30 seconds
   });
 
   const { data: recentNotifications } = useQuery<Notification[]>({
     queryKey: ["recent-notifications"],
     queryFn: async () => {
-      const res = await fetch("/api/notifications?unreadOnly=true");
-      if (!res.ok) return [];
-      const data = await res.json();
-      return data.slice(0, 5); // Get top 5 unread
+      if (!session?.user?.id) return [];
+      const result = await getNotifications(session.user.id, true);
+      if (!result.success) return [];
+      return result.data.slice(0, 5); // Get top 5 unread
     },
+    enabled: !!session?.user?.id,
     refetchInterval: 30000,
   });
 
   const markAsReadMutation = useMutation({
     mutationFn: async (notificationId: string) => {
-      const response = await fetch("/api/notifications", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notificationId }),
-      });
-      if (!response.ok) throw new Error("Failed to mark as read");
-      return response.json();
+      const result = await markAsRead(notificationId);
+      if (!result.success) throw new Error(result.error || "Failed to mark as read");
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notification-count"] });

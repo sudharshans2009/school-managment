@@ -41,6 +41,7 @@ import {
   getClassroomStudents,
   type TeacherAssignment,
 } from "@/actions/teacher";
+import { markAttendance } from "@/actions/attendance";
 
 interface Student {
   id: string;
@@ -101,13 +102,11 @@ export default function TeacherClassesPage() {
       }[];
       markedBy: string;
     }) => {
-      const res = await fetch("/api/attendance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to mark attendance");
-      return res.json();
+      const result = await markAttendance(data.records, data.markedBy);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to mark attendance");
+      }
+      return result.data;
     },
     onSuccess: () => {
       toast.success("Attendance marked successfully");

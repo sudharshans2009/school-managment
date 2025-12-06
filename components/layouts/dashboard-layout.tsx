@@ -56,12 +56,13 @@ export function DashboardLayout({
   };
 
   // Fetch announcements count for notification badge
-  const { data: unreadCount } = useQuery<{ count: number }>({
+  const { data: unreadCount } = useQuery<number>({
     queryKey: ["notifications-unread-count"],
     queryFn: async () => {
-      const response = await fetch("/api/notifications?countOnly=true");
-      if (!response.ok) return { count: 0 };
-      return response.json();
+      if (!session?.user?.id) return 0;
+      const { getUnreadCount } = await import("@/actions/notifications");
+      const result = await getUnreadCount(session.user.id);
+      return result.success ? result.data : 0;
     },
     enabled: !!session,
     refetchInterval: 30 * 1000, // Refetch every 30 seconds for real-time updates
@@ -145,12 +146,12 @@ export function DashboardLayout({
                 <Button variant="ghost" size="sm" className="relative">
                   <Bell className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Notifications</span>
-                  {unreadCount && unreadCount.count > 0 && (
+                  {unreadCount && unreadCount > 0 && (
                     <Badge
                       variant="destructive"
                       className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
                     >
-                      {unreadCount.count > 9 ? "9+" : unreadCount.count}
+                      {unreadCount > 9 ? "9+" : unreadCount}
                     </Badge>
                   )}
                 </Button>
