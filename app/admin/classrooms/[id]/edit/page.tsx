@@ -81,7 +81,7 @@ interface TimetableEntry {
   dayOfWeek: number;
   startTime: string;
   endTime: string;
-  roomNumber: string;
+  room: string | null;
   subject: { id: string; name: string };
   teacher: { id: string; name: string };
 }
@@ -150,8 +150,8 @@ export default function EditClassroomPage({
     queryKey: ["classroom", resolvedParams.id],
     queryFn: async () => {
       const result = await getClassroomById(resolvedParams.id);
-      if (!result.success) throw new Error(result.error || "Failed to fetch classroom");
-      return result.data;
+      if (!result.success || !result.data) throw new Error(result.error || "Failed to fetch classroom");
+      return result.data as Classroom;
     },
   });
 
@@ -311,7 +311,7 @@ export default function EditClassroomPage({
           room: body.roomNumber,
         });
         if (!result.success) throw new Error(result.error || "Failed to update timetable");
-        return result.data;
+        return { success: true };
       } else {
         const result = await createTimetableEntry({
           classroomId: resolvedParams.id,
@@ -327,7 +327,7 @@ export default function EditClassroomPage({
         if (!result.success) {
           throw new Error(result.error || "Failed to save timetable");
         }
-        return result.data;
+        return result.entry;
       }
     },
     onSuccess: () => {
@@ -897,7 +897,7 @@ export default function EditClassroomPage({
                                   {entry.subject.name}
                                 </p>
                                 <p className="text-sm text-gray-600">
-                                  {entry.teacher.name} • Room {entry.roomNumber}
+                                  {entry.teacher.name} • Room {entry.room || 'N/A'}
                                 </p>
                               </div>
                             ) : (
@@ -1038,7 +1038,7 @@ export default function EditClassroomPage({
                 name="roomNumber"
                 placeholder="e.g., 101"
                 required
-                defaultValue={editingPeriod?.existingEntry?.roomNumber}
+                defaultValue={editingPeriod?.existingEntry?.room || ''}
               />
             </div>
             {saveTimetableMutation.error && (

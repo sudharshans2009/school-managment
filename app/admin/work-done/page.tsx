@@ -81,7 +81,7 @@ export default function WorkDoneManagementPage() {
     queryKey: ["classrooms"],
     queryFn: async () => {
       const result = await getAllClassrooms();
-      if (!result.success) throw new Error(result.error || "Failed to fetch classrooms");
+      if (!result.success || !result.data) throw new Error(result.error || "Failed to fetch classrooms");
       return result.data.map((c) => ({ id: c.id, name: c.name }));
     },
     enabled: !!session?.user?.id,

@@ -113,7 +113,7 @@ export default function SubjectsPage() {
       if (!result.success) {
         throw new Error(result.error || "Failed to create subject");
       }
-      return result.data;
+      return result.subject;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subjects"] });
@@ -139,7 +139,7 @@ export default function SubjectsPage() {
       if (!result.success) {
         throw new Error(result.error || "Failed to update subject");
       }
-      return result.data;
+      return result.subject;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subjects"] });
@@ -157,7 +157,7 @@ export default function SubjectsPage() {
       if (!result.success) {
         throw new Error(result.error || "Failed to delete subject");
       }
-      return result.data;
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subjects"] });

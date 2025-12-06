@@ -101,7 +101,7 @@ export default function TimetablePage() {
     queryKey: ["classrooms"],
     queryFn: async () => {
       const result = await getAllClassrooms();
-      if (!result.success) throw new Error(result.error || "Failed to fetch classrooms");
+      if (!result.success || !result.data) throw new Error(result.error || "Failed to fetch classrooms");
       return result.data.map((c) => ({ id: c.id, name: c.name }));
     },
   });
@@ -150,7 +150,7 @@ export default function TimetablePage() {
       if (!result.success) {
         throw new Error(result.error || "Failed to create timetable entry");
       }
-      return result.data;
+      return result.entry;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["timetable"] });
@@ -176,7 +176,7 @@ export default function TimetablePage() {
       if (!result.success) {
         throw new Error(result.error || "Failed to update timetable entry");
       }
-      return result.data;
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["timetable"] });
@@ -190,7 +190,7 @@ export default function TimetablePage() {
       if (!result.success) {
         throw new Error(result.error || "Failed to delete timetable entry");
       }
-      return result.data;
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["timetable"] });
