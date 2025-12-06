@@ -44,6 +44,8 @@ import {
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { AdminHeader } from "@/components/admin/admin-header";
+import { getAllExams, createExamAdmin, updateExam, deleteExam, getAllSubjects } from "@/actions/admin";
+import { getAllClassrooms } from "@/actions/classrooms";
 
 interface Exam {
   id: string;
@@ -112,15 +114,14 @@ export default function AdminExamsPage() {
   const { data: exams, isLoading: examsLoading } = useQuery<Exam[]>({
     queryKey: ["exams", filterClassroom, filterSubject],
     queryFn: async () => {
-      const params = new URLSearchParams();
+      const filters: any = {};
       if (filterClassroom && filterClassroom !== "all")
-        params.append("classroomId", filterClassroom);
+        filters.classroomId = filterClassroom;
       if (filterSubject && filterSubject !== "all")
-        params.append("subjectId", filterSubject);
+        filters.subjectId = filterSubject;
 
-      const response = await fetch(`/api/exams?${params.toString()}`);
-      if (!response.ok) throw new Error("Failed to fetch exams");
-      return response.json();
+      const result = await getAllExams(filters);
+      return result;
     },
   });
 
@@ -128,9 +129,14 @@ export default function AdminExamsPage() {
   const { data: classrooms } = useQuery<Classroom[]>({
     queryKey: ["classrooms"],
     queryFn: async () => {
-      const response = await fetch("/api/classrooms");
-      if (!response.ok) throw new Error("Failed to fetch classrooms");
-      return response.json();
+      const result = await getAllClassrooms();
+      if (!result.success) throw new Error(result.error || "Failed to fetch classrooms");
+      return result.data.map((c) => ({
+        id: c.id,
+        name: c.name,
+        grade: c.grade,
+        section: c.section,
+      }));
     },
   });
 
@@ -138,34 +144,32 @@ export default function AdminExamsPage() {
   const { data: subjects } = useQuery<Subject[]>({
     queryKey: ["subjects"],
     queryFn: async () => {
-      const response = await fetch("/api/subjects");
-      if (!response.ok) throw new Error("Failed to fetch subjects");
-      return response.json();
+      const result = await getAllSubjects();
+      return result.map((s) => ({
+        id: s.id,
+        name: s.name,
+        code: s.code,
+      }));
     },
   });
 
   // Create exam mutation
   const createExamMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const response = await fetch("/api/exams", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          totalMarks: parseInt(data.totalMarks),
-          passingMarks: data.passingMarks
-            ? parseInt(data.passingMarks)
-            : undefined,
-          duration: data.duration ? parseInt(data.duration) : undefined,
-        }),
+      const result = await createExamAdmin({
+        ...data,
+        totalMarks: parseInt(data.totalMarks),
+        passingMarks: data.passingMarks
+          ? parseInt(data.passingMarks)
+          : undefined,
+        duration: data.duration ? parseInt(data.duration) : undefined,
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to create exam");
+      if (!result.success) {
+        throw new Error(result.error || "Failed to create exam");
       }
 
-      return response.json();
+      return result.exam;
     },
     onSuccess: () => {
       toast.success("Exam created successfully");
@@ -187,18 +191,13 @@ export default function AdminExamsPage() {
       examId: string;
       isFinalized: boolean;
     }) => {
-      const response = await fetch(`/api/exams/${examId}/finalize`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isFinalized }),
-      });
+      const result = await updateExam(examId, { isFinalized });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to finalize exam");
+      if (!result.success) {
+        throw new Error(result.error || "Failed to finalize exam");
       }
 
-      return response.json();
+      return result.exam;
     },
     onSuccess: () => {
       toast.success("Exam finalization updated");
@@ -212,16 +211,13 @@ export default function AdminExamsPage() {
   // Delete exam mutation
   const deleteExamMutation = useMutation({
     mutationFn: async (examId: string) => {
-      const response = await fetch(`/api/exams/${examId}`, {
-        method: "DELETE",
-      });
+      const result = await deleteExam(examId);
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to delete exam");
+      if (!result.success) {
+        throw new Error(result.error || "Failed to delete exam");
       }
 
-      return response.json();
+      return result;
     },
     onSuccess: () => {
       toast.success("Exam deleted successfully");
