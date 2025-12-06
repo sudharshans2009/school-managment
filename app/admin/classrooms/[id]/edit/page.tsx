@@ -33,7 +33,8 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
-import { getAllTeachers } from "@/actions/admin";
+import { getAllTeachers, getAllSubjects, getAllStudents, getTimetable, createTimetableEntry, updateTimetableEntry, deleteTimetableEntry } from "@/actions/admin";
+import { getClassroomById } from "@/actions/classrooms";
 
 interface Classroom {
   id: string;
@@ -148,9 +149,9 @@ export default function EditClassroomPage({
   const { data: classroom, isLoading } = useQuery<Classroom>({
     queryKey: ["classroom", resolvedParams.id],
     queryFn: async () => {
-      const response = await fetch(`/api/classrooms/${resolvedParams.id}`);
-      if (!response.ok) throw new Error("Failed to fetch classroom");
-      return response.json();
+      const result = await getClassroomById(resolvedParams.id);
+      if (!result.success) throw new Error(result.error || "Failed to fetch classroom");
+      return result.data;
     },
   });
 
@@ -165,29 +166,24 @@ export default function EditClassroomPage({
   const { data: subjects } = useQuery<Subject[]>({
     queryKey: ["subjects"],
     queryFn: async () => {
-      const response = await fetch("/api/subjects");
-      if (!response.ok) throw new Error("Failed to fetch subjects");
-      return response.json();
+      const result = await getAllSubjects();
+      return result.map((s) => ({ id: s.id, name: s.name }));
     },
   });
 
   const { data: allStudents } = useQuery<Student[]>({
     queryKey: ["students"],
     queryFn: async () => {
-      const response = await fetch("/api/students");
-      if (!response.ok) throw new Error("Failed to fetch students");
-      return response.json();
+      const result = await getAllStudents();
+      return result;
     },
   });
 
   const { data: timetable } = useQuery<TimetableEntry[]>({
     queryKey: ["timetable", resolvedParams.id],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/timetable?classroomId=${resolvedParams.id}`,
-      );
-      if (!response.ok) throw new Error("Failed to fetch timetable");
-      return response.json();
+      const result = await getTimetable(resolvedParams.id);
+      return result;
     },
   });
 
@@ -310,24 +306,28 @@ export default function EditClassroomPage({
     }) => {
       if (data.id) {
         const { id, ...body } = data;
-        const response = await fetch(`/api/timetable/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
+        const result = await updateTimetableEntry(id, {
+          ...body,
+          room: body.roomNumber,
         });
-        if (!response.ok) throw new Error("Failed to update timetable");
-        return response.json();
+        if (!result.success) throw new Error(result.error || "Failed to update timetable");
+        return result.data;
       } else {
-        const response = await fetch("/api/timetable", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...data, classroomId: resolvedParams.id }),
+        const result = await createTimetableEntry({
+          classroomId: resolvedParams.id,
+          subjectId: data.subjectId,
+          teacherId: data.teacherId,
+          dayOfWeek: data.dayOfWeek,
+          periodNumber: 0, // Default, determined by time
+          startTime: data.startTime,
+          endTime: data.endTime,
+          room: data.roomNumber,
+          sessionType: "regular",
         });
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Failed to save timetable");
+        if (!result.success) {
+          throw new Error(result.error || "Failed to save timetable");
         }
-        return response.json();
+        return result.data;
       }
     },
     onSuccess: () => {
@@ -340,11 +340,9 @@ export default function EditClassroomPage({
 
   const deleteTimetableMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/timetable/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to delete timetable entry");
-      return response.json();
+      const result = await deleteTimetableEntry(id);
+      if (!result.success) throw new Error(result.error || "Failed to delete timetable entry");
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
