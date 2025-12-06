@@ -1790,3 +1790,599 @@ function parseRelativeTime(timeStr: string): number {
 
   return Infinity;
 }
+
+// ============================================
+// SUBJECTS MANAGEMENT
+// ============================================
+
+export interface Subject {
+  id: string;
+  name: string;
+  code: string;
+  description: string | null;
+  applicableGrades: string | null;
+  applicableSections: string | null;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  teacherAssignments?: Array<{
+    teacher: { id: string; name: string };
+  }>;
+}
+
+/**
+ * Get all subjects
+ */
+export async function getAllSubjects(): Promise<Subject[]> {
+  try {
+    const allSubjects = await db.query.subjects.findMany({
+      orderBy: (subjects, { asc }) => [asc(subjects.name)],
+      with: {
+        teacherAssignments: {
+          with: {
+            teacher: true,
+          },
+        },
+      },
+    });
+
+    return allSubjects;
+  } catch (error) {
+    console.error("Error fetching subjects:", error);
+    throw new Error("Failed to fetch subjects");
+  }
+}
+
+/**
+ * Create a new subject
+ */
+export async function createSubject(data: {
+  name: string;
+  code: string;
+  description?: string;
+  applicableGrades?: string[];
+  applicableSections?: string[];
+}): Promise<{ success: boolean; subject?: Subject; error?: string }> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user || session.user.role !== "admin") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    // Check if code already exists
+    const existingSubject = await db.query.subjects.findFirst({
+      where: eq(subjects.code, data.code),
+    });
+
+    if (existingSubject) {
+      return { success: false, error: "Subject code already exists" };
+    }
+
+    const [newSubject] = await db
+      .insert(subjects)
+      .values({
+        name: data.name,
+        code: data.code,
+        description: data.description || null,
+        applicableGrades: data.applicableGrades
+          ? JSON.stringify(data.applicableGrades)
+          : null,
+        applicableSections: data.applicableSections
+          ? JSON.stringify(data.applicableSections)
+          : null,
+      })
+      .returning();
+
+    return { success: true, subject: newSubject };
+  } catch (error) {
+    console.error("Error creating subject:", error);
+    return { success: false, error: "Failed to create subject" };
+  }
+}
+
+/**
+ * Update a subject
+ */
+export async function updateSubject(
+  subjectId: string,
+  data: {
+    name?: string;
+    code?: string;
+    description?: string;
+    applicableGrades?: string[];
+    applicableSections?: string[];
+  },
+): Promise<{ success: boolean; subject?: Subject; error?: string }> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user || session.user.role !== "admin") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    // If updating code, check it doesn't exist
+    if (data.code) {
+      const existingSubject = await db.query.subjects.findFirst({
+        where: and(eq(subjects.code, data.code), sql`${subjects.id} != ${subjectId}`),
+      });
+
+      if (existingSubject) {
+        return { success: false, error: "Subject code already exists" };
+      }
+    }
+
+    const updateData: Partial<typeof subjects.$inferInsert> = {
+      updatedAt: new Date(),
+    };
+
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.code !== undefined) updateData.code = data.code;
+    if (data.description !== undefined) updateData.description = data.description;
+    if (data.applicableGrades !== undefined) {
+      updateData.applicableGrades = JSON.stringify(data.applicableGrades);
+    }
+    if (data.applicableSections !== undefined) {
+      updateData.applicableSections = JSON.stringify(data.applicableSections);
+    }
+
+    const [updatedSubject] = await db
+      .update(subjects)
+      .set(updateData)
+      .where(eq(subjects.id, subjectId))
+      .returning();
+
+    return { success: true, subject: updatedSubject };
+  } catch (error) {
+    console.error("Error updating subject:", error);
+    return { success: false, error: "Failed to update subject" };
+  }
+}
+
+/**
+ * Delete a subject
+ */
+export async function deleteSubject(
+  subjectId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user || session.user.role !== "admin") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    await db.delete(subjects).where(eq(subjects.id, subjectId));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting subject:", error);
+    return { success: false, error: "Failed to delete subject" };
+  }
+}
+
+// ============================================
+// EXAMS MANAGEMENT
+// ============================================
+
+export interface Exam {
+  id: string;
+  name: string;
+  examType: string;
+  examDate: string;
+  totalMarks: number;
+  passingMarks: number | null;
+  duration: number | null;
+  syllabus: string | null;
+  instructions: string | null;
+  isFinalized: boolean;
+  academicYear: string;
+  term: string | null;
+  createdAt: Date | null;
+  subject: {
+    id: string;
+    name: string;
+    code: string;
+  };
+  classroom: {
+    id: string;
+    name: string;
+    grade: string;
+    section: string;
+  };
+}
+
+/**
+ * Get all exams with optional filtering
+ */
+export async function getAllExams(filters?: {
+  classroomId?: string;
+  subjectId?: string;
+  isFinalized?: boolean;
+  examType?: string;
+}): Promise<Exam[]> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      throw new Error("Unauthorized");
+    }
+
+    const conditions: SQL<unknown>[] = [];
+    if (filters?.classroomId) conditions.push(eq(exams.classroomId, filters.classroomId));
+    if (filters?.subjectId) conditions.push(eq(exams.subjectId, filters.subjectId));
+    if (filters?.isFinalized !== undefined) {
+      conditions.push(eq(exams.isFinalized, filters.isFinalized));
+    }
+    if (filters?.examType) {
+      conditions.push(
+        eq(
+          exams.examType,
+          filters.examType as
+            | "class_test"
+            | "unit_test"
+            | "quarterly"
+            | "midterm"
+            | "final_exam",
+        ),
+      );
+    }
+
+    const examsList = await db
+      .select({
+        id: exams.id,
+        name: exams.name,
+        examType: exams.examType,
+        examDate: exams.examDate,
+        totalMarks: exams.totalMarks,
+        passingMarks: exams.passingMarks,
+        duration: exams.duration,
+        syllabus: exams.syllabus,
+        instructions: exams.instructions,
+        isFinalized: exams.isFinalized,
+        academicYear: exams.academicYear,
+        term: exams.term,
+        createdAt: exams.createdAt,
+        subject: {
+          id: subjects.id,
+          name: subjects.name,
+          code: subjects.code,
+        },
+        classroom: {
+          id: classrooms.id,
+          name: classrooms.name,
+          grade: classrooms.grade,
+          section: classrooms.section,
+        },
+      })
+      .from(exams)
+      .leftJoin(subjects, eq(exams.subjectId, subjects.id))
+      .leftJoin(classrooms, eq(exams.classroomId, classrooms.id))
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(exams.examDate));
+
+    return examsList as Exam[];
+  } catch (error) {
+    console.error("Error fetching exams:", error);
+    throw new Error("Failed to fetch exams");
+  }
+}
+
+/**
+ * Create a new exam
+ */
+export async function createExamAdmin(data: {
+  name: string;
+  examType: string;
+  subjectId: string;
+  classroomId: string;
+  examDate: string;
+  totalMarks: number;
+  passingMarks?: number;
+  duration?: number;
+  syllabus?: string;
+  instructions?: string;
+  academicYear: string;
+  term?: string;
+}): Promise<{ success: boolean; exam?: Exam; error?: string }> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user || session.user.role !== "admin") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const [newExam] = await db
+      .insert(exams)
+      .values({
+        name: data.name,
+        examType: data.examType as never,
+        subjectId: data.subjectId,
+        classroomId: data.classroomId,
+        examDate: data.examDate,
+        totalMarks: data.totalMarks,
+        passingMarks: data.passingMarks || null,
+        duration: data.duration || null,
+        syllabus: data.syllabus || null,
+        instructions: data.instructions || null,
+        isFinalized: false,
+        academicYear: data.academicYear,
+        term: data.term || null,
+      })
+      .returning();
+
+    return { success: true, exam: newExam as Exam };
+  } catch (error) {
+    console.error("Error creating exam:", error);
+    return { success: false, error: "Failed to create exam" };
+  }
+}
+
+/**
+ * Update an exam
+ */
+export async function updateExam(
+  examId: string,
+  data: Partial<{
+    name: string;
+    examType: string;
+    examDate: string;
+    totalMarks: number;
+    passingMarks: number;
+    duration: number;
+    syllabus: string;
+    instructions: string;
+    isFinalized: boolean;
+  }>,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user || session.user.role !== "admin") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const updateData: Partial<typeof exams.$inferInsert> = {
+      updatedAt: new Date(),
+    };
+
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.examType !== undefined) updateData.examType = data.examType as never;
+    if (data.examDate !== undefined) updateData.examDate = data.examDate;
+    if (data.totalMarks !== undefined) updateData.totalMarks = data.totalMarks;
+    if (data.passingMarks !== undefined) updateData.passingMarks = data.passingMarks;
+    if (data.duration !== undefined) updateData.duration = data.duration;
+    if (data.syllabus !== undefined) updateData.syllabus = data.syllabus;
+    if (data.instructions !== undefined) updateData.instructions = data.instructions;
+    if (data.isFinalized !== undefined) updateData.isFinalized = data.isFinalized;
+
+    await db.update(exams).set(updateData).where(eq(exams.id, examId));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating exam:", error);
+    return { success: false, error: "Failed to update exam" };
+  }
+}
+
+/**
+ * Delete an exam
+ */
+export async function deleteExam(
+  examId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user || session.user.role !== "admin") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    await db.delete(exams).where(eq(exams.id, examId));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting exam:", error);
+    return { success: false, error: "Failed to delete exam" };
+  }
+}
+
+// ============================================
+// TIMETABLE MANAGEMENT
+// ============================================
+
+export interface TimetableEntry {
+  id: string;
+  dayOfWeek: number;
+  periodNumber: number;
+  startTime: string;
+  endTime: string;
+  room: string | null;
+  sessionType: string | null;
+  isActive: boolean;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  classroom: { id: string; name: string };
+  subject: { id: string; name: string };
+  teacher: { id: string; name: string };
+}
+
+/**
+ * Get timetable entries
+ */
+export async function getTimetable(classroomId?: string): Promise<TimetableEntry[]> {
+  try {
+    let query;
+    if (classroomId) {
+      query = db.query.timetable.findMany({
+        where: eq(timetable.classroomId, classroomId),
+        with: {
+          classroom: true,
+          subject: true,
+          teacher: true,
+        },
+        orderBy: (timetable, { asc }) => [
+          asc(timetable.dayOfWeek),
+          asc(timetable.startTime),
+        ],
+      });
+    } else {
+      query = db.query.timetable.findMany({
+        with: {
+          classroom: true,
+          subject: true,
+          teacher: true,
+        },
+        orderBy: (timetable, { asc }) => [
+          asc(timetable.dayOfWeek),
+          asc(timetable.startTime),
+        ],
+      });
+    }
+
+    const entries = await query;
+    return entries as TimetableEntry[];
+  } catch (error) {
+    console.error("Error fetching timetable:", error);
+    throw new Error("Failed to fetch timetable");
+  }
+}
+
+/**
+ * Create a timetable entry
+ */
+export async function createTimetableEntry(data: {
+  classroomId: string;
+  subjectId: string;
+  teacherId: string;
+  dayOfWeek: number;
+  periodNumber: number;
+  startTime: string;
+  endTime: string;
+  room?: string;
+  sessionType?: string;
+}): Promise<{ success: boolean; entry?: TimetableEntry; error?: string }> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user || session.user.role !== "admin") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    // Check for time conflicts
+    const existing = await db.query.timetable.findFirst({
+      where: and(
+        eq(timetable.classroomId, data.classroomId),
+        eq(timetable.dayOfWeek, data.dayOfWeek),
+        eq(timetable.periodNumber, data.periodNumber),
+      ),
+    });
+
+    if (existing) {
+      return { success: false, error: "Period slot already occupied" };
+    }
+
+    const [newEntry] = await db
+      .insert(timetable)
+      .values({
+        classroomId: data.classroomId,
+        subjectId: data.subjectId,
+        teacherId: data.teacherId,
+        dayOfWeek: data.dayOfWeek,
+        periodNumber: data.periodNumber,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        room: data.room || null,
+        sessionType: data.sessionType as never || null,
+        isActive: true,
+      })
+      .returning();
+
+    return { success: true, entry: newEntry as TimetableEntry };
+  } catch (error) {
+    console.error("Error creating timetable entry:", error);
+    return { success: false, error: "Failed to create timetable entry" };
+  }
+}
+
+/**
+ * Update a timetable entry
+ */
+export async function updateTimetableEntry(
+  entryId: string,
+  data: {
+    subjectId?: string;
+    teacherId?: string;
+    startTime?: string;
+    endTime?: string;
+    room?: string;
+    sessionType?: string;
+  },
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user || session.user.role !== "admin") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    const updateData: Partial<typeof timetable.$inferInsert> = {
+      updatedAt: new Date(),
+    };
+
+    if (data.subjectId !== undefined) updateData.subjectId = data.subjectId;
+    if (data.teacherId !== undefined) updateData.teacherId = data.teacherId;
+    if (data.startTime !== undefined) updateData.startTime = data.startTime;
+    if (data.endTime !== undefined) updateData.endTime = data.endTime;
+    if (data.room !== undefined) updateData.room = data.room;
+    if (data.sessionType !== undefined) updateData.sessionType = data.sessionType as never;
+
+    await db.update(timetable).set(updateData).where(eq(timetable.id, entryId));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating timetable entry:", error);
+    return { success: false, error: "Failed to update timetable entry" };
+  }
+}
+
+/**
+ * Delete a timetable entry
+ */
+export async function deleteTimetableEntry(
+  entryId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user || session.user.role !== "admin") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    await db.delete(timetable).where(eq(timetable.id, entryId));
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting timetable entry:", error);
+    return { success: false, error: "Failed to delete timetable entry" };
+  }
+}

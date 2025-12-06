@@ -50,7 +50,7 @@ export default function ContributorsPage() {
                 <CardHeader className="text-center pb-2">
                   {/* Avatar Circle */}
                   <div className="flex justify-center mb-4">
-                    <div className="w-24 h-24 bg-gradient-to-br from-primary to-primary/60 rounded-full flex items-center justify-center shadow-lg">
+                    <div className="w-24 h-24 bg-linear-to-br from-primary to-primary/60 rounded-full flex items-center justify-center shadow-lg">
                       <span className="text-3xl font-bold text-primary-foreground">
                         {contributor.name
                           .split(" ")

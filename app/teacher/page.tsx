@@ -1410,32 +1410,37 @@ export default function TeacherPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <Tabs
-                      defaultValue={primaryClasses[0]?.classroomId}
-                      className="space-y-4"
-                    >
-                      <TabsList
-                        className="grid w-full"
-                        style={{
-                          gridTemplateColumns: `repeat(${primaryClasses.length}, 1fr)`,
-                        }}
+                    {primaryClasses.length === 0 ? (
+                      <p className="text-muted-foreground text-center py-8">
+                        No primary class assignments found.
+                      </p>
+                    ) : (
+                      <Tabs
+                        defaultValue={primaryClasses[0]?.classroomId}
+                        className="space-y-4"
                       >
+                        <TabsList
+                          className="grid w-full"
+                          style={{
+                            gridTemplateColumns: `repeat(${primaryClasses.length}, 1fr)`,
+                          }}
+                        >
+                          {primaryClasses.map((assignment) => (
+                            <TabsTrigger
+                              key={assignment.classroomId}
+                              value={assignment.classroomId}
+                              className="rounded-lg"
+                            >
+                              {assignment.classroom.name}
+                            </TabsTrigger>
+                          ))}
+                        </TabsList>
+
                         {primaryClasses.map((assignment) => (
-                          <TabsTrigger
+                          <TabsContent
                             key={assignment.classroomId}
                             value={assignment.classroomId}
-                            className="rounded-lg"
                           >
-                            {assignment.classroom.name}
-                          </TabsTrigger>
-                        ))}
-                      </TabsList>
-
-                      {primaryClasses.map((assignment) => (
-                        <TabsContent
-                          key={assignment.classroomId}
-                          value={assignment.classroomId}
-                        >
                           <div className="space-y-3">
                             {classWorkDoneRecords
                               ?.filter(
@@ -1533,6 +1538,7 @@ export default function TeacherPage() {
                         </TabsContent>
                       ))}
                     </Tabs>
+                    )}
                   </CardContent>
                 </Card>
               )}
