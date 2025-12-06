@@ -113,7 +113,7 @@ export default function TeacherExamsPage() {
       const allExams = await getTeacherExams(session.user.id);
 
       // Filter for non-finalized exams only (teachers can only upload to draft exams)
-      return allExams.filter((exam: any) => !exam.isFinalized);
+      return allExams.filter((exam) => !exam.isFinalized);
     },
     enabled: !!session?.user?.id,
   });

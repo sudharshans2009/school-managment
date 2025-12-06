@@ -2540,7 +2540,7 @@ export async function updateStudent(
     }
 
     // Update student
-    const updateData: any = {};
+    const updateData: Partial<typeof students.$inferInsert> = {};
     if (data.classroomId !== undefined) updateData.classroomId = data.classroomId;
     if (data.rollNumber) updateData.rollNumber = data.rollNumber;
     if (data.bloodGroup) updateData.bloodGroup = data.bloodGroup;
