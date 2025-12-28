@@ -20,6 +20,7 @@ import { Lock, Mail, Loader2, Eye, EyeOff, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { updateUserSettings } from "@/actions/user";
+import { DiscordRPCSettingsCard } from "@/components/settings/discord-rpc-settings-card";
 
 export default function SettingsPage() {
   const { data: session, isPending: sessionPending } = useSession();
@@ -301,6 +302,9 @@ export default function SettingsPage() {
             verify it before you can log in again.
           </AlertDescription>
         </Alert>
+
+        {/* Discord Rich Presence Settings */}
+        <DiscordRPCSettingsCard />
       </div>
     </DashboardLayout>
   );

@@ -1,10 +1,11 @@
 mod csv_export;
-mod settings_db;
-mod system_tray;
-mod notifications;
-mod shortcuts;
-mod updater;
+mod discord_rpc;
 mod file_system;
+mod notifications;
+mod settings_db;
+mod shortcuts;
+mod system_tray;
+mod updater;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -78,6 +79,12 @@ pub fn run() {
             file_system::get_file_info,
             file_system::select_file_dialog,
             file_system::select_folder_dialog,
+            // Discord RPC commands
+            discord_rpc::init_discord_rpc,
+            discord_rpc::update_discord_presence,
+            discord_rpc::clear_discord_presence,
+            discord_rpc::disconnect_discord_rpc,
+            discord_rpc::is_discord_connected,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

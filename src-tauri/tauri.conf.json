@@ -35,21 +35,10 @@
         "schemes": ["school-management"]
       }
     },
-    "notification": {
-      "identifier": "com.amrita.schoolmanagement.notification"
-    },
     "updater": {
       "active": true,
       "dialog": true,
       "pubkey": ""
-    },
-    "global-shortcut": {
-      "all": true
-    },
-    "fs": {
-      "scope": {
-        "allow": ["$APPDATA/**", "$DOCUMENT/**", "$DOWNLOAD/**"]
-      }
     }
   },
   "bundle": {
