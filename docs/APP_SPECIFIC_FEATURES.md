@@ -35,6 +35,7 @@ A smart, context-aware banner that prompts browser users to download the native 
   - Keyboard shortcuts
 
 - ✅ **Android** (.apk installer)
+
   - Mobile-optimized interface
   - Push notifications
   - Offline mode
@@ -42,9 +43,7 @@ A smart, context-aware banner that prompts browser users to download the native 
   - Quick actions from home screen
   - Battery optimized
 
-**Coming Soon:**
-
-- 🚧 **macOS** (.dmg installer)
+- ✅ **macOS** (.dmg installer)
 
   - Apple Silicon optimized
   - TouchBar support
@@ -53,7 +52,7 @@ A smart, context-aware banner that prompts browser users to download the native 
   - Spotlight search
   - Native macOS design
 
-- 🚧 **iOS** (.ipa installer)
+- ✅ **iOS** (.ipa installer)
 
   - Native iOS experience
   - Face ID / Touch ID
@@ -62,7 +61,10 @@ A smart, context-aware banner that prompts browser users to download the native 
   - Siri shortcuts
   - iCloud sync
 
+**Coming Soon:**
+
 - 🚧 **Linux** (.AppImage)
+
   - AppImage format
   - Cross-distribution support
   - Wayland & X11 compatible

@@ -13,6 +13,7 @@ import {
   Info,
 } from "lucide-react";
 import { HomeLayout } from "@/components/layouts/home-layout";
+import { EnhancedFeaturesShowcase } from "@/components/enhanced-features-showcase";
 import Link from "next/link";
 
 export default function DownloadsPage() {
@@ -55,9 +56,9 @@ export default function DownloadsPage() {
       description: "macOS 11 (Big Sur) and above",
       downloadUrl: "/downloads/amrita-school-management_macos.dmg",
       fileSize: "~90 MB",
-      version: "Coming Soon",
-      supported: false,
-      comingSoon: true,
+      version: "1.0.0",
+      supported: true,
+      comingSoon: false,
       features: [
         "Apple Silicon optimized",
         "TouchBar support",
@@ -71,9 +72,9 @@ export default function DownloadsPage() {
       description: "iOS 14.0 and above",
       downloadUrl: "/downloads/amrita-school-management_ios.ipa",
       fileSize: "~40 MB",
-      version: "Coming Soon",
-      supported: false,
-      comingSoon: true,
+      version: "1.0.0",
+      supported: true,
+      comingSoon: false,
       features: [
         "Native iOS experience",
         "Face ID / Touch ID",
@@ -208,6 +209,9 @@ export default function DownloadsPage() {
             ))}
           </div>
 
+          {/* Enhanced Features Showcase */}
+          <EnhancedFeaturesShowcase />
+
           {/* Information Section */}
           <div className="space-y-6">
             <Card className="rounded-2xl border-blue-200 dark:border-blue-900 bg-blue-50/50 dark:bg-blue-950/20">
@@ -230,11 +234,11 @@ export default function DownloadsPage() {
                         100MB free storage
                       </p>
                       <p>
-                        <strong>macOS (Soon):</strong> macOS 11 (Big Sur) or
+                        <strong>macOS:</strong> macOS 11 (Big Sur) or
                         later, Apple Silicon or Intel processor
                       </p>
                       <p>
-                        <strong>iOS (Soon):</strong> iOS 14.0 or later,
+                        <strong>iOS:</strong> iOS 14.0 or later,
                         compatible with iPhone, iPad, and iPod touch
                       </p>
                       <p>

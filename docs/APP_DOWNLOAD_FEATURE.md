@@ -24,11 +24,11 @@ A client-side component that:
 
 - ✅ Windows (Windows 10/11, 64-bit)
 - ✅ Android (Android 8.0+)
+- ✅ macOS (macOS 11 Big Sur and above)
+- ✅ iOS (iOS 14.0 and above)
 
 **Coming Soon:**
 
-- 🚧 macOS (macOS 11 Big Sur and above)
-- 🚧 iOS (iOS 14.0 and above)
 - 🚧 Linux (Ubuntu 20.04+, Fedora 35+)
 
 ### 2. **Downloads Page** (`app/downloads/page.tsx`)
@@ -382,5 +382,5 @@ For issues or questions:
 
 **Implementation Date**: November 8, 2025  
 **Status**: ✅ Complete and Production Ready  
-**Supported Platforms**: Windows, Android  
-**Coming Soon**: macOS, iOS, Linux
+**Supported Platforms**: Windows, Android, macOS, iOS  
+**Coming Soon**: Linux

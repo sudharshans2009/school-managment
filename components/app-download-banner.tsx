@@ -105,8 +105,8 @@ export function AppDownloadBanner() {
           os: "macOS",
           icon: <Apple className="h-5 w-5" />,
           downloadUrl: "/downloads/amrita-school-management_macos.dmg",
-          supported: false,
-          comingSoon: true,
+          supported: true,
+          comingSoon: false,
           features: [
             "Apple Silicon optimized",
             "TouchBar support",
@@ -127,8 +127,8 @@ export function AppDownloadBanner() {
           os: "iOS",
           icon: <Apple className="h-5 w-5" />,
           downloadUrl: "/downloads/amrita-school-management_ios.ipa",
-          supported: false,
-          comingSoon: true,
+          supported: true,
+          comingSoon: false,
           features: [
             "Native iOS experience",
             "Face ID / Touch ID",
@@ -250,7 +250,7 @@ export function AppDownloadBanner() {
                 )}
                 {platform.comingSoon && (
                   <p className="text-xs text-muted-foreground">
-                    Available: Windows & Android
+                    Available: Windows, Android, macOS & iOS
                   </p>
                 )}
               </div>
