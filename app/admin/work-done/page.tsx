@@ -25,7 +25,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdminHeader } from "@/components/admin/admin-header";
-import { getWorkDoneRecords, type WorkDoneRecord } from "@/actions/admin";
+import { getWorkDoneRecords, type WorkDoneRecord, getAllSubjects } from "@/actions/admin";
+import { getAllClassrooms } from "@/actions/classrooms";
 
 interface Classroom {
   id: string;
@@ -79,9 +80,9 @@ export default function WorkDoneManagementPage() {
   const { data: classrooms } = useQuery<Classroom[]>({
     queryKey: ["classrooms"],
     queryFn: async () => {
-      const res = await fetch("/api/classrooms");
-      if (!res.ok) throw new Error("Failed to fetch classrooms");
-      return res.json();
+      const result = await getAllClassrooms();
+      if (!result.success || !result.data) throw new Error(result.error || "Failed to fetch classrooms");
+      return result.data.map((c) => ({ id: c.id, name: c.name }));
     },
     enabled: !!session?.user?.id,
   });
@@ -90,9 +91,8 @@ export default function WorkDoneManagementPage() {
   const { data: subjects } = useQuery<Subject[]>({
     queryKey: ["subjects"],
     queryFn: async () => {
-      const res = await fetch("/api/subjects");
-      if (!res.ok) throw new Error("Failed to fetch subjects");
-      return res.json();
+      const result = await getAllSubjects();
+      return result.map((s) => ({ id: s.id, name: s.name }));
     },
     enabled: !!session?.user?.id,
   });

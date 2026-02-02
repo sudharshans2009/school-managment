@@ -25,7 +25,8 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Edit2, Clock } from "lucide-react";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdminHeader } from "@/components/admin/admin-header";
-import { getAllTeachers } from "@/actions/admin";
+import { getAllTeachers, getAllSubjects, getTimetable, createTimetableEntry, updateTimetableEntry, deleteTimetableEntry } from "@/actions/admin";
+import { getAllClassrooms } from "@/actions/classrooms";
 
 interface Classroom {
   id: string;
@@ -99,9 +100,9 @@ export default function TimetablePage() {
   const { data: classrooms } = useQuery<Classroom[]>({
     queryKey: ["classrooms"],
     queryFn: async () => {
-      const response = await fetch("/api/classrooms");
-      if (!response.ok) throw new Error("Failed to fetch classrooms");
-      return response.json();
+      const result = await getAllClassrooms();
+      if (!result.success || !result.data) throw new Error(result.error || "Failed to fetch classrooms");
+      return result.data.map((c) => ({ id: c.id, name: c.name }));
     },
   });
 
@@ -116,21 +117,16 @@ export default function TimetablePage() {
   const { data: subjects } = useQuery<Subject[]>({
     queryKey: ["subjects"],
     queryFn: async () => {
-      const response = await fetch("/api/subjects");
-      if (!response.ok) throw new Error("Failed to fetch subjects");
-      return response.json();
+      const result = await getAllSubjects();
+      return result.map((s) => ({ id: s.id, name: s.name }));
     },
   });
 
   const { data: timetable } = useQuery<TimetableEntry[]>({
     queryKey: ["timetable", selectedClassroom],
     queryFn: async () => {
-      const url = selectedClassroom
-        ? `/api/timetable?classroomId=${selectedClassroom}`
-        : "/api/timetable";
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("Failed to fetch timetable");
-      return response.json();
+      const result = await getTimetable(selectedClassroom || undefined);
+      return result;
     },
     enabled: !!selectedClassroom,
   });
@@ -145,16 +141,16 @@ export default function TimetablePage() {
       endTime: string;
       roomNumber: string;
     }) => {
-      const response = await fetch("/api/timetable", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+      const result = await createTimetableEntry({
+        ...data,
+        periodNumber: 0, // Default, will be determined by time
+        room: data.roomNumber,
+        sessionType: "regular",
       });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to create timetable entry");
+      if (!result.success) {
+        throw new Error(result.error || "Failed to create timetable entry");
       }
-      return response.json();
+      return result.entry;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["timetable"] });
@@ -173,16 +169,14 @@ export default function TimetablePage() {
       roomNumber: string;
     }) => {
       const { id, ...body } = data;
-      const response = await fetch(`/api/timetable/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+      const result = await updateTimetableEntry(id, {
+        ...body,
+        room: body.roomNumber,
       });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to update timetable entry");
+      if (!result.success) {
+        throw new Error(result.error || "Failed to update timetable entry");
       }
-      return response.json();
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["timetable"] });
@@ -192,11 +186,11 @@ export default function TimetablePage() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/timetable/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to delete timetable entry");
-      return response.json();
+      const result = await deleteTimetableEntry(id);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to delete timetable entry");
+      }
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["timetable"] });

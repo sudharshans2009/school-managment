@@ -29,6 +29,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AdminHeader } from "@/components/admin/admin-header";
+import { getAllSubjects, createSubject, updateSubject, deleteSubject } from "@/actions/admin";
 
 interface Subject {
   id: string;
@@ -95,9 +96,8 @@ export default function SubjectsPage() {
   const { data: subjects, isLoading } = useQuery<Subject[]>({
     queryKey: ["subjects"],
     queryFn: async () => {
-      const response = await fetch("/api/subjects");
-      if (!response.ok) throw new Error("Failed to fetch subjects");
-      return response.json();
+      const result = await getAllSubjects();
+      return result;
     },
   });
 
@@ -109,16 +109,11 @@ export default function SubjectsPage() {
       applicableGrades?: string[];
       applicableSections?: string[];
     }) => {
-      const response = await fetch("/api/subjects", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to create subject");
+      const result = await createSubject(data);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to create subject");
       }
-      return response.json();
+      return result.subject;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subjects"] });
@@ -140,16 +135,11 @@ export default function SubjectsPage() {
       applicableSections?: string[];
     }) => {
       const { id, ...body } = data;
-      const response = await fetch(`/api/subjects/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to update subject");
+      const result = await updateSubject(id, body);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to update subject");
       }
-      return response.json();
+      return result.subject;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subjects"] });
@@ -163,11 +153,11 @@ export default function SubjectsPage() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/subjects/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to delete subject");
-      return response.json();
+      const result = await deleteSubject(id);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to delete subject");
+      }
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subjects"] });

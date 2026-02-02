@@ -51,6 +51,7 @@ import {
 import { toast } from "sonner";
 import { TeacherHeader } from "@/components/teacher/teacher-header";
 import { format } from "date-fns";
+import { getTeacherExams, getExamGrades, createExamGrade, getClassroomStudents } from "@/actions/teacher";
 
 interface Exam {
   id: string;
@@ -108,12 +109,11 @@ export default function TeacherExamsPage() {
   const { data: exams } = useQuery<Exam[]>({
     queryKey: ["teacher-exams", session?.user?.id],
     queryFn: async () => {
-      const response = await fetch("/api/exams");
-      if (!response.ok) throw new Error("Failed to fetch exams");
-      const allExams = await response.json();
+      if (!session?.user?.id) return [];
+      const allExams = await getTeacherExams(session.user.id);
 
       // Filter for non-finalized exams only (teachers can only upload to draft exams)
-      return allExams.filter((exam: Exam) => !exam.isFinalized);
+      return allExams.filter((exam) => !exam.isFinalized);
     },
     enabled: !!session?.user?.id,
   });
@@ -127,11 +127,8 @@ export default function TeacherExamsPage() {
       const examData = exams?.find((e) => e.id === selectedExam);
       if (!examData) return [];
 
-      const response = await fetch(
-        `/api/students?classroomId=${examData.classroom.id}`,
-      );
-      if (!response.ok) throw new Error("Failed to fetch students");
-      return response.json();
+      const result = await getClassroomStudents(examData.classroom.id);
+      return result;
     },
     enabled: !!selectedExam && !!exams,
   });
@@ -142,9 +139,8 @@ export default function TeacherExamsPage() {
     queryFn: async () => {
       if (!selectedExam) return [];
 
-      const response = await fetch(`/api/exams/${selectedExam}/grades`);
-      if (!response.ok) throw new Error("Failed to fetch grades");
-      return response.json();
+      const result = await getExamGrades(selectedExam);
+      return result;
     },
     enabled: !!selectedExam,
   });
@@ -152,18 +148,26 @@ export default function TeacherExamsPage() {
   // Upload grades mutation
   const uploadGradesMutation = useMutation({
     mutationFn: async (grades: GradeInput[]) => {
-      const response = await fetch(`/api/exams/${selectedExam}/grades`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ grades }),
-      });
+      if (!session?.user?.id) throw new Error("Not authenticated");
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to upload grades");
-      }
+      const results = await Promise.allSettled(
+        grades.map((grade) =>
+          createExamGrade({
+            examId: selectedExam,
+            studentId: grade.studentId,
+            marksObtained: parseFloat(grade.marksObtained),
+            uploadedBy: session.user.id,
+            remarks: grade.remarks || undefined,
+          })
+        )
+      );
 
-      return response.json();
+      const success = results.filter((r) => r.status === "fulfilled").length;
+      const errors = results
+        .filter((r): r is PromiseRejectedResult => r.status === "rejected")
+        .map((r) => r.reason.message);
+
+      return { success, failed: errors.length, errors };
     },
     onSuccess: (data) => {
       const { success, errors } = data;

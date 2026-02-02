@@ -52,6 +52,8 @@ import { DataTable } from "@/components/ui/data-table";
 import { createStudentColumns, Student } from "./components/columns";
 import Link from "next/link";
 import { AdminHeader } from "@/components/admin/admin-header";
+import { getAllStudents, createStudent, updateStudent, deleteStudent } from "@/actions/admin";
+import { getAllClassrooms } from "@/actions/classrooms";
 
 interface Classroom {
   id: string;
@@ -81,18 +83,23 @@ export default function StudentsPage() {
   const { data: students, isLoading } = useQuery<Student[]>({
     queryKey: ["students"],
     queryFn: async () => {
-      const response = await fetch("/api/students");
-      if (!response.ok) throw new Error("Failed to fetch students");
-      return response.json();
+      const result = await getAllStudents();
+      return result;
     },
   });
 
+  // Fetch classrooms
   const { data: classrooms } = useQuery<Classroom[]>({
     queryKey: ["classrooms"],
     queryFn: async () => {
-      const response = await fetch("/api/classrooms");
-      if (!response.ok) throw new Error("Failed to fetch classrooms");
-      return response.json();
+      const result = await getAllClassrooms();
+      if (!result.success || !result.data) throw new Error(result.error || "Failed to fetch classrooms");
+      return result.data.map((c) => ({
+        id: c.id,
+        name: c.name,
+        grade: c.grade,
+        section: c.section,
+      }));
     },
   });
 
@@ -110,16 +117,11 @@ export default function StudentsPage() {
       bloodGroup: string;
       house: string;
     }) => {
-      const response = await fetch("/api/students", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to create student");
+      const result = await createStudent(data);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to create student");
       }
-      return response.json();
+      return result.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
@@ -144,16 +146,11 @@ export default function StudentsPage() {
       house?: string;
     }) => {
       const { id, ...body } = data;
-      const response = await fetch(`/api/students/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to update student");
+      const result = await updateStudent(id, body);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to update student");
       }
-      return response.json();
+      return result.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
@@ -165,11 +162,11 @@ export default function StudentsPage() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await fetch(`/api/students/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to delete student");
-      return response.json();
+      const result = await deleteStudent(id);
+      if (!result.success) {
+        throw new Error(result.error || "Failed to delete student");
+      }
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
