@@ -3,13 +3,16 @@
 ## Quick Checks
 
 ### 1. Is Discord Running?
+
 - **Windows/Mac**: Check if Discord desktop app is running (not just the browser version)
 - Discord RPC only works with the desktop client
 
 ### 2. Test Page
+
 Navigate to: `http://localhost:3000/test-discord` to test Discord RPC functionality with detailed logging.
 
 ### 3. Check Console Logs
+
 1. Open browser DevTools (F12 or Right-click → Inspect)
 2. Go to Console tab
 3. Look for messages starting with `[Discord RPC]`
@@ -17,29 +20,38 @@ Navigate to: `http://localhost:3000/test-discord` to test Discord RPC functional
 ### 4. Common Errors & Solutions
 
 #### Error: "Failed to connect to Discord"
+
 **Cause**: Discord desktop app is not running
-**Solution**: 
+**Solution**:
+
 - Start Discord desktop app
 - Wait a few seconds
 - Try initializing again
 
 #### Error: "Discord RPC not initialized"
+
 **Cause**: Connection wasn't established before trying to update presence
 **Solution**:
+
 - Go to Settings and toggle Discord RPC on
 - Or use the test page to manually initialize
 
 #### No presence showing on Discord profile
+
 **Possible causes**:
+
 1. **Activity Status disabled in Discord**
+
    - Open Discord Settings → Activity Settings → Activity Privacy
    - Make sure "Display current activity as a status message" is ON
 
 2. **Wrong Application ID**
+
    - Check `src-tauri/src/discord_rpc.rs` line 7
    - Verify the Application ID matches your Discord application
 
 3. **Images not uploaded**
+
    - Go to Discord Developer Portal
    - Your Application → Rich Presence → Art Assets
    - Upload required images (optional but recommended)
@@ -49,6 +61,7 @@ Navigate to: `http://localhost:3000/test-discord` to test Discord RPC functional
    - It won't work in the browser version
 
 #### Error: "invalid type: map, expected unit"
+
 **Cause**: Plugin configuration error in tauri.conf.json
 **Solution**: Already fixed - this was a configuration issue
 
@@ -80,9 +93,9 @@ import { SchoolActivity } from "@/types/discord-rpc";
 import { useEffect } from "react";
 
 function MyComponent() {
-  const { isConnected, updateActivityPreset } = useDiscordRPC({ 
+  const { isConnected, updateActivityPreset } = useDiscordRPC({
     autoInit: true,
-    enableLogging: true // Enable to see logs
+    enableLogging: true, // Enable to see logs
   });
 
   useEffect(() => {
@@ -143,6 +156,7 @@ export function useDiscordRPC(options: UseDiscordRPCOptions = {}) {
 ### Check Rust Logs
 
 Run with verbose logging:
+
 ```bash
 RUST_LOG=debug bun run tauri:dev
 ```
@@ -150,15 +164,18 @@ RUST_LOG=debug bun run tauri:dev
 ### Manual Test
 
 Open browser console and run:
+
 ```javascript
-window.__TAURI__.invoke('is_discord_connected')
-  .then(connected => console.log('Connected:', connected))
-  .catch(err => console.error('Error:', err));
+window.__TAURI__
+  .invoke("is_discord_connected")
+  .then((connected) => console.log("Connected:", connected))
+  .catch((err) => console.error("Error:", err));
 ```
 
 ### Rebuild
 
 Sometimes a clean rebuild helps:
+
 ```bash
 cd src-tauri
 cargo clean
@@ -171,12 +188,14 @@ bun run tauri:dev
 When working correctly:
 
 1. **In Console**: You'll see logs like:
+
    ```
    [Discord RPC] Initialized Discord RPC successfully
    [Discord RPC] Presence updated
    ```
 
 2. **In Discord**: Your profile will show:
+
    - "Playing School Management System"
    - Your current activity (e.g., "Viewing Dashboard")
    - School logo (if uploaded)
@@ -187,5 +206,6 @@ When working correctly:
 ## Need More Help?
 
 Check the full documentation:
+
 - [DISCORD_RPC_INTEGRATION.md](./DISCORD_RPC_INTEGRATION.md) - Complete technical docs
 - [DISCORD_RPC_QUICKSTART.md](./DISCORD_RPC_QUICKSTART.md) - Quick setup guide

@@ -125,10 +125,10 @@ pub fn disconnect_discord_rpc() -> Result<String, String> {
         match Arc::try_unwrap(client_arc) {
             Ok(mutex) => {
                 let mut client = mutex.into_inner().map_err(|e| e.to_string())?;
-                
+
                 // First clear the activity
                 let _ = client.clear_activity();
-                
+
                 // Then close the connection
                 client
                     .close()
